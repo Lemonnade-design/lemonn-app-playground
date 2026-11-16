@@ -1,6 +1,6 @@
 {
  "source": "Yahoo Finance (public chart endpoint)",
- "fetchedAt": "2026-11-16T22:59:26.723Z",
+ "fetchedAt": "2026-11-16T23:17:10.138Z",
  "symbols": [
   "AAL",
   "AAPL",
@@ -2025,7 +2025,7 @@
    "change": -4,
    "changePct": -4.49,
    "dayHigh": 88.98,
-   "dayLow": 84.95,
+   "dayLow": 84.96,
    "high52": 97.85,
    "low52": 44,
    "volume": 2155820,
@@ -2472,7 +2472,7 @@
    ]
   },
   "GM": {
-   "name": "General Motors Company",
+   "name": "General Motors Company Common Stock",
    "exchange": "NYSE",
    "type": "EQUITY",
    "price": 83.67,
@@ -4017,7 +4017,7 @@
    "change": -6.71,
    "changePct": -4.12,
    "dayHigh": 163,
-   "dayLow": 155.01,
+   "dayLow": 155.02,
    "high52": 243.37,
    "low52": 148.8,
    "volume": 329959344,
