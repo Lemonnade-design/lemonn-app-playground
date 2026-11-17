@@ -9000,7 +9000,7 @@ export function Creations({ rules, indicators, strategies, onBack, onDeleteRule,
           />
         </div>
       ) : (
-        <Inset paddingInline="16" paddingBlock="24">
+        <Inset paddingInline="16" paddingBlock="24" data-page-end>
           <Stack gap="24">
             {kinds.map((kind) => (
               <Stack as="section" gap="16" key={kind} aria-label={t(`creations.${kind}Count`, { count: counts[kind] })}>
@@ -9579,7 +9579,7 @@ export function IndicatorScene({ step, onStep, request: initialRequest, onSend, 
         )}
         {chatStarted && (
           <div className={styles.panel} data-flat>
-            <Inset paddingInline="16" paddingBlock="24">
+            <Inset paddingInline="16" paddingBlock="24" data-page-end>
               <Stack gap="16" className={styles.turns}>
                 {turns.map((turn) => (
                   <div key={turn.key} className={turn.key === 'request' ? undefined : styles.appear} data-turn={turn.key}>
@@ -11077,7 +11077,7 @@ export function RuleScene({ step, request: initialRequest = maxDailyLoss.title, 
         )}
         {!empty && (
           <div className={styles.panel} data-flat>
-            <Inset paddingInline="16" paddingBlock="24">
+            <Inset paddingInline="16" paddingBlock="24" data-page-end>
               <Stack gap="16" className={styles.turns}>
                 {conversation(step, request, step === 'question' && pending ? answer : step !== 'thinking' && step !== 'question' ? answer : null, {
                   onRefine,
@@ -12180,7 +12180,16 @@ export function useSystemKeyboard() {
   min-height: 0;
   overflow-x: hidden; /* a screen never scrolls sideways — only rails inside it do */
   overflow-y: auto;
+  padding-bottom: var(--app-body-end);
 }
+
+/* The body owns the page's end spacing: whatever comes last adds none of its own (no 24 + 24). */
+.body > :last-child {
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+/* A page's last block nested deeper (inside tabs or a panel) is marked data-page-end so it adds none either. */
+.body [data-page-end] { padding-bottom: 0; margin-bottom: 0; }
 
 /* Floating toast: sits on the bottom edge of the body, above the dock / navbar (L3 Aerobar rule). */
 .toast {

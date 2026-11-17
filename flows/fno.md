@@ -2174,7 +2174,7 @@ export function Heatmap({ onOpen, onViewAll }: { onOpen: (name: string) => void;
 .heading { font: var(--l3-text-heading-14); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .description { font: var(--l3-text-description-12); color: var(--l3-content-secondary); white-space: nowrap; }
 .grow { flex: 1; min-width: 0; }
-.feed { padding-block: var(--l3-spacing-24) var(--l3-spacing-32); }
+.feed { padding-block: var(--l3-spacing-24) 0; } /* page end: the body's --app-body-end */
 .ribbonIcon { display: inline-flex; width: var(--l3-size-16); height: var(--l3-size-16); }
 .shortcuts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--l3-spacing-08); padding: var(--l3-spacing-08) var(--l3-spacing-16) 0; }
 .shortcuts .secondaryLabel { white-space: normal; text-align: center; }
@@ -5667,7 +5667,16 @@ export function Rail({ children, label, visible, rows = 1, snap = 'start', class
   min-height: 0;
   overflow-x: hidden; /* a screen never scrolls sideways — only rails inside it do */
   overflow-y: auto;
+  padding-bottom: var(--app-body-end);
 }
+
+/* The body owns the page's end spacing: whatever comes last adds none of its own (no 24 + 24). */
+.body > :last-child {
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+/* A page's last block nested deeper (inside tabs or a panel) is marked data-page-end so it adds none either. */
+.body [data-page-end] { padding-bottom: 0; margin-bottom: 0; }
 
 /* Floating toast: sits on the bottom edge of the body, above the dock / navbar (L3 Aerobar rule). */
 .toast {

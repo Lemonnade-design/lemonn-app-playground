@@ -368,6 +368,8 @@
     "src/shared/money.tsx",
     "src/shared/prototype.ts",
     "src/shared/support.ts",
+    "src/shared/ui/CenteredTabs.module.css",
+    "src/shared/ui/CenteredTabs.tsx",
     "src/shared/ui/DepositProgressSheet.module.css",
     "src/shared/ui/DepositProgressSheet.tsx",
     "src/shared/ui/Flag.module.css",
