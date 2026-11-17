@@ -260,6 +260,7 @@ The source uses old D2 controls alongside L3; their code equivalents are L3 comp
 - 2026-10-26 — Added the Scalper chart-tools bottom sheet and Indicators list from the supplied reference.
 - 2026-10-26 — Grouped the chart-tools list into Your indicators and Lemon indicators; linked DASH AI's View indicator
   action to the saved custom indicator in the open sheet.
+- 2026-11-17 — Header: 48 tall (`--app-topbar-height`, like every navbar tab's Actionbar), and the wallet is the shared round `TopBarAction`.
 
 
 ## Source — this flow
@@ -1620,6 +1621,7 @@ import { t } from '../../copy'
 import { assetCandles, type AssetPage as Asset } from '../data'
 import scalppro from '../../assets/scalppro.svg'
 import styles from './AssetPage.module.css'
+import { TopBarAction } from '../../../../shared/ui/TopBarAction'
 
 type Props = { asset: Asset; onBack: () => void; onChain: () => void; /** ScalpPro (Scalper) — disabled for an illiquid contract. */ onScalper: () => void; /** Buy / Sell open the commodity order pad. */ onOrder: (side: 'buy' | 'sell') => void }
 
@@ -1673,7 +1675,7 @@ export function AssetPage({ asset, onBack, onChain, onScalper, onOrder }: Props)
   </ButtonGroup>
 
   return <Screen
-    top={<Actionbar className={styles.bar} elevated={scrolled} onBack={onBack} backLabel={t('asset.back')} actions={<Button variant="tertiary" size="sm" aria-label={t('asset.watchlist')} aria-pressed={saved} iconLeft={<Icon icon={saved ? msStarFill : msStar} size={20} />} onClick={() => setSaved(!saved)} />} />}
+    top={<Actionbar className={styles.bar} elevated={scrolled} onBack={onBack} backLabel={t('asset.back')} actions={<TopBarAction icon={saved ? msStarFill : msStar} label={t('asset.watchlist')} pressed={saved} onClick={() => setSaved(!saved)} />} />}
     bottom={dock}
     sheet={explain ? <IlliquidSheet contract={`${asset.name} ${asset.contract}`} onClose={() => setExplain(false)} /> : detail ? <DetailSheet title={detail} onClose={() => setDetail(null)} /> : undefined}>
     <Stack ref={pageRef} gap="32" className={styles.page}>
@@ -2081,7 +2083,7 @@ export function FnoNav({ onHome, onDestination, onChain, onScalper }: { onHome: 
 ### `src/flows/fno/components/Header.module.css`
 
 ```css
-.bar { display: flex; align-items: center; gap: var(--l3-spacing-12); height: 64px; padding-inline: var(--l3-spacing-16); background: var(--l3-surface-secondary); transition: background-color var(--l3-motion-duration-short) var(--l3-motion-easing-standard); }
+.bar { display: flex; align-items: center; gap: var(--l3-spacing-12); height: var(--app-topbar-height); padding-inline: var(--l3-spacing-16); background: var(--l3-surface-secondary); transition: background-color var(--l3-motion-duration-short) var(--l3-motion-easing-standard); }
 .bar[data-scrolled] { background: var(--l3-surface-primary); }
 .bar > :is(.profile, .search, .wallet) { display: inline-flex; flex: none; align-items: center; justify-content: center; height: var(--app-stocks-topbar-control); padding: 0; border: 0; color: var(--l3-content-primary); cursor: pointer; -webkit-tap-highlight-color: transparent; transition: transform var(--l3-motion-duration-short) var(--l3-motion-easing-standard); }
 .bar > :is(.profile, .search, .wallet):active { transform: scale(var(--l3-motion-scale-press-default)); }
@@ -2100,6 +2102,7 @@ import { msAccountBalanceWallet, msSearch } from '@l3/icons/material'
 import { DashEntry } from '../../../shared/ui/dash/DashEntry'
 import { t } from '../copy'
 import styles from './Header.module.css'
+import { TopBarAction } from '../../../shared/ui/TopBarAction'
 
 type HeaderProps = {
   initials: string
@@ -2116,7 +2119,7 @@ export function Header({ initials, scrolled = false, onProfile, onSearch, onWall
     <button type="button" className={styles.profile} aria-label={t('top.profile')} onClick={onProfile}>{initials}</button>
     <button type="button" className={styles.search} onClick={onSearch}><Icon icon={msSearch} size={20} /><span className={styles.placeholder}>{t('top.search')}</span></button>
     <DashEntry label={t('top.dash')} ariaLabel={t('top.dash')} onClick={onDash} />
-    <button type="button" className={styles.wallet} aria-label={t('top.wallet')} onClick={onWallet}><Icon icon={msAccountBalanceWallet} size={20} /></button>
+    <TopBarAction icon={msAccountBalanceWallet} label={t('top.wallet')} onClick={onWallet} />
   </header>
 }
 ```
@@ -5863,6 +5866,70 @@ export function SheetHost({ container, children }: { container: HTMLElement | nu
         </BottomSheet>
       )}
     </SheetHostContext.Provider>
+  )
+}
+```
+
+### `src/shared/ui/TopBarAction.module.css`
+
+```css
+/* Home's round top-bar button (stocks TopBar .wallet): 38 circle, border/light edge, no shadow. L3 gap: see TopBarAction.tsx. */
+.action.action {
+  --btn-radius: var(--l3-radius-full);
+  --btn-border: var(--l3-border-light);
+  --btn-icon-size: var(--l3-icon-size-20);
+  width: var(--app-stocks-topbar-control);
+  height: var(--app-stocks-topbar-control);
+  padding: 0;
+}
+
+/* A toggled action (pressed) takes border-dark, like any selected bordered control (as L3's ActionbarAction). */
+.action.action[aria-pressed='true'] {
+  --btn-border: var(--l3-border-dark);
+}
+```
+
+### `src/shared/ui/TopBarAction.tsx`
+
+```tsx
+import { Button } from '@l3/components/Button'
+import { Icon } from '@l3/components/Icon'
+import { Stack } from '@l3/components/Stack'
+import { msAccountBalanceWallet, msSearch } from '@l3/icons/material'
+import styles from './TopBarAction.module.css'
+
+/**
+ * The app's icon button in a top bar (Actionbar `actions`): the same round button as Home's top bar — a 38 circle with
+ * a 1px border/light edge, a 20 icon and no shadow — so every page's top-bar icons match.
+ * It's L3's Tertiary Small button with three local changes (L3 gap: ActionbarAction is a 32 rounded square with
+ * the tertiary border and a soft raise, no round option): fully round, border/light, raised none.
+ * Icon-only actions with no box keep L3's `ActionbarAction variant="ghost"`.
+ */
+export function TopBarAction({ icon, label, onClick, pressed }: { icon: string; label: string; onClick: () => void; pressed?: boolean }) {
+  return (
+    <Button
+      size="sm"
+      variant="tertiary"
+      raised="none"
+      className={styles.action}
+      iconLeft={<Icon icon={icon} size={20} />}
+      onClick={onClick}
+      aria-label={label}
+      aria-pressed={pressed}
+    />
+  )
+}
+
+/**
+ * The top bar's search and wallet, in this order, 8 apart — the same pair on every navbar tab (Stocks home, Market,
+ * Portfolio, Mutual Fund), so nothing moves when you switch tabs. Copy it as is; don't redraw it per screen.
+ */
+export function SearchWalletActions({ searchLabel, walletLabel, onSearch, onWallet }: { searchLabel: string; walletLabel: string; onSearch: () => void; onWallet: () => void }) {
+  return (
+    <Stack direction="horizontal" align="center" gap="08">
+      <TopBarAction icon={msSearch} label={searchLabel} onClick={onSearch} />
+      <TopBarAction icon={msAccountBalanceWallet} label={walletLabel} onClick={onWallet} />
+    </Stack>
   )
 }
 ```

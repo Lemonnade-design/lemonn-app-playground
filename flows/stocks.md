@@ -25,7 +25,7 @@ Prototype: https://kirtanyak-pe.github.io/lemonn-app-prototype/#/stocks · machi
 | `stocks-22` | Home · US tab · activation approved sheet | [9001:21]() | `us-stocks-20`, `stocks-15` | The review is approved: the activated US tab with the "US Stocks is active" sheet (success spot). Add Money to US wallet → the $0 USD wallet (us-stocks-20); Later or closing → the activated Home (stocks-15). The under-review Home (stocks-13) moves here by itself after 2 s. |
 | `stocks-14` | Home · US tab · activation failed | [5776:81034]() | — | US tab, activation failed (PAN could not be verified): red card, Retry Activation → the activation pages (us-stocks-94). |
 | `stocks-15` | Home · US tab · activated · add money | [5776:81870]() | `us-stocks-20` | US tab, activation successful: green card with the unlocked benefits, Add Money to US wallet → the $0 USD wallet (us-stocks-20). The wallet icon goes there too. |
-| `stocks-16` | Home · US tab · money ready | [5796:87332]() | `market-09` | Money reached the US wallet: a "Your money is ready" toast above the navbar (times out after 6 s; no card, as in his design); tapping the toast or the card\ |
+| `stocks-16` | Home · US tab · money ready | [5796:87332]() | `market-09` | Money reached the US wallet: a "Your money is ready" toast above the navbar with an OK button (OK closes it; it closes on its own after 3 s; no card, as in his design); the card\ |
 | `stocks-17` | Home · US tab · activated · holding | [5826:92885]() | — | US tab for an activated user who holds US stocks: no card, the summary shows US holdings ($). A US stock opens its stock page — NVDA (held) with Buy / Sell, others Buy only. Wallet → the funded USD wallet. |
 | `stocks-19` | Home · US tab · under review · Contact Support | [5776:80202]() | — | Activation still under review after a working day: the honey card gains a Contact Support button. Contact Support opens an email to Lemonn support (mail app), no in-app screen. The wallet opens the wallet\ |
 | `stocks-20` | Home · US tab · money on the way | [5796:86490]() | `us-stocks-28` | After paying on the bank page: the honey "Money on the way" card (trade from Thu 8 PM) with what happens next (debited, converted, credited). Track Transfer and the wallet open the wallet\ |
@@ -67,7 +67,7 @@ One long, scrolling L1 page. The board shows it as frames scrolled to each part,
 | `stocks-13` | Home · US tab · activation under review | Honey card "Activation under review" (5756:75539). Auto → `stocks-22` after 2 s; wallet → `us-stocks-55` |
 | `stocks-14` | Home · US tab · activation failed | Red card, Retry Activation → `us-stocks-94` (5776:81034); wallet → `us-stocks-56` |
 | `stocks-15` | Home · US tab · activated · add money | Green card with the unlocked benefits, Add Money to US wallet → `us-stocks-20` (5776:81870); wallet → `us-stocks-20` |
-| `stocks-16` | Home · US tab · money ready | "Your money is ready" toast (L3 Aerobar, 6 s) + the ready card, Explore US Stocks → `stocks-17` (5796:87332); wallet → `us-stocks-59` |
+| `stocks-16` | Home · US tab · money ready | "Your money is ready" toast (L3 Aerobar with OK, 3 s) + the ready card, Explore US Stocks → `stocks-17` (5796:87332); wallet → `us-stocks-59` |
 | `stocks-17` | Home · US tab · activated · holding | No card; the summary shows **US holdings ($)** (5826:92885). A stock → `us-stocks-32` (NVDA, held) or `us-stocks-31`; wallet → `us-stocks-59` |
 | `stocks-18` | Home · activation submitted sheet | Under-review US tab + the **"US Stocks activation under review"** sheet (5756:73797). Okay / close → `stocks-13` |
 | `stocks-21` | Home · US tab · KYC not done | **Not in Figma.** The user's Lemonn (Indian) KYC isn't complete, so US Stocks can't be activated: blue card "Complete your KYC first", Complete KYC → `kyc-01`; a US stock → `us-stocks-74` (Complete KYC); wallet → `us-stocks-53` |
@@ -639,6 +639,9 @@ lower on the page is scrolled into view first). `components/MarketSwitchGuide.ts
 - 2026-11-17 · Page end: Home's feed and the theme page drop their own bottom padding; the body's `--app-body-end` (24) ends every page.
 - 2026-11-17 · No shadows on Home's cards: every clickable card (L3 Cards and card-style ListCells, IN and US tabs) keeps only its 1px border/light edge; replaces the 2026-11-04 soft shadow (`.flatCards` in screens/Home.module.css). L3 gap: Card has no "no shadow" option.
 - 2026-11-17 · `useSwipeBetween` moved to `src/shared/ui/` (Market's tabs use it too).
+- 2026-11-17 · "Your money is ready" toast: an OK button instead of the chevron; OK only closes it (the toast no longer opens Market), and it closes on its own after 3 s (was 6).
+- 2026-11-17 · Top-bar icon buttons app-wide are the shared `TopBarAction` (Home's round button: 38 circle, border/light, 20 icon, no shadow) instead of L3's ActionbarAction (32 rounded square, soft raise). L3 gap: ActionbarAction has no round / unraised option.
+- 2026-11-17 · Home's top bar is 48 tall (was 64; `--app-topbar-height`, L3 Actionbar's row) and its search + wallet are the shared `SearchWalletActions`, so the profile, search and wallet sit exactly where Market's, Portfolio's and Mutual Fund's do — no jump between navbar tabs.
 
 
 ## Source — this flow
@@ -20882,7 +20885,7 @@ export function HeroButtons({ buy, add }: HeroButtonsProps) {
   position: absolute;
   z-index: var(--app-layer-fab);
   left: var(--l3-spacing-12);
-  top: var(--l3-size-64);
+  top: var(--app-topbar-height);
   width: max-content;
   display: flex;
   flex-wrap: wrap;
@@ -22850,7 +22853,7 @@ export function ShortcutArt({ art }: { art: Art }) {
   padding-left: var(--l3-spacing-16);
   background: var(--l3-surface-secondary);
   position: sticky;
-  height: var(--l3-size-64);
+  height: var(--app-topbar-height);
 }
 
 /* Scrolled: the bar leaves the summary's grey for surface/default (the page under it) — at once, with no fade, so the
@@ -23007,6 +23010,7 @@ import { msAccountBalanceWallet, msSearch } from '@l3/icons/material'
 import { lmSwitchArrowVertical } from '@l3/icons/lemonnade'
 import { Flag, type Market } from './MarketTabs'
 import { t } from '../copy'
+import { SearchWalletActions, TopBarAction } from '../../../shared/ui/TopBarAction'
 import styles from './TopBar.module.css'
 
 type TopBarProps = {
@@ -23034,7 +23038,8 @@ type TopBarProps = {
 }
 
 /**
- * Stocks home's own top bar, as in the live app (a one-off for this screen — not the L3 Actionbar):
+ * Stocks home's own top bar, as in the live app (a one-off for this screen — not the L3 Actionbar), 48 tall like every
+ * navbar tab's Actionbar, with the shared search and wallet (shared/ui/TopBarAction) so nothing jumps between tabs:
  * profile initials (indigo circle) · a search pill ("Search stocks", opens Search) · the wallet. (No DASH pill: DASH
  * is entered from the F&O home only — 2026-11-01.)
  * The bar sits on the summary area's grey; the pill and the wallet are on surface/default.
@@ -23061,19 +23066,18 @@ export function TopBar({ initials, onProfile, onSearch, onWallet, scrolled = fal
       {compactSearch ? (
         <>
           <span className={styles.gap} aria-hidden="true" />
-          <button type="button" className={styles.wallet} aria-label={placeholder} onClick={onSearch}>
-            <Icon icon={msSearch} size={20} />
-          </button>
+          {/* The same search and wallet as every navbar tab's top bar (shared/ui/TopBarAction). */}
+          <SearchWalletActions searchLabel={placeholder} walletLabel={t('top.wallet')} onSearch={() => onSearch?.()} onWallet={() => onWallet?.()} />
         </>
       ) : (
-        <button type="button" className={styles.search} onClick={onSearch}>
-          <Icon icon={msSearch} size={20} />
-          <span className={styles.placeholder}>{placeholder}</span>
-        </button>
+        <>
+          <button type="button" className={styles.search} onClick={onSearch}>
+            <Icon icon={msSearch} size={20} />
+            <span className={styles.placeholder}>{placeholder}</span>
+          </button>
+          <TopBarAction icon={msAccountBalanceWallet} label={t('top.wallet')} onClick={() => onWallet?.()} />
+        </>
       )}
-      <button type="button" className={styles.wallet} aria-label={t('top.wallet')} onClick={onWallet}>
-        <Icon icon={msAccountBalanceWallet} size={20} />
-      </button>
       {end}
     </header>
   )
@@ -27556,6 +27560,7 @@ export function useLiveHeatmap(symbols: string[] = heatSymbols): HeatValue[] {
   "us.activated.cta": "Add Money to US wallet",
   "us.ready.title": "Your money is ready",
   "us.ready.subtitle": "$1,035.37 added to your US wallet",
+  "us.ready.ok": "OK",
   "us.ready.cta": "Explore US Stocks",
   "us.holdings.label": "US Stocks holdings",
   "us.sheet.close": "Close",
@@ -27950,7 +27955,7 @@ export const stocks: Flow = {
     { id: 'stocks-22', name: 'Home · US tab · activation approved sheet', badge: 'new', badgeNote: 'Not in Jojo\'s Figma: tells the user the review was approved', figma: '9001:21', group: 'us-review', note: 'The review is approved: the activated US tab with the "US Stocks is active" sheet (success spot). Add Money to US wallet → the $0 USD wallet (us-stocks-20); Later or closing → the activated Home (stocks-15). The under-review Home (stocks-13) moves here by itself after 2 s.', tab: true, render: (go) => usHome(go, 'activated', { onActivateUs: () => go('us-stocks-20'), sheet: <ActivationApprovedSheet onAddMoney={() => go('us-stocks-20')} onLater={() => go('stocks-15')} /> }) },
     { id: 'stocks-14', hidden: true, name: 'Home · US tab · activation failed', figma: '5776:81034', note: 'US tab, activation failed (PAN could not be verified): red card, Retry Activation → the activation pages (us-stocks-94).', tab: true, render: (go) => usHome(go, 'failed') },
     { id: 'stocks-15', hidden: true, name: 'Home · US tab · activated · add money', figma: '5776:81870', note: 'US tab, activation successful: green card with the unlocked benefits, Add Money to US wallet → the $0 USD wallet (us-stocks-20). The wallet icon goes there too.', tab: true, render: (go) => usHome(go, 'activated', { onActivateUs: () => go('us-stocks-20') }) },
-    { id: 'stocks-16', hidden: true, name: 'Home · US tab · money ready', figma: '5796:87332', note: 'Money reached the US wallet: a "Your money is ready" toast above the navbar (times out after 6 s; no card, as in his design); tapping the toast or the card\'s Explore US Stocks → Market with US picked (market-09). Wallet → the funded USD wallet (us-stocks-59).', tab: true, render: (go) => usHome(go, 'ready', { onActivateUs: () => go('market-09') }) },
+    { id: 'stocks-16', hidden: true, name: 'Home · US tab · money ready', figma: '5796:87332', note: 'Money reached the US wallet: a "Your money is ready" toast above the navbar with an OK button (OK closes it; it closes on its own after 3 s; no card, as in his design); the card\'s Explore US Stocks → Market with US picked (market-09). Wallet → the funded USD wallet (us-stocks-59).', tab: true, render: (go) => usHome(go, 'ready', { onActivateUs: () => go('market-09') }) },
     { id: 'stocks-17', hidden: true, name: 'Home · US tab · activated · holding', figma: '5826:92885', note: 'US tab for an activated user who holds US stocks: no card, the summary shows US holdings ($). A US stock opens its stock page — NVDA (held) with Buy / Sell, others Buy only. Wallet → the funded USD wallet.', tab: true, render: (go) => usHome(go, 'holding', { onUsStock: (sym) => go(sym === 'NVDA' ? 'us-stocks-32' : 'us-stocks-31') }) },
     { id: 'stocks-19', hidden: true, name: 'Home · US tab · under review · Contact Support', badge: 'new', badgeNote: 'Added from Jojo\'s Figma (A00 · Home · Under review · Contact Support)', figma: '5776:80202', group: 'us-review', note: 'Activation still under review after a working day: the honey card gains a Contact Support button. Contact Support opens an email to Lemonn support (mail app), no in-app screen. The wallet opens the wallet\'s Contact Support state (us-stocks-57).', tab: true, render: (go) => usHome(go, 'support', stateTaps(go, 'support')) },
     { id: 'stocks-20', hidden: true, name: 'Home · US tab · money on the way', badge: 'new', badgeNote: 'Added from Jojo\'s Figma (A00 · Home · Money on the way)', figma: '5796:86490', note: 'After paying on the bank page: the honey "Money on the way" card (trade from Thu 8 PM) with what happens next (debited, converted, credited). Track Transfer and the wallet open the wallet\'s transfer in progress (us-stocks-28). In the prototype it moves on to "money ready" (stocks-16) by itself after 2 s, as in his prototype.', tab: true, render: (go) => usHome(go, 'onTheWay', { onActivateUs: () => go('us-stocks-28'), autoNext: 'stocks-16' }) },
@@ -28368,21 +28373,21 @@ export function BrandsPage({ onStock }: BrandsPageProps) {
 
 .spacer {
   flex: none;
-  height: var(--l3-size-64); /* the top bar's height (TopBar.module.css) */
+  height: var(--app-topbar-height); /* the top bar's height (TopBar.module.css) */
 }
 
 .marquee {
   --band-pad: var(--l3-spacing-12);
 
   position: sticky;
-  top: var(--l3-size-64); /* right under the top bar */
+  top: var(--app-topbar-height); /* right under the top bar */
   z-index: 3; /* over the summary and the notched tabs scrolling under it */
   flex: none;
 }
 
 /* Top bar away: up into its place, the band's 12 above the strip now inside the screen. */
 .marquee[data-state='down'] {
-  translate: 0 calc(var(--band-pad) - var(--l3-size-64));
+  translate: 0 calc(var(--band-pad) - var(--app-topbar-height));
 }
 
 .band {
@@ -28550,7 +28555,7 @@ export function BrandsPage({ onStock }: BrandsPageProps) {
 
 .hubHead {
   position: sticky;
-  top: var(--l3-size-64);
+  top: var(--app-topbar-height);
   z-index: 3;
   margin-bottom: var(--l3-spacing-16);
   padding-top: var(--l3-spacing-08);
@@ -29065,7 +29070,7 @@ export function Home({ scrollTo = 'top', market = 'in', movers, onTab, onSearch,
   return (
     <Screen
       sheet={sheet ?? (explaining ? <DepositProgressSheet deposit={depositOnTheWay()} eta={DEPOSIT_ETA} onClose={() => setExplaining(false)} /> : intro && f1 ? introSheet : guiding && <MarketSwitchGuide key={version.id} onView={() => switchInPage('us')} onClose={() => setGuideDoneFor(version.id)} />)}
-      toast={showToast && <Aerobar type="success" floating icon={<Icon icon={msCheckCircle} />} heading={t('us.ready.title')} paragraph={t('us.ready.subtitle')} duration={6000} onClick={onActivateUs} onDismiss={() => setToastGone(true)} />}
+      toast={showToast && <Aerobar type="success" floating icon={<Icon icon={msCheckCircle} />} heading={t('us.ready.title')} paragraph={t('us.ready.subtitle')} duration={3000} action={{ label: t('us.ready.ok'), onClick: () => setToastGone(true) }} onDismiss={() => setToastGone(true)} />}
       bottom={<MainNav value="stocks" onChange={onTab} />}
     >
       <div className={styles.header} data-animate={animate || undefined} data-white={white} data-hero-top={heroTop || undefined}>
@@ -55898,6 +55903,70 @@ export function StockListCard({ symbol, name, logoUrl, initials, logo, tag, pric
       onClick={onOpen}
       aria-label={rest['aria-label']}
     />
+  )
+}
+```
+
+### `src/shared/ui/TopBarAction.module.css`
+
+```css
+/* Home's round top-bar button (stocks TopBar .wallet): 38 circle, border/light edge, no shadow. L3 gap: see TopBarAction.tsx. */
+.action.action {
+  --btn-radius: var(--l3-radius-full);
+  --btn-border: var(--l3-border-light);
+  --btn-icon-size: var(--l3-icon-size-20);
+  width: var(--app-stocks-topbar-control);
+  height: var(--app-stocks-topbar-control);
+  padding: 0;
+}
+
+/* A toggled action (pressed) takes border-dark, like any selected bordered control (as L3's ActionbarAction). */
+.action.action[aria-pressed='true'] {
+  --btn-border: var(--l3-border-dark);
+}
+```
+
+### `src/shared/ui/TopBarAction.tsx`
+
+```tsx
+import { Button } from '@l3/components/Button'
+import { Icon } from '@l3/components/Icon'
+import { Stack } from '@l3/components/Stack'
+import { msAccountBalanceWallet, msSearch } from '@l3/icons/material'
+import styles from './TopBarAction.module.css'
+
+/**
+ * The app's icon button in a top bar (Actionbar `actions`): the same round button as Home's top bar — a 38 circle with
+ * a 1px border/light edge, a 20 icon and no shadow — so every page's top-bar icons match.
+ * It's L3's Tertiary Small button with three local changes (L3 gap: ActionbarAction is a 32 rounded square with
+ * the tertiary border and a soft raise, no round option): fully round, border/light, raised none.
+ * Icon-only actions with no box keep L3's `ActionbarAction variant="ghost"`.
+ */
+export function TopBarAction({ icon, label, onClick, pressed }: { icon: string; label: string; onClick: () => void; pressed?: boolean }) {
+  return (
+    <Button
+      size="sm"
+      variant="tertiary"
+      raised="none"
+      className={styles.action}
+      iconLeft={<Icon icon={icon} size={20} />}
+      onClick={onClick}
+      aria-label={label}
+      aria-pressed={pressed}
+    />
+  )
+}
+
+/**
+ * The top bar's search and wallet, in this order, 8 apart — the same pair on every navbar tab (Stocks home, Market,
+ * Portfolio, Mutual Fund), so nothing moves when you switch tabs. Copy it as is; don't redraw it per screen.
+ */
+export function SearchWalletActions({ searchLabel, walletLabel, onSearch, onWallet }: { searchLabel: string; walletLabel: string; onSearch: () => void; onWallet: () => void }) {
+  return (
+    <Stack direction="horizontal" align="center" gap="08">
+      <TopBarAction icon={msSearch} label={searchLabel} onClick={onSearch} />
+      <TopBarAction icon={msAccountBalanceWallet} label={walletLabel} onClick={onWallet} />
+    </Stack>
   )
 }
 ```

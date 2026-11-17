@@ -142,6 +142,8 @@
     "src/shared/ui/Sheet.module.css",
     "src/shared/ui/Sheet.tsx",
     "src/shared/ui/Spot.module.css",
-    "src/shared/ui/Spot.tsx"
+    "src/shared/ui/Spot.tsx",
+    "src/shared/ui/TopBarAction.module.css",
+    "src/shared/ui/TopBarAction.tsx"
   ]
 }

@@ -406,6 +406,8 @@
     "src/shared/ui/Screen.tsx",
     "src/shared/ui/Sheet.module.css",
     "src/shared/ui/Sheet.tsx",
+    "src/shared/ui/TopBarAction.module.css",
+    "src/shared/ui/TopBarAction.tsx",
     "src/shared/ui/dash/DashEntry.module.css",
     "src/shared/ui/dash/DashEntry.tsx",
     "src/shared/ui/dash/DashOrb.module.css",

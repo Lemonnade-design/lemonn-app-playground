@@ -172,6 +172,7 @@ card is used by every stock list in the app.
 - 2026-11-17 — Market list rows use StockListCard's new `look="list"`: edge to edge, no fill, a hairline from the symbol's start to the price's end, none under the last row. Other screens keep the card look. L3 gap: ListCell has no divider option.
 - 2026-11-17 — Tabs: tapping a tab or swiping the body left / right slides the whole list to the next tab (shared `useSwipeBetween`, the stocks theme page's pattern); a new tab opens at its top.
 - 2026-11-17 — The filter bar sits in the top bar (Actionbar `bottom`, under the tabs): it stays put while the list scrolls or slides. The top bar's bottom line shows only once the list has scrolled under it. L3 gap: Actionbar always draws its line (no "line on scroll" option; local `.barAtTop`).
+- 2026-11-17 — Top bar search + wallet: the shared `SearchWalletActions` (round 38, no shadow), the same pair on every navbar tab.
 
 
 ## Source — this flow
@@ -800,7 +801,7 @@ export const market: Flow = {
 
 ```tsx
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { Actionbar, ActionbarAction } from '@l3/components/Actionbar'
+import { Actionbar } from '@l3/components/Actionbar'
 import { Badge } from '@l3/components/Badge'
 import { Button } from '@l3/components/Button'
 import { EmptyState } from '@l3/components/EmptyState'
@@ -809,7 +810,7 @@ import { Inset } from '@l3/components/Inset'
 import { Section } from '@l3/components/Section'
 import { Stack } from '@l3/components/Stack'
 import { Tabs } from '@l3/components/Tabs'
-import { msAccountBalanceWallet, msClose, msFilterAlt, msSearch } from '@l3/icons/material'
+import { msClose, msFilterAlt } from '@l3/icons/material'
 import { lmSwitchArrowVertical } from '@l3/icons/lemonnade'
 import { MainNav, type Section as NavSection } from '../../../shared/ui/MainNav'
 import { Screen } from '../../../shared/ui/Screen'
@@ -823,6 +824,7 @@ import { FilterSheet } from '../sheets/FilterSheet'
 import { Flag } from '../../../shared/ui/Flag'
 import { t } from '../copy'
 import styles from './Market.module.css'
+import { SearchWalletActions } from '../../../shared/ui/TopBarAction'
 
 type Props = {
   /** Which stocks the page lists: Indian (default) or US. The picker next to the tabs switches it. */
@@ -939,12 +941,7 @@ export function Market({ market: initialMarket = 'in', tab: initialTab = 'all', 
         <Actionbar
           className={scrolled ? undefined : styles.barAtTop}
           title={t('title')}
-          actions={
-            <>
-              <ActionbarAction icon={msSearch} label={t('action.search')} onClick={() => onSearch?.()} />
-              <ActionbarAction icon={msAccountBalanceWallet} label={t('action.wallet')} onClick={() => {}} />
-            </>
-          }
+          actions={<SearchWalletActions searchLabel={t('action.search')} walletLabel={t('action.wallet')} onSearch={() => onSearch?.()} onWallet={() => {}} />}
           bottom={
             <Stack>
               {/* Sticky: the tabs, then the filter bar — it stays put while the list scrolls or slides to another tab. */}
@@ -27156,6 +27153,70 @@ export function StockListCard({ symbol, name, logoUrl, initials, logo, tag, pric
       onClick={onOpen}
       aria-label={rest['aria-label']}
     />
+  )
+}
+```
+
+### `src/shared/ui/TopBarAction.module.css`
+
+```css
+/* Home's round top-bar button (stocks TopBar .wallet): 38 circle, border/light edge, no shadow. L3 gap: see TopBarAction.tsx. */
+.action.action {
+  --btn-radius: var(--l3-radius-full);
+  --btn-border: var(--l3-border-light);
+  --btn-icon-size: var(--l3-icon-size-20);
+  width: var(--app-stocks-topbar-control);
+  height: var(--app-stocks-topbar-control);
+  padding: 0;
+}
+
+/* A toggled action (pressed) takes border-dark, like any selected bordered control (as L3's ActionbarAction). */
+.action.action[aria-pressed='true'] {
+  --btn-border: var(--l3-border-dark);
+}
+```
+
+### `src/shared/ui/TopBarAction.tsx`
+
+```tsx
+import { Button } from '@l3/components/Button'
+import { Icon } from '@l3/components/Icon'
+import { Stack } from '@l3/components/Stack'
+import { msAccountBalanceWallet, msSearch } from '@l3/icons/material'
+import styles from './TopBarAction.module.css'
+
+/**
+ * The app's icon button in a top bar (Actionbar `actions`): the same round button as Home's top bar — a 38 circle with
+ * a 1px border/light edge, a 20 icon and no shadow — so every page's top-bar icons match.
+ * It's L3's Tertiary Small button with three local changes (L3 gap: ActionbarAction is a 32 rounded square with
+ * the tertiary border and a soft raise, no round option): fully round, border/light, raised none.
+ * Icon-only actions with no box keep L3's `ActionbarAction variant="ghost"`.
+ */
+export function TopBarAction({ icon, label, onClick, pressed }: { icon: string; label: string; onClick: () => void; pressed?: boolean }) {
+  return (
+    <Button
+      size="sm"
+      variant="tertiary"
+      raised="none"
+      className={styles.action}
+      iconLeft={<Icon icon={icon} size={20} />}
+      onClick={onClick}
+      aria-label={label}
+      aria-pressed={pressed}
+    />
+  )
+}
+
+/**
+ * The top bar's search and wallet, in this order, 8 apart — the same pair on every navbar tab (Stocks home, Market,
+ * Portfolio, Mutual Fund), so nothing moves when you switch tabs. Copy it as is; don't redraw it per screen.
+ */
+export function SearchWalletActions({ searchLabel, walletLabel, onSearch, onWallet }: { searchLabel: string; walletLabel: string; onSearch: () => void; onWallet: () => void }) {
+  return (
+    <Stack direction="horizontal" align="center" gap="08">
+      <TopBarAction icon={msSearch} label={searchLabel} onClick={onSearch} />
+      <TopBarAction icon={msAccountBalanceWallet} label={walletLabel} onClick={onWallet} />
+    </Stack>
   )
 }
 ```

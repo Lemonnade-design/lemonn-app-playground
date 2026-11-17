@@ -3241,12 +3241,12 @@ export function ReplyChips({ options, asButtons = false, glow = false }: { optio
 
 ```tsx
 import { useEffect, useRef, useState } from 'react'
-import { ActionbarAction } from '@l3/components/Actionbar'
 import { Icon } from '@l3/components/Icon'
 import { ListCell } from '@l3/components/ListCell'
 import { msDelete, msHistory, msMoreVert, msWidgets } from '@l3/icons/material'
 import { t } from '../copy'
 import styles from './ChatMenu.module.css'
+import { TopBarAction } from '../../../shared/ui/TopBarAction'
 
 /**
  * A started chat's ⋮ in the top bar: a small dropdown that opens over it (three options don't need a sheet) — Past chats,
@@ -3275,7 +3275,7 @@ export function ChatMenu({ onPastChats, onCreations, onDelete }: {
   const pick = (go?: () => void) => () => { setOpen(false); go?.() }
   return (
     <span ref={wrap} className={styles.wrap}>
-      <ActionbarAction icon={msMoreVert} label={label} onClick={() => setOpen((o) => !o)} />
+      <TopBarAction icon={msMoreVert} label={label} onClick={() => setOpen((o) => !o)} />
       {open && (
         <div className={styles.menu} role="group" aria-label={label}>
           <ListCell as="button" size="sm" iconLeft={<Icon icon={msHistory} />} label={t('landing.pastChats')} onClick={pick(onPastChats)} />
@@ -9052,7 +9052,6 @@ export function Creations({ rules, indicators, strategies, onBack, onDeleteRule,
 
 ```tsx
 import { useEffect, useState, type ReactNode } from 'react'
-import { ActionbarAction } from '@l3/components/Actionbar'
 import { msHistory, msWidgets } from '@l3/icons/material'
 import { DashBar, DashScreen } from '../components/DashScreen'
 import { SceneSwap, type SceneMove } from '../components/SceneSwap'
@@ -9070,6 +9069,7 @@ import { ChatMenu } from '../components/ChatMenu'
 import { Tag } from '@l3/components/Tag'
 import { PastChatsSheet } from './PastChats'
 import type { PastChat } from '../data'
+import { TopBarAction } from '../../../shared/ui/TopBarAction'
 
 type Common = {
   onBack?: () => void
@@ -9195,7 +9195,7 @@ export function DashAI(props: DashAIProps) {
       bottom={<div ref={setDockHost} className={styles.dockHost} />}
       // Right of the bar — on the home and an empty chat: past chats (history), then what they've made. Once a chat has
       // started (a message sent, or a past chat opened): one ⋮ dropdown with those two and Delete this chat.
-      top={<DashBar onBack={onBack} center={barTitle} actions={inChat ? <ChatMenu onPastChats={onPastChats} onCreations={onYourRules} onDelete={() => setChatSheet('delete')} /> : <><ActionbarAction icon={msHistory} label={t('landing.pastChats')} onClick={onPastChats} /><ActionbarAction icon={msWidgets} label={t('landing.menu')} onClick={() => onYourRules?.()} /></>} />}
+      top={<DashBar onBack={onBack} center={barTitle} actions={inChat ? <ChatMenu onPastChats={onPastChats} onCreations={onYourRules} onDelete={() => setChatSheet('delete')} /> : <><TopBarAction icon={msHistory} label={t('landing.pastChats')} onClick={onPastChats} /><TopBarAction icon={msWidgets} label={t('landing.menu')} onClick={() => onYourRules?.()} /></>} />}
       sheet={
         chatSheet === 'history' ? (
           <PastChatsSheet
@@ -12595,6 +12595,70 @@ export const typeText = (value: string, key: string) => {
   if (key.length !== 1) return value
   // Like a phone keyboard: the first letter is a capital, the rest lower case.
   return value + (value === '' ? key.toUpperCase() : key.toLowerCase())
+}
+```
+
+### `src/shared/ui/TopBarAction.module.css`
+
+```css
+/* Home's round top-bar button (stocks TopBar .wallet): 38 circle, border/light edge, no shadow. L3 gap: see TopBarAction.tsx. */
+.action.action {
+  --btn-radius: var(--l3-radius-full);
+  --btn-border: var(--l3-border-light);
+  --btn-icon-size: var(--l3-icon-size-20);
+  width: var(--app-stocks-topbar-control);
+  height: var(--app-stocks-topbar-control);
+  padding: 0;
+}
+
+/* A toggled action (pressed) takes border-dark, like any selected bordered control (as L3's ActionbarAction). */
+.action.action[aria-pressed='true'] {
+  --btn-border: var(--l3-border-dark);
+}
+```
+
+### `src/shared/ui/TopBarAction.tsx`
+
+```tsx
+import { Button } from '@l3/components/Button'
+import { Icon } from '@l3/components/Icon'
+import { Stack } from '@l3/components/Stack'
+import { msAccountBalanceWallet, msSearch } from '@l3/icons/material'
+import styles from './TopBarAction.module.css'
+
+/**
+ * The app's icon button in a top bar (Actionbar `actions`): the same round button as Home's top bar — a 38 circle with
+ * a 1px border/light edge, a 20 icon and no shadow — so every page's top-bar icons match.
+ * It's L3's Tertiary Small button with three local changes (L3 gap: ActionbarAction is a 32 rounded square with
+ * the tertiary border and a soft raise, no round option): fully round, border/light, raised none.
+ * Icon-only actions with no box keep L3's `ActionbarAction variant="ghost"`.
+ */
+export function TopBarAction({ icon, label, onClick, pressed }: { icon: string; label: string; onClick: () => void; pressed?: boolean }) {
+  return (
+    <Button
+      size="sm"
+      variant="tertiary"
+      raised="none"
+      className={styles.action}
+      iconLeft={<Icon icon={icon} size={20} />}
+      onClick={onClick}
+      aria-label={label}
+      aria-pressed={pressed}
+    />
+  )
+}
+
+/**
+ * The top bar's search and wallet, in this order, 8 apart — the same pair on every navbar tab (Stocks home, Market,
+ * Portfolio, Mutual Fund), so nothing moves when you switch tabs. Copy it as is; don't redraw it per screen.
+ */
+export function SearchWalletActions({ searchLabel, walletLabel, onSearch, onWallet }: { searchLabel: string; walletLabel: string; onSearch: () => void; onWallet: () => void }) {
+  return (
+    <Stack direction="horizontal" align="center" gap="08">
+      <TopBarAction icon={msSearch} label={searchLabel} onClick={onSearch} />
+      <TopBarAction icon={msAccountBalanceWallet} label={walletLabel} onClick={onWallet} />
+    </Stack>
+  )
 }
 ```
 

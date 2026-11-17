@@ -555,7 +555,7 @@ export function Otp({ initial = '', wrong = false, resendIn = RESEND_AFTER_S, on
 
 ```tsx
 import { useState } from 'react'
-import { Actionbar, ActionbarAction } from '@l3/components/Actionbar'
+import { Actionbar } from '@l3/components/Actionbar'
 import { Button } from '@l3/components/Button'
 import { ButtonGroup } from '@l3/components/ButtonGroup'
 import { Section } from '@l3/components/Section'
@@ -568,6 +568,7 @@ import { Keyboard, keypadFieldProps, typeKey } from '../../../shared/ui/Keyboard
 import { Screen } from '../../../shared/ui/Screen'
 import styles from './Form.module.css'
 import { t } from '../copy'
+import { TopBarAction } from '../../../shared/ui/TopBarAction'
 
 /**
  * login-02 / 03 · Mobile number. The number keypad types into the field; "Get OTP" turns on at 10 digits.
@@ -580,7 +581,7 @@ export function Phone({ initial = '', onBack, onSubmit }: { initial?: string; on
   const ready = digits.length === 10
   return (
     <Screen
-      top={<Actionbar onBack={onBack} actions={<ActionbarAction icon={msHelp} label={t('phone.help')} onClick={() => {}} />} />}
+      top={<Actionbar onBack={onBack} actions={<TopBarAction icon={msHelp} label={t('phone.help')} onClick={() => {}} />} />}
       bottom={
         <>
           <ButtonGroup aria-label={t('phone.actionsLabel')}>
@@ -1566,6 +1567,70 @@ export function Spot({ icon, tone = 'brand', size = 'lg' }: { icon: string; tone
     <span className={styles.spot} data-tone={tone} data-size={size} aria-hidden="true" data-illustration-slot="">
       <Icon icon={icon} className={styles.glyph} />
     </span>
+  )
+}
+```
+
+### `src/shared/ui/TopBarAction.module.css`
+
+```css
+/* Home's round top-bar button (stocks TopBar .wallet): 38 circle, border/light edge, no shadow. L3 gap: see TopBarAction.tsx. */
+.action.action {
+  --btn-radius: var(--l3-radius-full);
+  --btn-border: var(--l3-border-light);
+  --btn-icon-size: var(--l3-icon-size-20);
+  width: var(--app-stocks-topbar-control);
+  height: var(--app-stocks-topbar-control);
+  padding: 0;
+}
+
+/* A toggled action (pressed) takes border-dark, like any selected bordered control (as L3's ActionbarAction). */
+.action.action[aria-pressed='true'] {
+  --btn-border: var(--l3-border-dark);
+}
+```
+
+### `src/shared/ui/TopBarAction.tsx`
+
+```tsx
+import { Button } from '@l3/components/Button'
+import { Icon } from '@l3/components/Icon'
+import { Stack } from '@l3/components/Stack'
+import { msAccountBalanceWallet, msSearch } from '@l3/icons/material'
+import styles from './TopBarAction.module.css'
+
+/**
+ * The app's icon button in a top bar (Actionbar `actions`): the same round button as Home's top bar — a 38 circle with
+ * a 1px border/light edge, a 20 icon and no shadow — so every page's top-bar icons match.
+ * It's L3's Tertiary Small button with three local changes (L3 gap: ActionbarAction is a 32 rounded square with
+ * the tertiary border and a soft raise, no round option): fully round, border/light, raised none.
+ * Icon-only actions with no box keep L3's `ActionbarAction variant="ghost"`.
+ */
+export function TopBarAction({ icon, label, onClick, pressed }: { icon: string; label: string; onClick: () => void; pressed?: boolean }) {
+  return (
+    <Button
+      size="sm"
+      variant="tertiary"
+      raised="none"
+      className={styles.action}
+      iconLeft={<Icon icon={icon} size={20} />}
+      onClick={onClick}
+      aria-label={label}
+      aria-pressed={pressed}
+    />
+  )
+}
+
+/**
+ * The top bar's search and wallet, in this order, 8 apart — the same pair on every navbar tab (Stocks home, Market,
+ * Portfolio, Mutual Fund), so nothing moves when you switch tabs. Copy it as is; don't redraw it per screen.
+ */
+export function SearchWalletActions({ searchLabel, walletLabel, onSearch, onWallet }: { searchLabel: string; walletLabel: string; onSearch: () => void; onWallet: () => void }) {
+  return (
+    <Stack direction="horizontal" align="center" gap="08">
+      <TopBarAction icon={msSearch} label={searchLabel} onClick={onSearch} />
+      <TopBarAction icon={msAccountBalanceWallet} label={walletLabel} onClick={onWallet} />
+    </Stack>
   )
 }
 ```

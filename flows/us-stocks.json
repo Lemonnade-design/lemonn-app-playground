@@ -325,6 +325,8 @@
     "src/shared/ui/StockListCard.tsx",
     "src/shared/ui/SupportedBanks.module.css",
     "src/shared/ui/SupportedBanks.tsx",
+    "src/shared/ui/TopBarAction.module.css",
+    "src/shared/ui/TopBarAction.tsx",
     "src/shared/userStatus.ts"
   ]
 }

@@ -416,6 +416,8 @@ Every tap he wired is kept. The main path: FTUX sheet → Activate → Declarati
 - 2026-10-30 — Imported from `US-Stocks-Happy-Flow (1).html` (his L3 update with Raised). Rebuilt from the compiled
   bundle into source; flag GIF converted to WebP; Figma-screenshot fallbacks dropped.
 - 2026-11-17 · Page end: every scrolling body ends 24 above the dock / navbar (`--app-body-end`, applied in Phone `.body`); SpxIndex's and Mutual funds' own trailing padding removed, Order details' last section marked `data-page-end`.
+- 2026-11-17 · Top bars: Portfolio's search and wallet are the shared `SearchWalletActions` (shared/ui/TopBarAction: round 38, border/light, no shadow, Material search / wallet icons) instead of its own SVG icons. Mutual Fund home's top bar is now an Actionbar like Market's: "Mutual Fund" title, then the same search (→ Search) and wallet (→ the wallet); the search field is gone.
+- 2026-11-17 · Mutual Fund home: 16 between the top bar and the holdings (was 0, set for the old search-field bar).
 
 
 ## Source — this flow
@@ -22247,6 +22249,7 @@ export function UsMainNav({ value }: { value: Section }) {
   "portfolio.title": "Portfolio",
   "portfolio.search": "Search",
   "portfolio.wallet": "Wallet",
+  "mf.title": "Mutual Fund",
   "portfolio.sections": "Portfolio sections",
   "portfolio.tab.positions": "Positions",
   "portfolio.tab.holdings": "Holdings",
@@ -24451,6 +24454,7 @@ import { FUNDAMENTALS } from './data'
 import { AboutBlock, AssetTitle, CandleChart, DetailsSheet, LogoImg, StatChips, TradeDock, detailsPhone } from './details'
 import { msBookmark } from '@l3/icons/material'
 import styles from './StockPage.module.css'
+import { TopBarAction } from '../../../../shared/ui/TopBarAction'
 
 /** The "≈ ₹" line under the price: hidden for now (4 Nov), kept to turn back on. */
 const SHOW_PRICE_INR = false
@@ -24535,7 +24539,7 @@ export function StockPage({ state, backdrop, emptyWallet }: { state: StockState;
       onBack={() => back('stocks-01')}
       title={scrolled ? stock.name : undefined}
       description={scrolled ? <><Usd value={stock.price} layout="inline" /> <EtfMove change={stock.change} /></> : undefined}
-      actions={<ActionbarAction icon={asset('assets/activation/watchlist.svg')} label={`Add ${stock.sym} to watchlist`} onClick={() => {}} />}
+      actions={<TopBarAction icon={asset('assets/activation/watchlist.svg')} label={`Add ${stock.sym} to watchlist`} onClick={() => {}} />}
     />
   )
 
@@ -27228,7 +27232,7 @@ export function RiskBullets({ className, link = true }: { className?: string; li
 
 .topSection {
   gap: var(--l3-spacing-24);
-  padding: 0 var(--l3-spacing-16) var(--l3-spacing-32);
+  padding: var(--l3-spacing-16) var(--l3-spacing-16) var(--l3-spacing-32); /* 16 under the top bar, so the holdings don't sit on its title */
   flex-direction: column;
   display: flex;
 }
@@ -27959,6 +27963,11 @@ import { Move } from './components/Primitives'
 import { entryUrl } from './entryAssets'
 import { arrowForward, chevronRight } from './icons'
 import styles from './MutualFundHome.module.css'
+import { SearchWalletActions } from '../../../../shared/ui/TopBarAction'
+import { useUsJourney } from '../../../../shared/userStatus'
+import { useUsNav } from '../../nav'
+import { SEARCH, WALLET, WALLET_US } from './ids'
+import { t } from './copy'
 
 const mfUrl = (file: string) => entryUrl(`mf/${file}`)
 /** Path of an mf SVG for InlineSvg (its colours are L3 tokens). */
@@ -28021,14 +28030,18 @@ export function MutualFundHomeScreen() {
   const preview = usePreview()
   const [popular, setPopular] = useState('high')
   const [explore, setExplore] = useState('equity')
-  const [query, setQuery] = useState('')
+  const { go } = useUsNav()
+  const journey = useUsJourney()
+  const usActive = journey === 'activated' || journey === 'onTheWay' || journey === 'ready' || journey === 'holding'
   return (
     <Phone
       label="Mutual funds"
       surface="primary"
       header={
+        // Same top bar as every navbar tab (Market, Portfolio): the title, then the shared search and wallet.
         <Actionbar
-          search={{ value: query, onChange: setQuery, placeholder: 'Search for stocks', label: 'Search for stocks' }}
+          title={t('mf.title')}
+          actions={<SearchWalletActions searchLabel={t('portfolio.search')} walletLabel={t('portfolio.wallet')} onSearch={() => go(SEARCH)} onWallet={() => go(usActive ? WALLET_US : WALLET)} />}
         />
       }
       gesture="none"
@@ -28257,7 +28270,7 @@ export function MutualFundHomeScreen() {
 // the two Figma variants (before / after 8 PM IST) render the same.
 // FLAG: redraws the app's Portfolio tab (no portfolio flow in src/flows yet) for this prototype.
 import { useState } from 'react'
-import { Actionbar, ActionbarAction } from '@l3/components/Actionbar'
+import { Actionbar } from '@l3/components/Actionbar'
 import { Section } from '@l3/components/Section'
 import { Phone } from '../../components/Phone'
 import { UsMainNav } from '../../components/UsMainNav'
@@ -28269,7 +28282,6 @@ import { OrdersTab } from './components/OrdersTab'
 import { SlidingTabs } from './components/SlidingTabs'
 import { neighbour, useSwipePages } from './components/swipePages'
 import { t } from './copy'
-import { entryUrl } from './entryAssets'
 import { SEARCH, WALLET, WALLET_US } from './ids'
 import { HoldingsTab } from './portfolio/HoldingsTab'
 import { PortfolioPage } from './portfolio/PortfolioPage'
@@ -28277,6 +28289,7 @@ import { PositionsTab } from './portfolio/PositionsTab'
 import { portfolioTabs, type PortfolioTab } from './portfolioData'
 import { SortSheet, type SortValue } from './sheets/SortSheet'
 import styles from './portfolio/Portfolio.module.css'
+import { SearchWalletActions } from '../../../../shared/ui/TopBarAction'
 
 /** `tab` / `market`: where it opens (Home's US holdings card opens Holdings with the US Stocks card upfront). */
 export function PortfolioScreen({ tab: initialTab = 'holdings', market: initialMarket = 'in' }: { tab?: PortfolioTab; market?: HoldingsMarket }) {
@@ -28308,12 +28321,7 @@ export function PortfolioScreen({ tab: initialTab = 'holdings', market: initialM
       header={
         <Actionbar
           title={t('portfolio.title')}
-          actions={
-            <>
-              <ActionbarAction icon={entryUrl('search.svg')} label={t('portfolio.search')} onClick={() => go(SEARCH)} />
-              <ActionbarAction icon={entryUrl('wallet.svg')} label={t('portfolio.wallet')} onClick={() => go(usActive ? WALLET_US : WALLET)} />
-            </>
-          }
+          actions={<SearchWalletActions searchLabel={t('portfolio.search')} walletLabel={t('portfolio.wallet')} onSearch={() => go(SEARCH)} onWallet={() => go(usActive ? WALLET_US : WALLET)} />}
           bottom={
             <SlidingTabs
               appearance="underline"
@@ -28792,7 +28800,7 @@ export const PortfolioUsPositionsScreen = () => <PortfolioScreen tab="positions"
 // E1a · S&P 500 index page (market open): name + value, the intraday chart, chart tools, the day's range, and the
 // index's stocks — tapping one opens its stock page. Back and the footer CTA both lead to US Stocks home.
 // FLAG: hand-made chart tools, and "See all" (see SpxIndex.module.css); the stock rows are the shared StockListCard — L3 Button / SectionHeader / Card / ListCell exist.
-import { ActionbarAction, Actionbar } from '@l3/components/Actionbar'
+import { Actionbar } from '@l3/components/Actionbar'
 import { Button } from '@l3/components/Button'
 import { ButtonGroup } from '@l3/components/ButtonGroup'
 import { Icon } from '@l3/components/Icon'
@@ -28809,6 +28817,7 @@ import { STOCKS_HOME, STOCKS_HOME_ENTRY } from './ids'
 import { InlineSvg } from '../../components/InlineSvg'
 import { indexStocks } from './spxData'
 import styles from './SpxIndex.module.css'
+import { TopBarAction } from '../../../../shared/ui/TopBarAction'
 
 /** The row of chart tools under the chart: an icon or a text glyph + a caption. */
 const chartTools: { label: string; icon?: string; text?: string }[] = [
@@ -28828,7 +28837,7 @@ export function SpxIndexScreen() {
       header={
         <Actionbar
           onBack={() => back(STOCKS_HOME)}
-          actions={<ActionbarAction icon={star} label="Add S&P 500 to watchlist" onClick={() => {}} />}
+          actions={<TopBarAction icon={star} label="Add S&P 500 to watchlist" onClick={() => {}} />}
         />
       }
       footer={
@@ -33495,6 +33504,7 @@ import { boltIcon, infoIcon } from './icons'
 import { EtfMove, HoldingLogo, SideTag } from './parts'
 import { EtfPeers } from './EtfPeers'
 import styles from './EtfPage.module.css'
+import { TopBarAction } from '../../../../shared/ui/TopBarAction'
 
 /** The "≈ ₹" line under the price: hidden for now (4 Nov), kept to turn back on. */
 const SHOW_PRICE_INR = false
@@ -33552,7 +33562,7 @@ export function EtfPage({ backdrop }: { backdrop?: boolean }) {
       onBack={() => back(ETF_LIST)}
       title={scrolled ? etf.name : undefined}
       description={scrolled ? <><Usd value={etf.price} layout="inline" /> <EtfMove change={etf.change} /></> : undefined}
-      actions={<ActionbarAction icon={asset('assets/etf/watchlist.svg')} label={`Add ${etf.sym} to watchlist`} onClick={() => {}} />}
+      actions={<TopBarAction icon={asset('assets/etf/watchlist.svg')} label={`Add ${etf.sym} to watchlist`} onClick={() => {}} />}
     />
   )
 
@@ -67184,6 +67194,70 @@ export function SupportedBanks({ label }: { /** The list's accessible name, "Sup
           <span className={styles.name}>{bank.short}</span>
         </Stack>
       ))}
+    </Stack>
+  )
+}
+```
+
+### `src/shared/ui/TopBarAction.module.css`
+
+```css
+/* Home's round top-bar button (stocks TopBar .wallet): 38 circle, border/light edge, no shadow. L3 gap: see TopBarAction.tsx. */
+.action.action {
+  --btn-radius: var(--l3-radius-full);
+  --btn-border: var(--l3-border-light);
+  --btn-icon-size: var(--l3-icon-size-20);
+  width: var(--app-stocks-topbar-control);
+  height: var(--app-stocks-topbar-control);
+  padding: 0;
+}
+
+/* A toggled action (pressed) takes border-dark, like any selected bordered control (as L3's ActionbarAction). */
+.action.action[aria-pressed='true'] {
+  --btn-border: var(--l3-border-dark);
+}
+```
+
+### `src/shared/ui/TopBarAction.tsx`
+
+```tsx
+import { Button } from '@l3/components/Button'
+import { Icon } from '@l3/components/Icon'
+import { Stack } from '@l3/components/Stack'
+import { msAccountBalanceWallet, msSearch } from '@l3/icons/material'
+import styles from './TopBarAction.module.css'
+
+/**
+ * The app's icon button in a top bar (Actionbar `actions`): the same round button as Home's top bar — a 38 circle with
+ * a 1px border/light edge, a 20 icon and no shadow — so every page's top-bar icons match.
+ * It's L3's Tertiary Small button with three local changes (L3 gap: ActionbarAction is a 32 rounded square with
+ * the tertiary border and a soft raise, no round option): fully round, border/light, raised none.
+ * Icon-only actions with no box keep L3's `ActionbarAction variant="ghost"`.
+ */
+export function TopBarAction({ icon, label, onClick, pressed }: { icon: string; label: string; onClick: () => void; pressed?: boolean }) {
+  return (
+    <Button
+      size="sm"
+      variant="tertiary"
+      raised="none"
+      className={styles.action}
+      iconLeft={<Icon icon={icon} size={20} />}
+      onClick={onClick}
+      aria-label={label}
+      aria-pressed={pressed}
+    />
+  )
+}
+
+/**
+ * The top bar's search and wallet, in this order, 8 apart — the same pair on every navbar tab (Stocks home, Market,
+ * Portfolio, Mutual Fund), so nothing moves when you switch tabs. Copy it as is; don't redraw it per screen.
+ */
+export function SearchWalletActions({ searchLabel, walletLabel, onSearch, onWallet }: { searchLabel: string; walletLabel: string; onSearch: () => void; onWallet: () => void }) {
+  return (
+    <Stack direction="horizontal" align="center" gap="08">
+      <TopBarAction icon={msSearch} label={searchLabel} onClick={onSearch} />
+      <TopBarAction icon={msAccountBalanceWallet} label={walletLabel} onClick={onWallet} />
     </Stack>
   )
 }

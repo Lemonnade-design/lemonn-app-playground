@@ -159,7 +159,7 @@
       "id": "stocks-16",
       "name": "Home · US tab · money ready",
       "figma": "5796:87332",
-      "note": "Money reached the US wallet: a \"Your money is ready\" toast above the navbar (times out after 6 s; no card, as in his design); tapping the toast or the card\\",
+      "note": "Money reached the US wallet: a \"Your money is ready\" toast above the navbar with an OK button (OK closes it; it closes on its own after 3 s; no card, as in his design); the card\\",
       "goesTo": [
         "market-09"
       ],
@@ -384,6 +384,8 @@
     "src/shared/ui/Spot.tsx",
     "src/shared/ui/StockListCard.module.css",
     "src/shared/ui/StockListCard.tsx",
+    "src/shared/ui/TopBarAction.module.css",
+    "src/shared/ui/TopBarAction.tsx",
     "src/shared/ui/useSwipeBetween.ts",
     "src/shared/userStatus.ts"
   ]
