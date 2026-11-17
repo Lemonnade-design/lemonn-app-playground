@@ -67046,6 +67046,26 @@ export function SheetHost({ container, children }: { container: HTMLElement | nu
 .static[data-variant='card'] {
   box-shadow: inset 0 0 0 1px var(--l3-border-light), var(--l3-shadow-elevation-soft); /* 1px: Figma stroke weight has no variable */
 }
+
+/* look="list": an edge-to-edge row with a hairline under it, from the symbol's start (16 + the 40 logo + 16) to the
+   price's end (16 in). FLAG: L3 gap — ListCell has no divider option (its USAGE.md, open question). */
+.listRow {
+  position: relative;
+}
+
+.listRow::after {
+  content: '';
+  position: absolute;
+  inset: auto var(--l3-spacing-16) 0 calc(var(--l3-spacing-16) * 2 + var(--l3-size-40));
+  border-bottom: 1px solid var(--l3-border-light); /* 1px hairline */
+  pointer-events: none;
+}
+
+/* The last row of the list draws no line (rows sit in <li>s, or directly in the list). */
+li:last-child > .listRow::after,
+.listRow:not(li > .listRow):last-child::after {
+  display: none;
+}
 ```
 
 ### `src/shared/ui/StockListCard.tsx`
@@ -67083,6 +67103,12 @@ type StockListCardProps = {
   onOpen?: () => void
   /** A plain row (L3 ListCell `variant="plain"`, no card) for lists split by hairlines — the US F1 home (Figma 6441:3). */
   plain?: boolean
+  /**
+   * 'card' (default): the flat card, for most lists. 'list': edge to edge, no fill, rows split by a hairline that runs
+   * from the symbol's start to the price's end (the Market page, 17 Nov). Use 'list' rows inside a list with no gap
+   * and no side padding; the last row draws no line.
+   */
+  look?: 'card' | 'list'
   /** The logo's size (default 40; the F1 home's plain rows use 32). */
   logoSize?: 24 | 32 | 40
   'aria-label'?: string
@@ -67095,13 +67121,19 @@ type StockListCardProps = {
  *
  * Symbol in Label 14 = `labelSize="14"` (list-cell 1.9.0).
  */
-export function StockListCard({ symbol, name, logoUrl, initials, logo, tag, price, changePct, onOpen, plain = false, logoSize = 40, ...rest }: StockListCardProps) {
-  const look = plain ? ({ variant: 'plain' } as const) : ({ variant: 'card', raised: false } as const)
+export function StockListCard({ symbol, name, logoUrl, initials, logo, tag, price, changePct, onOpen, plain = false, look: layout = 'card', logoSize = 40, ...rest }: StockListCardProps) {
+  const list = layout === 'list'
+  const look = list
+    ? ({ variant: 'plain', density: 'breathable' } as const)
+    : plain
+      ? ({ variant: 'plain' } as const)
+      : ({ variant: 'card', raised: false } as const)
+  const className = [list ? styles.listRow : undefined, !onOpen && !list ? styles.static : undefined].filter(Boolean).join(' ') || undefined
   return (
     <ListCell
       {...look}
       as={onOpen ? 'button' : undefined}
-      className={onOpen ? undefined : styles.static}
+      className={className}
       iconLeft={logo ?? <Avatar initials={initials ?? symbol.slice(0, 2)} src={logoUrl} size={logoSize} label={name} />}
       labelSuffix={tag || undefined}
       labelSuffixTone="neutral"

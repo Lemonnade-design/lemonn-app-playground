@@ -319,7 +319,6 @@
     "src/flows/stocks/components/us/sheets/UsFtuxSheet.tsx",
     "src/flows/stocks/components/us/useAutoSlide.ts",
     "src/flows/stocks/components/us/useLiveHeatmap.ts",
-    "src/flows/stocks/components/useSwipeBetween.ts",
     "src/flows/stocks/copy.json",
     "src/flows/stocks/copy.ts",
     "src/flows/stocks/data.ts",
@@ -385,6 +384,7 @@
     "src/shared/ui/Spot.tsx",
     "src/shared/ui/StockListCard.module.css",
     "src/shared/ui/StockListCard.tsx",
+    "src/shared/ui/useSwipeBetween.ts",
     "src/shared/userStatus.ts"
   ]
 }

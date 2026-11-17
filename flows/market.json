@@ -166,6 +166,8 @@
     "src/shared/money.module.css",
     "src/shared/money.tsx",
     "src/shared/prototype.ts",
+    "src/shared/ui/CenteredTabs.module.css",
+    "src/shared/ui/CenteredTabs.tsx",
     "src/shared/ui/Flag.module.css",
     "src/shared/ui/Flag.tsx",
     "src/shared/ui/MainNav.tsx",
@@ -175,6 +177,7 @@
     "src/shared/ui/Sheet.tsx",
     "src/shared/ui/StockListCard.module.css",
     "src/shared/ui/StockListCard.tsx",
+    "src/shared/ui/useSwipeBetween.ts",
     "src/shared/userStatus.ts"
   ]
 }

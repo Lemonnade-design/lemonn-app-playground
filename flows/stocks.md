@@ -629,7 +629,7 @@ lower on the page is scrolled into view first). `components/MarketSwitchGuide.ts
   the Mutual Funds highlight's badge artwork and the baskets' dark-blue card fill.
 - The second idea basket only peeks in on the live app; its name ("High Growth Media") and stocks are a guess.
 - Same day, second pass (designer's calls): the top bar is plain elements (no L3 Actionbar), with the DASH pill copied
-  from Figma; **no card shadows on this screen** (a one-off, not a rule — `screens/Home.module.css` flatCards); sizes
+  from Figma; **no card shadows on this screen** (2026-11-17; a one-off, not a rule — `screens/Home.module.css` flatCards); sizes
   re-measured at 360 dp from the live capture: section titles 16, card / summary text 12, shortcut circles 40, card
   widths (products 2.55 visible, movers 2.39, watchlists 1.6, sectors 2.07, highlights 1.67, baskets 1.19).
 
@@ -637,6 +637,8 @@ lower on the page is scrolled into view first). `components/MarketSwitchGuide.ts
   instead of the wallet; the timed move to "money ready" waits while it's open.
 - 2026-11-17 · Homepage versions V16 and V17 archived; the picker keeps V8, V12, V13, V14 and V18.
 - 2026-11-17 · Page end: Home's feed and the theme page drop their own bottom padding; the body's `--app-body-end` (24) ends every page.
+- 2026-11-17 · No shadows on Home's cards: every clickable card (L3 Cards and card-style ListCells, IN and US tabs) keeps only its 1px border/light edge; replaces the 2026-11-04 soft shadow (`.flatCards` in screens/Home.module.css). L3 gap: Card has no "no shadow" option.
+- 2026-11-17 · `useSwipeBetween` moved to `src/shared/ui/` (Market's tabs use it too).
 
 
 ## Source — this flow
@@ -22692,7 +22694,7 @@ export function ProductCards({ onProduct, items = products, compact = false }: {
   min-width: 0;
 }
 /* No shadow (the user's call, 8 Nov): the clickable card keeps its border/light hairline and its press, without
-   L3's elevation-soft — over both L3's clickable card and Home's flatCards rule (which adds the shadow to every card). */
+   L3's elevation-soft — over L3's clickable card (Home's flatCards rule drops it too, since 17 Nov). */
 .row > .item > .card.card[data-interactive][data-variant] {
   box-shadow: var(--card-border);
 }
@@ -27325,225 +27327,6 @@ export function useLiveHeatmap(symbols: string[] = heatSymbols): HeatValue[] {
 }
 ```
 
-### `src/flows/stocks/components/useSwipeBetween.ts`
-
-```ts
-import { useCallback, useLayoutEffect, useRef } from 'react'
-
-// Ported from the US Stocks prototype (screens/home/useSwipeBetween.ts): swipe the page sideways to switch IND ↔ US.
-// FLAG: hand-made swipe gesture (pointer events + translate) — L3 has no swipeable pages.
-
-const MIN_DISTANCE = 48
-const MIN_VELOCITY = 0.45
-const EASING = 'cubic-bezier(0.2, 0, 0, 1)'
-const SLIDE_MS = 280
-// The rest of the page: a quick dissolve, done while the card is still moving.
-const FADE_OUT_MS = 100
-const FADE_IN_MS = 200
-
-const reducedMotion = () => typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches
-
-/** The item `step` places after/before `current` in `list`, or null at the ends. */
-export const neighbour = <T,>(list: T[], current: T, step: number): T | null => {
-  const at = list.indexOf(current) + step
-  return at >= 0 && at < list.length ? list[at] : null
-}
-
-// Is there a sideways-scrolling element between the touch target and the swipe container (a card rail)? Then it scrolls, not swipes.
-const insideSideScroller = (from: HTMLElement | null, stop: HTMLElement) => {
-  for (let el = from; el && el !== stop; el = el.parentElement) {
-    const overflowX = getComputedStyle(el).overflowX
-    if ((overflowX === 'auto' || overflowX === 'scroll') && el.scrollWidth > el.clientWidth + 1) return true
-  }
-  return false
-}
-
-/** Pointer-swipe on an element: `onSwipe(±1)` when released far/fast enough, `onDrag(dx)` while dragging (null when it ends). */
-function useSwipe(onSwipe: (direction: 1 | -1) => void, onDrag: (dx: number | null) => void, area?: string) {
-  const swipeRef = useRef(onSwipe)
-  swipeRef.current = onSwipe
-  const dragRef = useRef(onDrag)
-  dragRef.current = onDrag
-  const cleanup = useRef<(() => void) | null>(null)
-
-  return useCallback((el: HTMLElement | null) => {
-    cleanup.current?.()
-    cleanup.current = null
-    if (!el) return
-    el.style.touchAction = 'pan-y'
-    let start: { x: number; y: number; t: number; id: number } | null = null
-    let swiped = false
-    let dragging = false
-
-    const down = (e: PointerEvent) => {
-      const target = e.target as HTMLElement
-      // `data-own-swipe`: a part with its own swipe (the activation card's benefits strip) keeps the gesture.
-      if (e.button !== 0 || target.closest('input, textarea, [role="dialog"], [contenteditable], [data-own-swipe]') || insideSideScroller(target, el)) return
-      // `area`: the swipe starts only there (the top card), not anywhere on the page.
-      if (area && !target.closest(area)) return
-      start = { x: e.clientX, y: e.clientY, t: e.timeStamp, id: e.pointerId }
-      swiped = false
-      dragging = false
-    }
-    const move = (e: PointerEvent) => {
-      if (!start || e.pointerId !== start.id || !dragRef.current) return
-      const dx = e.clientX - start.x
-      const dy = e.clientY - start.y
-      if (!dragging) {
-        if (Math.hypot(dx, dy) < 8) return
-        if (Math.abs(dx) < Math.abs(dy) * 1.5) {
-          start = null
-          return
-        }
-        dragging = true
-      }
-      dragRef.current(dx)
-    }
-    const up = (e: PointerEvent) => {
-      if (!start || e.pointerId !== start.id) return
-      const dx = e.clientX - start.x
-      const dy = e.clientY - start.y
-      const velocity = Math.abs(dx) / Math.max(1, e.timeStamp - start.t)
-      start = null
-      if (dragging) dragRef.current?.(null)
-      dragging = false
-      if (Math.abs(dx) < Math.abs(dy) * 1.5) return
-      if (Math.abs(dx) >= MIN_DISTANCE || (Math.abs(dx) >= 24 && velocity >= MIN_VELOCITY)) {
-        swiped = true
-        swipeRef.current(dx < 0 ? 1 : -1)
-      }
-    }
-    const cancel = () => {
-      if (dragging) dragRef.current?.(null)
-      start = null
-      dragging = false
-    }
-    // A swipe that ends on a button must not also click it.
-    const click = (e: Event) => {
-      if (swiped) {
-        swiped = false
-        e.preventDefault()
-        e.stopPropagation()
-      }
-    }
-    el.addEventListener('pointerdown', down)
-    el.addEventListener('pointermove', move)
-    el.addEventListener('pointerup', up)
-    el.addEventListener('pointercancel', cancel)
-    el.addEventListener('click', click, true)
-    cleanup.current = () => {
-      el.removeEventListener('pointerdown', down)
-      el.removeEventListener('pointermove', move)
-      el.removeEventListener('pointerup', up)
-      el.removeEventListener('pointercancel', cancel)
-      el.removeEventListener('click', click, true)
-    }
-  }, [])
-}
-
-/**
- * Swipe between two markets' pages: only the top cards move sideways — a track with both, the other one beside it,
- * follows the finger and slides across so the other market's card comes into view, as in a carousel — while the rest of the page (`fades()`) just dissolves
- * into the other market's. A tap on a switcher (`go`) runs the same switch, so a swipe and a tap look alike.
- * `bind` goes on the scroll container; `area` is where a swipe may start (the cards); `slides()` returns what moves
- * sideways (the cards' track), `fades()` what dissolves (the feed under it).
- */
-export function useSwipeBetween({ canGo, onSwitch, page, area, slides, fades }: { canGo: (direction: 1 | -1) => boolean; onSwitch: (direction: 1 | -1) => void; page: string; area?: string; slides: () => HTMLElement[]; fades: () => HTMLElement[] }) {
-  const entering = useRef<number>(0)
-  const settling = useRef(false)
-  const leaving = useRef(false)
-  const pageNow = useRef(page)
-  pageNow.current = page
-
-  const springBack = () => {
-    for (const el of slides()) {
-      if (!el.style.translate) continue
-      const from = { translate: el.style.translate }
-      el.style.translate = ''
-      el.animate([from, { translate: '0 0' }], { duration: 240, easing: EASING })
-    }
-  }
-
-  // The track slides to the other card (from where the finger left it) as the rest fades out; then the switch.
-  const leave = (direction: 1 | -1, commit: () => void) => {
-    if (leaving.current) return
-    entering.current = direction
-    const moving = slides()
-    const dissolving = fades()
-    if (reducedMotion() || (!moving.length && !dissolving.length)) return commit()
-    leaving.current = true
-    Promise.all([
-      ...moving.map((el) => {
-        const from = { translate: el.style.translate || '0 0' }
-        el.style.translate = ''
-        // The track moves one card's width: the other card is then where this one was.
-        return el.animate([from, { translate: `${-direction * el.offsetWidth}px 0` }], { duration: SLIDE_MS, easing: EASING, fill: 'forwards' }).finished
-      }),
-      ...dissolving.map((el) => el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: FADE_OUT_MS, easing: 'linear', fill: 'forwards' }).finished),
-    ]).then(done, done)
-    function done() {
-      leaving.current = false
-      const was = pageNow.current
-      commit()
-      // The switch didn't happen (still the same page once React has had time to render): bring the old one back
-      // rather than leave it hidden.
-      setTimeout(() => {
-        if (pageNow.current !== was || !entering.current) return
-        entering.current = 0
-        for (const el of [...slides(), ...fades()]) el.getAnimations().forEach((a) => a.cancel())
-      }, 120)
-    }
-  }
-
-  const swipeBind = useSwipe(
-    (direction) => {
-      settling.current = false
-      if (!canGo(direction)) return springBack()
-      leave(direction, () => onSwitch(direction))
-    },
-    (dx) => {
-      if (reducedMotion() || leaving.current) return
-      if (dx === null) {
-        settling.current = true
-        setTimeout(() => {
-          if (settling.current) springBack()
-          settling.current = false
-        }, 0)
-        return
-      }
-      // Swiping is off altogether (neither way goes): the card doesn't even rubber-band.
-      if (!canGo(1) && !canGo(-1)) return
-      // Towards a market: the card follows the finger. Past the last one: a short rubber band.
-      const pull = canGo(dx < 0 ? 1 : -1) ? 1 : 0.18
-      for (const el of slides()) el.style.translate = `${dx * pull}px 0`
-    },
-    area,
-  )
-
-  useLayoutEffect(() => {
-    const from = entering.current
-    if (!from) return
-    entering.current = 0
-    const motion = !reducedMotion()
-    // The track has already brought the new card into place: it just resets (now with that card in the middle).
-    for (const el of slides()) {
-      el.getAnimations().forEach((a) => a.cancel())
-      el.style.translate = ''
-    }
-    for (const el of fades()) {
-      el.getAnimations().forEach((a) => a.cancel())
-      if (motion) el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: FADE_IN_MS, easing: 'linear' })
-    }
-  }, [page])
-
-  return {
-    bind: swipeBind,
-    /** Switch by tap (tabs, market button): the same switch as a swipe, towards `direction`. */
-    go: (direction: 1 | -1, commit: () => void) => leave(direction, commit),
-  }
-}
-```
-
 ### `src/flows/stocks/copy.json`
 
 ```json
@@ -28518,17 +28301,16 @@ export function BrandsPage({ onStock }: BrandsPageProps) {
 }
 
 /*
- * Every clickable card on Home (L3 Cards and card-style ListCells, flat ones too) has its 1px edge and L3's soft
- * shadow (2026-11-04; it replaced the 2026-10-22 "edge only" call).
+ * No card on Home has a shadow (2026-11-17; replaces the 2026-11-04 soft shadow): every clickable card (L3 Cards and
+ * card-style ListCells, flat ones too) keeps only its 1px border/light edge. L3 gap: Card has no "no shadow" option.
  */
 .flatCards.flatCards [data-interactive][data-variant='default'] {
-  box-shadow: var(--card-border), var(--l3-shadow-elevation-soft);
+  box-shadow: var(--card-border);
 }
 
 .flatCards.flatCards [data-interactive][data-variant='card'] {
-  box-shadow: inset 0 0 0 1px var(--l3-border-light), var(--l3-shadow-elevation-soft); /* 1px: Figma stroke weight has no variable */
+  box-shadow: inset 0 0 0 1px var(--l3-border-light); /* 1px: Figma stroke weight has no variable */
 }
-
 
 /* Home versions V3, V4: the L3 IND / US switch at the top of the feed's rounded sheet (the feed then starts under it). */
 .sheetHead {
@@ -28853,7 +28635,7 @@ import { InShortcutsF1 } from '../components/InShortcutsF1'
 import { holdings } from '../../../shared/data/portfolio'
 import { inr } from '../../../shared/data/format'
 import { UsHomeF1, UsRoundShortcuts } from '../components/us/UsHomeF1'
-import { neighbour, useSwipeBetween } from '../components/useSwipeBetween'
+import { neighbour, useSwipeBetween } from '../../../shared/ui/useSwipeBetween'
 import { Shortcuts, TopMovers, Watchlists } from '../components/Discover'
 import { productsClassic, products, productsF1, productsF1Us, productsWithInvest, productsWithUs, type MoverList } from '../data'
 import { t } from '../copy'
@@ -28932,7 +28714,7 @@ export const markUsIntroSeen = () => {
 /**
  * stocks-01 … 07 · Stocks home — the app's first L1 screen (the Stocks tab).
  * Top bar: the screen's own (components/TopBar) — profile initials, a search pill, the wallet — as in the live app.
- * Cards on this screen have no shadow (designer's one-off call, 2026-10-22: screens/Home.module.css flatCards). The search field is the way into Search: tapping it opens the Search
+ * Cards on this screen have no shadow, only their 1px edge (2026-11-17: screens/Home.module.css flatCards). The search field is the way into Search: tapping it opens the Search
  * screen (stocks tab, keyboard up) — nothing is typed here. Then, on a grey summary area: today's indices, the holdings and the
  * products; and on the rounded sheet over it, the feed: shortcuts, top movers, watchlists, Smart Invest (brand tint),
  * an announcement (the campaign's artwork), sectors, highlights, idea baskets and the broker's disclosure.
@@ -29525,7 +29307,7 @@ import { Screen } from '../../../shared/ui/Screen'
 import { CenteredTabs } from '../../../shared/ui/CenteredTabs'
 import { StockListCard } from '../../../shared/ui/StockListCard'
 import { t } from '../copy'
-import { neighbour, useSwipeBetween } from '../components/useSwipeBetween'
+import { neighbour, useSwipeBetween } from '../../../shared/ui/useSwipeBetween'
 import { themeById, themeMonthReturn, themes, usStock, type ThemeId } from '../components/us/data'
 import styles from './ThemePage.module.css'
 
@@ -56013,6 +55795,26 @@ export function Spot({ icon, tone = 'brand', size = 'lg' }: { icon: string; tone
 .static[data-variant='card'] {
   box-shadow: inset 0 0 0 1px var(--l3-border-light), var(--l3-shadow-elevation-soft); /* 1px: Figma stroke weight has no variable */
 }
+
+/* look="list": an edge-to-edge row with a hairline under it, from the symbol's start (16 + the 40 logo + 16) to the
+   price's end (16 in). FLAG: L3 gap — ListCell has no divider option (its USAGE.md, open question). */
+.listRow {
+  position: relative;
+}
+
+.listRow::after {
+  content: '';
+  position: absolute;
+  inset: auto var(--l3-spacing-16) 0 calc(var(--l3-spacing-16) * 2 + var(--l3-size-40));
+  border-bottom: 1px solid var(--l3-border-light); /* 1px hairline */
+  pointer-events: none;
+}
+
+/* The last row of the list draws no line (rows sit in <li>s, or directly in the list). */
+li:last-child > .listRow::after,
+.listRow:not(li > .listRow):last-child::after {
+  display: none;
+}
 ```
 
 ### `src/shared/ui/StockListCard.tsx`
@@ -56050,6 +55852,12 @@ type StockListCardProps = {
   onOpen?: () => void
   /** A plain row (L3 ListCell `variant="plain"`, no card) for lists split by hairlines — the US F1 home (Figma 6441:3). */
   plain?: boolean
+  /**
+   * 'card' (default): the flat card, for most lists. 'list': edge to edge, no fill, rows split by a hairline that runs
+   * from the symbol's start to the price's end (the Market page, 17 Nov). Use 'list' rows inside a list with no gap
+   * and no side padding; the last row draws no line.
+   */
+  look?: 'card' | 'list'
   /** The logo's size (default 40; the F1 home's plain rows use 32). */
   logoSize?: 24 | 32 | 40
   'aria-label'?: string
@@ -56062,13 +55870,19 @@ type StockListCardProps = {
  *
  * Symbol in Label 14 = `labelSize="14"` (list-cell 1.9.0).
  */
-export function StockListCard({ symbol, name, logoUrl, initials, logo, tag, price, changePct, onOpen, plain = false, logoSize = 40, ...rest }: StockListCardProps) {
-  const look = plain ? ({ variant: 'plain' } as const) : ({ variant: 'card', raised: false } as const)
+export function StockListCard({ symbol, name, logoUrl, initials, logo, tag, price, changePct, onOpen, plain = false, look: layout = 'card', logoSize = 40, ...rest }: StockListCardProps) {
+  const list = layout === 'list'
+  const look = list
+    ? ({ variant: 'plain', density: 'breathable' } as const)
+    : plain
+      ? ({ variant: 'plain' } as const)
+      : ({ variant: 'card', raised: false } as const)
+  const className = [list ? styles.listRow : undefined, !onOpen && !list ? styles.static : undefined].filter(Boolean).join(' ') || undefined
   return (
     <ListCell
       {...look}
       as={onOpen ? 'button' : undefined}
-      className={onOpen ? undefined : styles.static}
+      className={className}
       iconLeft={logo ?? <Avatar initials={initials ?? symbol.slice(0, 2)} src={logoUrl} size={logoSize} label={name} />}
       labelSuffix={tag || undefined}
       labelSuffixTone="neutral"
@@ -56085,6 +55899,226 @@ export function StockListCard({ symbol, name, logoUrl, initials, logo, tag, pric
       aria-label={rest['aria-label']}
     />
   )
+}
+```
+
+### `src/shared/ui/useSwipeBetween.ts`
+
+```ts
+import { useCallback, useLayoutEffect, useRef } from 'react'
+
+// Ported from the US Stocks prototype (screens/home/useSwipeBetween.ts): swipe a page sideways to the next one —
+// Stocks Home (IND ↔ US), a theme page, the Market list tabs.
+// FLAG: hand-made swipe gesture (pointer events + translate) — L3 has no swipeable pages.
+
+const MIN_DISTANCE = 48
+const MIN_VELOCITY = 0.45
+const EASING = 'cubic-bezier(0.2, 0, 0, 1)'
+const SLIDE_MS = 280
+// The rest of the page: a quick dissolve, done while the card is still moving.
+const FADE_OUT_MS = 100
+const FADE_IN_MS = 200
+
+const reducedMotion = () => typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches
+
+/** The item `step` places after/before `current` in `list`, or null at the ends. */
+export const neighbour = <T,>(list: T[], current: T, step: number): T | null => {
+  const at = list.indexOf(current) + step
+  return at >= 0 && at < list.length ? list[at] : null
+}
+
+// Is there a sideways-scrolling element between the touch target and the swipe container (a card rail)? Then it scrolls, not swipes.
+const insideSideScroller = (from: HTMLElement | null, stop: HTMLElement) => {
+  for (let el = from; el && el !== stop; el = el.parentElement) {
+    const overflowX = getComputedStyle(el).overflowX
+    if ((overflowX === 'auto' || overflowX === 'scroll') && el.scrollWidth > el.clientWidth + 1) return true
+  }
+  return false
+}
+
+/** Pointer-swipe on an element: `onSwipe(±1)` when released far/fast enough, `onDrag(dx)` while dragging (null when it ends). */
+function useSwipe(onSwipe: (direction: 1 | -1) => void, onDrag: (dx: number | null) => void, area?: string) {
+  const swipeRef = useRef(onSwipe)
+  swipeRef.current = onSwipe
+  const dragRef = useRef(onDrag)
+  dragRef.current = onDrag
+  const cleanup = useRef<(() => void) | null>(null)
+
+  return useCallback((el: HTMLElement | null) => {
+    cleanup.current?.()
+    cleanup.current = null
+    if (!el) return
+    el.style.touchAction = 'pan-y'
+    let start: { x: number; y: number; t: number; id: number } | null = null
+    let swiped = false
+    let dragging = false
+
+    const down = (e: PointerEvent) => {
+      const target = e.target as HTMLElement
+      // `data-own-swipe`: a part with its own swipe (the activation card's benefits strip) keeps the gesture.
+      if (e.button !== 0 || target.closest('input, textarea, [role="dialog"], [contenteditable], [data-own-swipe]') || insideSideScroller(target, el)) return
+      // `area`: the swipe starts only there (the top card), not anywhere on the page.
+      if (area && !target.closest(area)) return
+      start = { x: e.clientX, y: e.clientY, t: e.timeStamp, id: e.pointerId }
+      swiped = false
+      dragging = false
+    }
+    const move = (e: PointerEvent) => {
+      if (!start || e.pointerId !== start.id || !dragRef.current) return
+      const dx = e.clientX - start.x
+      const dy = e.clientY - start.y
+      if (!dragging) {
+        if (Math.hypot(dx, dy) < 8) return
+        if (Math.abs(dx) < Math.abs(dy) * 1.5) {
+          start = null
+          return
+        }
+        dragging = true
+      }
+      dragRef.current(dx)
+    }
+    const up = (e: PointerEvent) => {
+      if (!start || e.pointerId !== start.id) return
+      const dx = e.clientX - start.x
+      const dy = e.clientY - start.y
+      const velocity = Math.abs(dx) / Math.max(1, e.timeStamp - start.t)
+      start = null
+      if (dragging) dragRef.current?.(null)
+      dragging = false
+      if (Math.abs(dx) < Math.abs(dy) * 1.5) return
+      if (Math.abs(dx) >= MIN_DISTANCE || (Math.abs(dx) >= 24 && velocity >= MIN_VELOCITY)) {
+        swiped = true
+        swipeRef.current(dx < 0 ? 1 : -1)
+      }
+    }
+    const cancel = () => {
+      if (dragging) dragRef.current?.(null)
+      start = null
+      dragging = false
+    }
+    // A swipe that ends on a button must not also click it.
+    const click = (e: Event) => {
+      if (swiped) {
+        swiped = false
+        e.preventDefault()
+        e.stopPropagation()
+      }
+    }
+    el.addEventListener('pointerdown', down)
+    el.addEventListener('pointermove', move)
+    el.addEventListener('pointerup', up)
+    el.addEventListener('pointercancel', cancel)
+    el.addEventListener('click', click, true)
+    cleanup.current = () => {
+      el.removeEventListener('pointerdown', down)
+      el.removeEventListener('pointermove', move)
+      el.removeEventListener('pointerup', up)
+      el.removeEventListener('pointercancel', cancel)
+      el.removeEventListener('click', click, true)
+    }
+  }, [])
+}
+
+/**
+ * Swipe between two markets' pages: only the top cards move sideways — a track with both, the other one beside it,
+ * follows the finger and slides across so the other market's card comes into view, as in a carousel — while the rest of the page (`fades()`) just dissolves
+ * into the other market's. A tap on a switcher (`go`) runs the same switch, so a swipe and a tap look alike.
+ * `bind` goes on the scroll container; `area` is where a swipe may start (the cards); `slides()` returns what moves
+ * sideways (the cards' track), `fades()` what dissolves (the feed under it).
+ */
+export function useSwipeBetween({ canGo, onSwitch, page, area, slides, fades }: { canGo: (direction: 1 | -1) => boolean; onSwitch: (direction: 1 | -1) => void; page: string; area?: string; slides: () => HTMLElement[]; fades: () => HTMLElement[] }) {
+  const entering = useRef<number>(0)
+  const settling = useRef(false)
+  const leaving = useRef(false)
+  const pageNow = useRef(page)
+  pageNow.current = page
+
+  const springBack = () => {
+    for (const el of slides()) {
+      if (!el.style.translate) continue
+      const from = { translate: el.style.translate }
+      el.style.translate = ''
+      el.animate([from, { translate: '0 0' }], { duration: 240, easing: EASING })
+    }
+  }
+
+  // The track slides to the other card (from where the finger left it) as the rest fades out; then the switch.
+  const leave = (direction: 1 | -1, commit: () => void) => {
+    if (leaving.current) return
+    entering.current = direction
+    const moving = slides()
+    const dissolving = fades()
+    if (reducedMotion() || (!moving.length && !dissolving.length)) return commit()
+    leaving.current = true
+    Promise.all([
+      ...moving.map((el) => {
+        const from = { translate: el.style.translate || '0 0' }
+        el.style.translate = ''
+        // The track moves one card's width: the other card is then where this one was.
+        return el.animate([from, { translate: `${-direction * el.offsetWidth}px 0` }], { duration: SLIDE_MS, easing: EASING, fill: 'forwards' }).finished
+      }),
+      ...dissolving.map((el) => el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: FADE_OUT_MS, easing: 'linear', fill: 'forwards' }).finished),
+    ]).then(done, done)
+    function done() {
+      leaving.current = false
+      const was = pageNow.current
+      commit()
+      // The switch didn't happen (still the same page once React has had time to render): bring the old one back
+      // rather than leave it hidden.
+      setTimeout(() => {
+        if (pageNow.current !== was || !entering.current) return
+        entering.current = 0
+        for (const el of [...slides(), ...fades()]) el.getAnimations().forEach((a) => a.cancel())
+      }, 120)
+    }
+  }
+
+  const swipeBind = useSwipe(
+    (direction) => {
+      settling.current = false
+      if (!canGo(direction)) return springBack()
+      leave(direction, () => onSwitch(direction))
+    },
+    (dx) => {
+      if (reducedMotion() || leaving.current) return
+      if (dx === null) {
+        settling.current = true
+        setTimeout(() => {
+          if (settling.current) springBack()
+          settling.current = false
+        }, 0)
+        return
+      }
+      // Swiping is off altogether (neither way goes): the card doesn't even rubber-band.
+      if (!canGo(1) && !canGo(-1)) return
+      // Towards a market: the card follows the finger. Past the last one: a short rubber band.
+      const pull = canGo(dx < 0 ? 1 : -1) ? 1 : 0.18
+      for (const el of slides()) el.style.translate = `${dx * pull}px 0`
+    },
+    area,
+  )
+
+  useLayoutEffect(() => {
+    const from = entering.current
+    if (!from) return
+    entering.current = 0
+    const motion = !reducedMotion()
+    // The track has already brought the new card into place: it just resets (now with that card in the middle).
+    for (const el of slides()) {
+      el.getAnimations().forEach((a) => a.cancel())
+      el.style.translate = ''
+    }
+    for (const el of fades()) {
+      el.getAnimations().forEach((a) => a.cancel())
+      if (motion) el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: FADE_IN_MS, easing: 'linear' })
+    }
+  }, [page])
+
+  return {
+    bind: swipeBind,
+    /** Switch by tap (tabs, market button): the same switch as a swipe, towards `direction`. */
+    go: (direction: 1 | -1, commit: () => void) => leave(direction, commit),
+  }
 }
 ```
 

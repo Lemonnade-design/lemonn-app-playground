@@ -150,6 +150,7 @@ card is used by every stock list in the app.
   (L3 tokens, Badge for the count).
 - **Removable filter chip** — an L3 secondary Button with ✕ stands in.
 - **Split sheet body** (two columns, fixed height, the right one scrolling) — local `--app-size-filter-body`.
+- **List divider** — ListCell has no divider option; the stock rows draw their own 1px hairline (`StockListCard` `look="list"`).
 
 ### Changelog
 
@@ -168,6 +169,9 @@ card is used by every stock list in the app.
 - 2026-10-19 — the filter button is Small (32 × 32).
 - 2026-10-19 — the Search action opens the Search flow (`search-24`); back returns to Market.
 - 2026-10-17 — first version: lists (5 tabs, one layout) and the redesigned Filters sheet.
+- 2026-11-17 — Market list rows use StockListCard's new `look="list"`: edge to edge, no fill, a hairline from the symbol's start to the price's end, none under the last row. Other screens keep the card look. L3 gap: ListCell has no divider option.
+- 2026-11-17 — Tabs: tapping a tab or swiping the body left / right slides the whole list to the next tab (shared `useSwipeBetween`, the stocks theme page's pattern); a new tab opens at its top.
+- 2026-11-17 — The filter bar sits in the top bar (Actionbar `bottom`, under the tabs): it stays put while the list scrolls or slides. The top bar's bottom line shows only once the list has scrolled under it. L3 gap: Actionbar always draws its line (no "line on scroll" option; local `.barAtTop`).
 
 
 ## Source — this flow
@@ -311,7 +315,7 @@ import { inr } from '../../../shared/data/format'
 import { Usd } from '../../../shared/money'
 import type { MarketStock } from '../data'
 
-/** One stock in a Market list: the shared StockListCard (flat card), fed by a live quote that ticks every 2 s. US stocks show $ via <Usd>. Opens the stock page. */
+/** One stock in a Market list: the shared StockListCard as an edge-to-edge row (look="list"), fed by a live quote that ticks every 2 s. US stocks show $ via <Usd>. Opens the stock page. */
 export function StockRow({ stock, onOpen }: { stock: MarketStock; onOpen?: (symbol: string) => void }) {
   const live = useLiveQuote(stock.symbol, stock.price, stock.changePct)
   return (
@@ -323,6 +327,7 @@ export function StockRow({ stock, onOpen }: { stock: MarketStock; onOpen?: (symb
       price={stock.market === 'us' ? <Usd value={live.price} layout="inline" /> : inr(live.price)}
       changePct={live.changePct}
       onOpen={() => onOpen?.(stock.symbol)}
+      look="list"
     />
   )
 }
@@ -700,9 +705,10 @@ export const market: Flow = {
  * Inset / Section; only text styles and what those blocks don't cover live here.
  */
 
-/* 16 above the filter bar but 24 below the list: Section's paddingBlock is the same top and bottom. */
+/* One tab's list. The filter bar sits in the top bar (sticky); the page end is the body's --app-body-end. */
 .page {
-  padding-block: var(--l3-spacing-16) 0; /* page end: the body's --app-body-end */
+  display: flex;
+  flex-direction: column;
 }
 
 .filterHint {
@@ -754,12 +760,46 @@ export const market: Flow = {
   flex: 1;
   min-width: 0; /* lets the tab row scroll sideways instead of widening the page */
 }
+
+/* Tabs as pages: the track (a swipe drags it sideways) holds the current tab with the ones before and after just off
+   either side. FLAG: hand-made swipe (shared/ui/useSwipeBetween) — L3 has no swipeable pages. */
+.viewport {
+  flex-shrink: 0;
+  min-height: 100%;
+  overflow: clip; /* both ways: a longer tab beside never stretches the page */
+}
+
+.track {
+  position: relative;
+  min-height: 100%;
+}
+
+.panel[data-side='before'],
+.panel[data-side='after'] {
+  position: absolute;
+  inset-block-start: var(--market-peek-top, 0);
+  inline-size: 100%;
+}
+
+.panel[data-side='before'] {
+  inset-inline-start: -100%;
+}
+
+.panel[data-side='after'] {
+  inset-inline-start: 100%;
+}
+
+/* At the top of the list the top bar draws no bottom line; it appears once the list scrolls under the bar.
+   L3 gap: Actionbar always draws its line (no "line on scroll" option). */
+.barAtTop {
+  box-shadow: none;
+}
 ```
 
 ### `src/flows/market/screens/Market.tsx`
 
 ```tsx
-import { useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Actionbar, ActionbarAction } from '@l3/components/Actionbar'
 import { Badge } from '@l3/components/Badge'
 import { Button } from '@l3/components/Button'
@@ -773,6 +813,8 @@ import { msAccountBalanceWallet, msClose, msFilterAlt, msSearch } from '@l3/icon
 import { lmSwitchArrowVertical } from '@l3/icons/lemonnade'
 import { MainNav, type Section as NavSection } from '../../../shared/ui/MainNav'
 import { Screen } from '../../../shared/ui/Screen'
+import { CenteredTabs } from '../../../shared/ui/CenteredTabs'
+import { neighbour, useSwipeBetween } from '../../../shared/ui/useSwipeBetween'
 import { useMarketSnapshot } from '../../../shared/data/companies'
 import { takeMarketHandoff } from '../../../shared/data/marketHandoff'
 import { StockRow } from '../components/StockRow'
@@ -812,7 +854,6 @@ export function Market({ market: initialMarket = 'in', tab: initialTab = 'all', 
   const [open, setOpen] = useState(sheet)
   useMarketSnapshot() // re-render when fresher Indian prices arrive
   const base = listFor(tab, market)
-  const list = applyFilters(base, filters, market)
   const currency = currencyOf(market)
   const applied = picks(filters)
 
@@ -823,10 +864,80 @@ export function Market({ market: initialMarket = 'in', tab: initialTab = 'all', 
   /** A chip's ✕ removes just that pick (other picks in the same group stay). */
   const remove = (group: FilterGroupId, id: string) => setFilters((f) => withPicks(f, group, pickedIn(f, group).filter((x) => x !== id)))
 
+  // Tabs as pages side by side: a left / right swipe on the body drags the list with the
+  // finger and brings the next tab's in (the tabs and filter bar stay put, in the top bar); a tap on a tab slides it in the same way (the stocks theme page's pattern).
+  const [tapped, setTapped] = useState<MarketTab | null>(null)
+  const track = useRef<HTMLDivElement>(null)
+  const comingFrom = useRef<1 | -1 | 0>(0)
+  const scroller = () => {
+    for (let el = track.current?.parentElement; el; el = el.parentElement) {
+      const overflow = getComputedStyle(el).overflowY
+      if (overflow === 'auto' || overflow === 'scroll') return el
+    }
+    return null
+  }
+  // The tabs beside sit level with the top of what's on screen, so a swipe from far down the list still shows them.
+  const peek = () => track.current?.style.setProperty('--market-peek-top', `${scroller()?.scrollTop ?? 0}px`)
+  const show = (next: MarketTab) => { setTab(next); setTapped(null) }
+  const swipe = useSwipeBetween({
+    page: tab,
+    canGo: (direction) => neighbour(tabs, tab, direction) !== null,
+    onSwitch: (direction) => { const next = neighbour(tabs, tab, direction); if (next) show(next) },
+    slides: () => (track.current ? [track.current] : []),
+    fades: () => [],
+  })
+  const pick = (next: MarketTab) => {
+    const step = tabs.indexOf(next) - tabs.indexOf(tab)
+    if (!step || next === tapped) return
+    setTapped(next)
+    peek()
+    if (Math.abs(step) === 1) return swipe.go(step as 1 | -1, () => show(next))
+    comingFrom.current = step > 0 ? 1 : -1
+    show(next)
+  }
+  // A new tab opens at its top. One further than next door glides in from its side (no slide-out first).
+  useLayoutEffect(() => {
+    const box = scroller()
+    if (box) box.scrollTop = 0
+    const from = comingFrom.current
+    comingFrom.current = 0
+    const el = track.current
+    if (!from || !el || matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    el.animate([{ translate: `${from * el.offsetWidth}px 0` }, { translate: '0 0' }], { duration: 280, easing: 'cubic-bezier(0.2, 0, 0, 1)' })
+  }, [tab])
+
+  // The top bar's bottom line shows only once the list has scrolled under it.
+  const [scrolled, setScrolled] = useState(false)
+  useEffect(() => {
+    const box = scroller()
+    if (!box) return
+    const update = () => setScrolled(box.scrollTop > 0)
+    update()
+    box.addEventListener('scroll', update, { passive: true })
+    return () => box.removeEventListener('scroll', update)
+  }, [])
+
+  /** One tab's page: its list (the filter bar above stays put, in the top bar). */
+  const page = (id: MarketTab) => {
+    const stocks = applyFilters(listFor(id, market), filters, market)
+    return (
+      <div className={styles.page}>
+        {stocks.length ? (
+          <Section as="ul" aria-label={t(`tab.${id}`, { currency })}>
+            {stocks.map((stock) => <li key={stock.symbol}><StockRow stock={stock} onOpen={stock.market === 'us' ? onOpenUs : undefined} /></li>)}
+          </Section>
+        ) : (
+          <EmptyState title={t('empty.title')} description={t('empty.description')} />
+        )}
+      </div>
+    )
+  }
+
   return (
     <Screen
       top={
         <Actionbar
+          className={scrolled ? undefined : styles.barAtTop}
           title={t('title')}
           actions={
             <>
@@ -835,28 +946,51 @@ export function Market({ market: initialMarket = 'in', tab: initialTab = 'all', 
             </>
           }
           bottom={
-            <Stack direction="horizontal" align="center">
-              {/*
-                * One pill, one tap: shows the market on screen with the ↕ switch icon and flips IN ⇄ US. The whole
-                * block around it (16 each side, the row's full height) takes the tap, so the small pill is easy to hit;
-                * the pill's own tap bubbles up to it.
-                */}
-              <div className={styles.picker} onClick={switchMarket}>
-                <Inset paddingInline="16" paddingBlock="00">
-                  <Tabs
-                    appearance="pill"
-                    size="sm"
-                    aria-label={t('picker.label', { market: t(`picker.${market}`), other: t(`picker.${other}`) })}
-                    items={[{ value: market, label: t(`picker.${market}`), iconLeft: <Flag code={market === 'in' ? 'in' : 'us'} />, iconRight: <Icon icon={lmSwitchArrowVertical} size={16} /> }]}
-                    value={market}
-                    onChange={() => {}}
-                  />
-                </Inset>
-              </div>
-              <span className={styles.divider} aria-hidden="true" />
-              <div className={styles.tabs}>
-                <Tabs aria-label={t('tabs.label')} items={tabs.map((id) => ({ value: id, label: t(`tab.${id}`, { currency }) }))} value={tab} onChange={(v) => setTab(v as MarketTab)} />
-              </div>
+            <Stack>
+              {/* Sticky: the tabs, then the filter bar — it stays put while the list scrolls or slides to another tab. */}
+              <Stack direction="horizontal" align="center">
+                {/*
+                  * One pill, one tap: shows the market on screen with the ↕ switch icon and flips IN ⇄ US. The whole
+                  * block around it (16 each side, the row's full height) takes the tap, so the small pill is easy to hit;
+                  * the pill's own tap bubbles up to it.
+                  */}
+                <div className={styles.picker} onClick={switchMarket}>
+                  <Inset paddingInline="16" paddingBlock="00">
+                    <Tabs
+                      appearance="pill"
+                      size="sm"
+                      aria-label={t('picker.label', { market: t(`picker.${market}`), other: t(`picker.${other}`) })}
+                      items={[{ value: market, label: t(`picker.${market}`), iconLeft: <Flag code={market === 'in' ? 'in' : 'us'} />, iconRight: <Icon icon={lmSwitchArrowVertical} size={16} /> }]}
+                      value={market}
+                      onChange={() => {}}
+                    />
+                  </Inset>
+                </div>
+                <span className={styles.divider} aria-hidden="true" />
+                <div className={styles.tabs}>
+                  <CenteredTabs aria-label={t('tabs.label')} items={tabs.map((id) => ({ value: id, label: t(`tab.${id}`, { currency }) }))} value={tapped ?? tab} onChange={(v) => pick(v as MarketTab)} />
+                </div>
+              </Stack>
+              <Inset paddingInline="16" paddingBlock="16">
+                <Stack direction="horizontal" align="center" gap="12">
+                  {applied.length ? (
+                    <Stack direction="horizontal" gap="08" className={styles.applied} role="group" aria-label={t('filterBar.appliedLabel')}>
+                      {applied.map(({ group, option }) => (
+                        <Button size="sm" key={`${group}-${option.id}`} variant="secondary" iconRight={<Icon icon={msClose} />} aria-label={t('filterBar.remove', { name: option.label })} onClick={() => remove(group, option.id)}>
+                          {option.label}
+                        </Button>
+                      ))}
+                    </Stack>
+                  ) : (
+                    <p className={styles.filterHint}>{t('filterBar.hint')}</p>
+                  )}
+                  <span className={styles.filterButton}>
+                    <Badge dot={applied.length > 0} label={t('filterBar.appliedCount', { count: applied.length })}>
+                      <Button variant="tertiary" size="sm" iconLeft={<Icon icon={msFilterAlt} />} aria-label={t('filterBar.button')} onClick={() => setOpen(true)} />
+                    </Badge>
+                  </span>
+                </Stack>
+              </Inset>
             </Stack>
           }
         />
@@ -873,36 +1007,16 @@ export function Market({ market: initialMarket = 'in', tab: initialTab = 'all', 
         />
       ) : undefined}
     >
-      <Stack gap="16" className={styles.page}>
-        <Inset paddingInline="16" paddingBlock="00">
-          <Stack direction="horizontal" align="center" gap="12">
-            {applied.length ? (
-              <Stack direction="horizontal" gap="08" className={styles.applied} role="group" aria-label={t('filterBar.appliedLabel')}>
-                {applied.map(({ group, option }) => (
-                  <Button size="sm" key={`${group}-${option.id}`} variant="secondary" iconRight={<Icon icon={msClose} />} aria-label={t('filterBar.remove', { name: option.label })} onClick={() => remove(group, option.id)}>
-                    {option.label}
-                  </Button>
-                ))}
-              </Stack>
-            ) : (
-              <p className={styles.filterHint}>{t('filterBar.hint')}</p>
-            )}
-            <span className={styles.filterButton}>
-              <Badge dot={applied.length > 0} label={t('filterBar.appliedCount', { count: applied.length })}>
-                <Button variant="tertiary" size="sm" iconLeft={<Icon icon={msFilterAlt} />} aria-label={t('filterBar.button')} onClick={() => setOpen(true)} />
-              </Badge>
-            </span>
-          </Stack>
-        </Inset>
-
-        {list.length ? (
-          <Section as="ul" paddingInline="16" gap="12" aria-label={t(`tab.${tab}`, { currency })}>
-            {list.map((stock) => <li key={stock.symbol}><StockRow stock={stock} onOpen={stock.market === 'us' ? onOpenUs : undefined} /></li>)}
-          </Section>
-        ) : (
-          <EmptyState title={t('empty.title')} description={t('empty.description')} />
-        )}
-      </Stack>
+      <div className={styles.viewport}>
+        <div ref={(el) => { track.current = el; swipe.bind(el) }} className={styles.track} onPointerDownCapture={peek}>
+          {/* The tab before and after sit just off-screen on either side, so a swipe brings them into view. */}
+          {[neighbour(tabs, tab, -1), tab, neighbour(tabs, tab, 1)].map((id, at) => id && (
+            <div key={id} className={styles.panel} data-side={['before', 'current', 'after'][at]} inert={at !== 1} aria-hidden={at !== 1 || undefined}>
+              {page(id)}
+            </div>
+          ))}
+        </div>
+      </div>
     </Screen>
   )
 }
@@ -26515,6 +26629,53 @@ export function useSystemKeyboard() {
 }
 ```
 
+### `src/shared/ui/CenteredTabs.module.css`
+
+```css
+/* Only a handle to find the tab row: takes no box, so the Tabs lay out as if it weren't there. */
+.rail {
+  display: contents;
+}
+```
+
+### `src/shared/ui/CenteredTabs.tsx`
+
+```tsx
+// A scrolling L3 Tabs row whose selected tab glides to the middle, so the tabs after it come into view (17 Nov).
+// L3 Tabs only keeps the selected tab inside the row (scrolls just enough); this re-centres it after every change.
+// L3 gap: Tabs has no "centre the selected tab" option — when it gets one, use it and drop this wrapper.
+import { useEffect, useLayoutEffect, useRef, type ComponentProps } from 'react'
+import { Tabs } from '@l3/components/Tabs'
+import styles from './CenteredTabs.module.css'
+
+export function CenteredTabs(props: ComponentProps<typeof Tabs>) {
+  const rail = useRef<HTMLDivElement>(null)
+  const first = useRef(true)
+  const before = useRef(0)
+  const tabList = () => rail.current?.querySelector<HTMLElement>('[role="tablist"]')
+  // Where the row was before L3's own effect jumps it (layout effects run first)…
+  useLayoutEffect(() => {
+    before.current = tabList()?.scrollLeft ?? 0
+  }, [props.value])
+  useEffect(() => {
+    const list = tabList()
+    const tab = list?.querySelector<HTMLElement>('[aria-selected="true"]')
+    if (!list || !tab) return
+    // …put it back before the frame is painted, so the row makes one smooth glide instead of a jump and a glide.
+    if (!first.current) list.scrollTo({ left: before.current, behavior: 'instant' })
+    const left = tab.offsetLeft + tab.offsetWidth / 2 - list.clientWidth / 2
+    const still = first.current || matchMedia('(prefers-reduced-motion: reduce)').matches
+    first.current = false
+    list.scrollTo({ left: Math.max(0, left), behavior: still ? 'auto' : 'smooth' })
+  }, [props.value])
+  return (
+    <div ref={rail} className={styles.rail}>
+      <Tabs {...props} />
+    </div>
+  )
+}
+```
+
 ### `src/shared/ui/Flag.module.css`
 
 ```css
@@ -26892,6 +27053,26 @@ export function SheetHost({ container, children }: { container: HTMLElement | nu
 .static[data-variant='card'] {
   box-shadow: inset 0 0 0 1px var(--l3-border-light), var(--l3-shadow-elevation-soft); /* 1px: Figma stroke weight has no variable */
 }
+
+/* look="list": an edge-to-edge row with a hairline under it, from the symbol's start (16 + the 40 logo + 16) to the
+   price's end (16 in). FLAG: L3 gap — ListCell has no divider option (its USAGE.md, open question). */
+.listRow {
+  position: relative;
+}
+
+.listRow::after {
+  content: '';
+  position: absolute;
+  inset: auto var(--l3-spacing-16) 0 calc(var(--l3-spacing-16) * 2 + var(--l3-size-40));
+  border-bottom: 1px solid var(--l3-border-light); /* 1px hairline */
+  pointer-events: none;
+}
+
+/* The last row of the list draws no line (rows sit in <li>s, or directly in the list). */
+li:last-child > .listRow::after,
+.listRow:not(li > .listRow):last-child::after {
+  display: none;
+}
 ```
 
 ### `src/shared/ui/StockListCard.tsx`
@@ -26929,6 +27110,12 @@ type StockListCardProps = {
   onOpen?: () => void
   /** A plain row (L3 ListCell `variant="plain"`, no card) for lists split by hairlines — the US F1 home (Figma 6441:3). */
   plain?: boolean
+  /**
+   * 'card' (default): the flat card, for most lists. 'list': edge to edge, no fill, rows split by a hairline that runs
+   * from the symbol's start to the price's end (the Market page, 17 Nov). Use 'list' rows inside a list with no gap
+   * and no side padding; the last row draws no line.
+   */
+  look?: 'card' | 'list'
   /** The logo's size (default 40; the F1 home's plain rows use 32). */
   logoSize?: 24 | 32 | 40
   'aria-label'?: string
@@ -26941,13 +27128,19 @@ type StockListCardProps = {
  *
  * Symbol in Label 14 = `labelSize="14"` (list-cell 1.9.0).
  */
-export function StockListCard({ symbol, name, logoUrl, initials, logo, tag, price, changePct, onOpen, plain = false, logoSize = 40, ...rest }: StockListCardProps) {
-  const look = plain ? ({ variant: 'plain' } as const) : ({ variant: 'card', raised: false } as const)
+export function StockListCard({ symbol, name, logoUrl, initials, logo, tag, price, changePct, onOpen, plain = false, look: layout = 'card', logoSize = 40, ...rest }: StockListCardProps) {
+  const list = layout === 'list'
+  const look = list
+    ? ({ variant: 'plain', density: 'breathable' } as const)
+    : plain
+      ? ({ variant: 'plain' } as const)
+      : ({ variant: 'card', raised: false } as const)
+  const className = [list ? styles.listRow : undefined, !onOpen && !list ? styles.static : undefined].filter(Boolean).join(' ') || undefined
   return (
     <ListCell
       {...look}
       as={onOpen ? 'button' : undefined}
-      className={onOpen ? undefined : styles.static}
+      className={className}
       iconLeft={logo ?? <Avatar initials={initials ?? symbol.slice(0, 2)} src={logoUrl} size={logoSize} label={name} />}
       labelSuffix={tag || undefined}
       labelSuffixTone="neutral"
@@ -26964,6 +27157,226 @@ export function StockListCard({ symbol, name, logoUrl, initials, logo, tag, pric
       aria-label={rest['aria-label']}
     />
   )
+}
+```
+
+### `src/shared/ui/useSwipeBetween.ts`
+
+```ts
+import { useCallback, useLayoutEffect, useRef } from 'react'
+
+// Ported from the US Stocks prototype (screens/home/useSwipeBetween.ts): swipe a page sideways to the next one —
+// Stocks Home (IND ↔ US), a theme page, the Market list tabs.
+// FLAG: hand-made swipe gesture (pointer events + translate) — L3 has no swipeable pages.
+
+const MIN_DISTANCE = 48
+const MIN_VELOCITY = 0.45
+const EASING = 'cubic-bezier(0.2, 0, 0, 1)'
+const SLIDE_MS = 280
+// The rest of the page: a quick dissolve, done while the card is still moving.
+const FADE_OUT_MS = 100
+const FADE_IN_MS = 200
+
+const reducedMotion = () => typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches
+
+/** The item `step` places after/before `current` in `list`, or null at the ends. */
+export const neighbour = <T,>(list: T[], current: T, step: number): T | null => {
+  const at = list.indexOf(current) + step
+  return at >= 0 && at < list.length ? list[at] : null
+}
+
+// Is there a sideways-scrolling element between the touch target and the swipe container (a card rail)? Then it scrolls, not swipes.
+const insideSideScroller = (from: HTMLElement | null, stop: HTMLElement) => {
+  for (let el = from; el && el !== stop; el = el.parentElement) {
+    const overflowX = getComputedStyle(el).overflowX
+    if ((overflowX === 'auto' || overflowX === 'scroll') && el.scrollWidth > el.clientWidth + 1) return true
+  }
+  return false
+}
+
+/** Pointer-swipe on an element: `onSwipe(±1)` when released far/fast enough, `onDrag(dx)` while dragging (null when it ends). */
+function useSwipe(onSwipe: (direction: 1 | -1) => void, onDrag: (dx: number | null) => void, area?: string) {
+  const swipeRef = useRef(onSwipe)
+  swipeRef.current = onSwipe
+  const dragRef = useRef(onDrag)
+  dragRef.current = onDrag
+  const cleanup = useRef<(() => void) | null>(null)
+
+  return useCallback((el: HTMLElement | null) => {
+    cleanup.current?.()
+    cleanup.current = null
+    if (!el) return
+    el.style.touchAction = 'pan-y'
+    let start: { x: number; y: number; t: number; id: number } | null = null
+    let swiped = false
+    let dragging = false
+
+    const down = (e: PointerEvent) => {
+      const target = e.target as HTMLElement
+      // `data-own-swipe`: a part with its own swipe (the activation card's benefits strip) keeps the gesture.
+      if (e.button !== 0 || target.closest('input, textarea, [role="dialog"], [contenteditable], [data-own-swipe]') || insideSideScroller(target, el)) return
+      // `area`: the swipe starts only there (the top card), not anywhere on the page.
+      if (area && !target.closest(area)) return
+      start = { x: e.clientX, y: e.clientY, t: e.timeStamp, id: e.pointerId }
+      swiped = false
+      dragging = false
+    }
+    const move = (e: PointerEvent) => {
+      if (!start || e.pointerId !== start.id || !dragRef.current) return
+      const dx = e.clientX - start.x
+      const dy = e.clientY - start.y
+      if (!dragging) {
+        if (Math.hypot(dx, dy) < 8) return
+        if (Math.abs(dx) < Math.abs(dy) * 1.5) {
+          start = null
+          return
+        }
+        dragging = true
+      }
+      dragRef.current(dx)
+    }
+    const up = (e: PointerEvent) => {
+      if (!start || e.pointerId !== start.id) return
+      const dx = e.clientX - start.x
+      const dy = e.clientY - start.y
+      const velocity = Math.abs(dx) / Math.max(1, e.timeStamp - start.t)
+      start = null
+      if (dragging) dragRef.current?.(null)
+      dragging = false
+      if (Math.abs(dx) < Math.abs(dy) * 1.5) return
+      if (Math.abs(dx) >= MIN_DISTANCE || (Math.abs(dx) >= 24 && velocity >= MIN_VELOCITY)) {
+        swiped = true
+        swipeRef.current(dx < 0 ? 1 : -1)
+      }
+    }
+    const cancel = () => {
+      if (dragging) dragRef.current?.(null)
+      start = null
+      dragging = false
+    }
+    // A swipe that ends on a button must not also click it.
+    const click = (e: Event) => {
+      if (swiped) {
+        swiped = false
+        e.preventDefault()
+        e.stopPropagation()
+      }
+    }
+    el.addEventListener('pointerdown', down)
+    el.addEventListener('pointermove', move)
+    el.addEventListener('pointerup', up)
+    el.addEventListener('pointercancel', cancel)
+    el.addEventListener('click', click, true)
+    cleanup.current = () => {
+      el.removeEventListener('pointerdown', down)
+      el.removeEventListener('pointermove', move)
+      el.removeEventListener('pointerup', up)
+      el.removeEventListener('pointercancel', cancel)
+      el.removeEventListener('click', click, true)
+    }
+  }, [])
+}
+
+/**
+ * Swipe between two markets' pages: only the top cards move sideways — a track with both, the other one beside it,
+ * follows the finger and slides across so the other market's card comes into view, as in a carousel — while the rest of the page (`fades()`) just dissolves
+ * into the other market's. A tap on a switcher (`go`) runs the same switch, so a swipe and a tap look alike.
+ * `bind` goes on the scroll container; `area` is where a swipe may start (the cards); `slides()` returns what moves
+ * sideways (the cards' track), `fades()` what dissolves (the feed under it).
+ */
+export function useSwipeBetween({ canGo, onSwitch, page, area, slides, fades }: { canGo: (direction: 1 | -1) => boolean; onSwitch: (direction: 1 | -1) => void; page: string; area?: string; slides: () => HTMLElement[]; fades: () => HTMLElement[] }) {
+  const entering = useRef<number>(0)
+  const settling = useRef(false)
+  const leaving = useRef(false)
+  const pageNow = useRef(page)
+  pageNow.current = page
+
+  const springBack = () => {
+    for (const el of slides()) {
+      if (!el.style.translate) continue
+      const from = { translate: el.style.translate }
+      el.style.translate = ''
+      el.animate([from, { translate: '0 0' }], { duration: 240, easing: EASING })
+    }
+  }
+
+  // The track slides to the other card (from where the finger left it) as the rest fades out; then the switch.
+  const leave = (direction: 1 | -1, commit: () => void) => {
+    if (leaving.current) return
+    entering.current = direction
+    const moving = slides()
+    const dissolving = fades()
+    if (reducedMotion() || (!moving.length && !dissolving.length)) return commit()
+    leaving.current = true
+    Promise.all([
+      ...moving.map((el) => {
+        const from = { translate: el.style.translate || '0 0' }
+        el.style.translate = ''
+        // The track moves one card's width: the other card is then where this one was.
+        return el.animate([from, { translate: `${-direction * el.offsetWidth}px 0` }], { duration: SLIDE_MS, easing: EASING, fill: 'forwards' }).finished
+      }),
+      ...dissolving.map((el) => el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: FADE_OUT_MS, easing: 'linear', fill: 'forwards' }).finished),
+    ]).then(done, done)
+    function done() {
+      leaving.current = false
+      const was = pageNow.current
+      commit()
+      // The switch didn't happen (still the same page once React has had time to render): bring the old one back
+      // rather than leave it hidden.
+      setTimeout(() => {
+        if (pageNow.current !== was || !entering.current) return
+        entering.current = 0
+        for (const el of [...slides(), ...fades()]) el.getAnimations().forEach((a) => a.cancel())
+      }, 120)
+    }
+  }
+
+  const swipeBind = useSwipe(
+    (direction) => {
+      settling.current = false
+      if (!canGo(direction)) return springBack()
+      leave(direction, () => onSwitch(direction))
+    },
+    (dx) => {
+      if (reducedMotion() || leaving.current) return
+      if (dx === null) {
+        settling.current = true
+        setTimeout(() => {
+          if (settling.current) springBack()
+          settling.current = false
+        }, 0)
+        return
+      }
+      // Swiping is off altogether (neither way goes): the card doesn't even rubber-band.
+      if (!canGo(1) && !canGo(-1)) return
+      // Towards a market: the card follows the finger. Past the last one: a short rubber band.
+      const pull = canGo(dx < 0 ? 1 : -1) ? 1 : 0.18
+      for (const el of slides()) el.style.translate = `${dx * pull}px 0`
+    },
+    area,
+  )
+
+  useLayoutEffect(() => {
+    const from = entering.current
+    if (!from) return
+    entering.current = 0
+    const motion = !reducedMotion()
+    // The track has already brought the new card into place: it just resets (now with that card in the middle).
+    for (const el of slides()) {
+      el.getAnimations().forEach((a) => a.cancel())
+      el.style.translate = ''
+    }
+    for (const el of fades()) {
+      el.getAnimations().forEach((a) => a.cancel())
+      if (motion) el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: FADE_IN_MS, easing: 'linear' })
+    }
+  }, [page])
+
+  return {
+    bind: swipeBind,
+    /** Switch by tap (tabs, market button): the same switch as a swipe, towards `direction`. */
+    go: (direction: 1 | -1, commit: () => void) => leave(direction, commit),
+  }
 }
 ```
 
