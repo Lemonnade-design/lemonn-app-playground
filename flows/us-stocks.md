@@ -1,10 +1,10 @@
 # Flow: US Stocks (`us-stocks`)
 
-> One self-contained file for converting this flow to another platform. Read https://kirtanyak-pe.github.io/lemonn-app-prototype/CONVERT.md first. Design system: Lemonnade V3 @ `6de43c8` (components, tokens and rules: https://kirtanyak-pe.github.io/lemonnade-v3-docs/llms.txt).
+> One self-contained file for converting this flow to another platform. Read https://lemonnade-design.github.io/lemonn-app-prototype/CONVERT.md first. Design system: Lemonnade V3 @ `6de43c8` (components, tokens and rules: https://lemonnade-design.github.io/lemonnade-v3-docs/llms.txt).
 
 Activate US Stocks, add money to the USD wallet, buy and sell, withdraw (teammate import, under review).
 
-Prototype: https://kirtanyak-pe.github.io/lemonn-app-prototype/#/us-stocks · machine-readable: https://kirtanyak-pe.github.io/lemonn-app-prototype/flows/us-stocks.json
+Prototype: https://lemonnade-design.github.io/lemonn-app-prototype/#/us-stocks · machine-readable: https://lemonnade-design.github.io/lemonn-app-prototype/flows/us-stocks.json
 
 ## Screens
 

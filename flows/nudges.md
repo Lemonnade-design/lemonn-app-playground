@@ -1,10 +1,10 @@
 # Flow: Overtrading nudges (playground) (`nudges`)
 
-> One self-contained file for converting this flow to another platform. Read https://kirtanyak-pe.github.io/lemonn-app-prototype/CONVERT.md first. Design system: Lemonnade V3 @ `6de43c8` (components, tokens and rules: https://kirtanyak-pe.github.io/lemonnade-v3-docs/llms.txt).
+> One self-contained file for converting this flow to another platform. Read https://lemonnade-design.github.io/lemonn-app-prototype/CONVERT.md first. Design system: Lemonnade V3 @ `6de43c8` (components, tokens and rules: https://lemonnade-design.github.io/lemonnade-v3-docs/llms.txt).
 
 Journey-aware P&L limit and TP/SL prompts: silent help on the order pad, and one nudge sheet when the revenge flag and the journey engine agree.
 
-Prototype: https://kirtanyak-pe.github.io/lemonn-app-prototype/#/nudges · machine-readable: https://kirtanyak-pe.github.io/lemonn-app-prototype/flows/nudges.json
+Prototype: https://lemonnade-design.github.io/lemonn-app-prototype/#/nudges · machine-readable: https://lemonnade-design.github.io/lemonn-app-prototype/flows/nudges.json
 
 ## Screens
 
