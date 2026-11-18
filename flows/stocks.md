@@ -433,6 +433,7 @@ lower on the page is scrolled into view first). `components/MarketSwitchGuide.ts
   16 / 24 icon or an Avatar only — event rows are plain buttons laid out with Stack.
 
 ### Changelog
+- 2026-11-18 — The floating Homepage version switch (V19 / V18 …, phone app mode) shows only on the Home screens (IND and US tab, every state), not on other pages.
 
 - 2026-11-18 — V19 scroll: the IN / US tabs sit flush on the sticky block (the 12 under them showed as a white strip). The index marquee now docks under the tabs once it scrolls up to them — it stops right where it is, so it reads as the same strip coming up out of the middle — rides with the header as the top bar hides and returns, and lets go on the way back down. The hairline moves under the strip.
 - 2026-11-18 — Home **V19** (`homeVersions.ts`, the user's ask from a reference): V18 with the index marquee moved from under the top bar to between the hero (the header) and the feed (the body), scrolling with the page, 16 above and below the strip. That whole stretch is surface/accent-discover-light — from behind the hero's rounded foot down under the feed, which is a rounded sheet again (radius 32, 24 over the band) — and the hero has no glow (plain, like the header card). Only the IN / US tabs stay sticky (their band keeps its background, no 12 around it). V18 stays the default; the floating one-tap version switch is back (V18 ⇄ V19).
@@ -28744,6 +28745,9 @@ function HomeInState({ go }: { go: Go }) {
  * Stocks — the Stocks tab, the app's home after login. Built from the live app's screenshots (shared 2026-10-17,
  * re-matched to the live app over ADB on 2026-10-22; there's no Figma for it yet). One long page; the board shows it as frames scrolled to each part.
  */
+// Every Home screen (IND and US tab, in each user status): where the Homepage version switch floats.
+const HOME_SCREEN_IDS = ['stocks-01', 'stocks-02', 'stocks-03', 'stocks-04', 'stocks-05', 'stocks-06', 'stocks-07', 'stocks-09', 'stocks-10', 'stocks-11', 'stocks-13', 'stocks-14', 'stocks-15', 'stocks-16', 'stocks-17', 'stocks-18', 'stocks-19', 'stocks-20', 'stocks-21', 'stocks-22']
+
 export const stocks: Flow = {
   id: 'stocks',
   title: 'Stocks',
@@ -28758,8 +28762,9 @@ export const stocks: Flow = {
       picker: 'dropdown',
       values: activeHomeVersions.map((v) => ({ value: v.id, label: `${v.id.toUpperCase()} · ${v.name}` })),
       default: DEFAULT_HOME_VERSION,
-      // V18 and V19 (18 Nov): the floating one-tap switch is back, to flip between them.
-      quickSwitch: true,
+      // V18 and V19 (18 Nov): the floating one-tap switch is back, to flip between them — only on the Home screens
+      // (IND and US tab, every state), the only pages the version changes.
+      quickSwitch: { on: HOME_SCREEN_IDS },
     },
     // FTUX guide for the IND / US switch: dims the screen, lights the switch with a tooltip. Shown every time a Home
     // opens (and again after a version change) while on; tap anywhere or ✕ to end it.
