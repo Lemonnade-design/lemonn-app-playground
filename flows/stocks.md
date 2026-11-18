@@ -434,6 +434,9 @@ lower on the page is scrolled into view first). `components/MarketSwitchGuide.ts
 
 ### Changelog
 
+- 2026-11-18 — Home section headers: View all sits 4 closer to the right edge (12 in, was 16).
+- 2026-11-18 — Shortcuts (V2 card, IN and US): each shortcut is 12 taller — 18 above and below (was 12).
+- 2026-11-18 — Home scroll reveal: parts come in one by one instead of whole sections — the section header, then its chips row, then each card or row (80 apart when they arrive together; a rail’s cards follow one another).
 - 2026-11-18 — US home, Top analyst picks (list) and Discover ETFs: flat edge-to-edge rows split by an inset hairline (logo start to price end, 16 in), like the stock lists — were stacks of cards.
 - 2026-11-18 — Themes page “All stocks” (shared StockListCard look="list"): the hairline runs from the logo's start to the price's end, 16 in from each edge (was edge to edge).
 - 2026-11-18 — New setting Home → Chips: V2 (default) the L3 switcher pill + outlined-selected chips; V1 brings back the earlier hand-made outlined switcher and small black-selected chips.
@@ -20761,7 +20764,8 @@ export function HeroButtons({ buy, add }: HeroButtonsProps) {
   border-left: 1px solid var(--l3-border-light); /* 1px divider */
 }
 .shortcutPlain {
-  padding-block: var(--l3-spacing-12);
+  /* 18 above and below (18 Nov: 12 taller in all, was 12) — no 18 in L3's spacing, so 12 + 6. */
+  padding-block: calc(var(--l3-spacing-12) + var(--l3-spacing-06));
   gap: var(--l3-spacing-04);
 }
 /* A plain 24 icon (no circle), in the success green like V1's. */
@@ -29427,7 +29431,14 @@ export function Glossary({ kind, onBack }: { kind: keyof typeof TERMS; onBack: (
   font: var(--l3-text-heading-16);
 }
 
-/* Scroll reveal (Home.tsx): a feed section below the fold waits hidden 16 lower, then fades and rises in. */
+/* Section headers' View all sits 4 closer to the edge — 12 from it instead of the page's 16 (18 Nov). L3 gap: SectionHeader
+   has no option for its action's inset. */
+.flatCards [class*='_header_'] > [class*='_action_']:has(> [data-variant='ghost']) {
+  margin-inline-end: calc(-1 * var(--l3-spacing-04));
+}
+
+/* Scroll reveal (Home.tsx): each part of a feed section below the fold (header, chips row, each card) waits hidden 16
+   lower, then fades and rises in. */
 .flatCards [data-reveal] {
   transition:
     opacity var(--app-home-reveal) var(--l3-motion-easing-decelerate),
@@ -29697,29 +29708,47 @@ export function Home({ scrollTo = 'top', market = 'in', movers, onStock, onTab, 
     return () => body.removeEventListener('scroll', sync)
   }, [])
 
-  // Scroll reveal: each feed section below the fold fades in (and rises 16) as it scrolls into view, once. What's
-  // on screen when the Home opens shows at once. Off with reduced motion. Runs again when the market or version changes.
+  // Scroll reveal: below the fold, each part of a feed section fades in (and rises 16) on its own as it scrolls into
+  // view, once — the section header, then its chips row, then each card or row (revealPieces). Parts that arrive
+  // together are staggered 80 apart; a horizontal rail's cards come in one after another with the first. What's on
+  // screen when the Home opens shows at once. Off with reduced motion. Runs again when the market or version changes.
   useEffect(() => {
     const root = page.current
     const body = root?.parentElement
     if (!root || !body || matchMedia('(prefers-reduced-motion: reduce)').matches) return
     const fold = body.getBoundingClientRect().bottom
-    const sections = [...root.querySelectorAll<HTMLElement>('[data-feed] [data-market-part] > *')]
+    const pieces = [...root.querySelectorAll<HTMLElement>('[data-feed] [data-market-part] > *')]
+      .flatMap(revealPieces)
       .filter((el) => el.getBoundingClientRect().top > fold)
+    const rails = new Map<HTMLElement, HTMLElement[]>()
+    for (const el of pieces) {
+      const rail = horizontalRail(el, root)
+      if (rail) rails.set(rail, [...(rails.get(rail) ?? []), el])
+    }
+    const show = (el: HTMLElement, delay: number) => {
+      if (el.dataset.reveal !== 'hidden') return
+      el.style.transitionDelay = `${delay}ms`
+      el.dataset.reveal = 'shown'
+      observer.unobserve(el)
+      // Once in, hand the element back its own transitions (a card's press state).
+      el.addEventListener('transitionend', () => { delete el.dataset.reveal; el.style.transitionDelay = '' }, { once: true })
+    }
     const observer = new IntersectionObserver((entries) => {
+      let step = 0
       for (const entry of entries) {
-        if (!entry.isIntersecting) continue
-        ;(entry.target as HTMLElement).dataset.reveal = 'shown'
-        observer.unobserve(entry.target)
+        const el = entry.target as HTMLElement
+        if (!entry.isIntersecting || el.dataset.reveal !== 'hidden') continue
+        const rail = horizontalRail(el, root)
+        for (const piece of rail ? rails.get(rail) ?? [el] : [el]) show(piece, Math.min(step++, REVEAL_MAX_STEPS) * REVEAL_STAGGER)
       }
     }, { root: body, rootMargin: '0px 0px -10% 0px' })
-    for (const el of sections) {
+    for (const el of pieces) {
       el.dataset.reveal = 'hidden'
       observer.observe(el)
     }
     return () => {
       observer.disconnect()
-      for (const el of sections) delete el.dataset.reveal
+      for (const el of pieces) { delete el.dataset.reveal; el.style.transitionDelay = '' }
     }
   }, [tab, versionId])
 
@@ -30066,6 +30095,33 @@ function MarketSwitchFor({ version, value, onChange }: { version: HomeVersion; v
 /** "Rohan Mehta" → "RM": the profile's initials. */
 function initials(name: string) {
   return name.split(' ').map((part) => part.charAt(0)).join('').slice(0, 2).toUpperCase()
+}
+
+/** Scroll reveal: the gap between parts that come into view together (ms). */
+const REVEAL_STAGGER = 80
+/** …and the most steps a batch waits (a fast scroll never queues more than 480 of delay). */
+const REVEAL_MAX_STEPS = 6
+
+/** Scroll reveal: splits a feed section into the parts that appear one by one — its header (the heading with its
+ *  View all), a chips row (the switcher + chips, as one), and each card or row; a part with nothing to split shows
+ *  whole. Reads the DOM, so every section's layout works without marking it up. */
+function revealPieces(el: HTMLElement): HTMLElement[] {
+  const isCard = el.matches('button, a[href], [role="button"]') || /(^|\s)_card_/.test(el.className)
+  if (isCard || el.matches('[role="tablist"]')) return [el]
+  const buttons = [...el.querySelectorAll('button, a[href], [role="button"]')]
+  const outsideTabs = buttons.filter((b) => !b.closest('[role="tablist"]'))
+  if (outsideTabs.length === 0) return [el] // a chips row, or static content
+  if (el.querySelector('h2') && outsideTabs.length <= 1 && !el.querySelector('[role="tablist"]')) return [el] // a header
+  return [...el.children].flatMap((child) => revealPieces(child as HTMLElement))
+}
+
+/** The horizontally scrolling rail a part sits in (Top Movers, Brands, themes…), if any — within the Home page. */
+function horizontalRail(el: HTMLElement, root: HTMLElement): HTMLElement | null {
+  for (let node = el.parentElement; node && node !== root; node = node.parentElement) {
+    const x = getComputedStyle(node).overflowX
+    if (x === 'auto' || x === 'scroll') return node
+  }
+  return null
 }
 ```
 
