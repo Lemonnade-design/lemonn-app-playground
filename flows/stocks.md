@@ -363,6 +363,8 @@ lower on the page is scrolled into view first). `components/MarketSwitchGuide.ts
 
 ### Changelog
 
+- 2026-11-18 — US home chips rows (Top Movers, Heatmap, ETFs): the switcher (cap / country–sector) is an L3 primary pill (black, big md like the chips, ↕ 14 — like Market's IN / US picker), replacing the hand-made outlined chip; the filter chips are L3 pill tabs with secondary emphasis (selected = border/dark outline, not black). Local chip overrides removed. L3 gap: a Tab's icon slot is fixed at 16.
+- 2026-11-18 — US home, Brands cards: the price and its day change sit 2 apart (were 8).
 - 2026-11-18 — US home, Top analyst picks (list): “94% of analysts recommend” is back to ListCell's Description 12; the “Expected profit” caption stays 10.
 - 2026-11-18 — L3 moved to 9467515: raised only on solid black (Primary, selected black pill, sliding pill); every other button and chip is flat, with no drop shadow. No local overrides needed removing (the app had none on buttons or chips).
 - 2026-11-18 — US home, Top Movers: the cards size to show 1.8 up front at any phone width ((page − 16 − 12 gap) / 1.8, ≈ 202 on a 392 phone; were 150); the head and graph fill the card.
@@ -24583,21 +24585,16 @@ export function UsHero({ onHoldings, onBuy, onAddUsd, empty = false, children }:
   padding-inline-start: var(--l3-spacing-16);
 }
 
-.capChip {
+.capSwitch {
   display: flex;
   flex: none;
-  align-items: center;
-  gap: var(--l3-spacing-02);
-  box-sizing: border-box;
-  height: var(--l3-size-28);
-  padding: 0 calc(var(--l3-spacing-12) - 1px);
-  border: 1px solid var(--l3-content-primary);
-  border-radius: var(--l3-radius-full);
-  background: var(--l3-surface-default);
-  color: var(--l3-content-primary);
-  font: var(--l3-text-label-12);
   cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
+}
+
+/* L3 gap: a Tab's icon slot is fixed at 16; the ↕ arrow is 14 (as on Market's picker). */
+.capSwitch [role='tab'] > span:last-child {
+  width: var(--l3-icon-size-14);
+  height: var(--l3-icon-size-14);
 }
 
 /* FLAG: hand-made divider between chip and tabs */
@@ -24612,22 +24609,6 @@ export function UsHero({ onHoldings, onBuy, onAddUsd, empty = false, children }:
   flex: 1;
   gap: var(--l3-spacing-12);
   min-width: 0;
-}
-
-.chips .chipTabs > [role='tab'][data-appearance] {
-  --tab-height: var(--l3-size-28);
-  --tab-padding-block: var(--l3-spacing-06);
-  --tab-padding-inline: var(--l3-spacing-10);
-  --tab-surface: var(--l3-surface-default);
-  --tab-content: var(--l3-content-primary);
-  --tab-border: var(--l3-border-intense);
-  box-shadow: inset 0 0 0 1px var(--tab-border);
-}
-
-.chips .chipTabs > [role='tab'][data-appearance][aria-selected='true'] {
-  --tab-surface: var(--l3-surface-inverted);
-  --tab-content: var(--l3-content-inverted);
-  --tab-border: transparent;
 }
 
 .capName {
@@ -24792,6 +24773,11 @@ export function UsHero({ onHoldings, onBuy, onAddUsd, empty = false, children }:
 .brandPrice {
   font: var(--l3-text-label-12);
   color: var(--l3-content-primary);
+}
+
+/* The price and its day change read as one pair: 2 apart (the stack's 8 elsewhere). */
+.brandPrice + * {
+  margin-top: calc(var(--l3-spacing-02) - var(--l3-spacing-08));
 }
 
 /* ---- Explore by themes ---- */
@@ -25072,17 +25058,14 @@ export function UsHome({ usState = 'activate', onActivate, onStock, onMarket, on
         <Stack as="section" gap="16" aria-label={t('us.movers.title')}>
           <Inset paddingInline="16" paddingBlock="00"><SectionHeader title={t('us.movers.title')} action={{ type: 'view-all', onClick: openMarketForMovers }} /></Inset>
           <Stack direction="horizontal" align="center" gap="12" className={styles.chips}>
-            {/* FLAG: hand-made cap chip (outlined pill that cycles Mega / Large / Mid / Small) — L3 Select opens a sheet instead */}
-            <button type="button" className={styles.capChip} aria-label={t('us.cap.switch', { cap: capName })} onClick={cycleCap}>
-              <span className={styles.capName} key={cap}>{capName}</span>
-              <Icon icon={lmSwitchArrowVertical} size={16} />
-            </button>
+            <CapSwitch label={capName} value={cap} aria-label={t('us.cap.switch', { cap: capName })} onClick={cycleCap} />
             <span className={styles.chipDivider} aria-hidden="true" />
             <Tabs
               appearance="pill"
               aria-label={t('us.movers.tabsLabel')}
               items={moverFilters.map((value) => ({ value, label: t(`us.movers.${value}`) }))}
               value={filter}
+              emphasis="secondary"
               onChange={(v) => setFilter(v as MoverFilter)}
               className={styles.chipTabs}
             />
@@ -25176,11 +25159,7 @@ export function UsHeatmap({ onOpen, f1 = false }: { onOpen: (sym: string) => voi
         <SectionHeader title={t('us.heatmap.title')} action={f1 ? undefined : { type: 'switcher', label: t(`us.heatmap.${index}`), onClick: nextIndex, 'aria-label': t('us.heatmap.indexLabel') }} />
       </Inset>
       <Stack direction="horizontal" align="center" gap="12" className={styles.chips}>
-        {/* FLAG: hand-made cap chip, as Top Movers' */}
-        <button type="button" className={styles.capChip} aria-label={t('us.cap.switch', { cap: heatCapName })} onClick={cycleHeatCap}>
-          <span className={styles.capName} key={heatCap}>{heatCapName}</span>
-          <Icon icon={lmSwitchArrowVertical} size={16} />
-        </button>
+        <CapSwitch label={heatCapName} value={heatCap} aria-label={t('us.cap.switch', { cap: heatCapName })} onClick={cycleHeatCap} />
         <span className={styles.chipDivider} aria-hidden="true" />
         <Tabs
           appearance="pill"
@@ -25188,6 +25167,7 @@ export function UsHeatmap({ onOpen, f1 = false }: { onOpen: (sym: string) => voi
           items={heatSectors.map((value) => ({ value, label: value === 'all' ? t('us.sectors.all') : t(`us.sector.${value}`) }))}
           value={sector}
           onChange={(v) => setSector(v as HeatSector)}
+          emphasis="secondary"
           className={styles.chipTabs}
         />
       </Stack>
@@ -25220,6 +25200,26 @@ export function MonthLine({ closes, up, className }: { closes: number[]; up: boo
       <path d={`${line} L${w} ${h} L0 ${h} Z`} fill={`url(#${fade})`} />
       <path d={line} className={styles.sparkLine} />
     </svg>
+  )
+}
+
+/**
+ * The switcher at the start of a chips row (Top Movers' cap, Heatmap's cap, ETFs' country / sector): one L3 primary
+ * pill (black, like the Market IN / US picker) with the ↕ arrow; a tap cycles the choice. The wrapper takes the tap,
+ * so the one-tab group needs no handler of its own.
+ */
+function CapSwitch({ label, value, onClick, 'aria-label': ariaLabel }: { label: string; value: string; onClick: () => void; 'aria-label': string }) {
+  return (
+    <div className={styles.capSwitch} onClick={onClick}>
+      <Tabs
+        appearance="pill"
+        size="md"
+        aria-label={ariaLabel}
+        items={[{ value, label, iconRight: <Icon icon={lmSwitchArrowVertical} size={14} /> }]}
+        value={value}
+        onChange={() => {}}
+      />
+    </div>
   )
 }
 
@@ -25280,10 +25280,7 @@ export function DiscoverEtfs({ onOpen, onViewAll, f1 = false }: { onOpen: (sym: 
       </Inset>
       {/* The small chips of Top movers: switcher chip, divider, chips (Home always uses the small ones). */}
       <Stack direction="horizontal" align="center" gap="12" className={styles.chips}>
-        <button type="button" className={styles.capChip} aria-label={t('us.etfs.by.switch', { by: byName })} onClick={() => setBy(by === 'country' ? 'sector' : 'country')}>
-          <span className={styles.capName} key={by}>{byName}</span>
-          <Icon icon={lmSwitchArrowVertical} size={16} />
-        </button>
+        <CapSwitch label={byName} value={by} aria-label={t('us.etfs.by.switch', { by: byName })} onClick={() => setBy(by === 'country' ? 'sector' : 'country')} />
         <span className={styles.chipDivider} aria-hidden="true" />
         {by === 'country' ? (
           <Tabs
@@ -25293,6 +25290,7 @@ export function DiscoverEtfs({ onOpen, onViewAll, f1 = false }: { onOpen: (sym: 
             items={etfRegions.map((value) => ({ value, label: t(`us.etfs.region.${value}`), iconLeft: flags ? <Flag code={REGION_FLAGS[value]} /> : undefined }))}
             value={region}
             onChange={(v) => setRegion(v as EtfRegion)}
+            emphasis="secondary"
             className={styles.chipTabs}
           />
         ) : (
@@ -25303,6 +25301,7 @@ export function DiscoverEtfs({ onOpen, onViewAll, f1 = false }: { onOpen: (sym: 
             items={etfSectors.map((value) => ({ value, label: t(`us.etfs.sector.${value}`) }))}
             value={sector}
             onChange={(v) => setSector(v as EtfSector)}
+            emphasis="secondary"
             className={styles.chipTabs}
           />
         )}
