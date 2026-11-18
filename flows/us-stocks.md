@@ -200,7 +200,7 @@ Every tap he wired is kept. The main path: FTUX sheet → Activate → Declarati
 
 ### Changelog
 - 2026-11-18 — **Order pad V2 · Minted layout (the default).** New prototype setting **Order pad** (group Trade): V1 · Commodity pad layout, V2 · Minted layout. V2 takes the layout of Minted's order pad (`~/minted`, screens s05 / s13 / s14 / s06 / s16): stock header, a centred Market / Limit / SL switch, a big centred amount with the quick chips and one helper line under it, limit / trigger prices as filled cards with the Stepper, the note as a grey strip, then Balance · Approx. req., the Buy / Sell button and the app keypad. Results and processing take Minted's result layout (status icon over a tinted top, big heading, details below). Same states, data and navigation as V1 (`orderPads.tsx`, `orderResults.ts`); only the layout differs. Minted's Futures tab, leverage card, SIP and "sell automatically at a profit" are left out: US stocks are cash, Day orders only. Code: `screens/trade/version.ts` (`useOrderPadVersion()`), `OrderPadV2.tsx`, `OrderResultV2.tsx`; V1 stays in `OrderPad.tsx` / `OrderResult.tsx`. Header: no line under it, title centred (a 24 spacer balances the back button), stock logo 16. L3 gap: Avatar has no 16 size (smallest 24) — sized down locally (`.logo16`). Built from L3: Actionbar, Avatar, PriceChange, Tabs (order type, chips), Select (Amount ⇄ Shares, swap icon), Card filled (limit / trigger price), Stepper, Button (Buy / Sell, ghost Req.), Stack. Other L3 gaps: Stepper has no on-grey fill (set to surface/primary locally); no large amount field (raw input); no centred logo + price Actionbar title; no note strip (a token-styled line); a pill group has no equal-width hug option (order-type pills made equal locally, `.orderTypes`). Order-type tabs are Medium and their pill slides from the type you came from.
-- 2026-11-18 — Order pad V2: the amount's typing caret is drawn (a blinking discover-blue 2px bar, L3 TextField's Typing colour) so it shows on Market, Limit and SL; the line under the amount always shows the ≈ ₹ value of the order (live USDINR rate) in the same line, 8 apart, no separator dot; SL is now an amount in $ with the $ / shares switch, like Market and Limit; the amount field has a fixed 48 height so emptying it no longer moves the cards; the Buy / Sell button shows the order’s ₹ value after a dot ("Buy · ₹9,345"), the ₹ in Description 14 (2 smaller than the label, regular weight), just the label when the amount is empty; the $ before the amount is Heading 24 (the amount stays Heading 36); the price cards' labels (Limit, Trigger Price) are Description 12; every field takes typing: tap the amount or a price (Limit, Trigger Price) and the keypad types into it (first key replaces the value, the blue caret moves there, a typed price sets its Stepper %; a Stepper tap keeps the field you were typing in). The whole left part of a price card (label + price, out to the card's edges, up to the Stepper) is the tap target for typing. The order note above the balance line has no grey band. The price cards are L3 default cards (white, 1px border/light) instead of grey filled ones, so the Steppers keep L3's own grey pill (the local on-grey override is gone) with dark ± buttons (surface/inverted, local: L3 gap, its Small buttons are light blue and merge with the grey pill). On SL, "Req." is underlined in secondary text (a link, local style: L3 gap) and opens the Fee Breakdown sheet over the same SL page (us-stocks-42 is now a sheet over us-stocks-41: no slide, typed values kept; closing returns to it). The line under the amount (shares hint + ≈ ₹) is gone — the ₹ value is in the button; only an error shows there. FLAG: the price is a raw input like the amount (L3 has no inline price field), whatever the app's ₹ setting.
+- 2026-11-18 — Order pad V2: the amount's typing caret is drawn (a blinking discover-blue 2px bar, L3 TextField's Typing colour) so it shows on Market, Limit and SL; the line under the amount always shows the ≈ ₹ value of the order (live USDINR rate) in the same line, 8 apart, no separator dot; SL is now an amount in $ with the $ / shares switch, like Market and Limit; the amount field has a fixed 48 height so emptying it no longer moves the cards; the Buy / Sell button shows the order’s ₹ value after a dot ("Buy · ₹9,345"), the ₹ in Description 14 (2 smaller than the label, regular weight), just the label when the amount is empty; the $ before the amount is Heading 24 (the amount stays Heading 36); the price cards' labels (Limit, Trigger Price) are Description 12; every field takes typing: tap the amount or a price (Limit, Trigger Price) and the keypad types into it (first key replaces the value, the blue caret moves there, a typed price sets its Stepper %; a Stepper tap keeps the field you were typing in). The whole left part of a price card (label + price, out to the card's edges, up to the Stepper) is the tap target for typing. The order note above the balance line has no grey band. The price cards are L3 default cards (white, 1px border/light) instead of grey filled ones, so the Steppers keep L3's own grey pill (the local on-grey override is gone) with dark ± buttons (surface/inverted, local: L3 gap, its Small buttons are light blue and merge with the grey pill). On SL, "Req." is underlined in secondary text (a link, local style: L3 gap) and opens the Fee Breakdown sheet over the same SL page (us-stocks-42 is now a sheet over us-stocks-41: no slide, typed values kept; closing returns to it). The line under the amount (shares hint + ≈ ₹) is gone — the ₹ value is in the button; only an error shows there. Switching order type dissolves the fields instead of sliding them sideways: the old ones drop 8 (spacing 08) and fade out (140 ms), then the new ones rise 8 into place and fade in (220 ms); none with reduced motion. Price cards merged: on SL (two prices) both sit in one bordered card with a hairline between them, inset 12 like the text; the earlier card-per-price layout stays as the prototype setting "Price cards" (Trade → Separate) for A/B testing. FLAG: the price is a raw input like the amount (L3 has no inline price field), whatever the app's ₹ setting.
 - 2026-11-18 — Stock and ETF pages (Classic, F1 and the previous ETF page): one bottom dock in every user state, `AssetDock` in `screens/activation/details.tsx`. Same padding, floating over the page's end on a gradient of the page's colour (the body shows through as it scrolls under); only the buttons inside change: Buy · Sell, Go Long · Go Short, or the one activation button (Complete KYC, Activate US Stocks, Under review, Contact support, Retry activation). It was L3 ButtonGroup on the ETF page and the activation states. L3 gap: no floating dock / fade.
 
 - 2026-11-18 — New page **Fractional shares** (`us-stocks-99`, `screens/etf/FractionalScreen.tsx`, no Figma): behind the Stocks home's Fractional product card. Intro, a worked example from today's price ($10 in NVDA = 0.053 shares, `<Usd>`), the 8 highest-priced stocks you can slice (shared `StockListCard`; a row opens its stock page), a short FAQ. Copy in `copy.json` (`fractional.*`). L3 gaps: no accordion / info list (FAQ is plain text), no heading + paragraph block.
@@ -22506,6 +22506,19 @@ export const usStocks: Flow = {
       default: 'v2',
       floatOn: ['us-stocks-33', 'us-stocks-34', 'us-stocks-35', 'us-stocks-36', 'us-stocks-37', 'us-stocks-38', 'us-stocks-39', 'us-stocks-40', 'us-stocks-41', 'us-stocks-47', 'us-stocks-48', 'us-stocks-49', 'us-stocks-50', 'us-stocks-43', 'us-stocks-44', 'us-stocks-45', 'us-stocks-46', 'us-stocks-51', 'us-stocks-52'],
     },
+    // The V2 order pad's price cards (18 Nov): merged (one card, a line between the prices) or separate (a card each).
+    {
+      id: 'priceCards',
+      group: 'Trade',
+      label: 'Price cards',
+      picker: 'dropdown',
+      values: [
+        { value: 'merged', label: 'Merged · one card, a line between' },
+        { value: 'separate', label: 'Separate · a card per price' },
+      ],
+      default: 'merged',
+      floatOn: ['us-stocks-41'],
+    },
     // The Boosted tab's note (3 Nov): one line on a strip, a small card, or a chip.
     {
       id: 'boostNote',
@@ -38334,6 +38347,9 @@ function OrderPadV1({ config, backdrop, sheet }: OrderPadProps) {
 
 /* "Req." opens the fee sheet: secondary text, underlined like a link (L3 gap: no link-style Button). */
 .reqLink.reqLink { color: var(--l3-content-secondary); text-decoration: underline; text-underline-offset: var(--l3-spacing-02); }
+
+/* Merged price card: the line between two prices, inset by the card's padding (12, like the text). 1px hairline. */
+.priceDivider { margin: 0; border: 0; height: 1px; background: var(--l3-border-light); }
 ```
 
 ### `src/flows/us-stocks/screens/trade/OrderPadV2.tsx`
@@ -38351,7 +38367,7 @@ function OrderPadV1({ config, backdrop, sheet }: OrderPadProps) {
 // FLAG: the big amount is a raw <input> (L3 has no large amount field); it is focused, typed from the shared Keyboard.
 // The keypad has "." (shared Keyboard `decimal`): $ amounts take 2 decimals, shares 4, whole-share stocks none. The first key replaces the prefilled value.
 // FLAG: duplicates the app's Indian order pad (src/flows/stocks) for US stocks.
-import { useEffect, useLayoutEffect, useRef, useState, type ReactNode, type SyntheticEvent } from 'react'
+import { Fragment, useEffect, useLayoutEffect, useRef, useState, type ReactNode, type SyntheticEvent } from 'react'
 import { Actionbar } from '@l3/components/Actionbar'
 import { Avatar } from '@l3/components/Avatar'
 import { Button } from '@l3/components/Button'
@@ -38369,6 +38385,7 @@ import { useUsNav } from '../../nav'
 import { Usd, formatInr, useUsd, useUsdInrRate } from '../../../../shared/money'
 import { al, forCurrentStock } from './format'
 import type { Derived, OrderPadConfig, OrderType, PadMode } from './types'
+import { usePriceCards } from './version'
 import styles from './OrderPadV2.module.css'
 
 const ORDER_TYPES: { value: OrderType; label: string }[] = [
@@ -38377,10 +38394,13 @@ const ORDER_TYPES: { value: OrderType; label: string }[] = [
   { value: 'sl', label: 'SL' },
 ]
 
-/** The pad on screen (its order type, and when it closed): see OrderPad.tsx — the fields slide in on an order type switch. */
+/** The pad on screen (its order type, and when it closed): an order type switch dissolves the fields (leaveTo / fields below). */
 let shownPad: { type: OrderType; closedAt: number | null } | null = null
 
 const MAX_DIGITS = 7
+
+/** How far the fields drop / rise in the order-type dissolve (L3 spacing 08). */
+const DISSOLVE_SHIFT = 'var(--l3-spacing-08)'
 
 /** The logo of the stock being traded (as the stock page picks it). */
 function useStockLogo(symbol: string) {
@@ -38398,6 +38418,7 @@ export function OrderPadV2({ config, backdrop, sheet }: { config: OrderPadConfig
   const rate = useUsdInrRate()
   const inr = (n: number) => (n > 0 ? `≈ ${formatInr(n * rate, { decimals: 0 })}` : undefined)
   const logo = useStockLogo(config.stock.symbol)
+  const priceCards = usePriceCards()
   // The unit the field is showing; `value` is always kept in the config's own unit (config.mode).
   const [mode, setMode] = useState<PadMode>(config.mode)
   const [value, setValue] = useState(config.value)
@@ -38554,86 +38575,31 @@ export function OrderPadV2({ config, backdrop, sheet }: { config: OrderPadConfig
     const giveUp = setTimeout(() => setTabValue(config.type), 1000)
     return () => { cancelAnimationFrame(frame); clearTimeout(giveUp) }
   }, [tabValue, config.type])
+  // Order type switch = a dissolve: the old fields drop a little and fade out (leaveTo), then this type's fields rise
+  // into place and fade in (here, once, when they first attach: a callback ref, the phone mounts its body later).
   const slid = useRef(false)
+  const fieldsEl = useRef<HTMLElement | null>(null)
   const fields = (el: HTMLElement | null) => {
+    fieldsEl.current = el
     if (!el || slid.current) return
     slid.current = true
     if (!cameFrom || cameFrom === config.type || matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    const order = ORDER_TYPES.map((t) => t.value)
-    const from = order.indexOf(config.type) > order.indexOf(cameFrom) ? 1 : -1
     el.animate(
-      [{ translate: `${from * 100}% 0`, opacity: 0 }, { translate: '0 0', opacity: 1 }],
-      { duration: 280, easing: 'cubic-bezier(0.2, 0, 0, 1)' },
+      [{ translate: `0 ${DISSOLVE_SHIFT}`, opacity: 0 }, { translate: '0 0', opacity: 1 }],
+      { duration: 220, easing: 'cubic-bezier(0.2, 0, 0, 1)' },
     )
   }
+  const leaveTo = (target: string) => {
+    const el = fieldsEl.current
+    if (!el || matchMedia('(prefers-reduced-motion: reduce)').matches) return go(target)
+    el.animate(
+      [{ translate: '0 0', opacity: 1 }, { translate: `0 ${DISSOLVE_SHIFT}`, opacity: 0 }],
+      { duration: 140, easing: 'cubic-bezier(0.4, 0, 1, 1)', fill: 'forwards' },
+    ).finished.then(() => go(target), () => go(target))
+  }
 
-  const fieldError = typeof config.fieldError === 'function' ? config.fieldError(derived) : config.fieldError
-  const unitLabel = mode === 'amount' ? 'Amount' : 'Shares'
-  const switchLabel = `${unitLabel}. Switch to ${mode === 'amount' ? 'shares' : 'amount'}`
-
-  return (
-    <Phone label={forCurrentStock(config.label)} header={header} footer={footer} gesture="none">
-      <Stack gap="16" align="center" className={styles.body} inert={backdrop || undefined} ref={bodyRef}>
-        {/* FLAG: the order type switch is L3 Tabs (pill-group, toggle) but its choice also goes to another screen of the same page group. */}
-        <Tabs
-          appearance="pill-group"
-          size="md"
-          behavior="toggle"
-          width="fill"
-          className={styles.orderTypes}
-          aria-label="Order type"
-          items={ORDER_TYPES}
-          value={tabValue}
-          onChange={(type) => {
-            const target = config.to?.[type]
-            if (type !== config.type && target) go(target)
-          }}
-        />
-        {/* The part that changes with the order type: it slides, the tabs above it stay put. */}
-        <Stack gap="16" align="center" className={styles.fields} ref={fields}>
-          <Stack gap="08" align="center">
-            <label className={styles.amountRow} data-error={fieldError || undefined}>
-              {mode === 'amount' && <span className={styles.prefix}>$</span>}
-              <input
-                className={styles.amount}
-                {...keypadFieldProps()}
-                autoFocus
-                onFocus={pick('amount')}
-                onPointerDown={pick('amount')}
-                onBlur={keepFocus}
-                autoComplete="off"
-                aria-label={mode === 'amount' ? 'Amount in dollars' : 'Number of shares'}
-                placeholder="0"
-                value={amountText}
-                size={Math.max(amountText.length, 1)}
-                onChange={() => undefined}
-              />
-              {active === 'amount' && <span className={styles.caret} aria-hidden="true" />}
-            </label>
-            {config.toggle && (
-              <Select size="sm" subtle icon="swap" onClick={switchMode} aria-label={switchLabel}>
-                {unitLabel}
-              </Select>
-            )}
-          </Stack>
-          {config.chips && mode === config.mode && (
-            <Tabs
-              appearance="pill"
-              size="sm"
-              behavior="filter"
-              aria-label={mode === 'amount' ? 'Add amount' : 'Shares to sell'}
-              items={config.chips.map((chip, i) => ({ value: String(i), label: typeof chip.label === 'function' ? chip.label(usd) : chip.label }))}
-              value=""
-              onChange={(label) => {
-                const chip = config.chips?.[Number(label)]
-                if (chip) applyChip(chip.apply)
-              }}
-            />
-          )}
-          {/* No helper line under the amount: the order's ₹ value is in the Buy / Sell button. Only an error shows here. */}
-          {derived.error && <p className={styles.error}>{forCurrentStock(derived.error)}</p>}
-          {(config.prices ?? []).map((price, i) => (
-            <Card key={price.label} className={styles.priceCard}>
+  // One price row: the label + price (the tap target for typing) and its % Stepper.
+  const priceRow = (price: NonNullable<OrderPadConfig['prices']>[number], i: number) => (
               <Stack direction="horizontal" justify="between" align="center" gap="08">
                 {/* The whole left part of the card (label + price, to the card's edges) is the tap target for typing the price. */}
                 <Stack
@@ -38680,8 +38646,91 @@ export function OrderPadV2({ config, backdrop, sheet }: { config: OrderPadConfig
                 className={styles.stepperDark}
               />
               </Stack>
+  )
+
+  const fieldError = typeof config.fieldError === 'function' ? config.fieldError(derived) : config.fieldError
+  const unitLabel = mode === 'amount' ? 'Amount' : 'Shares'
+  const switchLabel = `${unitLabel}. Switch to ${mode === 'amount' ? 'shares' : 'amount'}`
+
+  return (
+    <Phone label={forCurrentStock(config.label)} header={header} footer={footer} gesture="none">
+      <Stack gap="16" align="center" className={styles.body} inert={backdrop || undefined} ref={bodyRef}>
+        {/* FLAG: the order type switch is L3 Tabs (pill-group, toggle) but its choice also goes to another screen of the same page group. */}
+        <Tabs
+          appearance="pill-group"
+          size="md"
+          behavior="toggle"
+          width="fill"
+          className={styles.orderTypes}
+          aria-label="Order type"
+          items={ORDER_TYPES}
+          value={tabValue}
+          onChange={(type) => {
+            const target = config.to?.[type]
+            if (type !== config.type && target) leaveTo(target)
+          }}
+        />
+        {/* The part that changes with the order type: it dissolves (drops + fades out, rises + fades in); the tabs stay put. */}
+        <Stack gap="16" align="center" className={styles.fields} ref={fields}>
+          <Stack gap="08" align="center">
+            <label className={styles.amountRow} data-error={fieldError || undefined}>
+              {mode === 'amount' && <span className={styles.prefix}>$</span>}
+              <input
+                className={styles.amount}
+                {...keypadFieldProps()}
+                autoFocus
+                onFocus={pick('amount')}
+                onPointerDown={pick('amount')}
+                onBlur={keepFocus}
+                autoComplete="off"
+                aria-label={mode === 'amount' ? 'Amount in dollars' : 'Number of shares'}
+                placeholder="0"
+                value={amountText}
+                size={Math.max(amountText.length, 1)}
+                onChange={() => undefined}
+              />
+              {active === 'amount' && <span className={styles.caret} aria-hidden="true" />}
+            </label>
+            {config.toggle && (
+              <Select size="sm" subtle icon="swap" onClick={switchMode} aria-label={switchLabel}>
+                {unitLabel}
+              </Select>
+            )}
+          </Stack>
+          {config.chips && mode === config.mode && (
+            <Tabs
+              appearance="pill"
+              size="sm"
+              behavior="filter"
+              aria-label={mode === 'amount' ? 'Add amount' : 'Shares to sell'}
+              items={config.chips.map((chip, i) => ({ value: String(i), label: typeof chip.label === 'function' ? chip.label(usd) : chip.label }))}
+              value=""
+              onChange={(label) => {
+                const chip = config.chips?.[Number(label)]
+                if (chip) applyChip(chip.apply)
+              }}
+            />
+          )}
+          {/* No helper line under the amount: the order's ₹ value is in the Buy / Sell button. Only an error shows here. */}
+          {derived.error && <p className={styles.error}>{forCurrentStock(derived.error)}</p>}
+          {/* Price cards (flow option "Price cards"): one card holding every price, a line between (merged, the default),
+              or a card per price (separate, the earlier design, kept for A/B). */}
+          {priceCards === 'merged' && (config.prices ?? []).length > 1 ? (
+            <Card className={styles.priceCard}>
+              <Stack gap="12">
+                {(config.prices ?? []).map((price, i) => (
+                  <Fragment key={price.label}>
+                    {i > 0 && <hr className={styles.priceDivider} />}
+                    {priceRow(price, i)}
+                  </Fragment>
+                ))}
+              </Stack>
             </Card>
-          ))}
+          ) : (
+            (config.prices ?? []).map((price, i) => (
+              <Card key={price.label} className={styles.priceCard}>{priceRow(price, i)}</Card>
+            ))
+          )}
         </Stack>
       </Stack>
       {sheet}
@@ -39525,6 +39574,12 @@ export const DEFAULT_ORDER_PAD_VERSION: OrderPadVersion = 'v2'
 
 export const useOrderPadVersion = (): OrderPadVersion =>
   useFlowOption('us-stocks', 'orderPad', DEFAULT_ORDER_PAD_VERSION) === 'v1' ? 'v1' : 'v2'
+
+// The V2 pad's price cards (flow option "Price cards", group Trade): merged · every price in one card, a line between
+// (the default since 18 Nov); separate · a card per price (the earlier design, kept for A/B testing).
+export type PriceCards = 'merged' | 'separate'
+export const usePriceCards = (): PriceCards =>
+  useFlowOption('us-stocks', 'priceCards', 'merged') === 'separate' ? 'separate' : 'merged'
 ```
 
 ### `src/flows/us-stocks/screens/types.ts`
