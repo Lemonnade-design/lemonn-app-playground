@@ -1,6 +1,6 @@
 # Flow: Stocks (`stocks`)
 
-> One self-contained file for converting this flow to another platform. Read https://lemonnade-design.github.io/lemonn-app-prototype/CONVERT.md first. Design system: Lemonnade V3 @ `4a58bf1` (components, tokens and rules: https://lemonnade-design.github.io/lemonnade-v3-docs/llms.txt).
+> One self-contained file for converting this flow to another platform. Read https://lemonnade-design.github.io/lemonn-app-prototype/CONVERT.md first. Design system: Lemonnade V3 @ `9467515` (components, tokens and rules: https://lemonnade-design.github.io/lemonnade-v3-docs/llms.txt).
 
 The Stocks tab — the home after login: indices, holdings, products, movers, watchlists, ideas.
 
@@ -363,6 +363,8 @@ lower on the page is scrolled into view first). `components/MarketSwitchGuide.ts
 
 ### Changelog
 
+- 2026-11-18 — L3 moved to 9467515: raised only on solid black (Primary, selected black pill, sliding pill); every other button and chip is flat, with no drop shadow. No local overrides needed removing (the app had none on buttons or chips).
+- 2026-11-18 — US home, Top Movers: the cards size to show 1.8 up front at any phone width ((page − 16 − 12 gap) / 1.8, ≈ 202 on a 392 phone; were 150); the head and graph fill the card.
 - 2026-11-18 — Themes page: “All stocks” are edge-to-edge list rows (StockListCard look="list", as Market) instead of cards. The shared list row's hairline now runs edge to edge (was inset from the symbol to the price), in every list.
 
 - 2026-11-18 — US home, Top analyst picks (list): “94% of analysts recommend” and the “Expected profit” caption are Description 10 (were ListCell's 12).
@@ -24652,6 +24654,21 @@ export function UsHero({ onHoldings, onBuy, onAddUsd, empty = false, children }:
   padding: var(--l3-spacing-12);
 }
 
+/* Top Movers: 1.8 cards up front at any phone width (user ask, 18 Nov). The scroller's content box is the page minus
+   2 × 16, so a card is (that + 16 − the 12 gap) / 1.8; the head and graph fill it. */
+.scroller[data-peek] {
+  container-type: inline-size;
+}
+
+.scroller[data-peek] .titan[data-interactive] {
+  width: calc((100cqw + var(--l3-spacing-16) - var(--l3-spacing-12)) / 1.8);
+}
+
+.scroller[data-peek] .titanHead,
+.scroller[data-peek] .spark {
+  width: 100%;
+}
+
 .titanHead {
   display: flex;
   align-items: center;
@@ -24920,6 +24937,11 @@ export function UsHero({ onHoldings, onBuy, onAddUsd, empty = false, children }:
 .pickCaption {
   font: var(--l3-text-description-10);
 }
+
+/* The wider Top Movers graph stretches its viewBox: keep the line 1.5 thick. */
+.scroller[data-peek] .sparkLine {
+  vector-effect: non-scaling-stroke;
+}
 ```
 
 ### `src/flows/stocks/components/us/UsHome.tsx`
@@ -25066,7 +25088,7 @@ export function UsHome({ usState = 'activate', onActivate, onStock, onMarket, on
           </Stack>
           {/* FLAG: hand-made sideways scroller of fixed-width cards (L3 has no carousel; src/shared/ui Rail sizes by count, not by width).
               Keyed by the cap and filter: a new pick starts the rail at its first card and the cards slide in one after another. */}
-          <div key={`${cap}-${filter}`} className={styles.scroller} role="region" aria-label={t('us.movers.railLabel')}>
+          <div key={`${cap}-${filter}`} className={styles.scroller} data-peek role="region" aria-label={t('us.movers.railLabel')}>
             <div className={styles.row}>
               {moversFor(cap, filter).map((m) => <MoverCard key={m.sym} mover={m} onOpen={open} />)}
             </div>
