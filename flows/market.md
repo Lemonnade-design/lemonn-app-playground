@@ -153,6 +153,7 @@ card is used by every stock list in the app.
 - **List divider** — ListCell has no divider option; the stock rows draw their own 1px hairline (`StockListCard` `look="list"`).
 
 ### Changelog
+- 2026-11-18 — Tabs and Picker default to V2 (pill chips; "IN Stocks" / "US Stocks").
 - 2026-11-18 — New setting Picker: V1 "IN" / "US" (default), V2 "IN Stocks" / "US Stocks" on the market pill.
 - 2026-11-18 — List tabs: new setting Tabs — V1 underline tabs (default; the 1px baseline now runs under the whole row, the IN / US picker too), V2 L3 pill chips at the default (big) size (secondary emphasis: the selected chip is outlined border/dark, not black; the IN / US picker is the big pill too; 16 between the divider and the first chip, as on the picker's side; 8 above and below, no baseline).
 - 2026-11-18 — IN / US picker: the ↕ switch arrow is 14 (was 16). L3 gap: a Tab's icon slot is fixed at 16 (local override).
@@ -690,10 +691,10 @@ export const market: Flow = {
     { id: 'filters', title: 'Filters' },
   ],
   options: [
-    // The list tabs beside the IN / US picker: V1 underline tabs (default), V2 pill chips (18 Nov, the user's ask).
-    { id: 'tabs', label: 'Tabs', values: [{ value: 'v1', label: 'V1' }, { value: 'v2', label: 'V2' }], default: 'v1' },
-    // The IN / US picker's label: V1 "IN" / "US" (default), V2 "IN Stocks" / "US Stocks" (18 Nov, the user's ask).
-    { id: 'picker', label: 'Picker', values: [{ value: 'v1', label: 'V1' }, { value: 'v2', label: 'V2' }], default: 'v1' },
+    // The list tabs beside the IN / US picker: V1 underline tabs, V2 pill chips (default, 18 Nov — the user's call).
+    { id: 'tabs', label: 'Tabs', values: [{ value: 'v1', label: 'V1' }, { value: 'v2', label: 'V2' }], default: 'v2' },
+    // The IN / US picker's label: V1 "IN" / "US", V2 "IN Stocks" / "US Stocks" (default, 18 Nov — the user's call).
+    { id: 'picker', label: 'Picker', values: [{ value: 'v1', label: 'V1' }, { value: 'v2', label: 'V2' }], default: 'v2' },
   ],
   screens: [
     { id: 'market-01', section: 'lists', name: 'Market · All', figma: '', note: 'The filter bar shows "Apply filters" until something is applied.', tab: true, render: (go) => <Market onTab={(t) => goToTab(go, t)} onSearch={() => go('search-24')} onOpenUs={(sym) => { viewUsStock(sym); go('us-stocks-13') }} /> },
@@ -885,9 +886,9 @@ export function Market({ market: initialMarket = 'in', tab: initialTab = 'all', 
   // Opened from another screen with a market / tab / filters to start on (Home's "View all")? Read once.
   const [handoff] = useState(takeMarketHandoff)
   // List tabs: V1 underline tabs (a baseline under the whole row, the picker too), V2 pill chips (settings: Tabs).
-  const pillTabs = useFlowOption('market', 'tabs', 'v1') === 'v2'
+  const pillTabs = useFlowOption('market', 'tabs', 'v2') === 'v2'
   // The IN / US picker's label: V1 "IN" / "US", V2 "IN Stocks" / "US Stocks" (settings: Picker).
-  const longPicker = useFlowOption('market', 'picker', 'v1') === 'v2'
+  const longPicker = useFlowOption('market', 'picker', 'v2') === 'v2'
   const [market, setMarket] = useState<MarketId>(handoff?.market ?? initialMarket)
   const [tab, setTab] = useState<MarketTab>(handoff?.tab && (tabs as string[]).includes(handoff.tab) ? (handoff.tab as MarketTab) : initialTab)
   const [filters, setFilters] = useState<Filters>(handoff ? (handoff.filters ?? {}) : initialFilters)
