@@ -1,6 +1,6 @@
 # Flow: US Stocks (`us-stocks`)
 
-> One self-contained file for converting this flow to another platform. Read https://lemonnade-design.github.io/lemonn-app-prototype/CONVERT.md first. Design system: Lemonnade V3 @ `9467515` (components, tokens and rules: https://lemonnade-design.github.io/lemonnade-v3-docs/llms.txt).
+> One self-contained file for converting this flow to another platform. Read https://lemonnade-design.github.io/lemonn-app-prototype/CONVERT.md first. Design system: Lemonnade V3 @ `c9e9b87` (components, tokens and rules: https://lemonnade-design.github.io/lemonnade-v3-docs/llms.txt).
 
 Activate US Stocks, add money to the USD wallet, buy and sell, withdraw (teammate import, under review).
 
@@ -199,7 +199,8 @@ Every tap he wired is kept. The main path: FTUX sheet → Activate → Declarati
 → Pay on bank → Money ready → Stock → Buy → Executed → Wallet → Withdraw.
 
 ### Changelog
-- 2026-11-18 — **Order pad V2 · Minted layout (the default).** New prototype setting **Order pad** (group Trade): V1 · Commodity pad layout, V2 · Minted layout. V2 takes the layout of Minted's order pad (`~/minted`, screens s05 / s13 / s14 / s06 / s16): stock header, a centred Market / Limit / SL switch, a big centred amount with the quick chips and one helper line under it, limit / trigger prices as filled cards with the Stepper, the note as a grey strip, then Balance · Approx. req., the Buy / Sell button and the app keypad. Results and processing take Minted's result layout (status icon over a tinted top, big heading, details below). Same states, data and navigation as V1 (`orderPads.tsx`, `orderResults.ts`); only the layout differs. Minted's Futures tab, leverage card, SIP and "sell automatically at a profit" are left out: US stocks are cash, Day orders only. Code: `screens/trade/version.ts` (`useOrderPadVersion()`), `OrderPadV2.tsx`, `OrderResultV2.tsx`; V1 stays in `OrderPad.tsx` / `OrderResult.tsx`. Header: no line under it, title centred (a 24 spacer balances the back button), stock logo 16. L3 gap: Avatar has no 16 size (smallest 24) — sized down locally (`.logo16`). Built from L3: Actionbar, Avatar, PriceChange, Tabs (order type, chips), Select (Amount ⇄ Shares, swap icon), Card filled (limit / trigger price), Stepper, Button (Buy / Sell, ghost Req.), Stack. Other L3 gaps: Stepper has no on-grey fill (set to surface/primary locally); no large amount field (raw input); no centred logo + price Actionbar title; no note strip (a token-styled line).
+- 2026-11-18 — **Order pad V2 · Minted layout (the default).** New prototype setting **Order pad** (group Trade): V1 · Commodity pad layout, V2 · Minted layout. V2 takes the layout of Minted's order pad (`~/minted`, screens s05 / s13 / s14 / s06 / s16): stock header, a centred Market / Limit / SL switch, a big centred amount with the quick chips and one helper line under it, limit / trigger prices as filled cards with the Stepper, the note as a grey strip, then Balance · Approx. req., the Buy / Sell button and the app keypad. Results and processing take Minted's result layout (status icon over a tinted top, big heading, details below). Same states, data and navigation as V1 (`orderPads.tsx`, `orderResults.ts`); only the layout differs. Minted's Futures tab, leverage card, SIP and "sell automatically at a profit" are left out: US stocks are cash, Day orders only. Code: `screens/trade/version.ts` (`useOrderPadVersion()`), `OrderPadV2.tsx`, `OrderResultV2.tsx`; V1 stays in `OrderPad.tsx` / `OrderResult.tsx`. Header: no line under it, title centred (a 24 spacer balances the back button), stock logo 16. L3 gap: Avatar has no 16 size (smallest 24) — sized down locally (`.logo16`). Built from L3: Actionbar, Avatar, PriceChange, Tabs (order type, chips), Select (Amount ⇄ Shares, swap icon), Card filled (limit / trigger price), Stepper, Button (Buy / Sell, ghost Req.), Stack. Other L3 gaps: Stepper has no on-grey fill (set to surface/primary locally); no large amount field (raw input); no centred logo + price Actionbar title; no note strip (a token-styled line); a pill group has no equal-width hug option (order-type pills made equal locally, `.orderTypes`). Order-type tabs are Medium and their pill slides from the type you came from.
+- 2026-11-18 — Order pad V2: the amount's typing caret is drawn (a blinking discover-blue 2px bar, L3 TextField's Typing colour) so it shows on Market, Limit and SL; the line under the amount always shows the ≈ ₹ value of the order (live USDINR rate) in the same line, 8 apart, no separator dot; SL is now an amount in $ with the $ / shares switch, like Market and Limit; the amount field has a fixed 48 height so emptying it no longer moves the cards; the Buy / Sell button shows the order’s ₹ value after a dot ("Buy · ₹9,345"), the ₹ in Description 14 (2 smaller than the label, regular weight), just the label when the amount is empty; the $ before the amount is Heading 24 (the amount stays Heading 36); the price cards' labels (Limit, Trigger Price) are Description 12; every field takes typing: tap the amount or a price (Limit, Trigger Price) and the keypad types into it (first key replaces the value, the blue caret moves there, a typed price sets its Stepper %; a Stepper tap keeps the field you were typing in). The whole left part of a price card (label + price, out to the card's edges, up to the Stepper) is the tap target for typing. The order note above the balance line has no grey band. The price cards are L3 default cards (white, 1px border/light) instead of grey filled ones, so the Steppers keep L3's own grey pill (the local on-grey override is gone) with dark ± buttons (surface/inverted, local: L3 gap, its Small buttons are light blue and merge with the grey pill). On SL, "Req." is underlined in secondary text (a link, local style: L3 gap) and opens the Fee Breakdown sheet over the same SL page (us-stocks-42 is now a sheet over us-stocks-41: no slide, typed values kept; closing returns to it). FLAG: the price is a raw input like the amount (L3 has no inline price field), whatever the app's ₹ setting.
 - 2026-11-18 — Stock and ETF pages (Classic, F1 and the previous ETF page): one bottom dock in every user state, `AssetDock` in `screens/activation/details.tsx`. Same padding, floating over the page's end on a gradient of the page's colour (the body shows through as it scrolls under); only the buttons inside change: Buy · Sell, Go Long · Go Short, or the one activation button (Complete KYC, Activate US Stocks, Under review, Contact support, Retry activation). It was L3 ButtonGroup on the ETF page and the activation states. L3 gap: no floating dock / fade.
 
 - 2026-11-18 — New page **Fractional shares** (`us-stocks-99`, `screens/etf/FractionalScreen.tsx`, no Figma): behind the Stocks home's Fractional product card. Intro, a worked example from today's price ($10 in NVDA = 0.053 shares, `<Usd>`), the 8 highest-priced stocks you can slice (shared `StockListCard`; a row opens its stock page), a short FAQ. Copy in `copy.json` (`fractional.*`). L3 gaps: no accordion / info list (FAQ is plain text), no heading + paragraph block.
@@ -22738,7 +22739,7 @@ export const registry: UsScreenEntry[] = [
   { figma: '5837:96042', id: 'us-stocks-39', section: 'activated', name: "T06 · Buy · Whole shares only", note: "Fractional shares not available for this stock. Whole shares only." },
   { figma: '5837:95972', id: 'us-stocks-40', section: 'activated', name: "T07 · Buy · Limit", note: "Limit order: buys only at the limit price or lower today." },
   { figma: '5837:95888', id: 'us-stocks-41', section: 'activated', name: "T08 · Buy · SL", note: "Stop-loss order: a trigger price places a limit order." },
-  { figma: '5852:98171', id: 'us-stocks-42', section: 'activated', name: "T11 · Buy · Fee breakdown", note: "Fee breakdown for the required amount." },
+  { figma: '5852:98171', id: 'us-stocks-42', over: 'us-stocks-41', section: 'activated', name: "T11 · Buy · Fee breakdown", note: "Fee breakdown for the required amount." },
   { figma: '5837:95677', id: 'us-stocks-43', section: 'activated', name: "T12 · Order result · Processing", note: "Order processing loader." },
   { figma: '5837:95657', id: 'us-stocks-44', section: 'activated', name: "T13 · Order result · Created (US market closed)", note: "Order created while the US market is closed. Sent when it opens." },
   { figma: '5837:95638', id: 'us-stocks-45', section: 'activated', name: "T14 · Order result · Executed", note: "Buy order executed." },
@@ -37925,10 +37926,10 @@ import styles from './FeeBreakdown.module.css'
 
 const FEES = { total: 1.13, brokerage: 0.94, charges: 0.02, taxes: 0.17 }
 
-/** The order pad (Shares state) drawn behind, with the fee sheet on top. */
+/** The SL order pad drawn behind (its own screen, us-stocks-41, stays put: this is a sheet over it), with the fee sheet on top. */
 export function FeeBreakdownScreen({ backdrop }: { backdrop?: boolean }) {
   const { back } = useUsNav()
-  return <OrderPad config={orderPads[tradeIds.T02]} backdrop sheet={backdrop ? undefined : <FeeBreakdownSheet onClose={() => back(tradeIds.T08)} />} />
+  return <OrderPad config={orderPads[tradeIds.T08]} backdrop sheet={backdrop ? undefined : <FeeBreakdownSheet onClose={() => back(tradeIds.T08)} />} />
 }
 
 function FeeBreakdownSheet({ onClose }: { onClose: () => void }) {
@@ -38281,25 +38282,35 @@ function OrderPadV1({ config, backdrop, sheet }: OrderPadProps) {
 .fields { align-self: stretch; }
 
 /* The big amount: "$" and the typed digits, centred; the input is focused (Typing) with the keypad up. */
-.amountRow { display: inline-flex; align-items: baseline; justify-content: center; gap: var(--l3-spacing-04); max-width: 100%; }
-.prefix { font: var(--l3-text-heading-36); color: var(--l3-content-secondary); }
-.amount { min-width: 0; margin: 0; padding: 0; border: 0; outline: none; background: none; font: var(--l3-text-heading-36); color: var(--l3-content-primary); text-align: left; caret-color: var(--l3-content-accent-discover-default); }
+.amountRow { display: inline-flex; align-items: center; justify-content: center; gap: var(--l3-spacing-04); max-width: 100%; }
+.prefix { font: var(--l3-text-heading-24); color: var(--l3-content-secondary); }
+.amount { min-width: 0; margin: 0; padding: 0; border: 0; outline: none; background: none; font: var(--l3-text-heading-36); color: var(--l3-content-primary); text-align: left; field-sizing: content; height: var(--l3-size-48); /* fixed: an empty field (placeholder) would be 3 taller and push the cards down */ caret-color: transparent; }
+/* The typing caret, drawn (the native one only paints while the page has focus and hides in captures): always blinking
+   while the keypad is up, as L3 TextField's Typing state (--tf-caret colour). 2px is the caret's own width. */
+.caret { align-self: center; width: 2px; height: var(--l3-size-40); background: var(--l3-content-accent-discover-default); animation: caretBlink 1s steps(1) infinite; }
+@keyframes caretBlink { 50% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .caret { animation: none; } }
 .amount::placeholder { color: var(--l3-content-tertiary); opacity: 1; }
 .amountRow[data-error] .amount, .amountRow[data-error] .prefix { color: var(--l3-content-accent-error-default); }
 
-.helper { margin: 0; font: var(--l3-text-label-12); color: var(--l3-content-secondary); text-align: center; }
+.helper { margin: 0; font: var(--l3-text-label-12); color: var(--l3-content-secondary); text-align: center; white-space: nowrap; }
+.helperLine + .helperLine { margin-left: var(--l3-spacing-08); }
 .error { margin: 0; font: var(--l3-text-label-12); color: var(--l3-content-accent-error-default); text-align: center; }
 
 /* Limit / trigger price: a filled card, label over the value, the L3 Stepper at the right. */
 /* L3 Card filled (surface/secondary, radius 12, padding 12), stretched to the column width. */
 .priceCard { align-self: stretch; }
-.priceText { min-width: 0; }
-.priceLabel { font: var(--l3-text-label-12); color: var(--l3-content-secondary); }
-.priceValue { font: var(--l3-text-heading-16); color: var(--l3-content-primary); }
+.priceText { flex: 1; min-width: 0; align-self: stretch; margin: calc(-1 * var(--l3-spacing-12)) 0 calc(-1 * var(--l3-spacing-12)) calc(-1 * var(--l3-spacing-12)); padding: var(--l3-spacing-12) 0 var(--l3-spacing-12) var(--l3-spacing-12); cursor: text; } /* reaches the card's left, top and bottom edges: a big tap target for the price */
+.priceLabel { font: var(--l3-text-description-12); color: var(--l3-content-secondary); }
+.priceValue { display: flex; align-items: center; font: var(--l3-text-heading-16); color: var(--l3-content-primary); }
+/* The price is typed like the amount: a raw input sized to its text, with the drawn caret when it's the keypad's field. */
+.priceInput { min-width: 0; height: var(--l3-size-24); margin: 0; padding: 0; border: 0; outline: none; background: none; font: inherit; color: inherit; field-sizing: content; caret-color: transparent; }
+.priceCaret { width: 2px; height: var(--l3-size-20); margin-left: var(--l3-spacing-02); background: var(--l3-content-accent-discover-default); animation: caretBlink 1s steps(1) infinite; }
+@media (prefers-reduced-motion: reduce) { .priceCaret { animation: none; } }
 
 /* Dock: the note strip, Balance · Approx. req., the main button, then the keypad. */
 .dock { background: var(--l3-surface-primary); }
-.note { margin: 0; padding: var(--l3-spacing-08) var(--l3-spacing-16); background: var(--l3-surface-secondary); font: var(--l3-text-label-12); color: var(--l3-content-secondary); text-align: center; }
+.note { margin: 0; padding: var(--l3-spacing-08) var(--l3-spacing-16); font: var(--l3-text-label-12); color: var(--l3-content-secondary); text-align: center; }
 .dockBody { padding: var(--l3-spacing-12) var(--l3-spacing-16); }
 .funds { font: var(--l3-text-label-12); }
 .funds strong { font: var(--l3-text-heading-12); color: var(--l3-content-primary); }
@@ -38311,9 +38322,18 @@ function OrderPadV1({ config, backdrop, sheet }: OrderPadProps) {
 /* Header logo at 16 (design ask). L3 gap: Avatar's smallest size is 24 — sized down locally until L3 adds 16. */
 .logo16.logo16 { --av-size: var(--l3-size-16); }
 
-/* The Stepper sits on the grey price card, so its pill is surface/primary (L3's surface/secondary would merge with the card).
-   L3 gap: Stepper has no on-grey option — set locally. */
-.stepperOnGrey.stepperOnGrey { background: var(--l3-surface-primary); }
+
+/* Order type: the pill group hugs its pills, and the three pills are equal (each as wide as the widest, "Market").
+   L3 gap: a pill group is either hug (pills as wide as their labels) or fill (full width) — no equal-width hug. */
+.orderTypes.orderTypes { display: inline-grid; grid-auto-flow: column; grid-auto-columns: 1fr; width: fit-content; }
+.ctaInr { font: var(--l3-text-description-14); white-space: pre; } /* 2 smaller than the label (16), regular weight */
+
+/* The Stepper's grey pill would swallow L3's light-blue Small buttons, so the enabled ± buttons go dark
+   (surface/inverted, icon surface/default — L3's look before c9e9b87). L3 gap: Stepper has no dark-button option. */
+.stepperDark.stepperDark[data-size] button:not(:disabled) { background: var(--l3-surface-inverted); color: var(--l3-surface-default); }
+
+/* "Req." opens the fee sheet: secondary text, underlined like a link (L3 gap: no link-style Button). */
+.reqLink.reqLink { color: var(--l3-content-secondary); text-decoration: underline; text-underline-offset: var(--l3-spacing-02); }
 ```
 
 ### `src/flows/us-stocks/screens/trade/OrderPadV2.tsx`
@@ -38331,7 +38351,7 @@ function OrderPadV1({ config, backdrop, sheet }: OrderPadProps) {
 // FLAG: the big amount is a raw <input> (L3 has no large amount field); it is focused, typed from the shared Keyboard.
 // The keypad has "." (shared Keyboard `decimal`): $ amounts take 2 decimals, shares 4, whole-share stocks none. The first key replaces the prefilled value.
 // FLAG: duplicates the app's Indian order pad (src/flows/stocks) for US stocks.
-import { useLayoutEffect, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode, type SyntheticEvent } from 'react'
 import { Actionbar } from '@l3/components/Actionbar'
 import { Avatar } from '@l3/components/Avatar'
 import { Button } from '@l3/components/Button'
@@ -38346,7 +38366,7 @@ import { Phone } from '../../components/Phone'
 import { currentStock, logoFor } from '../../data'
 import { asset } from '../../asset'
 import { useUsNav } from '../../nav'
-import { Usd, useInrEquivalent, useUsd } from '../../../../shared/money'
+import { Usd, formatInr, useUsd, useUsdInrRate } from '../../../../shared/money'
 import { al, forCurrentStock } from './format'
 import type { Derived, OrderPadConfig, OrderType, PadMode } from './types'
 import styles from './OrderPadV2.module.css'
@@ -38373,13 +38393,21 @@ function useStockLogo(symbol: string) {
 export function OrderPadV2({ config, backdrop, sheet }: { config: OrderPadConfig; backdrop?: boolean; sheet?: ReactNode }) {
   const { go, back } = useUsNav()
   const usd = useUsd()
-  const inr = useInrEquivalent()
+  // The order pad always shows what the order is worth in ₹ ("≈ ₹8,812" in the line under the amount), whatever the
+  // app's ₹ setting: you pay in from an Indian bank, so the ₹ figure is part of deciding the order.
+  const rate = useUsdInrRate()
+  const inr = (n: number) => (n > 0 ? `≈ ${formatInr(n * rate, { decimals: 0 })}` : undefined)
   const logo = useStockLogo(config.stock.symbol)
   // The unit the field is showing; `value` is always kept in the config's own unit (config.mode).
   const [mode, setMode] = useState<PadMode>(config.mode)
   const [value, setValue] = useState(config.value)
   const [amountText, setAmountText] = useState(config.value ? String(config.value) : '')
   const [pcts, setPcts] = useState(() => (config.prices ?? []).map((price) => price.pct))
+  // The field the keypad types into: the amount, or a price card (its index). Tapping a field picks it; the blue caret
+  // shows on that one. A typed price is kept as text while you type and sets its % (the Stepper follows).
+  const [active, setActive] = useState<'amount' | number>('amount')
+  const [priceDraft, setPriceDraft] = useState<string | null>(null)
+  const activeRef = useRef<HTMLInputElement | null>(null)
 
   const prices = pcts.map((pct) => al(config.stock.price, pct))
   // The price one share costs: market price, or the last price field (limit / SL limit).
@@ -38389,6 +38417,9 @@ export function OrderPadV2({ config, backdrop, sheet }: { config: OrderPadConfig
   const setShown = (next: number) => setValue(mode === config.mode ? next : config.mode === 'amount' ? next * unitPrice : next / unitPrice)
 
   const derived: Derived = config.derive(value, prices, mode, { usd, inr: (n) => inr(n) })
+  // What the order is worth in $ (the field is kept in the config's unit), for the ₹ on the Buy / Sell button.
+  const orderUsd = config.mode === 'amount' ? value : value * unitPrice
+  const ctaInr = orderUsd > 0 ? formatInr(orderUsd * rate, { decimals: 0 }) : undefined
   const ctaDisabled = typeof config.cta.disabled === 'function' ? config.cta.disabled(derived) : config.cta.disabled
   const goTo = (key: keyof NonNullable<OrderPadConfig['to']>) => (config.to?.[key] ? () => go(config.to![key]!) : undefined)
   const onReq = goTo('req')
@@ -38404,20 +38435,46 @@ export function OrderPadV2({ config, backdrop, sheet }: { config: OrderPadConfig
   const decimals = mode === 'shares' ? ((config.min ?? 0) >= 1 && mode === config.mode ? 0 : 4) : 2
   // The prefilled value is "selected": the first key replaces it, as when tapping into a filled amount.
   const [fresh, setFresh] = useState(true)
+  // One key into a text with up to `places` decimals; undefined = the key is ignored.
+  const typeInto = (base: string, key: string, places: number) => {
+    if (key === '.') return !places || base.includes('.') ? undefined : (base || '0') + '.'
+    const [, frac] = base.split('.')
+    if (/^\d$/.test(key) && frac !== undefined && frac.length >= places) return undefined
+    return typeKey(base, key, MAX_DIGITS).replace(/^0+(?=\d)/, '')
+  }
   const onKey = (key: string) => {
-    const base = fresh ? '' : amountText
-    setFresh(false)
-    let text: string
-    if (key === '.') {
-      if (!decimals || base.includes('.')) return
-      text = (base || '0') + '.'
-    } else {
-      const [, frac] = base.split('.')
-      if (/^\d$/.test(key) && frac !== undefined && frac.length >= decimals) return
-      text = typeKey(base, key, MAX_DIGITS).replace(/^0+(?=\d)/, '')
+    if (typeof active === 'number') {
+      const text = typeInto(fresh ? '' : (priceDraft ?? prices[active].toFixed(2)), key, 2)
+      setFresh(false)
+      if (text === undefined) return
+      setPriceDraft(text)
+      const price = Number(text) || 0
+      // The price sets its % from the last price (not rounded, so the card shows exactly what was typed).
+      if (price > 0) setPcts((all) => all.map((old, j) => (j === active ? (price / config.stock.price - 1) * 100 : old)))
+      return
     }
+    const text = typeInto(fresh ? '' : amountText, key, decimals)
+    setFresh(false)
+    if (text === undefined) return
     setAmountText(text)
     setShown(Number(text) || 0)
+  }
+  // Picking a field: its value is "selected", so the first key replaces it.
+  const pick = (field: 'amount' | number) => (e: SyntheticEvent<HTMLInputElement>) => pickField(field, e.currentTarget)
+  const pickField = (field: 'amount' | number, input: HTMLInputElement) => {
+    activeRef.current = input
+    if (field === active) return
+    setActive(field)
+    setPriceDraft(null)
+    setFresh(true)
+  }
+  // The keypad is always up, so a field always shows the typing caret: when focus leaves for anything but another field
+  // (a chip, the unit switch, a Stepper button, the order-type tabs), the field you were typing in takes it back.
+  const keepFocus = () => {
+    requestAnimationFrame(() => {
+      const field = activeRef.current
+      if (field?.isConnected && !(document.activeElement instanceof HTMLInputElement)) field.focus({ preventScroll: true })
+    })
   }
   const applyChip = (apply: (current: number) => number) => {
     const next = Number(apply(current).toFixed(mode === 'amount' ? 2 : 4))
@@ -38451,7 +38508,7 @@ export function OrderPadV2({ config, backdrop, sheet }: { config: OrderPadConfig
   )
 
   const reqLabel = onReq
-    ? <Button variant="ghost" size="sm" onClick={onReq}>{config.reqLabel}</Button>
+    ? <Button variant="ghost" size="sm" onClick={onReq} className={styles.reqLink}>{config.reqLabel}</Button>
     : <span className={styles.muted}>{config.reqLabel}</span>
   // Day is the only validity for US orders: Limit / SL notes say so.
   const note = derived.note ? `${config.type === 'market' ? '' : 'Day order · '}${forCurrentStock(derived.note)}` : undefined
@@ -38465,6 +38522,8 @@ export function OrderPadV2({ config, backdrop, sheet }: { config: OrderPadConfig
         </Stack>
         <Button variant={config.side === 'buy' ? 'brand' : 'sell'} size="lg" fullWidth disabled={ctaDisabled} onClick={goTo('cta')}>
           {config.cta.label}
+          {/* The order's value in ₹ after the label ("Buy · ₹9,345"), lighter than the label. */}
+          {ctaInr && <span className={styles.ctaInr}> · {ctaInr}</span>}
         </Button>
       </Stack>
       <Keyboard onKey={onKey} decimal={decimals > 0} />
@@ -38478,6 +38537,23 @@ export function OrderPadV2({ config, backdrop, sheet }: { config: OrderPadConfig
     shownPad = pad
     return () => { pad.closedAt = performance.now() }
   }, [config.type])
+  // The order-type pill slides from the type you came from: each type is its own screen, so the tabs remount. Start them
+  // on the previous type, then select this one once the slider is placed (L3 Tabs animates a change of value).
+  const [tabValue, setTabValue] = useState<OrderType>(cameFrom ?? config.type)
+  const bodyRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (tabValue === config.type) return
+    // Wait until the slider sits on the old type and is ready to animate (the phone mounts its body a little later).
+    let frame = 0
+    const wait = () => {
+      const ready = bodyRef.current?.querySelector('[role="tablist"] [data-ready]')
+      if (ready) frame = requestAnimationFrame(() => setTabValue(config.type))
+      else frame = requestAnimationFrame(wait)
+    }
+    frame = requestAnimationFrame(wait)
+    const giveUp = setTimeout(() => setTabValue(config.type), 1000)
+    return () => { cancelAnimationFrame(frame); clearTimeout(giveUp) }
+  }, [tabValue, config.type])
   const slid = useRef(false)
   const fields = (el: HTMLElement | null) => {
     if (!el || slid.current) return
@@ -38497,16 +38573,17 @@ export function OrderPadV2({ config, backdrop, sheet }: { config: OrderPadConfig
 
   return (
     <Phone label={forCurrentStock(config.label)} header={header} footer={footer} gesture="none">
-      <Stack gap="16" align="center" className={styles.body} inert={backdrop || undefined}>
+      <Stack gap="16" align="center" className={styles.body} inert={backdrop || undefined} ref={bodyRef}>
         {/* FLAG: the order type switch is L3 Tabs (pill-group, toggle) but its choice also goes to another screen of the same page group. */}
         <Tabs
           appearance="pill-group"
-          size="sm"
+          size="md"
           behavior="toggle"
-          width="hug"
+          width="fill"
+          className={styles.orderTypes}
           aria-label="Order type"
           items={ORDER_TYPES}
-          value={config.type}
+          value={tabValue}
           onChange={(type) => {
             const target = config.to?.[type]
             if (type !== config.type && target) go(target)
@@ -38521,14 +38598,9 @@ export function OrderPadV2({ config, backdrop, sheet }: { config: OrderPadConfig
                 className={styles.amount}
                 {...keypadFieldProps()}
                 autoFocus
-                // The keypad is always up, so the amount always shows the typing caret: refocus when focus leaves for
-                // anything but another field (a chip, the unit switch, the order-type tabs).
-                onBlur={(e) => {
-                  const next = e.relatedTarget
-                  if (next instanceof HTMLInputElement || next instanceof HTMLTextAreaElement) return
-                  const field = e.currentTarget
-                  requestAnimationFrame(() => { if (field.isConnected && !(document.activeElement instanceof HTMLInputElement)) field.focus({ preventScroll: true }) })
-                }}
+                onFocus={pick('amount')}
+                onPointerDown={pick('amount')}
+                onBlur={keepFocus}
                 autoComplete="off"
                 aria-label={mode === 'amount' ? 'Amount in dollars' : 'Number of shares'}
                 placeholder="0"
@@ -38536,6 +38608,7 @@ export function OrderPadV2({ config, backdrop, sheet }: { config: OrderPadConfig
                 size={Math.max(amountText.length, 1)}
                 onChange={() => undefined}
               />
+              {active === 'amount' && <span className={styles.caret} aria-hidden="true" />}
             </label>
             {config.toggle && (
               <Select size="sm" subtle icon="swap" onClick={switchMode} aria-label={switchLabel}>
@@ -38562,29 +38635,58 @@ export function OrderPadV2({ config, backdrop, sheet }: { config: OrderPadConfig
           ) : (
             (derived.left || derived.right) && (
               <p className={styles.helper}>
-                {derived.left}
-                {derived.left && derived.right && <span aria-hidden="true"> • </span>}
-                {derived.right}
+                {/* One line, no separator dot: the shares / $ hint, then the ≈ ₹ value 8 apart. */}
+                {derived.left && <span className={styles.helperLine}>{derived.left}</span>}
+                {derived.right && <span className={styles.helperLine}>{derived.right}</span>}
               </p>
             )
           )}
           {(config.prices ?? []).map((price, i) => (
-            <Card variant="filled" key={price.label} className={styles.priceCard}>
+            <Card key={price.label} className={styles.priceCard}>
               <Stack direction="horizontal" justify="between" align="center" gap="08">
-                <Stack gap="04" className={styles.priceText}>
+                {/* The whole left part of the card (label + price, to the card's edges) is the tap target for typing the price. */}
+                <Stack
+                  gap="04"
+                  className={styles.priceText}
+                  onPointerDown={(e) => {
+                    const input = e.currentTarget.querySelector('input')
+                    if (!input || e.target === input) return
+                    e.preventDefault()
+                    input.focus({ preventScroll: true })
+                    pickField(i, input)
+                  }}
+                >
                   <span className={styles.priceLabel}>{price.label}</span>
-                  <span className={styles.priceValue}><Usd value={prices[i]} layout="inline" /></span>
+                  {/* FLAG: a raw input like the amount (L3 has no inline price field); typed from the shared Keyboard. */}
+                  <label className={styles.priceValue}>
+                    <span>$</span>
+                    <input
+                      className={styles.priceInput}
+                      {...keypadFieldProps()}
+                      autoComplete="off"
+                      aria-label={price.label}
+                      value={active === i && priceDraft !== null ? priceDraft : prices[i].toFixed(2)}
+                      onFocus={pick(i)}
+                      onPointerDown={pick(i)}
+                      onBlur={keepFocus}
+                      onChange={() => undefined}
+                    />
+                    {active === i && <span className={styles.priceCaret} aria-hidden="true" />}
+                  </label>
                 </Stack>
               <Stepper
                 size="sm"
                 label={`${price.label} % from last price`}
                 value={pcts[i]}
-                onChange={(pct) => setPcts((all) => all.map((old, j) => (j === i ? pct : old)))}
+                onChange={(pct) => {
+                  setPcts((all) => all.map((old, j) => (j === i ? pct : old)))
+                  if (active === i) { setPriceDraft(null); setFresh(true) }
+                }}
                 min={-20}
                 max={20}
                 step={0.5}
                 format={(pct) => `${pct.toFixed(1)}%`}
-                className={styles.stepperOnGrey}
+                className={styles.stepperDark}
               />
               </Stack>
             </Card>
@@ -39203,14 +39305,16 @@ export const orderPads: Record<string, OrderPadConfig> = {
   [ids.T08]: buy({
     label: 'Buy NVDA · SL',
     type: 'sl',
-    mode: 'shares',
-    value: 2,
+    // In $ like Market and Limit (the $ / shares switch under it), so all three types start from the same amount.
+    mode: 'amount',
+    toggle: true,
+    value: 100,
     min: 1,
     prices: [{ label: 'Trigger Price', pct: 3.5 }, { label: 'Limit', pct: 4 }],
-    derive: (value, [trigger, limit], _mode, { usd, inr }) => ({
-      left: `≈ ${usd(value * limit)} at your limit price`,
-      right: inr(value * limit),
-      req: usd(value * limit * CHARGE_FACTOR),
+    derive: (value, [trigger, limit], mode, { usd, inr }) => ({
+      left: mode === 'shares' ? `≈ ${usd(value)} at your limit price` : `≈ ${(value / limit).toFixed(4)} shares at your limit price`,
+      right: inr(value),
+      req: usd(value * CHARGE_FACTOR),
       note: `Buys at up to ${usd(limit)} once NVDA reaches ${usd(trigger)}`,
     }),
     to: { req: ids.T11, cta: ids.T12, market: ids.T01, limit: ids.T07 },

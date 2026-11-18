@@ -1,6 +1,6 @@
 # Flow: Stocks (`stocks`)
 
-> One self-contained file for converting this flow to another platform. Read https://lemonnade-design.github.io/lemonn-app-prototype/CONVERT.md first. Design system: Lemonnade V3 @ `9467515` (components, tokens and rules: https://lemonnade-design.github.io/lemonnade-v3-docs/llms.txt).
+> One self-contained file for converting this flow to another platform. Read https://lemonnade-design.github.io/lemonn-app-prototype/CONVERT.md first. Design system: Lemonnade V3 @ `c9e9b87` (components, tokens and rules: https://lemonnade-design.github.io/lemonnade-v3-docs/llms.txt).
 
 The Stocks tab — the home after login: indices, holdings, products, movers, watchlists, ideas.
 
@@ -438,6 +438,7 @@ lower on the page is scrolled into view first). `components/MarketSwitchGuide.ts
 - 2026-11-18 — Home **V19** (`homeVersions.ts`, the user's ask from a reference): V18 with the index marquee moved from under the top bar to between the hero (the header) and the feed (the body), scrolling with the page, 16 above and below the strip. That whole stretch is surface/accent-discover-light — from behind the hero's rounded foot down under the feed, which is a rounded sheet again (radius 32, 24 over the band) — and the hero has no glow (plain, like the header card). Only the IN / US tabs stay sticky (their band keeps its background, no 12 around it). V18 stays the default; the floating one-tap version switch is back (V18 ⇄ V19).
 - 2026-11-18 — US tab product row: **Fractional** opens its own page, Fractional shares (`us-stocks-99`), through a new `onUsFractional` prop (was NVDA's stock page).
 - 2026-11-18 — Diwali search bar off and its setting hidden (App settings → Diwali): the home search pill stays regular. The artwork stays in shared/ui/Diwali.tsx.
+- 2026-11-18 — US tab · Explore by themes: 1.9 cards across (was 1.5).
 - 2026-11-18 — Homepage version: V8, V12, V13 and V14 archived, V18 is the only home; no floating version picker or quick-switch button beside the phone.
 - 2026-11-18 — Bottom navbar (shared MainNav, every tab): sits above the page so its shadow shows — on Home the feed's cards painted over it.
 - 2026-11-18 — Explore by themes cards: 1.5 across (was 1.9 earlier today), so half the second card shows.
@@ -24232,7 +24233,7 @@ export const homeVersion = (id: string) =>
 ### `src/flows/stocks/components/us/ThemeCard.tsx`
 
 ```tsx
-// A theme's card (Explore by themes on the US tab): a compact card, 1.5 across —
+// A theme's card (Explore by themes on the US tab): a compact card, 1.9 across —
 // overlapping logos (LogoStack), the theme's name, then its 1-year return (the % first, "1Y" after it) and "N stocks ›".
 // No description on the card (user ask, 18 Nov); the theme page still has it.
 // FLAG: L3 has no logo stack / group: the overlap and the "+n" disc are hand-made (ThemeCard.module.css).
@@ -24273,10 +24274,11 @@ export function ThemeCard({ theme, onOpen }: { theme: Theme; onOpen: (id: ThemeI
   )
 }
 
-/** The rail of theme cards: 1.5 across, so the second one shows half (18 Nov; was 2.2). */
+/** The rail of theme cards: 1.9 across, so the second one is cut and reads as swipeable (user ask, 18 Nov; was 2.2,
+ *  then 1.5, then Brands-card width). */
 export function ThemeRail({ onOpen }: { onOpen: (id: ThemeId) => void }) {
   return (
-    <Rail label={t('us.themes.railLabel')} visible={1.5}>
+    <Rail label={t('us.themes.railLabel')} visible={1.9}>
       {themes.map((theme) => <ThemeCard key={theme.id} theme={theme} onOpen={onOpen} />)}
     </Rail>
   )
