@@ -155,6 +155,7 @@ card is used by every stock list in the app.
 - **List divider** — ListCell has no divider option; the stock rows draw their own 1px hairline (`StockListCard` `look="list"`).
 
 ### Changelog
+- 2026-11-18 — Filter bar: “Apply filters” is Heading 14 (was 16).
 - 2026-11-18 — Stock list rows (shared StockListCard look="list", every list that uses it): the hairline runs from the logo's start to the price's end, 16 in from each edge (was edge to edge).
 - 2026-11-18 — Tabs V2 (pill chips): a 1px line runs under the whole picker + chips row, as in V1.
 - 2026-11-18 — Tabs and Picker default to V2 (pill chips; "IN Stocks" / "US Stocks").
@@ -735,7 +736,7 @@ export const market: Flow = {
 .filterHint {
   flex: 1;
   margin: 0;
-  font: var(--l3-text-heading-16);
+  font: var(--l3-text-heading-14);
 }
 
 /* Applied filters: the row takes the space left of the filter button and scrolls sideways if the chips don't fit. */
