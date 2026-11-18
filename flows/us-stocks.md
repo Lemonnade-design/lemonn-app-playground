@@ -31,6 +31,7 @@ Prototype: https://lemonnade-design.github.io/lemonn-app-prototype/#/us-stocks �
 | Entry points | `us-stocks-02`, `05`–`07` | Ways into US Stocks: S&P 500, Portfolio, MF (the Home entry is `stocks-09`; Search is the Search flow's US tab, `search-29`) |
 | FTUX | `13`, `20`–`28`, `74`, `94`–`97` | Stock page (not activated; KYC not done), activation (declarations, bank), $0 wallet, add money (the Home screens of the flow are `stocks-11`…`18`) |
 | Activated user | `31`–`52` | Stock page (no holdings / holding), buy (amount / shares / limit / SL / AMO / errors), results, sell |
+| Product pages | `71`, `78`, `98`, `99` | ETF list, ETF Top holdings, Stock · ETFs with the stock, **Fractional shares** (`99`, from Home's Fractional card: intro, $10 example, stocks to slice, FAQ) |
 | USD wallet | `53`–`70` | Wallet states, balance details, withdraw, withdrawal tracking |
 
 ### How the folder is put together
@@ -198,10 +199,21 @@ Every tap he wired is kept. The main path: FTUX sheet → Activate → Declarati
 → Pay on bank → Money ready → Stock → Buy → Executed → Wallet → Withdraw.
 
 ### Changelog
+- 2026-11-18 — **Order pad V2 · Minted layout (the default).** New prototype setting **Order pad** (group Trade): V1 · Commodity pad layout, V2 · Minted layout. V2 takes the layout of Minted's order pad (`~/minted`, screens s05 / s13 / s14 / s06 / s16): stock header, a centred Market / Limit / SL switch, a big centred amount with the quick chips and one helper line under it, limit / trigger prices as filled cards with the Stepper, the note as a grey strip, then Balance · Approx. req., the Buy / Sell button and the app keypad. Results and processing take Minted's result layout (status icon over a tinted top, big heading, details below). Same states, data and navigation as V1 (`orderPads.tsx`, `orderResults.ts`); only the layout differs. Minted's Futures tab, leverage card, SIP and "sell automatically at a profit" are left out: US stocks are cash, Day orders only. Code: `screens/trade/version.ts` (`useOrderPadVersion()`), `OrderPadV2.tsx`, `OrderResultV2.tsx`; V1 stays in `OrderPad.tsx` / `OrderResult.tsx`. Header: no line under it, title centred (a 24 spacer balances the back button), stock logo 16. L3 gap: Avatar has no 16 size (smallest 24) — sized down locally (`.logo16`). Built from L3: Actionbar, Avatar, PriceChange, Tabs (order type, chips), Select (Amount ⇄ Shares, swap icon), Card filled (limit / trigger price), Stepper, Button (Buy / Sell, ghost Req.), Stack. Other L3 gaps: Stepper has no on-grey fill (set to surface/primary locally); no large amount field (raw input); no centred logo + price Actionbar title; no note strip (a token-styled line).
+- 2026-11-18 — Stock and ETF pages (Classic, F1 and the previous ETF page): one bottom dock in every user state, `AssetDock` in `screens/activation/details.tsx`. Same padding, floating over the page's end on a gradient of the page's colour (the body shows through as it scrolls under); only the buttons inside change: Buy · Sell, Go Long · Go Short, or the one activation button (Complete KYC, Activate US Stocks, Under review, Contact support, Retry activation). It was L3 ButtonGroup on the ETF page and the activation states. L3 gap: no floating dock / fade.
 
+- 2026-11-18 — New page **Fractional shares** (`us-stocks-99`, `screens/etf/FractionalScreen.tsx`, no Figma): behind the Stocks home's Fractional product card. Intro, a worked example from today's price ($10 in NVDA = 0.053 shares, `<Usd>`), the 8 highest-priced stocks you can slice (shared `StockListCard`; a row opens its stock page), a short FAQ. Copy in `copy.json` (`fractional.*`). L3 gaps: no accordion / info list (FAQ is plain text), no heading + paragraph block.
+- 2026-11-18 — Stock and ETF pages: the trade dock is Buy · Sell only, the price-alert bell before them hidden.
 - 2026-11-18 — Prototype settings: the "₹ equivalent" setting left the floating card beside the phone (still in the settings list). User status is one row of states, **User account state**: Not active · KYC pending → Not active → Under review → Under review · contact support → Activation failed → Active · $0 → Active · money on the way → Active · has money → Active · US holdings (was "US Stocks" with USD wallet and US holdings under Active). The phone pill over the Home is one pill for it too.
 - 2026-11-18 — Portfolio → Holdings: the market tabs match the home's (V18) — L3 underline tabs with round flags, "IN Stocks / US Stocks" (was the IND / US glyphs and "Indian Stocks").
 - 2026-11-18 — Logos: no border on any stock / ETF logo or avatar (L3 Avatar 1.2.0 dropped its 1px edge — design system moved to 4a58bf1; Peers table plates too).
+- 2026-11-18 — Stock page "ETFs with {stock}": the first 5 funds, then an Others row (the next funds' logos, +N, chevron — as the ETF page's Top holdings) that opens the full list, us-stocks-98 (9001:13): the same table, every fund that holds the stock; back returns to the stock page.
+- 2026-11-18 — Archived (the user's call): "Stock / ETF page" (Classic kept, F1 off — its code stays), "Boosted line" (Grey kept) and "Leverage tag" (V5 · After heading kept).
+- 2026-11-18 — Trade dock: Buy / Sell are Large (48), the app's big buttons (Figma has md).
+- 2026-11-18 — Analyst ratings ring (Classic stock page): no grey border round the ring (was a 6 wide band).
+- 2026-11-18 — Analyst ratings ring: the arcs have round ends, 2 apart as before.
+- 2026-11-18 — Stock page header: the logo comes from the US logo catalogue too (Amazon, Apple … showed only their initial).
+- 2026-11-18 — Trade dock: sits on a gradient of the page's colour (full at the bottom, clear at the top) and floats over the page's end, so the page shows through as it scrolls under.
 
 - 2026-11-17 — ETF list filled with real US-listed funds in every category: Regular 25 → 54 (Country chips: US 10 → 21, new India chip 4, China 5, Japan 5, Europe 6, Korea 2; Sector chips: Financials, Healthcare, Energy 1 → 4 each, Industrials 2 → 4), Boosted 8 → 19 (UPRO / SPXU, TECL / TECS, FAS / FAZ, YINN / YANG, KORU, TSLL, TSLQ added; groups list the long first). Issuer logos mapped in `src/shared/data/etfIssuers.ts`; prices and day change from `npm run us:snapshot`. L3 gaps / data gaps: no Global X wordmark (the file is the BOTZ robot-arm icon), no Franklin (FLKR) or Tradr (TSLQ) logo yet; Korea has only two US-listed regular funds.
 - 2026-11-17 — Allocation V2 (prototype option "Allocation", ETFs): the split as Top holdings' panel — "N sectors · Weight", then rows of name, short bar and share, no icon (`ShareBars`); V1 donut stays the default. About Company / About Fund: the title moves inside the card. ETFs list: the Regular tab gets a chart icon, like Boosted's bolt.  "How Boosted ETFs work" sheet: no extra side padding (content 16 from the edges, like other sheets). Peers / ETF tables: column names line up with the numbers under them (same 4 inset as the highlight box; wide figures spill left). "Holding weight" versions archived: Top holdings keeps V3 (small bar before the %), the setting is gone. "Stock / ETF page" setting is a dropdown.
@@ -422,6 +434,7 @@ Every tap he wired is kept. The main path: FTUX sheet → Activate → Declarati
 - 2026-11-17 · Page end: every scrolling body ends 24 above the dock / navbar (`--app-body-end`, applied in Phone `.body`); SpxIndex's and Mutual funds' own trailing padding removed, Order details' last section marked `data-page-end`.
 - 2026-11-17 · Top bars: Portfolio's search and wallet are the shared `SearchWalletActions` (shared/ui/TopBarAction: round 38, border/light, no shadow, Material search / wallet icons) instead of its own SVG icons. Mutual Fund home's top bar is now an Actionbar like Market's: "Mutual Fund" title, then the same search (→ Search) and wallet (→ the wallet); the search field is gone.
 - 2026-11-17 · Mutual Fund home: 16 between the top bar and the holdings (was 0, set for the old search-field bar).
+- 2026-11-18 — Archived the app setting "₹ equivalent" (User status → US Stocks money): US money shows in $ only; the ₹ below / $ ⇄ ₹ switch code stays in shared/money.tsx (INR_DISPLAY). Stock and ETF pages keep their ≈ ₹ under the price.
 
 
 ## Source — this flow
@@ -22096,11 +22109,13 @@ export function InlineSvg({ src, w, h = w, className }: { src: string; w?: numbe
   height: 100%;
   isolation: isolate;
   overflow: clip;
-  background: var(--l3-surface-default);
+  /* The page's colour, also read by parts that fade into it (the trade dock's gradient, 18 Nov). */
+  --page-surface: var(--l3-surface-default);
+  background: var(--page-surface);
 }
 
-.phone[data-surface='primary'] { background: var(--l3-surface-primary); }
-.phone[data-surface='secondary'] { background: var(--l3-surface-secondary); }
+.phone[data-surface='primary'] { --page-surface: var(--l3-surface-primary); }
+.phone[data-surface='secondary'] { --page-surface: var(--l3-surface-secondary); }
 
 .page {
   position: relative;
@@ -22319,7 +22334,26 @@ export function UsMainNav({ value }: { value: Section }) {
   "bankCheck.none.cta": "Add bank account",
   "bankVerifying.title": "Verifying your bank account",
   "bankVerifying.description": "Checking {bank} — nothing for you to do",
-  "bankVerifying.fine": "Takes a few seconds — please keep the app open"
+  "bankVerifying.fine": "Takes a few seconds — please keep the app open",
+  "fractional.title": "Fractional shares",
+  "fractional.heading": "Own a slice of any US stock",
+  "fractional.intro": "You don't need the price of a whole share. Buy any US stock or ETF from $1 and own a slice of it, with the same gains and dividends, in proportion.",
+  "fractional.how.title": "How it works",
+  "fractional.how.description": "The example uses today's price",
+  "fractional.how.amount": "You invest",
+  "fractional.how.price": "{sym} price per share",
+  "fractional.how.shares": "You own",
+  "fractional.how.sharesValue": "{shares} shares",
+  "fractional.how.note": "Enter an amount in $ or a number of shares on the buy screen. Fractional orders are placed as market orders.",
+  "fractional.popular.title": "Popular stocks you can slice",
+  "fractional.popular.description": "Priced high, bought from $1",
+  "fractional.faq.title": "Good to know",
+  "fractional.faq.q1": "What is a fractional share?",
+  "fractional.faq.a1": "A part of one share. $10 in a $500 stock is 0.02 of a share.",
+  "fractional.faq.q2": "Do I get dividends?",
+  "fractional.faq.a2": "Yes, in proportion to the part you own.",
+  "fractional.faq.q3": "Which stocks can I buy this way?",
+  "fractional.faq.a3": "Most US stocks and ETFs on Lemonn. The buy screen tells you if one isn't available."
 }
 ```
 
@@ -22458,6 +22492,19 @@ export const usStocks: Flow = {
     { id: 'wallet', title: 'USD wallet' },
   ],
   options: [
+    // The order pad's layout (18 Nov): V1 the commodity-pad layout, V2 Minted's order pad (the default).
+    {
+      id: 'orderPad',
+      group: 'Trade',
+      label: 'Order pad',
+      picker: 'dropdown',
+      values: [
+        { value: 'v1', label: 'V1 · Commodity pad layout' },
+        { value: 'v2', label: 'V2 · Minted layout' },
+      ],
+      default: 'v2',
+      floatOn: ['us-stocks-33', 'us-stocks-34', 'us-stocks-35', 'us-stocks-36', 'us-stocks-37', 'us-stocks-38', 'us-stocks-39', 'us-stocks-40', 'us-stocks-41', 'us-stocks-47', 'us-stocks-48', 'us-stocks-49', 'us-stocks-50', 'us-stocks-43', 'us-stocks-44', 'us-stocks-45', 'us-stocks-46', 'us-stocks-51', 'us-stocks-52'],
+    },
     // The Boosted tab's note (3 Nov): one line on a strip, a small card, or a chip.
     {
       id: 'boostNote',
@@ -22519,54 +22566,11 @@ export const usStocks: Flow = {
       floatOn: ['us-stocks-72'],
     },
     // "Holding weight" (3 Nov, five versions) archived 17 Nov: Top holdings keeps V3, a small bar before the %.
-    // The stock and ETF pages from Figma 6538:84949 / 6538:107342 (8 Nov, the jojo branch's work): a new version beside
-    // the earlier page, which stays the default.
-    {
-      id: 'detailsPage',
-      group: 'Stock page',
-      label: 'Stock / ETF page',
-      picker: 'dropdown',
-      values: [
-        { value: 'classic', label: 'Classic · tabs, line chart' },
-        { value: 'f1', label: 'F1 · one page, candles' },
-      ],
-      default: 'classic',
-    },
-    // The Boosted note's colour (3 Nov).
-    {
-      id: 'boostTone',
-      group: 'ETFs',
-      label: 'Boosted line',
-      values: [
-        { value: 'grey', label: 'Grey' },
-        { value: 'green', label: 'Green' },
-        { value: 'gold', label: 'Gold' },
-        { value: 'blue', label: 'Blue' },
-        { value: 'purple', label: 'Purple' },
-      ],
-      // Grey by default (3 Nov). The jojo branch made Gold its default (8 Nov); here Gold stays a pick.
-      default: 'grey',
-      floatOn: ['us-stocks-71'],
-    },
-    // Where a leveraged fund's leverage shows on its card (3 Nov): eight versions to compare (and A/B test).
-    {
-      id: 'levTag',
-      group: 'ETFs',
-      label: 'Leverage tag',
-      picker: 'dropdown',
-      values: [
-        { value: 'foot', label: 'V1 · Logo foot' },
-        { value: 'badge', label: 'V2 · Logo badge' },
-        { value: 'ring', label: 'V3 · Logo ring' },
-        { value: 'corner', label: 'V4 · Card corner' },
-        { value: 'heading', label: 'V5 · After heading (current)' },
-        { value: 'pill', label: 'V6 · Pill on foot' },
-        { value: 'slice', label: 'V7 · Slice' },
-        { value: 'notch', label: 'V8 · Notch' },
-      ],
-      default: 'heading',
-      floatOn: ['us-stocks-71'],
-    },
+    // Archived 18 Nov (the user's call): "Stock / ETF page" (Classic · tabs, line chart kept; F1 · one page, candles from
+    // Figma 6538:84949 / 6538:107342 archived). useF1Details() returns false; the F1 code stays in StockPage / EtfPage.
+    // Archived 18 Nov (the user's call): "Boosted line" (Grey kept; Green, Gold, Blue, Purple archived) and "Leverage
+    // tag" (V5 · After heading kept; V1–V4, V6–V8 archived). EtfListScreen draws the kept ones; the other looks stay in
+    // its code and Etf.module.css.
   ],
   screens: registry.map((s) => ({
     id: s.id,
@@ -22767,6 +22771,8 @@ export const registry: UsScreenEntry[] = [
   { figma: '9001:2', id: 'us-stocks-72', badge: 'new', badgeNote: "ETF page: price, chart, Overview / Events, Buy / Sell", section: 'activated', name: "ETF page", note: "An ETF in the stock page layout: price and chart, Overview (1D and 52W range, fund details) and Events. Leveraged ETFs trade long or short." },
   { figma: '9001:6', id: 'us-stocks-73', badge: 'new', badgeNote: "Jojo's first ETF page, kept to compare", section: 'activated', name: "ETF page · previous", note: "The first ETF page (31 Oct): price line, about, opposite side and holdings, kept to compare." },
   { figma: '9001:12', id: 'us-stocks-78', badge: 'new', badgeNote: "Top holdings: the full list behind the ETF page's Others row", section: 'activated', name: "ETF · Top holdings", note: "Tap Others in the ETF page's Top holdings: a full page of the fund's top 50 holdings (as many as the sample has), biggest first — logo, name, ticker, a weight bar and the share. A row opens its stock page; back returns to the ETF page." },
+  { figma: '9001:13', id: 'us-stocks-98', badge: 'new', badgeNote: "ETFs with the stock: the full list behind the stock page's Others row", section: 'activated', name: "Stock · ETFs with the stock", note: "The stock page lists the first 5 ETFs that hold the stock, then an Others row (the next funds' logos, +N). Tapping it opens this page: every fund that holds it, in the same table (Weight / Today / Expense, or Returns). A row opens that ETF's page; back returns to the stock page." },
+  { figma: '9001:14', id: 'us-stocks-99', badge: 'new', badgeNote: "Not in Figma: the page behind Home's Fractional product card", section: 'activated', name: "Fractional shares", note: "Behind the Stocks home's Fractional card (US tab, “$1 to start”). Intro (buy any US stock or ETF from $1), a worked example from today's price ($10 in NVDA = 0.05 shares), the high-priced stocks you can buy a slice of (a row opens its stock page) and a short FAQ. Back returns to the Stocks home." },
   { figma: '9001:40', id: 'us-stocks-79', badge: 'new', badgeNote: "Order Details, from the F&O Positions & orders design", section: 'activated', name: "Order Details", note: "Tap an order in Portfolio → Orders (US): the order's page in its status — open, queued, partly filled, executed, partly executed, failed, cancelled or expired — with its details, the Order Status timeline and the actions that status allows." },
   { figma: '9001:41', id: 'us-stocks-80', badge: 'new', badgeNote: "Position Details, from the F&O Positions & orders design", section: 'activated', name: "Position Details", note: "Tap a US position in Portfolio → Positions: what was bought or sold today, the returns, Buy more / Exit position." },
   { figma: '9001:42', id: 'us-stocks-81', badge: 'new', section: 'activated', name: "Order Details · Open · Limit buy", note: "AAPL: a limit buy waiting for its price. Cancel order / Modify." },
@@ -24081,9 +24087,8 @@ export const screens: UsScreenMap = {
   rotate: 0deg;
 }
 
-.ringTrack {
-  stroke: var(--l3-border-intense);
-  stroke-width: 4px; /* FLAG: raw px */
+.ring .ringTrack {
+  stroke: none; /* no grey border round the disc (18 Nov, the user's call; was a 6 wide band) */
 }
 
 /* The disc's gradient (Figma Ellipse 6890: #101110 at the top to #153023 at the foot in dark): the page's darkest
@@ -24100,11 +24105,11 @@ export const screens: UsScreenMap = {
   );
 }
 
-/* One arc per rating (butt ends, gaps come from the dash lengths, as in the ETF Allocation donut). */
+/* One arc per rating (round ends since 18 Nov, gaps come from the dash lengths, as in the ETF Allocation donut). */
 .ring .arc {
   fill: none;
   stroke-width: 5px; /* FLAG: raw px (svg units) */
-  stroke-linecap: butt;
+  stroke-linecap: round; /* round ends (18 Nov, the user's call; was butt) */
 }
 
 .ring .arc[data-tone='up'] {
@@ -24429,7 +24434,6 @@ import { emailSupport } from '../../../../shared/support'
 import { useEffect, useState, type CSSProperties } from 'react'
 import { Actionbar, ActionbarAction } from '@l3/components/Actionbar'
 import { Button } from '@l3/components/Button'
-import { ButtonGroup } from '@l3/components/ButtonGroup'
 import { Icon } from '@l3/components/Icon'
 import { PriceChange } from '@l3/components/PriceChange'
 import { Stack } from '@l3/components/Stack'
@@ -24455,17 +24459,18 @@ import {
 import { EtfMove } from '../etf/parts'
 import { COMPANY_PROFILES } from './companyProfiles'
 import { FUNDAMENTALS } from './data'
-import { AboutBlock, AssetTitle, CandleChart, DetailsSheet, LogoImg, StatChips, TradeDock, detailsPhone } from './details'
+import { AboutBlock, AssetDock, AssetTitle, CandleChart, DetailsSheet, LogoImg, StatChips, TradeDock, detailsPhone } from './details'
 import { msBookmark } from '@l3/icons/material'
 import styles from './StockPage.module.css'
 import { TopBarAction } from '../../../../shared/ui/TopBarAction'
 
 /** The "≈ ₹" line under the price: hidden for now (4 Nov), kept to turn back on. */
 const SHOW_PRICE_INR = false
-/** The detail page from Figma 6538:84949 (8 Nov, from the jojo branch): the flow option "Stock / ETF page" (F1), off by
- *  default here, so the earlier page (tabs, line chart) stays as it was. Shared with the ETF page. */
+/** The detail page from Figma 6538:84949 (8 Nov, from the jojo branch), "F1". Archived 18 Nov (the user's call): the
+ *  Classic page (tabs, line chart) is the only one; the F1 code stays, switched off here. Shared with the ETF page. */
+const F1_DETAILS = false
 export function useF1Details() {
-  return useFlowOption('us-stocks', 'detailsPage', 'classic') === 'f1'
+  return F1_DETAILS
 }
 
 /** kyc-pending: the user's Lemonn KYC isn't done, so US Stocks can't be activated yet (not in Jojo's Figma). */
@@ -24487,7 +24492,7 @@ export function activationFooter(state: StockState, go: (figma: string) => void)
     : state === 'failed' ? <Button variant="primary" size="lg" fullWidth onClick={() => go(RISK_DISCLOSURE)}>Retry activation</Button>
     : null
   if (!button) return null
-  return <ButtonGroup aria-label="US Stocks" direction="horizontal" scrollIndicator>{button}</ButtonGroup>
+  return <AssetDock label="US Stocks">{button}</AssetDock>
 }
 
 export function StockPage({ state, backdrop, emptyWallet }: { state: StockState; backdrop?: boolean; emptyWallet?: boolean }) {
@@ -24645,7 +24650,9 @@ export function StockPage({ state, backdrop, emptyWallet }: { state: StockState;
                       style={stock.plate ? ({ '--plate': stock.plate } as CSSProperties) : undefined}
                       aria-hidden="true"
                     >
-                      {stock.logo ? <img src={/^(\/|https?:)/.test(stock.logo) ? stock.logo : asset(stock.logo)} alt="" /> : stock.sym[0]}
+                      {/* The same logo as the rest of the page (logoSrc: the stock's own, else the US logo catalogue —
+                          18 Nov: AMZN, AAPL … showed only their initial here). */}
+                      {logoSrc ? <img src={logoSrc} alt="" /> : stock.sym[0]}
                     </span>
                   )}
                 </div>
@@ -25125,7 +25132,7 @@ export function PeerTable({ stock, onOpen }: { stock: UsStock; onOpen: (peer: { 
 // starting at the top, with a small gap between arcs — the same way the ETF page's Allocation donut is drawn.
 // FLAG: hand-drawn gauge — L3 has no rating gauge; arcs are raw SVG circles.
 import { useId } from 'react'
-import { useFlowOption } from '../../../../../shared/prototype'
+import { useF1Details } from '../StockPage'
 import { RATINGS } from '../data'
 import styles from '../StockPage.module.css'
 
@@ -25134,11 +25141,12 @@ const ARC_R = 33.75
 /** How much of the ring the three arcs use together; the rest is the gap before 12 o'clock (Figma ≈ 30°). */
 const FILLED = 0.92
 /** The earlier ring's radius and the gap between its arcs. */
-const RING = { r: 32, gap: 2 }
+/** `cap`: the arcs' stroke width (StockPage.module.css .ring .arc) — round ends add half of it at each end (18 Nov). */
+const RING = { r: 32, gap: 2, cap: 5 }
 
-/** The F1 stock page (flow option "Stock / ETF page") draws Figma's ring; the earlier page keeps its own. */
+/** The F1 stock page draws Figma's ring; the Classic page keeps its own (F1 archived 18 Nov, see useF1Details). */
 export function RatingRing() {
-  return useFlowOption('us-stocks', 'detailsPage', 'classic') === 'f1' ? <RatingRingF1 /> : <RatingRingClassic />
+  return useF1Details() ? <RatingRingF1 /> : <RatingRingClassic />
 }
 
 function RatingRingF1() {
@@ -25185,7 +25193,8 @@ function RatingRingClassic() {
   let start = 0
   const arcs = RATINGS.map((r) => {
     const size = (r.value / total) * length
-    const arc = { tone: r.tone, label: r.label, dash: Math.max(size - RING.gap, 0.5), offset: -start }
+    const arc = { tone: r.tone, label: r.label, dash: Math.max(size - RING.gap - RING.cap, 0.01), offset: -(start + RING.cap / 2) }
+    // Round ends (18 Nov): each arc's dash is shortened by its caps and starts half a cap in, so the gaps stay 2.
     start += size
     return arc
   })
@@ -25197,7 +25206,8 @@ function RatingRingClassic() {
           <stop offset="1" className={styles.discFoot} />
         </linearGradient>
       </defs>
-      <circle cx="36" cy="36" r="34" fill="url(#rating-disc)" className={styles.ringTrack} />
+      {/* The disc, to the svg's edge, no border (18 Nov: was a 6 wide grey band at r 34). */}
+      <circle cx="36" cy="36" r="35.5" fill="url(#rating-disc)" className={styles.ringTrack} />
       {/* Rotated a quarter turn so the first arc (Buy) starts at 12 o'clock and runs clockwise. */}
       <g transform="rotate(-90 36 36)">
         {arcs.map((a) => (
@@ -25780,6 +25790,15 @@ export const ADDRESS = 'Flat 12, Green Park, Baner, Pune 411045'
   padding: var(--l3-spacing-08) var(--l3-spacing-12);
 }
 
+/* The dock floats over the page's end (18 Nov, the user's call): a gradient of the page's colour, full at the bottom
+   to clear at the top, so the page shows through as it scrolls under. The 24 above the buttons is the fade; the
+   negative margin pulls it over the scrolling body (the footer sits above the body). L3 gap: no dock / fade token. */
+footer > .dock {
+  margin-top: calc(-1 * var(--l3-spacing-24));
+  padding-top: calc(var(--l3-spacing-24) + var(--l3-spacing-08));
+  background: linear-gradient(to top, var(--page-surface, var(--l3-surface-default)), transparent);
+}
+
 /* ---- Figma 6538:84949 polish (8 Nov) ---- */
 
 /* The title: no glow behind the logo (8 Nov: the user dropped Figma's brand-colour bloom). */
@@ -26124,16 +26143,26 @@ export function AboutBlock({ logo, title, text }: { logo: ReactNode; title: stri
   )
 }
 
-/** The trade dock: a price-alert bell (40, outlined) · Buy · Sell, 12 apart (L3 buy / sell, md as in Figma). */
-export function TradeDock({ buy, sell, onBuy, onSell }: { buy: string; sell: string; onBuy?: () => void; onSell?: () => void }) {
+/** The asset page's bottom dock — one for the stock page, the ETF pages and every user state (18 Nov, the user's call):
+ *  same place, padding and fade; only the buttons inside change (Buy · Sell, Go Long · Go Short, or one full-width
+ *  activation button). It floats over the page's end on a gradient of the page's colour, full at the bottom to clear
+ *  at the top, so the body shows through as it scrolls under. Figma's price-alert bell is hidden (18 Nov, the user's
+ *  call); its .bell style stays in details.module.css. */
+export function AssetDock({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <div className={styles.dock}>
-      <button type="button" className={styles.bell} aria-label="Set a price alert">
-        <MaskIcon src={asset('assets/details/bell.svg')} />
-      </button>
-      <Button variant="buy" size="md" onClick={onBuy}>{buy}</Button>
-      <Button variant="sell" size="md" onClick={onSell}>{sell}</Button>
+    <div className={styles.dock} role="group" aria-label={label}>
+      {children}
     </div>
+  )
+}
+
+/** The trade dock: Buy · Sell, 12 apart (L3 buy / sell, Large: the app's big buttons, 18 Nov; Figma has md). */
+export function TradeDock({ buy, sell, onBuy, onSell, label = 'Trade' }: { buy: string; sell: string; onBuy?: () => void; onSell?: () => void; label?: string }) {
+  return (
+    <AssetDock label={label}>
+      <Button variant="buy" size="lg" onClick={onBuy}>{buy}</Button>
+      <Button variant="sell" size="lg" onClick={onSell}>{sell}</Button>
+    </AssetDock>
   )
 }
 
@@ -26260,7 +26289,7 @@ export const screens: UsScreenMap = {
 // ratings, fundamentals, about, peers, related ETFs, key holders, company financials; and the News & Events tab (events, news).
 // FLAG: layout is raw display:flex + gap/padding (module CSS) instead of L3 Stack/Section/Inset/Grid; panels, rows and bars are hand-made.
 import { EtfsHolding } from '../etf/EtfPeers'
-import { etfsHolding } from '../etf/data'
+import { ETFS_WITH_STOCK, etfsHolding } from '../etf/data'
 import { useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import { Stack } from '@l3/components/Stack'
 import { Card } from '@l3/components/Card'
@@ -26764,12 +26793,14 @@ export function RelatedEtfs({ sym }: { sym: string }) {
 }
 
 /** "ETFs with {stock}" (17 Nov): every fund in the catalogue that holds this stock, biggest weight first; tapping one opens it. */
+/** The first 5 funds, then an Others row to the full list (9001:13, 18 Nov). */
 export function EtfsWithStock({ sym, name }: { sym: string; name: string }) {
+  const { go } = useUsNav()
   if (!etfsHolding(sym).length) return null
   return (
     <section className={styles.section}>
       <SectionTitle title={`ETFs with ${name}`} />
-      <EtfsHolding sym={sym} label={`ETFs with ${name}`} />
+      <EtfsHolding sym={sym} label={`ETFs with ${name}`} limit={5} onAll={() => go(ETFS_WITH_STOCK)} />
     </section>
   )
 }
@@ -32726,7 +32757,8 @@ function FundRow({ etf, onClick }: { etf: Etf; onClick: () => void }) {
   const { plain } = plainFor(etf)
   // Where a leveraged fund's leverage shows (3 Nov, flow option "Leverage tag" in the prototype settings): eight
   // versions to compare; V5 After heading is the default.
-  const levTag = useFlowOption('us-stocks', 'levTag', 'heading')
+  // V5 · After heading: the one leverage tag left (18 Nov; the other versions are archived, still drawn below).
+  const levTag: string = 'heading'
   const lev = etf.kind === 'leveraged' ? levTag : undefined
   const marked = lev === 'foot' || lev === 'badge' || lev === 'ring' || lev === 'pill' || lev === 'slice' || lev === 'notch'
   const cell = (
@@ -32877,7 +32909,8 @@ export function EtfListScreen({ backdrop }: { backdrop?: boolean }) {
   const [boostOpen, setBoostOpen] = useState(false)
   // The Boosted note's look and colour (jojo, 3 Nov, flow options "Boosted note" / "Boosted line").
   const boostNote = useFlowOption('us-stocks', 'boostNote', 'strip')
-  const boostTone = useFlowOption('us-stocks', 'boostTone', 'grey')
+  // Grey: the one Boosted line colour left (18 Nov; Green, Gold, Blue, Purple archived, still in Etf.module.css).
+  const boostTone = 'grey'
   const regular = ETFS.filter((e) => e.kind === 'normal' && (filterBy === 'country' ? country === 'all' || e.country === country : sector === 'all' || e.sector === sector))
   // Switching Country ⇄ Sector starts the new filter at All.
   const switchFilter = () => {
@@ -33476,8 +33509,6 @@ export function EtfListScreen({ backdrop }: { backdrop?: boolean }) {
 // (EtfPage.module.css, copied from the stock page) instead of L3 Chart; same as the stock page.
 import { useEffect, useState, type ReactNode } from 'react'
 import { Actionbar, ActionbarAction } from '@l3/components/Actionbar'
-import { Button } from '@l3/components/Button'
-import { ButtonGroup } from '@l3/components/ButtonGroup'
 import { Icon } from '@l3/components/Icon'
 import { MaskIcon } from '@l3/components/MaskIcon'
 import { msBookmark, msSearch, msTrendingDown, msTrendingUp } from '@l3/icons/material'
@@ -33573,10 +33604,7 @@ export function EtfPage({ backdrop }: { backdrop?: boolean }) {
     journey === 'kyc' ? 'kyc-pending' : journey === 'activate' ? 'not-activated' : journey === 'review' || journey === 'support' || journey === 'failed' ? journey : undefined
   const buyTo = journey === 'activated' || journey === 'onTheWay' ? BUY_PAD_EMPTY_WALLET : BUY_PAD
   const footer = (gate && activationFooter(gate, (id) => act(() => go(id))())) || (
-    <ButtonGroup aria-label={`Trade ${etf.sym}`} direction="horizontal" scrollIndicator>
-      <Button variant="buy" size="lg" onClick={act(() => go(buyTo))}>{leveraged ? 'Go Long' : 'Buy'}</Button>
-      <Button variant="sell" size="lg" onClick={act(() => go(BUY_PAD))}>{leveraged ? 'Go Short' : 'Sell'}</Button>
-    </ButtonGroup>
+    <TradeDock label={`Trade ${etf.sym}`} buy={leveraged ? 'Go Long' : 'Buy'} sell={leveraged ? 'Go Short' : 'Sell'} onBuy={act(() => go(buyTo))} onSell={act(() => go(BUY_PAD))} />
   )
 
   // No "≈ ₹" lines on the ETF page (3 Nov): every amount is inline <Usd>.
@@ -33614,7 +33642,7 @@ export function EtfPage({ backdrop }: { backdrop?: boolean }) {
       />
     )
     const f1Footer = (gate && activationFooter(gate, (id) => act(() => go(id))())) || (
-      <TradeDock buy={leveraged ? 'Go Long' : 'Buy'} sell={leveraged ? 'Go Short' : 'Sell'} onBuy={act(() => go(buyTo))} onSell={act(() => go(BUY_PAD))} />
+      <TradeDock label={`Trade ${etf.sym}`} buy={leveraged ? 'Go Long' : 'Buy'} sell={leveraged ? 'Go Short' : 'Sell'} onBuy={act(() => go(buyTo))} onSell={act(() => go(BUY_PAD))} />
     )
     const fundLogo = (size: number) => <LogoImg src={logo?.src} plate={logo?.plate} size={size} fallback={etf.sym[0]} />
     const assetInfo: [string, ReactNode][] = [
@@ -33866,6 +33894,38 @@ function LeverageStrip({ etf, onOpen }: { etf: ReturnType<typeof getCurrentEtf>;
 }
 ```
 
+### `src/flows/us-stocks/screens/etf/EtfPeers.module.css`
+
+```css
+/* "ETFs with {stock}" (18 Nov): the Others row under the first 5 funds — the ETF page's Top holdings "Others" row
+   (EtfHoldings.module.css .others) inside the table card: a hairline above, 12 in from the card's edges. */
+.others {
+  display: flex;
+  align-items: center;
+  gap: var(--l3-spacing-12);
+  width: 100%;
+  padding: var(--l3-spacing-12);
+  border: 0;
+  border-top: 1px solid var(--l3-border-light);
+  background: none;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.othersName {
+  flex: 1;
+  font: var(--l3-text-heading-14);
+  color: var(--l3-content-secondary);
+}
+
+.othersChevron {
+  flex: none;
+  color: var(--l3-content-secondary);
+}
+```
+
 ### `src/flows/us-stocks/screens/etf/EtfPeers.tsx`
 
 ```tsx
@@ -33876,14 +33936,18 @@ function LeverageStrip({ etf, onOpen }: { etf: ReturnType<typeof getCurrentEtf>;
 // The same table lists, on a stock's page, every ETF that holds the stock (EtfsHolding, 17 Nov): by its weight in each.
 // FLAG: the stock page's hand-made table (activation/components/PeerTable.module.css) — L3 has no table.
 import { useRef, useState, type Ref } from 'react'
+import { Icon } from '@l3/components/Icon'
 import { Select } from '@l3/components/Select'
+import { msChevronRight } from '@l3/icons/material'
 import { Usd } from '../../../../shared/money'
 import { periodReturn } from '../activation/data'
 import tableStyles from '../activation/components/PeerTable.module.css'
 import { useUsNav } from '../../nav'
 import { setCurrentEtf } from './currentEtf'
-import { ETF_PAGE, etfsHolding, similarEtfs, type Etf } from './data'
+import { ETF_PAGE, etfsHolding, shortCount, similarEtfs, type Etf } from './data'
 import { EtfDisc } from './parts'
+import listStyles from './Etf.module.css'
+import styles from './EtfPeers.module.css'
 
 const percent = (n: number) => `${n >= 0 ? '+' : '−'}${Math.abs(n).toFixed(2)}%`
 const toneOf = (n: number) => (n >= 0 ? 'up' : 'down')
@@ -33935,8 +33999,10 @@ export function EtfPeers({ etf }: { etf: Etf }) {
   return <FundTable ref={table} label="Similar ETFs" rows={[etf, ...similarEtfs(etf)]} self={etf} columns={COLUMNS} onOpen={open} />
 }
 
-/** A stock's page (17 Nov): every ETF that holds it, the biggest share first. Nothing when no fund in the catalogue does. */
-export function EtfsHolding({ sym, label }: { sym: string; label: string }) {
+/** A stock's page (17 Nov): every ETF that holds it, the biggest share first. Nothing when no fund in the catalogue does.
+ *  `limit` (18 Nov): the stock page shows the first 5, then an Others row (the ETF page's Top holdings row: the next
+ *  funds' logos, "+N", Others, chevron) that opens the full list (`onAll`, 9001:13). */
+export function EtfsHolding({ sym, label, limit, onAll }: { sym: string; label: string; limit?: number; onAll?: () => void }) {
   const { go } = useUsNav()
   const funds = etfsHolding(sym)
   if (!funds.length) return null
@@ -33948,11 +34014,14 @@ export function EtfsHolding({ sym, label }: { sym: string; label: string }) {
     setCurrentEtf(fund)
     go(ETF_PAGE)
   }
-  return <FundTable label={label} rows={funds.map((f) => f.etf)} columns={columns} onOpen={open} />
+  const all = funds.map((f) => f.etf)
+  const rows = limit ? all.slice(0, limit) : all
+  const rest = all.slice(rows.length)
+  return <FundTable label={label} rows={rows} columns={columns} onOpen={open} more={rest.length && onAll ? { rest, onAll } : undefined} />
 }
 
 /** The funds table: a header cell that cycles Overview / Returns, then one row per fund; `self` is the page's own fund. */
-function FundTable({ label, rows, self, columns: views, onOpen, ref }: { label: string; rows: Etf[]; self?: Etf; columns: Record<View, Column[]>; onOpen: (sym: string) => void; ref?: Ref<HTMLDivElement> }) {
+function FundTable({ label, rows, self, columns: views, onOpen, more, ref }: { label: string; rows: Etf[]; self?: Etf; columns: Record<View, Column[]>; onOpen: (sym: string) => void; more?: { rest: Etf[]; onAll: () => void }; ref?: Ref<HTMLDivElement> }) {
   const [view, setView] = useState<View>('overview')
   const current = VIEWS.find((v) => v.value === view)!
   const columns = views[view]
@@ -34001,6 +34070,17 @@ function FundTable({ label, rows, self, columns: views, onOpen, ref }: { label: 
           </button>
         ))}
       </div>
+      {/* The rest of the funds (18 Nov), as the ETF page's Top holdings "Others" row: a tap opens the full list. */}
+      {more && (
+        <button type="button" className={styles.others} onClick={more.onAll} aria-label={`Others: ${more.rest.length} more ETFs. See all`}>
+          <span className={listStyles.logoStack} aria-hidden="true">
+            {more.rest.slice(0, 3).map((e) => <EtfDisc key={e.sym} sym={e.sym} size={24} />)}
+            {more.rest.length > 3 && <span className={listStyles.moreCount}>+{shortCount(more.rest.length - 3)}</span>}
+          </span>
+          <span className={styles.othersName}>Others</span>
+          <Icon icon={msChevronRight} size={16} className={styles.othersChevron} />
+        </button>
+      )}
     </div>
   )
 }
@@ -34015,8 +34095,6 @@ function FundTable({ label, rows, self, columns: views, onOpen, ref }: { label: 
 // FLAG: the price line is a hand-drawn SVG from made-up points (L3 has a Chart component).
 import type { ReactNode } from 'react'
 import { Actionbar } from '@l3/components/Actionbar'
-import { Button } from '@l3/components/Button'
-import { ButtonGroup } from '@l3/components/ButtonGroup'
 import { Card } from '@l3/components/Card'
 import { Tag } from '@l3/components/Tag'
 import { Phone } from '../../components/Phone'
@@ -34024,6 +34102,7 @@ import { useUsNav } from '../../nav'
 import { Usd } from '../../../../shared/money'
 import { useUsJourney } from '../../../../shared/userStatus'
 import { activationFooter, type StockState } from '../activation/StockPage'
+import { TradeDock } from '../activation/details'
 import { getCurrentEtf, setCurrentEtf } from './currentEtf'
 import { BUY_PAD, ETF_LIST, ETF_PAGE, leveragedOn, openHolding, stockName, type Etf } from './data'
 import { EtfDisc, EtfMove, SideTag } from './parts'
@@ -34078,10 +34157,7 @@ export function EtfPreviousScreen({ backdrop }: { backdrop?: boolean }) {
       header={<Actionbar title={etf.sym} onBack={() => back(ETF_LIST)} />}
       footer={
         (gate && activationFooter(gate, (id) => act(() => go(id))())) || (
-          <ButtonGroup aria-label={`Trade ${etf.sym}`} direction="horizontal">
-            <Button variant="buy" size="lg" onClick={act(() => go(buyTo))}>{primary}</Button>
-            <Button variant="sell" size="lg" onClick={act(() => go(buyTo))}>{secondary}</Button>
-          </ButtonGroup>
+          <TradeDock label={`Trade ${etf.sym}`} buy={primary} sell={secondary} onBuy={act(() => go(buyTo))} onSell={act(() => go(buyTo))} />
         )
       }
       gesture="none"
@@ -34157,6 +34233,178 @@ export function EtfPreviousScreen({ backdrop }: { backdrop?: boolean }) {
           </ul>
         </section>
       </div>
+    </Phone>
+  )
+}
+```
+
+### `src/flows/us-stocks/screens/etf/EtfsWithStockScreen.tsx`
+
+```tsx
+// 9001:13 · ETFs with {stock} (18 Nov): the full list behind the stock page's "ETFs with …" table, which shows the first
+// 5 and an Others row. The same table (Overview / Returns switch, weight first), every fund that holds the stock. A row
+// opens that ETF's page; back returns to the stock page. Laid out as the ETF page's Top holdings page (9001:12).
+// FLAG: copy not in copy.json yet (hard-coded).
+import { Actionbar } from '@l3/components/Actionbar'
+import { Section } from '@l3/components/Section'
+import { Phone } from '../../components/Phone'
+import { currentStock } from '../../data'
+import { useUsNav } from '../../nav'
+import { STOCK_PAGE_ID } from './data'
+import { EtfsHolding } from './EtfPeers'
+
+/** The stock's short name, as the stock page's section title ("NVIDIA", "Apple"). */
+const shortNameOf = (sym: string, name: string) => (sym === 'NVDA' ? 'NVIDIA' : name.split(' ')[0])
+
+export function EtfsWithStockScreen() {
+  const { back } = useUsNav()
+  const stock = currentStock()
+  const title = `ETFs with ${shortNameOf(stock.sym, stock.name)}`
+  return (
+    <Phone label={title} header={<Actionbar onBack={() => back(STOCK_PAGE_ID)} title={title} />} gesture="none" topLine>
+      {/* 24 under the bar, 16 at the sides, as the Top holdings page. */}
+      <Section paddingInline="16" paddingBlock="24" gap="12">
+        <EtfsHolding sym={stock.sym} label={title} />
+      </Section>
+    </Phone>
+  )
+}
+```
+
+### `src/flows/us-stocks/screens/etf/FractionalScreen.module.css`
+
+```css
+/* Fractional shares (us-stocks-99): the intro, the example's key-value card, the list's rows and the FAQ. Tokens only. */
+.heading {
+  margin: 0;
+  font: var(--l3-text-heading-20);
+  color: var(--l3-content-primary);
+}
+
+.text {
+  margin: 0;
+  font: var(--l3-text-description-14);
+  color: var(--l3-content-secondary);
+}
+
+.note {
+  margin: 0;
+  font: var(--l3-text-description-12);
+  color: var(--l3-content-secondary);
+}
+
+.list {
+  display: grid;
+  gap: var(--l3-spacing-08);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.faq {
+  display: grid;
+  gap: var(--l3-spacing-16);
+  margin: 0;
+}
+
+.question {
+  margin: 0 0 var(--l3-spacing-04);
+  font: var(--l3-text-label-14);
+  color: var(--l3-content-primary);
+}
+
+.answer {
+  margin: 0;
+  font: var(--l3-text-description-14);
+  color: var(--l3-content-secondary);
+}
+```
+
+### `src/flows/us-stocks/screens/etf/FractionalScreen.tsx`
+
+```tsx
+// Fractional shares (us-stocks-99, no Figma, 18 Nov): the page behind the Stocks home's Fractional product card
+// ("$1 to start"). Intro, a worked example from today's price ($10 in NVDA = 0.05 shares), the high-priced stocks you can
+// buy a slice of (the shared StockListCard; a row opens that stock's page, as every other list), a short FAQ.
+// Back returns to where it came from (the Stocks home).
+// FLAG: L3 has no accordion / info list, so the FAQ is plain question-over-answer text (FractionalScreen.module.css).
+// FLAG: no L3 heading-with-paragraph block: the intro heading and paragraphs are hand-made text on L3 type tokens.
+import { Actionbar } from '@l3/components/Actionbar'
+import { KeyValueList, KeyValueRow } from '@l3/components/KeyValueList'
+import { Section } from '@l3/components/Section'
+import { SectionHeader } from '@l3/components/SectionHeader'
+import { Phone } from '../../components/Phone'
+import { openStock, stockFor } from '../../data'
+import { useUsNav } from '../../nav'
+import { Usd } from '../../../../shared/money'
+import { useUsMarketSnapshot } from '../../../../shared/data/usStocks'
+import { StockListCard } from '../../../../shared/ui/StockListCard'
+import { t } from '../money/copy'
+import { HoldingLogo } from './parts'
+import styles from './FractionalScreen.module.css'
+
+/** Where back lands when the page was opened straight from the list: Home · US tab. */
+const HOME_US = '5796:91576'
+/** The worked example: $10 in NVDA. */
+const EXAMPLE = { sym: 'NVDA', amount: 10 }
+/** Stocks offered as a slice, by price today (highest first, the first 8 shown): the point of fractional is a price too high to buy whole. */
+const CANDIDATES = ['NFLX', 'META', 'MSFT', 'TSLA', 'AVGO', 'V', 'MCD', 'AMZN', 'GOOGL', 'AAPL', 'AMD', 'NVDA']
+
+export function FractionalScreen({ backdrop = false }: { backdrop?: boolean }) {
+  const { go, back } = useUsNav()
+  useUsMarketSnapshot() // re-render when a fresher snapshot lands
+  const example = stockFor(EXAMPLE.sym)
+  const shares = (EXAMPLE.amount / example.price).toFixed(3)
+  const popular = CANDIDATES.map((sym) => stockFor(sym)).sort((a, b) => b.price - a.price).slice(0, 8)
+  return (
+    <Phone label={t('fractional.title')} header={<Actionbar onBack={() => back(HOME_US)} title={t('fractional.title')} />} gesture="none" topLine>
+      <Section paddingInline="16" paddingBlock="24" gap="32">
+        <Section gap="08">
+          <h2 className={styles.heading}>{t('fractional.heading')}</h2>
+          <p className={styles.text}>{t('fractional.intro')}</p>
+        </Section>
+
+        <Section gap="16">
+          <SectionHeader title={t('fractional.how.title')} description={t('fractional.how.description')} />
+          <KeyValueList variant="card" aria-label={t('fractional.how.title')}>
+            <KeyValueRow label={t('fractional.how.amount')} value={<Usd value={EXAMPLE.amount} />} />
+            <KeyValueRow label={t('fractional.how.price', { sym: example.sym })} value={<Usd value={example.price} />} />
+            <KeyValueRow label={t('fractional.how.shares')} value={t('fractional.how.sharesValue', { shares })} />
+          </KeyValueList>
+          <p className={styles.note}>{t('fractional.how.note')}</p>
+        </Section>
+
+        <Section gap="16">
+          <SectionHeader title={t('fractional.popular.title')} description={t('fractional.popular.description')} />
+          <Section as="ul" gap="12" aria-label={t('fractional.popular.title')}>
+            {popular.map((s) => (
+              <li key={s.sym}>
+                <StockListCard
+                  symbol={s.sym}
+                  name={s.name}
+                  logo={<HoldingLogo sym={s.sym} size={40} />}
+                  price={<Usd value={s.price} align="end" />}
+                  changePct={s.change}
+                  onOpen={() => { if (!backdrop) openStock(go, s) }}
+                  aria-label={`${s.name}, ${s.sym}. Open stock`}
+                />
+              </li>
+            ))}
+          </Section>
+        </Section>
+
+        <Section gap="16">
+          <SectionHeader title={t('fractional.faq.title')} />
+          <dl className={styles.faq}>
+            {[1, 2, 3].map((n) => (
+              <div key={n}>
+                <dt className={styles.question}>{t(`fractional.faq.q${n}` as 'fractional.faq.q1')}</dt>
+                <dd className={styles.answer}>{t(`fractional.faq.a${n}` as 'fractional.faq.a1')}</dd>
+              </div>
+            ))}
+          </dl>
+        </Section>
+      </Section>
     </Phone>
   )
 }
@@ -34725,6 +34973,9 @@ export function etfsHolding(sym: string): { etf: Etf; weight: number }[] {
 }
 export const ETF_PAGE_PREVIOUS = '9001:6'
 export const ETF_HOLDINGS = '9001:12'
+/** The full "ETFs with {stock}" list (18 Nov), and the stock page it goes back to (us-stocks-13). */
+export const ETFS_WITH_STOCK = '9001:13'
+export const STOCK_PAGE_ID = '5826:93627'
 /** The order pad (Buy). */
 export const BUY_PAD = '5837:95201'
 /** Stocks home (stocks-01, follows the user status) — the back fallback of the ETF list. */
@@ -34793,6 +35044,8 @@ export const infoIcon = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000
 import type { UsScreenMap } from '../types'
 import { EtfListScreen } from './EtfListScreen'
 import { EtfHoldingsScreen } from './EtfHoldingsScreen'
+import { EtfsWithStockScreen } from './EtfsWithStockScreen'
+import { FractionalScreen } from './FractionalScreen'
 import { EtfPage } from './EtfPage'
 import { EtfPreviousScreen } from './EtfPreviousScreen'
 
@@ -34801,6 +35054,8 @@ export const screens: UsScreenMap = {
   '9001:2': EtfPage, // ETF page
   '9001:6': EtfPreviousScreen, // ETF page · previous
   '9001:12': EtfHoldingsScreen, // Top holdings (the full list behind "Others")
+  '9001:14': FractionalScreen, // Fractional shares (the Stocks home's Fractional product card)
+  '9001:13': EtfsWithStockScreen, // ETFs with {stock} (the full list behind the stock page's Others row)
 }
 ```
 
@@ -37764,7 +38019,8 @@ function FeeBreakdownSheet({ onClose }: { onClose: () => void }) {
 ### `src/flows/us-stocks/screens/trade/OrderPad.tsx`
 
 ```tsx
-// The Buy / Sell order pad (T01–T10, H03–H05, H11): order type tabs, amount or shares field, limit / trigger prices,
+// The Buy / Sell order pad (T01–T10, H03–H05, H11). `OrderPad` picks V2 (OrderPadV2.tsx, Minted's layout, the default) or
+// V1 (below, `OrderPadV1`) by version.ts. V1: order type tabs, amount or shares field, limit / trigger prices,
 // helper line, and the dock with Avail. / Req. and the main button.
 // Layout and look follow the commodity options order pad (F&O fno-25 … 31): header with the price and signed change,
 // small pill order types with the validity Select beside them, 40-high bordered rows with L3 Stepper Small, and the
@@ -37788,6 +38044,8 @@ import { useUsNav } from '../../nav'
 import { Usd, useInrEquivalent, useUsd } from '../../../../shared/money'
 import { al, forCurrentStock, il } from './format'
 import type { Derived, OrderPadConfig, OrderType, PadMode } from './types'
+import { OrderPadV2 } from './OrderPadV2'
+import { useOrderPadVersion } from './version'
 import styles from './OrderPad.module.css'
 
 const ORDER_TYPES: { value: OrderType; label: string }[] = [
@@ -37807,7 +38065,14 @@ let shownPad: { type: OrderType; closedAt: number | null } | null = null
  * The order pad. Switching order type keeps the header, tabs and dock in place; only the fields under the tabs slide in —
  * from the right when the new type is further along (Market → Limit → SL), from the left when it's back.
  */
-export function OrderPad({ config, backdrop, sheet }: { config: OrderPadConfig; backdrop?: boolean; sheet?: ReactNode }) {
+type OrderPadProps = { config: OrderPadConfig; backdrop?: boolean; sheet?: ReactNode }
+
+/** The order pad: V1 (this file) or V2 (OrderPadV2.tsx), by the flow option "Order pad" (version.ts). */
+export function OrderPad(props: OrderPadProps) {
+  return useOrderPadVersion() === 'v2' ? <OrderPadV2 {...props} /> : <OrderPadV1 {...props} />
+}
+
+function OrderPadV1({ config, backdrop, sheet }: OrderPadProps) {
   const { go, back } = useUsNav()
   const usd = useUsd()
   const inr = useInrEquivalent()
@@ -38004,10 +38269,338 @@ export function OrderPad({ config, backdrop, sheet }: { config: OrderPadConfig; 
 }
 ```
 
+### `src/flows/us-stocks/screens/trade/OrderPadV2.module.css`
+
+```css
+/* US Stocks order pad V2, laid out like Minted's order pad (s05 / s13 / s14). */
+.contract { display: flex; flex-direction: column; align-items: center; gap: var(--l3-spacing-02); text-align: center; }
+.contractName { display: inline-flex; align-items: center; gap: var(--l3-spacing-08); font: var(--l3-text-heading-14); color: var(--l3-content-primary); }
+.contractPrice { display: inline-flex; align-items: center; gap: var(--l3-spacing-08); font: var(--l3-text-label-12); color: var(--l3-content-primary); }
+
+.body { padding: var(--l3-spacing-32) var(--l3-spacing-16) var(--l3-spacing-16); overflow-x: clip; }
+.fields { align-self: stretch; }
+
+/* The big amount: "$" and the typed digits, centred; the input is focused (Typing) with the keypad up. */
+.amountRow { display: inline-flex; align-items: baseline; justify-content: center; gap: var(--l3-spacing-04); max-width: 100%; }
+.prefix { font: var(--l3-text-heading-36); color: var(--l3-content-secondary); }
+.amount { min-width: 0; margin: 0; padding: 0; border: 0; outline: none; background: none; font: var(--l3-text-heading-36); color: var(--l3-content-primary); text-align: left; caret-color: var(--l3-content-accent-discover-default); }
+.amount::placeholder { color: var(--l3-content-tertiary); opacity: 1; }
+.amountRow[data-error] .amount, .amountRow[data-error] .prefix { color: var(--l3-content-accent-error-default); }
+
+.helper { margin: 0; font: var(--l3-text-label-12); color: var(--l3-content-secondary); text-align: center; }
+.error { margin: 0; font: var(--l3-text-label-12); color: var(--l3-content-accent-error-default); text-align: center; }
+
+/* Limit / trigger price: a filled card, label over the value, the L3 Stepper at the right. */
+/* L3 Card filled (surface/secondary, radius 12, padding 12), stretched to the column width. */
+.priceCard { align-self: stretch; }
+.priceText { min-width: 0; }
+.priceLabel { font: var(--l3-text-label-12); color: var(--l3-content-secondary); }
+.priceValue { font: var(--l3-text-heading-16); color: var(--l3-content-primary); }
+
+/* Dock: the note strip, Balance · Approx. req., the main button, then the keypad. */
+.dock { background: var(--l3-surface-primary); }
+.note { margin: 0; padding: var(--l3-spacing-08) var(--l3-spacing-16); background: var(--l3-surface-secondary); font: var(--l3-text-label-12); color: var(--l3-content-secondary); text-align: center; }
+.dockBody { padding: var(--l3-spacing-12) var(--l3-spacing-16); }
+.funds { font: var(--l3-text-label-12); }
+.funds strong { font: var(--l3-text-heading-12); color: var(--l3-content-primary); }
+.muted { color: var(--l3-content-secondary); }
+
+/* Balances the back button (24) so the centred title sits at the screen's centre (L3 gap: no centred Actionbar title). */
+.backBalance { display: block; width: var(--l3-size-24); }
+
+/* Header logo at 16 (design ask). L3 gap: Avatar's smallest size is 24 — sized down locally until L3 adds 16. */
+.logo16.logo16 { --av-size: var(--l3-size-16); }
+
+/* The Stepper sits on the grey price card, so its pill is surface/primary (L3's surface/secondary would merge with the card).
+   L3 gap: Stepper has no on-grey option — set locally. */
+.stepperOnGrey.stepperOnGrey { background: var(--l3-surface-primary); }
+```
+
+### `src/flows/us-stocks/screens/trade/OrderPadV2.tsx`
+
+```tsx
+// Order pad V2 (T01–T10, H03–H05, H11): the layout of Minted's order pad (~/minted, screens s05 / s13 / s14), with the
+// US pad's own content and navigation (same OrderPadConfig as V1). Top to bottom: header with the logo, symbol and
+// price + change; the order type switch (Market / Limit / SL); the big centred amount (or share count) typed on the
+// app keypad, with the amount ⇄ shares switch under it; quick chips; one helper line; the limit / trigger price cards
+// with a Stepper; then the dock: note strip, Balance · Approx. req., the main button and the keypad.
+// Differences from Minted: no Markets / Futures tabs and no leverage card (US stocks are cash only); the switch is
+// Market / Limit / SL (not Instant / Limit / SIP) and moves between the pads of the same page group like V1;
+// the US "Day" validity is not a Tag any more — Limit / SL notes start with "Day order ·".
+// FLAG: L3 Actionbar has no centred title; the logo + symbol + price block is centred inside the Actionbar's content.
+// FLAG: the big amount is a raw <input> (L3 has no large amount field); it is focused, typed from the shared Keyboard.
+// The keypad has "." (shared Keyboard `decimal`): $ amounts take 2 decimals, shares 4, whole-share stocks none. The first key replaces the prefilled value.
+// FLAG: duplicates the app's Indian order pad (src/flows/stocks) for US stocks.
+import { useLayoutEffect, useRef, useState, type ReactNode } from 'react'
+import { Actionbar } from '@l3/components/Actionbar'
+import { Avatar } from '@l3/components/Avatar'
+import { Button } from '@l3/components/Button'
+import { Card } from '@l3/components/Card'
+import { PriceChange } from '@l3/components/PriceChange'
+import { Select } from '@l3/components/Select'
+import { Stack } from '@l3/components/Stack'
+import { Stepper } from '@l3/components/Stepper'
+import { Tabs } from '@l3/components/Tabs'
+import { Keyboard, keypadFieldProps, typeKey } from '../../../../shared/ui/Keyboard'
+import { Phone } from '../../components/Phone'
+import { currentStock, logoFor } from '../../data'
+import { asset } from '../../asset'
+import { useUsNav } from '../../nav'
+import { Usd, useInrEquivalent, useUsd } from '../../../../shared/money'
+import { al, forCurrentStock } from './format'
+import type { Derived, OrderPadConfig, OrderType, PadMode } from './types'
+import styles from './OrderPadV2.module.css'
+
+const ORDER_TYPES: { value: OrderType; label: string }[] = [
+  { value: 'market', label: 'Market' },
+  { value: 'limit', label: 'Limit' },
+  { value: 'sl', label: 'SL' },
+]
+
+/** The pad on screen (its order type, and when it closed): see OrderPad.tsx — the fields slide in on an order type switch. */
+let shownPad: { type: OrderType; closedAt: number | null } | null = null
+
+const MAX_DIGITS = 7
+
+/** The logo of the stock being traded (as the stock page picks it). */
+function useStockLogo(symbol: string) {
+  const stock = currentStock()
+  if (stock.sym !== symbol) return logoFor(symbol)
+  if (stock.logo) return /^(\/|https?:)/.test(stock.logo) ? stock.logo : asset(stock.logo)
+  return logoFor(symbol)
+}
+
+export function OrderPadV2({ config, backdrop, sheet }: { config: OrderPadConfig; backdrop?: boolean; sheet?: ReactNode }) {
+  const { go, back } = useUsNav()
+  const usd = useUsd()
+  const inr = useInrEquivalent()
+  const logo = useStockLogo(config.stock.symbol)
+  // The unit the field is showing; `value` is always kept in the config's own unit (config.mode).
+  const [mode, setMode] = useState<PadMode>(config.mode)
+  const [value, setValue] = useState(config.value)
+  const [amountText, setAmountText] = useState(config.value ? String(config.value) : '')
+  const [pcts, setPcts] = useState(() => (config.prices ?? []).map((price) => price.pct))
+
+  const prices = pcts.map((pct) => al(config.stock.price, pct))
+  // The price one share costs: market price, or the last price field (limit / SL limit).
+  const unitPrice = config.type === 'market' ? config.stock.price : (prices[prices.length - 1] ?? config.stock.price)
+  const shown = (m: PadMode) => (m === config.mode ? value : Number(m === 'shares' ? (value / unitPrice).toFixed(4) : (value * unitPrice).toFixed(2)))
+  const current = shown(mode)
+  const setShown = (next: number) => setValue(mode === config.mode ? next : config.mode === 'amount' ? next * unitPrice : next / unitPrice)
+
+  const derived: Derived = config.derive(value, prices, mode, { usd, inr: (n) => inr(n) })
+  const ctaDisabled = typeof config.cta.disabled === 'function' ? config.cta.disabled(derived) : config.cta.disabled
+  const goTo = (key: keyof NonNullable<OrderPadConfig['to']>) => (config.to?.[key] ? () => go(config.to![key]!) : undefined)
+  const onReq = goTo('req')
+
+  const textOf = (n: number) => (n ? String(n) : '')
+  const switchMode = () => {
+    const next: PadMode = mode === 'amount' ? 'shares' : 'amount'
+    setAmountText(textOf(shown(next)))
+    setMode(next)
+    setFresh(true)
+  }
+  // Whole-share stocks (BRK.B) take no decimals; $ amounts up to 2, shares up to 4.
+  const decimals = mode === 'shares' ? ((config.min ?? 0) >= 1 && mode === config.mode ? 0 : 4) : 2
+  // The prefilled value is "selected": the first key replaces it, as when tapping into a filled amount.
+  const [fresh, setFresh] = useState(true)
+  const onKey = (key: string) => {
+    const base = fresh ? '' : amountText
+    setFresh(false)
+    let text: string
+    if (key === '.') {
+      if (!decimals || base.includes('.')) return
+      text = (base || '0') + '.'
+    } else {
+      const [, frac] = base.split('.')
+      if (/^\d$/.test(key) && frac !== undefined && frac.length >= decimals) return
+      text = typeKey(base, key, MAX_DIGITS).replace(/^0+(?=\d)/, '')
+    }
+    setAmountText(text)
+    setShown(Number(text) || 0)
+  }
+  const applyChip = (apply: (current: number) => number) => {
+    const next = Number(apply(current).toFixed(mode === 'amount' ? 2 : 4))
+    setShown(next)
+    setAmountText(textOf(next))
+    setFresh(true)
+  }
+
+  // Header: back arrow, then the logo + symbol over the price and signed change, centred.
+  const header = (
+    <Actionbar
+      headingLevel={1}
+      onBack={() => back(config.back)}
+      title={
+        // Spans, not Stack: the title sits inside the Actionbar's <h1>, where L3's block-level Stack isn't valid.
+        // L3 gap: Actionbar has no centred "logo + symbol over price" title.
+        <span className={styles.contract}>
+          <span className={styles.contractName}>
+            <Avatar src={logo} initials={config.stock.symbol} size={24} className={styles.logo16} />
+            {config.stock.symbol}
+          </span>
+          <span className={styles.contractPrice}>
+            <Usd value={config.stock.price} layout="inline" />
+            <PriceChange value={config.stock.change} unit="percent" size="sm" />
+          </span>
+        </span>
+      }
+      // An empty slot as wide as the back button on the right, so the title sits at the screen's centre.
+      actions={<span className={styles.backBalance} aria-hidden="true" />}
+    />
+  )
+
+  const reqLabel = onReq
+    ? <Button variant="ghost" size="sm" onClick={onReq}>{config.reqLabel}</Button>
+    : <span className={styles.muted}>{config.reqLabel}</span>
+  // Day is the only validity for US orders: Limit / SL notes say so.
+  const note = derived.note ? `${config.type === 'market' ? '' : 'Day order · '}${forCurrentStock(derived.note)}` : undefined
+  const footer = (
+    <div className={styles.dock}>
+      {note && <p className={styles.note}>{note}</p>}
+      <Stack gap="12" className={styles.dockBody}>
+        <Stack direction="horizontal" justify="between" align="center" className={styles.funds}>
+          <span><span className={styles.muted}>{config.availLabel === 'Avail.' ? 'Balance:' : config.availLabel}</span> <strong><Usd text={config.avail} layout="inline" /></strong></span>
+          <Stack direction="horizontal" gap="04" align="center">{reqLabel}{derived.req && <strong>{derived.req}</strong>}</Stack>
+        </Stack>
+        <Button variant={config.side === 'buy' ? 'brand' : 'sell'} size="lg" fullWidth disabled={ctaDisabled} onClick={goTo('cta')}>
+          {config.cta.label}
+        </Button>
+      </Stack>
+      <Keyboard onKey={onKey} decimal={decimals > 0} />
+    </div>
+  )
+
+  // Slides the fields in once, when they first attach (a callback ref: the phone mounts its body after this pad renders).
+  const [cameFrom] = useState(() => (shownPad && (shownPad.closedAt === null || performance.now() - shownPad.closedAt < 500) ? shownPad.type : undefined))
+  useLayoutEffect(() => {
+    const pad = { type: config.type, closedAt: null as number | null }
+    shownPad = pad
+    return () => { pad.closedAt = performance.now() }
+  }, [config.type])
+  const slid = useRef(false)
+  const fields = (el: HTMLElement | null) => {
+    if (!el || slid.current) return
+    slid.current = true
+    if (!cameFrom || cameFrom === config.type || matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const order = ORDER_TYPES.map((t) => t.value)
+    const from = order.indexOf(config.type) > order.indexOf(cameFrom) ? 1 : -1
+    el.animate(
+      [{ translate: `${from * 100}% 0`, opacity: 0 }, { translate: '0 0', opacity: 1 }],
+      { duration: 280, easing: 'cubic-bezier(0.2, 0, 0, 1)' },
+    )
+  }
+
+  const fieldError = typeof config.fieldError === 'function' ? config.fieldError(derived) : config.fieldError
+  const unitLabel = mode === 'amount' ? 'Amount' : 'Shares'
+  const switchLabel = `${unitLabel}. Switch to ${mode === 'amount' ? 'shares' : 'amount'}`
+
+  return (
+    <Phone label={forCurrentStock(config.label)} header={header} footer={footer} gesture="none">
+      <Stack gap="16" align="center" className={styles.body} inert={backdrop || undefined}>
+        {/* FLAG: the order type switch is L3 Tabs (pill-group, toggle) but its choice also goes to another screen of the same page group. */}
+        <Tabs
+          appearance="pill-group"
+          size="sm"
+          behavior="toggle"
+          width="hug"
+          aria-label="Order type"
+          items={ORDER_TYPES}
+          value={config.type}
+          onChange={(type) => {
+            const target = config.to?.[type]
+            if (type !== config.type && target) go(target)
+          }}
+        />
+        {/* The part that changes with the order type: it slides, the tabs above it stay put. */}
+        <Stack gap="16" align="center" className={styles.fields} ref={fields}>
+          <Stack gap="08" align="center">
+            <label className={styles.amountRow} data-error={fieldError || undefined}>
+              {mode === 'amount' && <span className={styles.prefix}>$</span>}
+              <input
+                className={styles.amount}
+                {...keypadFieldProps()}
+                autoFocus
+                // The keypad is always up, so the amount always shows the typing caret: refocus when focus leaves for
+                // anything but another field (a chip, the unit switch, the order-type tabs).
+                onBlur={(e) => {
+                  const next = e.relatedTarget
+                  if (next instanceof HTMLInputElement || next instanceof HTMLTextAreaElement) return
+                  const field = e.currentTarget
+                  requestAnimationFrame(() => { if (field.isConnected && !(document.activeElement instanceof HTMLInputElement)) field.focus({ preventScroll: true }) })
+                }}
+                autoComplete="off"
+                aria-label={mode === 'amount' ? 'Amount in dollars' : 'Number of shares'}
+                placeholder="0"
+                value={amountText}
+                size={Math.max(amountText.length, 1)}
+                onChange={() => undefined}
+              />
+            </label>
+            {config.toggle && (
+              <Select size="sm" subtle icon="swap" onClick={switchMode} aria-label={switchLabel}>
+                {unitLabel}
+              </Select>
+            )}
+          </Stack>
+          {config.chips && mode === config.mode && (
+            <Tabs
+              appearance="pill"
+              size="sm"
+              behavior="filter"
+              aria-label={mode === 'amount' ? 'Add amount' : 'Shares to sell'}
+              items={config.chips.map((chip, i) => ({ value: String(i), label: typeof chip.label === 'function' ? chip.label(usd) : chip.label }))}
+              value=""
+              onChange={(label) => {
+                const chip = config.chips?.[Number(label)]
+                if (chip) applyChip(chip.apply)
+              }}
+            />
+          )}
+          {derived.error ? (
+            <p className={styles.error}>{forCurrentStock(derived.error)}</p>
+          ) : (
+            (derived.left || derived.right) && (
+              <p className={styles.helper}>
+                {derived.left}
+                {derived.left && derived.right && <span aria-hidden="true"> • </span>}
+                {derived.right}
+              </p>
+            )
+          )}
+          {(config.prices ?? []).map((price, i) => (
+            <Card variant="filled" key={price.label} className={styles.priceCard}>
+              <Stack direction="horizontal" justify="between" align="center" gap="08">
+                <Stack gap="04" className={styles.priceText}>
+                  <span className={styles.priceLabel}>{price.label}</span>
+                  <span className={styles.priceValue}><Usd value={prices[i]} layout="inline" /></span>
+                </Stack>
+              <Stepper
+                size="sm"
+                label={`${price.label} % from last price`}
+                value={pcts[i]}
+                onChange={(pct) => setPcts((all) => all.map((old, j) => (j === i ? pct : old)))}
+                min={-20}
+                max={20}
+                step={0.5}
+                format={(pct) => `${pct.toFixed(1)}%`}
+                className={styles.stepperOnGrey}
+              />
+              </Stack>
+            </Card>
+          ))}
+        </Stack>
+      </Stack>
+      {sheet}
+    </Phone>
+  )
+}
+```
+
 ### `src/flows/us-stocks/screens/trade/OrderProcessing.tsx`
 
 ```tsx
-// T12 · Order processing: the spinner screen, which moves on to "Buy order executed" (T14) by itself after 2 s.
+// T12 · Order processing: the spinner screen (V1 look, or the V2 look through OrderResult), which moves on to "Buy order executed" (T14) by itself after 2 s.
 import { OrderResult, useAutoAdvance } from './OrderResult'
 import { tradeIds } from './ids'
 import { orderResults } from './orderResults'
@@ -38075,7 +38668,9 @@ export function OrderProcessing({ backdrop }: { backdrop?: boolean }) {
 
 ```tsx
 // Order result screen: processing spinner, success tick or error cross, title, order rows, optional note and actions.
-// FLAG: layout is raw display:flex + gap/padding (OrderResult.module.css), not L3 Stack / Section / Inset.
+// OrderResult switches on the flow option "Order pad" (version.ts): V1 is OrderResultV1 below, V2 is OrderResultV2.tsx
+// (Minted's layout). useAutoAdvance lives here for both: processing (T12) goes through OrderResult.
+// FLAG (V1): layout is raw display:flex + gap/padding (OrderResult.module.css), not L3 Stack / Section / Inset.
 // FLAG: result art (success / error SVGs) is the teammate's, not an L3 / app result pattern.
 import { useEffect, useRef } from 'react'
 import { Button } from '@l3/components/Button'
@@ -38087,6 +38682,8 @@ import { InlineSvg } from '../../components/InlineSvg'
 import { useUsNav } from '../../nav'
 import { Usd } from '../../../../shared/money'
 import { forCurrentStock } from './format'
+import { OrderResultV2 } from './OrderResultV2'
+import { useOrderPadVersion } from './version'
 import type { OrderResultConfig } from './types'
 import styles from './OrderResult.module.css'
 
@@ -38104,6 +38701,10 @@ export function useAutoAdvance(to: string, backdrop?: boolean) {
 }
 
 export function OrderResult({ config }: { config: OrderResultConfig }) {
+  return useOrderPadVersion() === 'v2' ? <OrderResultV2 config={config} /> : <OrderResultV1 config={config} />
+}
+
+function OrderResultV1({ config }: { config: OrderResultConfig }) {
   const { back, go } = useUsNav()
   const exit = () => back(config.back)
   const footer = config.actions?.length ? (
@@ -38137,6 +38738,163 @@ export function OrderResult({ config }: { config: OrderResultConfig }) {
         </KeyValueList>
         {config.note && <p className={styles.note}>{forCurrentStock(config.note)}</p>}
       </div>
+    </Phone>
+  )
+}
+```
+
+### `src/flows/us-stocks/screens/trade/OrderResultV2.module.css`
+
+```css
+/* V2 order result: laid out like Minted's order result screens (s06 in progress / placed, s16 failed).
+   Layout is L3 Stack / Section / Inset; this file only holds what they have no prop for (the wash, text styles, sheet corners). */
+
+/* Whole body: the status wash on top, the details sheet filling the rest down to the dock. */
+.page {
+  min-height: 100%;
+  box-sizing: border-box;
+}
+
+/* Soft colour wash: the status tint fades into the page surface. */
+.wash {
+  background: linear-gradient(to bottom, var(--wash-tint), var(--l3-surface-default));
+}
+.wash[data-status='success'] { --wash-tint: var(--l3-surface-accent-success-light); }
+.wash[data-status='error'] { --wash-tint: var(--l3-surface-accent-error-light); }
+
+.side {
+  font: var(--l3-text-label-14);
+  color: var(--l3-content-secondary);
+  margin: 0;
+}
+
+.heading {
+  font: var(--l3-text-heading-24);
+  color: var(--l3-content-primary);
+  text-align: center;
+  margin: 0;
+}
+
+.line {
+  font: var(--l3-text-description-14);
+  color: var(--l3-content-secondary);
+  text-align: center;
+  margin: 0;
+}
+
+.small {
+  font: var(--l3-text-description-12);
+  color: var(--l3-content-secondary);
+  text-align: center;
+  margin: 0;
+}
+
+/* The details sheet: rounded top corners only, grows to fill the space above the dock. */
+.sheet {
+  flex: 1;
+  border-radius: var(--l3-radius-24) var(--l3-radius-24) 0 0;
+}
+
+/* Processing: centred on an empty page; the bar is as wide as Minted's (a fixed share of the width). */
+.progress {
+  width: 50%;
+}
+```
+
+### `src/flows/us-stocks/screens/trade/OrderResultV2.tsx`
+
+```tsx
+// Order result screen, V2: the layout of Minted's order result screens (~/minted, s06 in progress / placed, s16 failed).
+//  · processing (art 'loading'): empty page, Loader, "Buy NVDA" is not known there so the title leads, a thin ProgressBar,
+//    then the description line.
+//  · success / error: back arrow, round status art, "Buy NVDA" line, big heading ("Order Executed"), one description
+//    line, all on a soft success / error wash; under it a rounded sheet with Lemonn's order rows + note; actions in a dock.
+// Content stays Lemonn's (config from orderResults.ts). Minted's "sell automatically" chips and "Similar Assets" are not
+// built: Lemonn has neither.
+// FLAG (L3 gap): the status wash is a local gradient of L3 accent-light surfaces; the preview's status bar only follows
+// data-status-surface='brand', so the bar over the wash keeps the top bar's colour.
+// FLAG: result art (success / error SVGs) is the teammate's, not an L3 pattern.
+import { Button } from '@l3/components/Button'
+import { ButtonGroup } from '@l3/components/ButtonGroup'
+import { Actionbar } from '@l3/components/Actionbar'
+import { KeyValueList, KeyValueRow } from '@l3/components/KeyValueList'
+import { Loader } from '@l3/components/Loader'
+import { ProgressBar } from '@l3/components/ProgressBar'
+import { Section } from '@l3/components/Section'
+import { Stack } from '@l3/components/Stack'
+import { Inset } from '@l3/components/Inset'
+import { Phone } from '../../components/Phone'
+import { InlineSvg } from '../../components/InlineSvg'
+import { useUsNav } from '../../nav'
+import { Usd } from '../../../../shared/money'
+import { currentStock } from '../../data'
+import { forCurrentStock } from './format'
+import type { OrderResultConfig } from './types'
+import styles from './OrderResultV2.module.css'
+
+/** "Buy NVDA" / "Sell NVDA", read from the config's label or title; undefined when the screen has no side (processing). */
+function sideLine(config: OrderResultConfig): string | undefined {
+  const side = /\b(buy|sell)\b/i.exec(`${config.label} ${config.title}`)?.[1]
+  if (!side) return undefined
+  return `${side[0].toUpperCase()}${side.slice(1).toLowerCase()} ${currentStock().sym}`
+}
+
+/** "Yay! Buy Order Executed" → "Order Executed"; "Oops! Sell Order not Placed" → "Order not Placed" (the side is in the line above). */
+const headingOf = (title: string) => forCurrentStock(title).replace(/^(Yay!|Oops!)\s*/, '').replace(/^(Buy|Sell)\s+/i, '')
+
+export function OrderResultV2({ config }: { config: OrderResultConfig }) {
+  const { back, go } = useUsNav()
+  const exit = () => back(config.back)
+  const side = sideLine(config)
+
+  if (config.art === 'loading') {
+    return (
+      <Phone label={forCurrentStock(config.label)} gesture="none">
+        <Stack className={styles.page} align="center" justify="center" gap="24" role="status">
+          <Loader size="lg" label={null} />
+          <Stack align="center" gap="12">
+            {side && <p className={styles.side}>{side}</p>}
+            <h1 className={styles.heading}>{forCurrentStock(config.title)}</h1>
+            <ProgressBar className={styles.progress} value={40} size="sm" label={forCurrentStock(config.title)} />
+            <p className={styles.small}>{forCurrentStock(config.description)}</p>
+          </Stack>
+        </Stack>
+      </Phone>
+    )
+  }
+
+  const footer = config.actions?.length ? (
+    <ButtonGroup direction="horizontal" aria-label="Order result">
+      {config.actions.map((action) => (
+        <Button key={action.label} variant={action.variant} size="lg" onClick={action.to ? () => go(action.to!) : action.exit ? exit : undefined}>
+          {action.label}
+        </Button>
+      ))}
+    </ButtonGroup>
+  ) : undefined
+
+  return (
+    <Phone label={forCurrentStock(config.label)} header={<Actionbar onBack={exit} />} footer={footer} gesture="none">
+      <Stack className={styles.page} gap="00">
+        <Inset paddingBlock="24" paddingInline="16" className={styles.wash} data-status={config.art}>
+          <Stack align="center" gap="12">
+            <InlineSvg src={`assets/trade/${config.art}.svg`} w={72} />
+            <Stack align="center" gap="08">
+              {side && <p className={styles.side}>{side}</p>}
+              <h1 className={styles.heading}>{headingOf(config.title)}</h1>
+              <p className={styles.line}>{forCurrentStock(config.description)}</p>
+            </Stack>
+          </Stack>
+        </Inset>
+        <Section className={styles.sheet} surface="secondary" padding="16" gap="16">
+          <KeyValueList variant="card" size="md" aria-label="Order details">
+            {config.rows.map(([label, value]) => (
+              <KeyValueRow key={label} label={label} value={<Usd text={value} align="end" />} />
+            ))}
+          </KeyValueList>
+          {config.note && <p className={styles.small}>{forCurrentStock(config.note)}</p>}
+        </Section>
+      </Stack>
     </Phone>
   )
 }
@@ -38655,6 +39413,23 @@ export type OrderResultConfig = {
   /** Screen "exit" actions go back to. */
   back: string
 }
+```
+
+### `src/flows/us-stocks/screens/trade/version.ts`
+
+```ts
+// Which order pad design the US Stocks trade screens draw (the flow option "Order pad", group Trade).
+// V1 · the pad laid out like the commodity options pad (OrderPad.tsx, OrderResult.tsx).
+// V2 · the layout of Minted's order pad (~/minted, screens s05 / s13 / s14 / s06 / s16), the default since 18 Nov:
+//      big centred amount, quick chips, order type switch on top, Balance · Approx. req. and the app keypad in the dock.
+//      Same states, data and navigation as V1; only the layout differs. No Futures / leverage (US stocks are cash only).
+import { useFlowOption } from '../../../../shared/prototype'
+
+export type OrderPadVersion = 'v1' | 'v2'
+export const DEFAULT_ORDER_PAD_VERSION: OrderPadVersion = 'v2'
+
+export const useOrderPadVersion = (): OrderPadVersion =>
+  useFlowOption('us-stocks', 'orderPad', DEFAULT_ORDER_PAD_VERSION) === 'v1' ? 'v1' : 'v2'
 ```
 
 ### `src/flows/us-stocks/screens/types.ts`
@@ -65930,8 +66705,6 @@ import { Tabs } from '@l3/components/Tabs'
 import type { FlowOption } from '../flows/types'
 import { usdInrSnapshot } from './data/usStocks'
 import { liveDrift, useLiveTick } from './data/live'
-import { useFlowOption } from './prototype'
-import { USER_STATUS } from './userStatus'
 import styles from './money.module.css'
 
 // ── The rate ────────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -66012,7 +66785,10 @@ export const moneyOptions: FlowOption[] = [
   },
 ]
 
-const useInrDisplay = () => useFlowOption(USER_STATUS, 'inrDisplay', moneyOptions[0].default) as InrDisplay
+// Archived 18 Nov (the user's call): the "₹ equivalent" setting is no longer offered — US money shows in $ only. The
+// ₹ below / $ ⇄ ₹ switch code stays; set INR_DISPLAY to 'below' or 'switch' to see it (stock and ETF pages keep their ≈ ₹).
+const INR_DISPLAY = moneyOptions[0].default as InrDisplay
+const useInrDisplay = () => INR_DISPLAY
 
 // The currency picked on the switch: one for the whole app, remembered on this device (like a real app's preference).
 const CURRENCY_KEY = 'us-currency'
@@ -66767,6 +67543,111 @@ const files: Record<FlagCode, string> = { us: flagUs, in: flagIndia, cn: flagChi
 export const Flag = ({ code }: { code: FlagCode }) => <img className={styles.flag} src={files[code]} alt="" aria-hidden="true" />
 ```
 
+### `src/shared/ui/Keyboard.module.css`
+
+```css
+/* OS number keypad mock: 3 × 4 keys on a grey tray. */
+.keyboard {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--app-space-key);
+  padding: var(--l3-spacing-12) var(--l3-spacing-12) var(--l3-spacing-24);
+  /* On a real phone, clear the home indicator (like the L3 button dock does). */
+  padding-bottom: calc(var(--l3-spacing-24) + env(safe-area-inset-bottom, var(--l3-spacing-00)));
+  background: var(--l3-surface-secondary);
+}
+
+.key {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--l3-spacing-04);
+  height: var(--app-size-key);
+  border: 0;
+  border-radius: var(--l3-radius-08);
+  background: var(--l3-surface-primary);
+  color: var(--l3-content-primary);
+  font: var(--l3-text-description-18);
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.key[data-kind='fn'] {
+  background: var(--l3-surface-tertiary);
+}
+
+
+.key:active {
+  transform: scale(var(--l3-motion-scale-press-default));
+}
+```
+
+### `src/shared/ui/Keyboard.tsx`
+
+```tsx
+import { useEffect, useRef, type PointerEvent } from 'react'
+import { Icon } from '@l3/components/Icon'
+import { msBackspace } from '@l3/icons/material'
+import styles from './Keyboard.module.css'
+
+const KEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', 'Backspace']
+
+/**
+ * The phone's own number keypad (OS chrome, NOT part of the app or L3 — real apps get the system keyboard by setting
+ * the field's input type to number). Drawn so the phone / OTP / PIN screens read like the phone. In the prototype the
+ * keys type into the screen. `data-surface` tells the OS navigation bar below it to take the keypad's grey.
+ */
+export function Keyboard({ onKey, decimal }: { onKey?: (key: string) => void; /** Show "." in the bottom-left key (amounts in $, fractional shares). */ decimal?: boolean }) {
+  const keys = decimal ? KEYS.map((k) => (k === '' ? '.' : k)) : KEYS
+  return (
+    <div className={styles.keyboard} role="group" aria-label="Number keypad" data-surface="secondary">
+      {keys.map((k) =>
+        k === '' ? <span key="blank" /> : (
+          <button key={k} type="button" className={styles.key} data-kind={k === 'Backspace' ? 'fn' : 'digit'} aria-label={k === 'Backspace' ? 'Delete' : k === '.' ? 'Decimal point' : undefined} onPointerDown={keepFocus} onClick={() => onKey?.(k)}>
+            {k === 'Backspace' ? <Icon icon={msBackspace} /> : k}
+          </button>
+        ),
+      )}
+    </div>
+  )
+}
+
+/** Like the OS keyboard, a key press doesn't take focus: the field being typed into keeps its Typing state. */
+const keepFocus = (e: PointerEvent) => e.preventDefault()
+
+/** Apply a keypad key to a digit string (max length). */
+export const typeKey = (value: string, key: string, max: number) =>
+  key === 'Backspace' ? value.slice(0, -1) : /^\d$/.test(key) && value.length < max ? value + key : value
+
+/**
+ * The drawn keypad IS the keyboard here, so the fields it types into must never open the phone's own keyboard:
+ * inputmode="none" (Android, desktop) and, on touch screens, read-only too (the only sure way on iPhone). They still
+ * take focus, so they show L3's Typing state. Real apps don't need this: the system keyboard is the keypad.
+ */
+export const keypadFieldProps = () => ({
+  inputMode: 'none' as const,
+  readOnly: typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches,
+})
+
+/**
+ * Prototype glue: the drawn keypad types into an L3 OtpInput, so focus follows the box being typed (the next empty
+ * one) — the Typing state moves along as it would with the phone's keyboard — and the boxes never open the phone's
+ * keyboard (keypadFieldProps). Put the ref on an element around the OtpInput.
+ */
+export function useKeypadFocus(value: string, length: number, enabled: boolean) {
+  const ref = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (!enabled) return
+    const boxes = ref.current?.querySelectorAll('input')
+    const { inputMode, readOnly } = keypadFieldProps()
+    boxes?.forEach((box) => { box.inputMode = inputMode; box.readOnly = readOnly })
+    boxes?.[Math.min(value.length, length - 1)]?.focus({ preventScroll: true })
+  }, [value, length, enabled])
+  return ref
+}
+```
+
 ### `src/shared/ui/MainNav.module.css`
 
 ```css
@@ -67340,6 +68221,7 @@ export const userStatusOptions: FlowOption[] = [
     id: 'banks',
     group: 'User status',
     label: 'Bank accounts',
+    picker: 'dropdown', // a dropdown like User account state (18 Nov: five choices didn't fit a segmented row)
     // Three / SBI only: with an account at a bank US Stocks money can't go from (State Bank of India).
     values: [{ value: 'none', label: 'None' }, { value: 'one', label: 'One' }, { value: 'two', label: 'Two' }, { value: 'three', label: 'Three (+ SBI)' }, { value: 'sbi', label: 'SBI only' }],
     default: 'three',

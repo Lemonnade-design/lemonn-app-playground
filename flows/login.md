@@ -1186,12 +1186,13 @@ const KEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', 'Backspace']
  * the field's input type to number). Drawn so the phone / OTP / PIN screens read like the phone. In the prototype the
  * keys type into the screen. `data-surface` tells the OS navigation bar below it to take the keypad's grey.
  */
-export function Keyboard({ onKey }: { onKey?: (key: string) => void }) {
+export function Keyboard({ onKey, decimal }: { onKey?: (key: string) => void; /** Show "." in the bottom-left key (amounts in $, fractional shares). */ decimal?: boolean }) {
+  const keys = decimal ? KEYS.map((k) => (k === '' ? '.' : k)) : KEYS
   return (
     <div className={styles.keyboard} role="group" aria-label="Number keypad" data-surface="secondary">
-      {KEYS.map((k) =>
+      {keys.map((k) =>
         k === '' ? <span key="blank" /> : (
-          <button key={k} type="button" className={styles.key} data-kind={k === 'Backspace' ? 'fn' : 'digit'} aria-label={k === 'Backspace' ? 'Delete' : undefined} onPointerDown={keepFocus} onClick={() => onKey?.(k)}>
+          <button key={k} type="button" className={styles.key} data-kind={k === 'Backspace' ? 'fn' : 'digit'} aria-label={k === 'Backspace' ? 'Delete' : k === '.' ? 'Decimal point' : undefined} onPointerDown={keepFocus} onClick={() => onKey?.(k)}>
             {k === 'Backspace' ? <Icon icon={msBackspace} /> : k}
           </button>
         ),

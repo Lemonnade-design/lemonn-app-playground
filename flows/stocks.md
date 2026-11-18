@@ -434,6 +434,10 @@ lower on the page is scrolled into view first). `components/MarketSwitchGuide.ts
 
 ### Changelog
 
+- 2026-11-18 — V19 scroll: the IN / US tabs sit flush on the sticky block (the 12 under them showed as a white strip). The index marquee now docks under the tabs once it scrolls up to them — it stops right where it is, so it reads as the same strip coming up out of the middle — rides with the header as the top bar hides and returns, and lets go on the way back down. The hairline moves under the strip.
+- 2026-11-18 — Home **V19** (`homeVersions.ts`, the user's ask from a reference): V18 with the index marquee moved from under the top bar to between the hero (the header) and the feed (the body), scrolling with the page, 16 above and below the strip. That whole stretch is surface/accent-discover-light — from behind the hero's rounded foot down under the feed, which is a rounded sheet again (radius 32, 24 over the band) — and the hero has no glow (plain, like the header card). Only the IN / US tabs stay sticky (their band keeps its background, no 12 around it). V18 stays the default; the floating one-tap version switch is back (V18 ⇄ V19).
+- 2026-11-18 — US tab product row: **Fractional** opens its own page, Fractional shares (`us-stocks-99`), through a new `onUsFractional` prop (was NVDA's stock page).
+- 2026-11-18 — Diwali search bar off and its setting hidden (App settings → Diwali): the home search pill stays regular. The artwork stays in shared/ui/Diwali.tsx.
 - 2026-11-18 — Homepage version: V8, V12, V13 and V14 archived, V18 is the only home; no floating version picker or quick-switch button beside the phone.
 - 2026-11-18 — Bottom navbar (shared MainNav, every tab): sits above the page so its shadow shows — on Home the feed's cards painted over it.
 - 2026-11-18 — Explore by themes cards: 1.5 across (was 1.9 earlier today), so half the second card shows.
@@ -760,6 +764,12 @@ lower on the page is scrolled into view first). `components/MarketSwitchGuide.ts
 - 2026-11-17 · "Your money is ready" toast: an OK button instead of the chevron; OK only closes it (the toast no longer opens Market), and it closes on its own after 3 s (was 6).
 - 2026-11-17 · Top-bar icon buttons app-wide are the shared `TopBarAction` (Home's round button: 38 circle, border/light, 20 icon, no shadow) instead of L3's ActionbarAction (32 rounded square, soft raise). L3 gap: ActionbarAction has no round / unraised option.
 - 2026-11-17 · Home's top bar is 48 tall (was 64; `--app-topbar-height`, L3 Actionbar's row) and its search + wallet are the shared `SearchWalletActions`, so the profile, search and wallet sit exactly where Market's, Portfolio's and Mutual Fund's do — no jump between navbar tabs.
+- 2026-11-18 — The profile avatar in the top bar has its 1px indigo ring back (only the user's profile; other avatars and logos stay borderless).
+- 2026-11-18 — US hero before holdings (Active · $0 and the activation states) ends 16 under its card, as the holdings hero (was 24).
+- 2026-11-18 — Theme page: the "All stocks · n stocks" header is hidden; the overview heading shows the count in brackets ("AI & chips (8)").
+- 2026-11-18 — Archived the Home settings "Analyst picks" (List kept, Cards archived) and "Shortcuts" (V2 kept, V1 archived); the archived code stays behind constants.
+- 2026-11-18 — Archived the Home setting "Chips" (V2 kept: L3 switcher pill + outlined chips; V1 behind a constant in UsHome.tsx).
+- 2026-11-18 — Archived the Home setting "US shortcuts": the round US shortcuts under the hero are always on.
 
 
 ## Source — this flow
@@ -20112,7 +20122,6 @@ import { inr } from '../../../shared/data/format'
 import { watchlists, type Watchlist } from '../../../shared/data/portfolio'
 import { Rail } from '../../../shared/ui/Rail'
 import { useMarketSnapshot } from '../../../shared/data/companies'
-import { useFlowOption } from '../../../shared/prototype'
 import { shortcuts, topMovers, type MoverList, type Shortcut } from '../data'
 import { t } from '../copy'
 import { ShortcutArt } from './ShortcutArt'
@@ -20121,6 +20130,7 @@ import styles from './Home.module.css'
 /** Which shortcuts design the Home shows (prototype option "Shortcuts", flow options in index.tsx): V1 is the default. */
 export type ShortcutsVersion = 'v1' | 'v2'
 export const DEFAULT_SHORTCUTS: ShortcutsVersion = 'v2'
+const SHORTCUTS_VERSION = DEFAULT_SHORTCUTS as ShortcutsVersion
 
 /**
  * "Do more with Lemonn": four feature shortcuts, with a count or "New" where there's something to see.
@@ -20128,7 +20138,8 @@ export const DEFAULT_SHORTCUTS: ShortcutsVersion = 'v2'
  * hairlines, a plain green icon over a secondary label.
  */
 export function Shortcuts(props: ShortcutsProps) {
-  const version = useFlowOption('stocks', 'shortcuts', DEFAULT_SHORTCUTS) as ShortcutsVersion
+  // The "Shortcuts" setting is archived (18 Nov): V2 is the only one shown; set 'v1' here to see the circles.
+  const version: ShortcutsVersion = SHORTCUTS_VERSION
   return version === 'v1' ? <ShortcutsCircles {...props} /> : <ShortcutsCard {...props} />
 }
 
@@ -20375,7 +20386,8 @@ export function Watchlists({ lists = watchlists, onOpen, onViewAll }: { lists?: 
    card's own 16 sides, 24 under it. */
 .hero.shell {
   align-items: stretch;
-  padding: var(--l3-spacing-20) 0 var(--l3-spacing-24);
+  /* 16 under the card / product row, as the holdings hero's foot (18 Nov: was 24, the states didn't line up). */
+  padding: var(--l3-spacing-20) 0 var(--l3-spacing-16);
 }
 .shellBody {
   position: relative;
@@ -20454,7 +20466,7 @@ export function HoldingsHero({ market, value, returnPct, onHoldings, children }:
     : {}
   return (
     <section className={styles.hero} data-market={market} aria-label={name}>
-      <span className={styles.glow} aria-hidden="true" />
+      <span className={styles.glow} data-hero-glow="" aria-hidden="true" />
       <Stack gap="12" align="center" className={styles.value} data-pressable={onHoldings ? true : undefined} {...open}>
         <span className={styles.overline}>
           {name}
@@ -20481,7 +20493,7 @@ export function HoldingsHero({ market, value, returnPct, onHoldings, children }:
 export function HeroShell({ market, tone, subtle = false, children }: { market: 'in' | 'us'; /** The card's tint, for the glow until US Stocks is active (honey: under review; red: failed). Else the market's colour. */ tone?: 'honey' | 'red' | 'green'; /** Before activation, and just activated: a very soft glow (8 Nov). */ subtle?: boolean; /** None: only the hero's foot (money ready: the aerobar says it). */ children?: ReactNode }) {
   return (
     <section className={`${styles.hero} ${styles.shell}`} data-empty={!children || undefined} data-market={market} data-tone={tone} data-subtle={subtle || undefined}>
-      <span className={styles.glow} aria-hidden="true" />
+      <span className={styles.glow} data-hero-glow="" aria-hidden="true" />
       {children && <div className={styles.shellBody}>{children}</div>}
     </section>
   )
@@ -23285,12 +23297,14 @@ function Financials({ page }: { page: StockPageData }) {
   outline-offset: 2px;
 }
 
-/* Initials on an indigo disc, no ring (18 Nov). */
+/* Initials on an indigo disc with its 1px indigo ring (back 18 Nov: the user's profile keeps the ring; other avatars
+   and logos stay borderless). */
 .bar .profile {
   width: var(--app-stocks-topbar-avatar);
   height: var(--app-stocks-topbar-avatar);
   border-radius: var(--l3-radius-full);
   background: var(--l3-surface-accent-indigo-light);
+  box-shadow: inset 0 0 0 1px var(--l3-border-accent-indigo-default); /* 1px ring */
   font: var(--l3-text-label-14);
 }
 
@@ -24041,7 +24055,7 @@ export function UsIntroStory({ onView, onClose }: { onView: () => void; onClose:
 // own US tab: the holdings hero and a new feed. V18 (8 Nov): V17's top over V14's body — the default.
 // The prototype picks one with the flow option `homeVersion` (index.tsx), default V18 (V2 is the default in Jojo’s file).
 
-export type HomeVersionId = 'v2' | 'v3' | 'v4' | 'v5' | 'v6' | 'v7' | 'v8' | 'v9' | 'v10' | 'v11' | 'v12' | 'v13' | 'v14' | 'v15' | 'v16' | 'v17' | 'v18'
+export type HomeVersionId = 'v2' | 'v3' | 'v4' | 'v5' | 'v6' | 'v7' | 'v8' | 'v9' | 'v10' | 'v11' | 'v12' | 'v13' | 'v14' | 'v15' | 'v16' | 'v17' | 'v18' | 'v19'
 
 export type HomeVersion = {
   id: HomeVersionId
@@ -24080,6 +24094,9 @@ export type HomeVersion = {
   tiles: 'classic' | 'today' | 'withUs' | 'withInvest'
   /** The index ticker under the top bar. */
   ticker: boolean
+  /** Where the ticker sits: in the sticky block under the top bar (default), or 'between' the hero and the feed,
+   *  scrolling with the page (V19). */
+  tickerPlace?: 'between'
   /** The page's surface: the grey summary with the feed on a white rounded sheet (default), or white all the way (V14). */
   surface?: 'white'
   /** V15 "One home": the user's summary across markets on top (portfolio, one next step, products), then sticky IN / US
@@ -24117,6 +24134,9 @@ export const homeVersions: HomeVersion[] = [
   // V18 (8 Nov, the user's ask, the default): V17's top (hero with the product cards, the round US shortcuts) and V14's
   // body (the US feed: Top Movers, analyst picks, Brands, ETFs, heatmap, themes; IND's feed is the same on both).
   { id: 'v18', name: 'F1 top · V14 body', figma: '', place: 'top', scope: 'page', look: 'underline', labels: 'stocks', flags: true, usNew: false, tiles: 'today', ticker: true, usHome: 'f1', cards: true, usBody: 'classic' },
+  // V19 (18 Nov, the user's ask): V18 with the index marquee moved from under the top bar to between the hero (the
+  // header) and the feed (the body), scrolling with the page; only the IN / US tabs stay sticky.
+  { id: 'v19', name: 'V18 · marquee under the hero', figma: '', place: 'top', scope: 'page', look: 'underline', labels: 'stocks', flags: true, usNew: false, tiles: 'today', ticker: true, tickerPlace: 'between', usHome: 'f1', cards: true, usBody: 'classic' },
 ]
 
 // Archived 2026-11-02 (V2, V3, V4, V5, V6, V9), back in the picker the same day. V9, V10 and V11 archived again later that day. V2–V7 archived too (playground), leaving V8, V12 and V13. V14 added 5 Nov. V15 (One home) added and archived 5 Nov. V16 and V17 archived 17 Nov (V18 keeps their F1 top). V8, V12, V13 and V14 archived 18 Nov: V18 is the only home.
@@ -25476,11 +25496,17 @@ type UsHomeProps = {
 
 const sign = (up: boolean) => (up ? '+' : '-')
 
+// Archived 18 Nov: Analyst picks as cards. The list is kept.
+const PICKS_VIEW: 'list' | 'cards' = 'list'
+// Archived 18 Nov: the V1 chips rows (hand-made switcher). Set true to see them.
+const US_CHIPS_V1: boolean = false
+
 export function UsHome({ usState = 'activate', onActivate, onStock, onMarket, onTheme, onEtfs, onEtf, onPicks, onBrands, card = true, shortcuts }: UsHomeProps) {
   const [filter, setFilter] = useState<MoverFilter>('gainers')
   const [cap, setCap] = useState<CapValue>('mega')
   // Top analyst picks: a list (default, so it doesn't read as a second Top Movers rail) or the cards (prototype option).
-  const picksView = useFlowOption('stocks', 'picksView', 'list')
+  // The "Analyst picks" setting is archived (18 Nov): the list only; set 'cards' to see the swipeable cards.
+  const picksView = PICKS_VIEW as 'list' | 'cards'
 
   const cycleCap = () => setCap(capBuckets[(capBuckets.indexOf(cap) + 1) % capBuckets.length])
   const capName = t(`us.cap.${cap}`)
@@ -25662,7 +25688,7 @@ export function MonthLine({ closes, up, className }: { closes: number[]; up: boo
  */
 function CapSwitch({ label, value, onClick, 'aria-label': ariaLabel }: { label: string; value: string; onClick: () => void; 'aria-label': string }) {
   // Settings → Chips: V1 the earlier hand-made outlined chip (28, Label 12), V2 this L3 primary pill (default).
-  const v1 = useFlowOption('stocks', 'usChips', 'v2') === 'v1'
+  const v1 = US_CHIPS_V1 // the "Chips" setting is archived (18 Nov): V2 only
   if (v1) {
     return (
       // FLAG (V1): hand-made cap chip — L3 Select opens a sheet instead. Its .capChip also turns on the V1 chip-tab
@@ -26241,7 +26267,6 @@ import { handToMarket } from '../../../../shared/data/marketHandoff'
 import { useLiveQuote } from '../../../../shared/data/live'
 import { usLogo, usQuote, viewUsStock } from '../../../../shared/data/usStocks'
 import { Usd } from '../../../../shared/money'
-import { useFlowOption } from '../../../../shared/prototype'
 import { StockListCard } from '../../../../shared/ui/StockListCard'
 import { t } from '../../copy'
 import zingArt from '../../assets/shortcuts/zing.svg'
@@ -26294,6 +26319,9 @@ type UsHomeF1Props = {
 
 const moverIcons: Record<F1MoverChip, string> = { watchlist: watchlistIcon, active: activeIcon, gainers: gainersIcon, losers: losersIcon }
 
+// Archived 18 Nov: the round US shortcuts are always shown. Set false to see the hero's cards alone.
+const US_SHORTCUTS_ON: boolean = true
+
 export function UsHomeF1({ onStock, onMarket, onTheme, onEtfs, onEtf, onPicks, roundShortcuts = false }: UsHomeF1Props) {
   const open = (sym: string) => {
     viewUsStock(sym)
@@ -26327,7 +26355,7 @@ export function UsRoundShortcuts({ onEtfs, onPicks }: { onEtfs?: () => void; onP
  */
 function Shortcuts({ onEtfs, onPicks, round = false }: { onEtfs?: () => void; onPicks?: () => void; round?: boolean }) {
   // V17 / V18: shown unless the "US shortcuts" option is off (on by default, 8 Nov).
-  const roundOn = useFlowOption('stocks', 'usShortcuts', 'on') === 'on'
+  const roundOn = US_SHORTCUTS_ON // the "US shortcuts" setting is archived (18 Nov): always on
   const art = (src: string) => <img src={src} alt="" width={24} height={24} className={styles.shortcutArt} />
   const items: StripItem[] = [
     { id: 'zing', label: t('f1.shortcuts.zing'), icon: art(zingArt) },
@@ -28145,6 +28173,7 @@ export function useLiveHeatmap(symbols: string[] = heatSymbols): HeatValue[] {
   "us.themes.pageTitle": "Themes",
   "us.themes.railLabel": "Themes",
   "us.themes.stocks": "{count} stocks",
+  "us.themes.nameCount": "{name} ({count})",
   "us.themes.return1y": "1Y",
   "us.themes.cardLabel": "{name}: {pct}% in 1 year, {count} stocks",
   "us.themes.returns": "Returns",
@@ -28658,7 +28687,7 @@ import { ActivationSubmittedSheet } from './components/us/sheets/ActivationSubmi
 import { UsFtuxSheet } from './components/us/sheets/UsFtuxSheet'
 
 /** The US tab's taps, by screen id: Activate US Stocks → the activation pages (us-stocks-94: declarations, then the bank), a stock → its page (not activated, in the US Stocks flow), View all / a theme → Market on the US list. */
-const usNav = (go: Go) => ({ onActivateUs: () => go('us-stocks-94'), onUsStock: () => go('us-stocks-13'), onUsMarket: () => go('market-10'), onUsTheme: (id: ThemeId) => go(themeScreenId(id)), onUsEtfs: () => go('us-stocks-71'), onUsEtf: () => go('us-stocks-72'), onUsPicks: () => go('stocks-29'), onUsBrands: () => go('stocks-31'), onUsHoldings: () => go('us-stocks-77'), onInHoldings: () => go('us-stocks-05') })
+const usNav = (go: Go) => ({ onActivateUs: () => go('us-stocks-94'), onUsStock: () => go('us-stocks-13'), onUsMarket: () => go('market-10'), onUsTheme: (id: ThemeId) => go(themeScreenId(id)), onUsEtfs: () => go('us-stocks-71'), onUsFractional: () => go('us-stocks-99'), onUsEtf: () => go('us-stocks-72'), onUsPicks: () => go('stocks-29'), onUsBrands: () => go('stocks-31'), onUsHoldings: () => go('us-stocks-77'), onInHoldings: () => go('us-stocks-05') })
 
 /** The top bar and navbar taps every Home screen shares. */
 /** Search from the Home field: the Stocks tab on IND, the US tab on US (search-29). */
@@ -28727,24 +28756,21 @@ export const stocks: Flow = {
       picker: 'dropdown',
       values: activeHomeVersions.map((v) => ({ value: v.id, label: `${v.id.toUpperCase()} · ${v.name}` })),
       default: DEFAULT_HOME_VERSION,
-      // V18 is the only version left (18 Nov), so no floating picker or quick-switch button beside the phone.
+      // V18 and V19 (18 Nov): the floating one-tap switch is back, to flip between them.
+      quickSwitch: true,
     },
     // FTUX guide for the IND / US switch: dims the screen, lights the switch with a tooltip. Shown every time a Home
     // opens (and again after a version change) while on; tap anywhere or ✕ to end it.
     // "Do more with Lemonn" shortcuts: V1 circles, V2 one outlined card with dividers (default).
     // Archived 3 Nov: the "Header" setting (Holdings on page · Holdings in card). Holdings on page is the only header;
     // the card variant stays in Home.tsx (HEADER_CARD) but is no longer offered.
-    // US tab, Top analyst picks: a list of four rows (default, 3 Nov) or the swipeable cards with the 7-day line.
-    { id: 'picksView', group: 'Home', label: 'Analyst picks', values: [{ value: 'list', label: 'List' }, { value: 'cards', label: 'Cards' }], default: 'list' },
-    // Home shortcuts: V2 is the default (18 Nov, the user's call); V1 is the earlier row.
-    { id: 'shortcuts', group: 'Home', label: 'Shortcuts', values: [{ value: 'v1', label: 'V1' }, { value: 'v2', label: 'V2' }], default: 'v2' },
+    // Archived 18 Nov (the user's call): "Analyst picks" (List kept; the swipeable Cards stay in UsHome.tsx behind
+    // PICKS_VIEW) and "Shortcuts" (V2 card kept; the V1 circles stay in Discover.tsx behind SHORTCUTS_VERSION).
     // US tab, Discover ETFs: the region pills with their round flags (default) or text only — testing whether the flags are too much (3 Nov).
-    // US home chips rows (Top Movers, Heatmap, ETFs): V1 the earlier hand-made outlined switcher + small black-selected
-    // chips, V2 L3's primary switcher pill + outlined-selected chips (default, 18 Nov — the user's call).
-    { id: 'usChips', group: 'Home', label: 'Chips', values: [{ value: 'v1', label: 'V1' }, { value: 'v2', label: 'V2' }], default: 'v2' },
-    // V17 / V18's round US shortcuts under the hero: shown by default (8 Nov, the user's call); off to see the hero's
-    // cards alone.
-    { id: 'usShortcuts', group: 'Home', label: 'US shortcuts', picker: 'toggle', values: [{ value: 'off', label: 'Off' }, { value: 'on', label: 'On' }], default: 'on' },
+    // Archived 18 Nov (the user's call): "Chips" on the US home rows (Top Movers, Heatmap, ETFs). V2 kept (L3's primary
+    // switcher pill + outlined-selected chips); the V1 hand-made switcher stays in UsHome.tsx behind US_CHIPS_V1.
+    // Archived 18 Nov (the user's call): "US shortcuts" — the round US shortcuts under the V17 / V18 hero are always
+    // shown; the off state stays in UsHomeF1.tsx behind US_SHORTCUTS_ON.
     { id: 'etfFlags', group: 'Home', label: 'ETF region flags', picker: 'toggle', values: [{ value: 'off', label: 'Off' }, { value: 'on', label: 'On' }], default: 'off' },
     { id: 'switchGuide', group: 'Home', label: 'Market switch guide', picker: 'toggle', values: [{ value: 'off', label: 'Off' }, { value: 'on', label: 'On' }], default: 'off' },
   ],
@@ -29486,6 +29512,76 @@ export function Glossary({ kind, onBack }: { kind: keyof typeof TERMS; onBack: (
   opacity: 0;
   transform: translateY(var(--l3-spacing-16));
 }
+
+/* V19: the sticky block holds only the IN / US tabs, so its band is the tabs' own background with no 12 around it. */
+.marquee[data-ticker='between'] {
+  --band-pad: 0px;
+}
+
+/* V19: the index marquee between the hero and the feed (the user's ask, 18 Nov), scrolling with the page. The whole
+   stretch from the hero's rounded foot to the feed's rounded top is surface/accent-discover-light (it shows behind
+   the hero's 16 corners), and the feed is a rounded sheet again (radius 32 at the top), as in the reference. The
+   ticker's tap areas run 12 above and below it, as the sticky one's. */
+.flatCards[data-ticker-between] .summary[data-hero] {
+  background: linear-gradient(to top, var(--l3-surface-accent-discover-light) var(--l3-radius-16), var(--l3-surface-default) 0);
+}
+/* V19: the hero without its blue / green glow (the user's call, 18 Nov) — plain, like the header card. */
+.flatCards[data-ticker-between] [data-hero-glow] {
+  display: none;
+}
+.tickerBetween {
+  position: relative;
+  /* 16 from the hero's foot to the strip's text and from it to the feed (the user's call, 18 Nov): 6 here + the tap
+     areas' 12 − the line's own 2. Below, + the feed's 24 overlap. */
+  padding-block: var(--l3-spacing-06) calc(var(--l3-spacing-06) + var(--l3-spacing-24));
+  background: var(--l3-surface-accent-discover-light); /* the user's call, 18 Nov (was surface/secondary) */
+}
+.tickerBetween [role='region'] > * > [data-interactive] {
+  padding-block: var(--l3-spacing-12);
+}
+.tickerBetween [role='region'] > * > [aria-hidden='true'] {
+  margin-block: var(--l3-spacing-12);
+}
+.flatCards[data-ticker-between] .feed[data-hero] {
+  margin-top: calc(-1 * var(--l3-spacing-24)); /* over the grey's end, so the grey shows behind its corners */
+  padding-top: var(--l3-spacing-16);
+  border-radius: var(--l3-radius-32) var(--l3-radius-32) 0 0;
+}
+
+/* V19: the tabs sit flush on the sticky block's bottom edge (no 12 under them: it showed as a white strip while scrolled). */
+.marquee[data-ticker='between'] .stickySwitch {
+  margin-bottom: 0;
+}
+
+/*
+ * V19: once the strip between the hero and the feed scrolls up to the sticky tabs, it docks under them — a copy that
+ * sits exactly where the scrolling strip is at that moment, so it reads as the same strip stopping there (it came up
+ * out of the middle of the page). It rides with the sticky block (up into the top bar's place and back, animated) and
+ * lets go when the page scrolls back past that point. The hairline moves from under the tabs to under the strip.
+ */
+.dockedTicker {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  left: 0;
+  visibility: hidden;
+}
+
+.dockedTicker[data-open] {
+  visibility: visible;
+}
+
+.dockedTicker > * {
+  background: var(--l3-surface-accent-discover-light);
+  box-shadow: inset 0 -1px 0 var(--l3-border-light); /* 1px hairline */
+}
+
+.dockedTicker [role='region'] > * > [data-interactive] { padding-block: var(--l3-spacing-12); }
+.dockedTicker [role='region'] > * > [aria-hidden='true'] { margin-block: var(--l3-spacing-12); }
+
+.marquee[data-docked] .band {
+  box-shadow: none;
+}
 ```
 
 ### `src/flows/stocks/screens/Home.tsx`
@@ -29578,6 +29674,8 @@ type Props = {
   onUsTheme?: (id: ThemeId) => void
   /** The US tab's ETFs shortcut → the ETF list. */
   onUsEtfs?: () => void
+  /** The US tab's Fractional product card → the Fractional shares page. */
+  onUsFractional?: () => void
   /** A Discover ETFs row (the symbol is already remembered with `viewUsStock`) → the ETF page. */
   onUsEtf?: () => void
   /** US tab, Top analyst picks' View all → the Top analyst picks page. */
@@ -29616,7 +29714,7 @@ export const markUsIntroSeen = () => {
 /** Archived "Header" variant: true puts the holdings inside the top card (the card the US tab uses for activation). */
 const HEADER_CARD = false as boolean
 
-export function Home({ scrollTo = 'top', market = 'in', movers, onStock, onTab, onSearch, onProfile, onWallet, onCommodities, onAddMoney, usState = 'activate', onActivateUs, onUsHoldings, onInHoldings, onUsStock, onUsMarket, onUsTheme, onUsEtfs, onUsEtf, onUsPicks, onUsBrands, autoNext, sheet, introOnOpen = false }: Props) {
+export function Home({ scrollTo = 'top', market = 'in', movers, onStock, onTab, onSearch, onProfile, onWallet, onCommodities, onAddMoney, usState = 'activate', onActivateUs, onUsHoldings, onInHoldings, onUsStock, onUsMarket, onUsTheme, onUsEtfs, onUsFractional, onUsEtf, onUsPicks, onUsBrands, autoNext, sheet, introOnOpen = false }: Props) {
   // Money on the way: its card opens the deposit explainer over Home (the timed move to "money ready" waits while it's open).
   const [explaining, setExplaining] = useState(false)
   useAutoAdvance(explaining ? undefined : autoNext, 2000)
@@ -29680,6 +29778,9 @@ export function Home({ scrollTo = 'top', market = 'in', movers, onStock, onTab, 
   const spacer = useRef<HTMLDivElement>(null)
   const marquee = useRef<HTMLDivElement>(null)
   const band = useRef<HTMLDivElement>(null)
+  // V19: the index marquee between the hero and the feed (in the page), and whether it has docked under the tabs.
+  const betweenStrip = useRef<HTMLDivElement>(null)
+  const [tickerDocked, setTickerDocked] = useState(false)
 
   // "Money ready": the toast shows on the US tab until it times out (6 s) — also when the tab is left and come back to.
   const [toastGone, setToastGone] = useState(false)
@@ -29726,6 +29827,10 @@ export function Home({ scrollTo = 'top', market = 'in', movers, onStock, onTab, 
     pinnedNow.current = pin
     setScrollState(state)
     setPinned(pin)
+    // V19: the strip docks under the sticky tabs the moment its top reaches their bottom edge, so it reads as the same
+    // strip stopping there (the docked copy sits exactly where the scrolling one is), and lets go again on the way back.
+    const strip = betweenStrip.current?.querySelector('[role="region"]')
+    setTickerDocked(!!strip && top > 0 && strip.getBoundingClientRect().top - body.getBoundingClientRect().top <= headerBottom(state, false))
     setScrolled(top > 0)
     const head = hubHead.current
     setHeadStuck(!!head && head.getBoundingClientRect().top - body.getBoundingClientRect().top <= (spacer.current?.offsetHeight ?? 0))
@@ -29940,13 +30045,9 @@ export function Home({ scrollTo = 'top', market = 'in', movers, onStock, onTab, 
     else if (id === 'fno') onTab?.('fno')
     else if (id === 'commodities') onCommodities?.()
     else if (id === 'etfs') onUsEtfs?.()
-    // Themes: the prototype has no list of themes, so the first one (AI). Fractional: the hero's stock (NVDA), where any
-    // amount from $1 buys a slice.
+    // Themes: the prototype has no list of themes, so the first one (AI). Fractional: its own page (us-stocks-99).
     else if (id === 'themes') onUsTheme?.('ai')
-    else if (id === 'fractional') {
-      viewUsStock('NVDA')
-      onUsStock?.('NVDA')
-    }
+    else if (id === 'fractional') onUsFractional?.()
     else if (id === 'boosted-etfs') {
       // The ETF list opens on its Boosted tab (its sessionStorage hand-off, EtfListScreen).
       try { sessionStorage.setItem('etf:tab', 'leveraged') } catch { /* storage off: the Regular tab */ }
@@ -29984,6 +30085,8 @@ export function Home({ scrollTo = 'top', market = 'in', movers, onStock, onTab, 
       ))}
     </div>
   )
+  // V19: the ticker leaves the sticky block for the gap between the hero and the feed.
+  const tickerBetween = !!version.ticker && version.tickerPlace === 'between' && !hub
   const indexStrip = tab === 'us' ? <IndexStrip key="us" items={usIndices} label={t('us.indices.label')} slideIn={stripSlides} /> : <IndexStrip key="in" slideIn={stripSlides} />
   const feedClass = version.place !== 'mid' ? styles.feed : version.look === 'folder' ? `${styles.feed} ${styles.feedTabbed}` : `${styles.feed} ${styles.feedTabbed} ${styles.feedUnderHead}`
 
@@ -30022,11 +30125,11 @@ export function Home({ scrollTo = 'top', market = 'in', movers, onStock, onTab, 
       {/* Holds the top bar's place at the top of the page (the bar itself hangs from the sticky header above). */}
       <div ref={spacer} className={styles.spacer} aria-hidden="true" />
       <HomeSwitcher />
-      <Stack ref={page} className={styles.flatCards} data-white={white}>
+      <Stack ref={page} className={styles.flatCards} data-white={white} data-ticker-between={tickerBetween || undefined}>
         {version.place === 'top' && !twoHomes && <MarketSwitchFor version={version} value={tab} onChange={(next) => switchTo(next)} />}
         {/* The page's one index marquee: sticky under the top bar, and up to the very top while the top bar is away. */}
         {/* V14: this block is the one container for the tabs and the ticker, each in its own container inside it. */}
-        {!hub && <div ref={marquee} className={styles.marquee} data-white={white} data-home="top" data-state={scrollState} data-tabs={pinned || undefined} data-animate={animate || undefined} data-ticker={version.ticker ? undefined : 'off'} data-hero-top={heroTop || undefined}>
+        {!hub && <div ref={marquee} className={styles.marquee} data-white={white} data-home="top" data-state={scrollState} data-tabs={pinned || undefined} data-animate={animate || undefined} data-ticker={!version.ticker ? 'off' : tickerBetween ? 'between' : undefined} data-hero-top={heroTop || undefined} data-docked={(tickerBetween && tickerDocked) || undefined}>
           <div ref={band} className={styles.band} aria-hidden="true" />
           {/* Two homes: the switch rides in the sticky block, above the ticker, so it never scrolls away. */}
           {version.place === 'top' && twoHomes && (
@@ -30038,7 +30141,13 @@ export function Home({ scrollTo = 'top', market = 'in', movers, onStock, onTab, 
           )}
           {/* V14: the ticker has a container of its own (the tabs' is the one above), 12 above and below inside it, and each
               index's tap area runs that full height (Home.module.css, .tickerBox). */}
-          {!version.ticker ? null : white ? <div className={styles.tickerBox}>{indexStrip}</div> : indexStrip}
+          {!version.ticker || tickerBetween ? null : white ? <div className={styles.tickerBox}>{indexStrip}</div> : indexStrip}
+          {/* V19: the docked copy of the strip, hanging under the tabs (Home.module.css, .dockedTicker). */}
+          {tickerBetween && (
+            <div className={styles.dockedTicker} data-open={tickerDocked || undefined} inert={!tickerDocked || undefined}>
+              <div>{indexStrip}</div>
+            </div>
+          )}
           {/* Two homes keep their switch in this block, so they have no compact tabs (hidden ones left a 1px underline peeking out under the band). */}
           {!twoHomes && (
             <div className={styles.pinnedTabs} data-open={pinned || undefined} inert={!pinned || undefined}>
@@ -30071,6 +30180,8 @@ export function Home({ scrollTo = 'top', market = 'in', movers, onStock, onTab, 
             )}
           </Stack>
         )}
+        {/* V19: the index marquee between the hero (the header) and the feed (the body), scrolling with the page. */}
+        {tickerBetween && <div ref={betweenStrip} className={styles.tickerBetween} data-hero={heroTop || undefined}>{indexStrip}</div>}
         {version.place === 'mid' && !hub && <MarketSwitchFor version={version} value={tab} onChange={(next) => switchTo(next)} />}
         {/* The white sheet stays; only what's on it changes (with the tiles above, in one movement). */}
         <div className={hub ? `${styles.feed} ${styles.hubFeed}` : feedClass} data-hero={heroTop || undefined} data-feed>
@@ -30536,7 +30647,6 @@ import { Icon } from '@l3/components/Icon'
 import { Inset } from '@l3/components/Inset'
 import { PriceChange } from '@l3/components/PriceChange'
 import { Section } from '@l3/components/Section'
-import { SectionHeader } from '@l3/components/SectionHeader'
 import { Select } from '@l3/components/Select'
 import { Stack } from '@l3/components/Stack'
 import { msDevices, msElectricCar, msHealthCross, msMemory, msPaid, msSavings } from '@l3/icons/material'
@@ -30595,7 +30705,8 @@ function ThemeOverview({ id }: { id: ThemeId }) {
     <Card aria-label={t(`us.theme.${id}`)}>
       <Stack direction="horizontal" align="center" gap="16">
         <Stack gap="04" className={styles.about}>
-          <h3 className={styles.name}>{t(`us.theme.${id}`)}</h3>
+          {/* The theme's name with its stock count in brackets (18 Nov: the "All stocks · n stocks" header is hidden). */}
+          <h3 className={styles.name}>{t('us.themes.nameCount', { name: t(`us.theme.${id}`), count: theme.symbols.length })}</h3>
           <p className={styles.desc}>{t(`us.theme.${id}.desc`)}</p>
         </Stack>
         <Stack gap="04" align="end" className={styles.returns}>
@@ -30616,11 +30727,9 @@ function ThemeBody({ id, onOpen }: { id: ThemeId; onOpen: (sym: string) => void 
     <Inset paddingInline="00" paddingBlock="24" data-page-end>
       <Stack gap="32">
         <Inset paddingInline="16" paddingBlock="00"><ThemeOverview id={id} /></Inset>
-        {/* All stocks: edge-to-edge list rows (StockListCard look="list", as Market's lists), a hairline between them. */}
+        {/* All stocks: edge-to-edge list rows (StockListCard look="list", as Market's lists), a hairline between them. No
+            header (hidden 18 Nov, the user's call): the count sits in the overview's heading. */}
         <Section gap="08">
-          <Inset paddingInline="16" paddingBlock="00">
-            <SectionHeader title={t('us.themes.allStocks')} description={t('us.themes.stocks', { count: theme.symbols.length })} headingLevel={3} />
-          </Inset>
           <Stack gap="00">
             {theme.symbols.map((sym) => <ThemeStock key={sym} sym={sym} onOpen={onOpen} />)}
           </Stack>
@@ -56082,8 +56191,6 @@ import { Tabs } from '@l3/components/Tabs'
 import type { FlowOption } from '../flows/types'
 import { usdInrSnapshot } from './data/usStocks'
 import { liveDrift, useLiveTick } from './data/live'
-import { useFlowOption } from './prototype'
-import { USER_STATUS } from './userStatus'
 import styles from './money.module.css'
 
 // ── The rate ────────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -56164,7 +56271,10 @@ export const moneyOptions: FlowOption[] = [
   },
 ]
 
-const useInrDisplay = () => useFlowOption(USER_STATUS, 'inrDisplay', moneyOptions[0].default) as InrDisplay
+// Archived 18 Nov (the user's call): the "₹ equivalent" setting is no longer offered — US money shows in $ only. The
+// ₹ below / $ ⇄ ₹ switch code stays; set INR_DISPLAY to 'below' or 'switch' to see it (stock and ETF pages keep their ≈ ₹).
+const INR_DISPLAY = moneyOptions[0].default as InrDisplay
+const useInrDisplay = () => INR_DISPLAY
 
 // The currency picked on the switch: one for the whole app, remembered on this device (like a real app's preference).
 const CURRENCY_KEY = 'us-currency'
@@ -56884,8 +56994,9 @@ import styles from './Diwali.module.css'
 const t = makeCopy('shared', copy)
 
 /**
- * Diwali touch (temporary, festival only) — a switch in the prototype's App settings → Diwali, on by default (the spec
- * for developers: docs/DIWALI.md):
+ * Diwali touch (temporary, festival only) — OFF and its setting hidden since 18 Nov (the festival is over; the user's
+ * call). Was a switch in the prototype's App settings → Diwali. To bring it back: set DIWALI_ON and re-add the option in
+ * src/flows/index.ts (spec for developers: docs/DIWALI.md):
  * - `diwaliFlip`: on Stocks / F&O home, the search pill's icon and label turn into the lotus diya and "Happy Green
  *   Diwali" (with a sparkler round the pill) twice, then go back.
  * Archived versions (not in the app): the Garland splash (archive/DiwaliSplash.tsx), the Lanterns splash and the profile
@@ -56895,10 +57006,14 @@ export const DIWALI_OPTIONS = {
   search: { id: 'diwaliFlip', off: 'off', on: 'search', default: 'search' },
 } as const
 
+/** The festival switch: false = the regular app everywhere, whatever was picked before. */
+const DIWALI_ON = false
+
 export const useDiwali = (which: keyof typeof DIWALI_OPTIONS) => {
   const option = DIWALI_OPTIONS[which]
-  // The same default as App settings (src/flows/index.ts): the stored value is keyed by it.
-  return useFlowOption('app', option.id, option.default) === option.on
+  // The same default as App settings had (src/flows/index.ts): the stored value is keyed by it.
+  const picked = useFlowOption('app', option.id, option.default) === option.on
+  return DIWALI_ON && picked
 }
 
 // The lotus diya (120 × 96 artwork). A petal is a teardrop from its base (0, 0) to its tip (0, -length), turned by
@@ -58345,6 +58460,7 @@ export const userStatusOptions: FlowOption[] = [
     id: 'banks',
     group: 'User status',
     label: 'Bank accounts',
+    picker: 'dropdown', // a dropdown like User account state (18 Nov: five choices didn't fit a segmented row)
     // Three / SBI only: with an account at a bank US Stocks money can't go from (State Bank of India).
     values: [{ value: 'none', label: 'None' }, { value: 'one', label: 'One' }, { value: 'two', label: 'Two' }, { value: 'three', label: 'Three (+ SBI)' }, { value: 'sbi', label: 'SBI only' }],
     default: 'three',

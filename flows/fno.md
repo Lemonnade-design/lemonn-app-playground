@@ -495,6 +495,7 @@ The source uses old D2 controls alongside L3; their code equivalents are L3 comp
 - 2026-11-17 — Prototype setting “Calendar days” for Expiring This Week v2 / v3: 3 today · 2 today + 1 tomorrow · 1 a day.
 - 2026-11-17 — Calendar days: “2 today · 1 tomorrow” is the default.
 - 2026-11-17 — Calendar today: on the calendar page (fno-38) today's date block is inverted (surface-inverted, content-inverted text) instead of ringed; the home's short calendar no longer marks today.
+- 2026-11-18 — The profile avatar in the top bar has its 1px indigo ring back (only the user's profile; other avatars and logos stay borderless).
 
 
 ## Source — this flow
@@ -5012,7 +5013,7 @@ export function FnoNav({ onHome, onDestination, onChain, onScalper }: { onHome: 
 .bar > :is(.profile, .search, .wallet) { display: inline-flex; flex: none; align-items: center; justify-content: center; height: var(--app-stocks-topbar-control); padding: 0; border: 0; color: var(--l3-content-primary); cursor: pointer; -webkit-tap-highlight-color: transparent; transition: transform var(--l3-motion-duration-short) var(--l3-motion-easing-standard); }
 .bar > :is(.profile, .search, .wallet):active { transform: scale(var(--l3-motion-scale-press-default)); }
 .bar > :is(.profile, .search, .wallet):focus-visible { outline: 2px solid var(--l3-content-primary); outline-offset: 2px; }
-.bar .profile { width: var(--app-stocks-topbar-avatar); height: var(--app-stocks-topbar-avatar); border-radius: var(--l3-radius-full); background: var(--l3-surface-accent-indigo-light); color: var(--l3-content-accent-indigo-default); font: var(--l3-text-label-14); }
+.bar .profile { width: var(--app-stocks-topbar-avatar); height: var(--app-stocks-topbar-avatar); border-radius: var(--l3-radius-full); background: var(--l3-surface-accent-indigo-light); box-shadow: inset 0 0 0 1px var(--l3-border-accent-indigo-default); /* 1px ring: the user's profile keeps it (18 Nov) */ color: var(--l3-content-accent-indigo-default); font: var(--l3-text-label-14); }
 .bar .search { flex: 1; min-width: 0; justify-content: flex-start; gap: var(--l3-spacing-08); padding-inline: var(--l3-spacing-12); border-radius: var(--l3-radius-full); background: var(--l3-surface-default); box-shadow: inset 0 0 0 1px var(--l3-border-light); }
 .placeholder { overflow: hidden; color: var(--l3-content-secondary); font: var(--l3-text-label-14); text-overflow: ellipsis; white-space: nowrap; }
 .wallet { width: var(--app-stocks-topbar-control); border-radius: var(--l3-radius-full); background: var(--l3-surface-default); box-shadow: inset 0 0 0 1px var(--l3-border-light); }
@@ -10072,8 +10073,9 @@ import styles from './Diwali.module.css'
 const t = makeCopy('shared', copy)
 
 /**
- * Diwali touch (temporary, festival only) — a switch in the prototype's App settings → Diwali, on by default (the spec
- * for developers: docs/DIWALI.md):
+ * Diwali touch (temporary, festival only) — OFF and its setting hidden since 18 Nov (the festival is over; the user's
+ * call). Was a switch in the prototype's App settings → Diwali. To bring it back: set DIWALI_ON and re-add the option in
+ * src/flows/index.ts (spec for developers: docs/DIWALI.md):
  * - `diwaliFlip`: on Stocks / F&O home, the search pill's icon and label turn into the lotus diya and "Happy Green
  *   Diwali" (with a sparkler round the pill) twice, then go back.
  * Archived versions (not in the app): the Garland splash (archive/DiwaliSplash.tsx), the Lanterns splash and the profile
@@ -10083,10 +10085,14 @@ export const DIWALI_OPTIONS = {
   search: { id: 'diwaliFlip', off: 'off', on: 'search', default: 'search' },
 } as const
 
+/** The festival switch: false = the regular app everywhere, whatever was picked before. */
+const DIWALI_ON = false
+
 export const useDiwali = (which: keyof typeof DIWALI_OPTIONS) => {
   const option = DIWALI_OPTIONS[which]
-  // The same default as App settings (src/flows/index.ts): the stored value is keyed by it.
-  return useFlowOption('app', option.id, option.default) === option.on
+  // The same default as App settings had (src/flows/index.ts): the stored value is keyed by it.
+  const picked = useFlowOption('app', option.id, option.default) === option.on
+  return DIWALI_ON && picked
 }
 
 // The lotus diya (120 × 96 artwork). A petal is a teardrop from its base (0, 0) to its tip (0, -length), turned by

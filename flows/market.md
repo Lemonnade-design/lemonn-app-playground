@@ -187,6 +187,12 @@ card is used by every stock list in the app.
 - 2026-11-17 — Tabs: tapping a tab or swiping the body left / right slides the whole list to the next tab (shared `useSwipeBetween`, the stocks theme page's pattern); a new tab opens at its top.
 - 2026-11-17 — The filter bar sits in the top bar (Actionbar `bottom`, under the tabs): it stays put while the list scrolls or slides. The top bar's bottom line shows only once the list has scrolled under it. L3 gap: Actionbar always draws its line (no "line on scroll" option; local `.barAtTop`).
 - 2026-11-17 — Top bar search + wallet: the shared `SearchWalletActions` (round 38, no shadow), the same pair on every navbar tab.
+- 2026-11-18 — Filters sheet: the grey rail runs the full height, header line to dock (the top and bottom strips were white: the sheet body clipped the rail's pulled-out ends), and has a 1px border on its right.
+- 2026-11-18 — Applied-filter chips above the list ("Price: high to low ×") are fully round.
+- 2026-11-18 — Applied-filter row scrolls sideways only (the chips' 48 tap area made it scroll up and down too).
+- 2026-11-18 — Applied-filter chips run right up to the filter button (no gap) and fade out over their last 24 instead of cutting off.
+- 2026-11-18 — Archived the Tabs and Picker settings: V2 kept (pill chip tabs, "IN Stocks" / "US Stocks" picker); the V1 code stays behind constants in Market.tsx.
+- 2026-11-18 — Scrolling the list fades out the "Apply filters" hint (the filter button stays); applied chips stay put.
 
 
 ## Source — this flow
@@ -203,6 +209,7 @@ card is used by every stock list in the app.
   padding-block: var(--l3-spacing-08);
   overflow-y: auto;
   background: var(--l3-surface-secondary);
+  border-right: 1px solid var(--l3-border-light); /* 1px hairline between the rail and the pane (18 Nov) */
 }
 
 .tab {
@@ -700,12 +707,9 @@ export const market: Flow = {
     { id: 'lists', title: 'Lists' },
     { id: 'filters', title: 'Filters' },
   ],
-  options: [
-    // The list tabs beside the IN / US picker: V1 underline tabs, V2 pill chips (default, 18 Nov — the user's call).
-    { id: 'tabs', label: 'Tabs', values: [{ value: 'v1', label: 'V1' }, { value: 'v2', label: 'V2' }], default: 'v2' },
-    // The IN / US picker's label: V1 "IN" / "US", V2 "IN Stocks" / "US Stocks" (default, 18 Nov — the user's call).
-    { id: 'picker', label: 'Picker', values: [{ value: 'v1', label: 'V1' }, { value: 'v2', label: 'V2' }], default: 'v2' },
-  ],
+  // Archived 18 Nov (the user's call): "Tabs" (V1 underline · V2 pill chips) and "Picker" (V1 "IN" / "US" · V2 "IN Stocks" /
+  // "US Stocks"). V2 of both is kept, hard-coded in Market.tsx (PILL_TABS, LONG_PICKER); the V1 code stays there.
+  options: [],
   screens: [
     { id: 'market-01', section: 'lists', name: 'Market · All', figma: '', note: 'The filter bar shows "Apply filters" until something is applied.', tab: true, render: (go) => <Market onTab={(t) => goToTab(go, t)} onSearch={() => go('search-24')} onOpenUs={(sym) => { viewUsStock(sym); go('us-stocks-13') }} onOpenStock={(s) => { openStock(s); go('stocks-32') }} /> },
     { id: 'market-02', section: 'lists', name: 'Market · Top gainers', figma: '', note: 'Same layout — only the list changes.', tab: true, render: (go) => <Market tab="gainers" onTab={(t) => goToTab(go, t)} onSearch={() => go('search-24')} onOpenUs={(sym) => { viewUsStock(sym); go('us-stocks-13') }} onOpenStock={(s) => { openStock(s); go('stocks-32') }} /> },
@@ -763,12 +767,30 @@ export const market: Flow = {
   font: var(--l3-text-heading-14);
 }
 
+/* Scrolled: the hint fades out, the filter button stays (applied chips never hide) — 18 Nov. */
+.filterHint {
+  transition: opacity var(--l3-motion-duration-short) var(--l3-motion-easing-standard);
+}
+.filterRow[data-scrolled] .filterHint {
+  opacity: 0;
+}
+
 /* Applied filters: the row takes the space left of the filter button and scrolls sideways if the chips don't fit. */
 .applied {
   position: relative; /* keeps absolutely placed bits inside the scrolling row */
   flex: 1;
   overflow-x: auto;
+  /* Sideways only (18 Nov fix): the Small chips' 48 tall tap area (L3 Button ::after) stuck out of the 32 row, so the
+     row also scrolled up and down. 8 of room above and below holds the tap area, given back with negative margins so
+     the row keeps its place. */
+  overflow-y: hidden;
+  padding-block: var(--l3-spacing-08);
+  margin-block: calc(-1 * var(--l3-spacing-08));
   scrollbar-width: none;
+  /* The chips fade out over the last 24 before the filter button instead of cutting off (18 Nov); 24 of room after the
+     last chip lets it scroll clear of the fade. The mask's colour only sets opacity. */
+  padding-inline-end: var(--l3-spacing-24);
+  mask-image: linear-gradient(to right, #000 calc(100% - var(--l3-spacing-24)), transparent);
 }
 
 .applied::-webkit-scrollbar {
@@ -777,6 +799,12 @@ export const market: Flow = {
 
 .applied > * {
   flex: none;
+}
+
+/* The applied-filter chips are fully round (user ask, 18 Nov), like the round filter button. FLAG: L3 Button has no
+   pill shape, so its radius variable is set to full here (L3 gap). */
+.applied > button[data-size] {
+  --btn-radius: var(--l3-radius-full);
 }
 
 .filterButton {
@@ -927,13 +955,17 @@ type Props = {
  * same layout; only the stocks change. Above the list: the applied filters as removable chips (or "Apply filters")
  * and the filter button, with a dot when something is applied.
  */
+// Archived 18 Nov: the Tabs and Picker settings — V2 kept (pill chips, long label). Set false to see V1.
+const PILL_TABS: boolean = true
+const LONG_PICKER: boolean = true
+
 export function Market({ market: initialMarket = 'in', tab: initialTab = 'all', filters: initialFilters = {}, sheet = false, sheetSection, onTab, onSearch, onOpenUs, onOpenStock }: Props) {
   // Opened from another screen with a market / tab / filters to start on (Home's "View all")? Read once.
   const [handoff] = useState(takeMarketHandoff)
-  // List tabs: V1 underline tabs (a baseline under the whole row, the picker too), V2 pill chips (settings: Tabs).
-  const pillTabs = useFlowOption('market', 'tabs', 'v2') === 'v2'
-  // The IN / US picker's label: V1 "IN" / "US", V2 "IN Stocks" / "US Stocks" (settings: Picker).
-  const longPicker = useFlowOption('market', 'picker', 'v2') === 'v2'
+  // List tabs: pill chips; the picker reads "IN Stocks" / "US Stocks". Archived options (index.tsx): V1 underline tabs
+  // with a baseline under the row, V1 short "IN" / "US" label.
+  const pillTabs = PILL_TABS
+  const longPicker = LONG_PICKER
   const [market, setMarket] = useState<MarketId>(handoff?.market ?? initialMarket)
   const [tab, setTab] = useState<MarketTab>(handoff?.tab && (tabs as string[]).includes(handoff.tab) ? (handoff.tab as MarketTab) : initialTab)
   const [filters, setFilters] = useState<Filters>(handoff ? (handoff.filters ?? {}) : initialFilters)
@@ -962,6 +994,17 @@ export function Market({ market: initialMarket = 'in', tab: initialTab = 'all', 
     }
     return null
   }
+  // Scrolled down the list? Then the "Apply filters" hint fades out (only the filter button stays); applied chips stay
+  // put (18 Nov, the user's call).
+  const [scrolled, setScrolled] = useState(false)
+  useEffect(() => {
+    const box = scroller()
+    if (!box) return
+    const onScroll = () => setScrolled(box.scrollTop > 0)
+    onScroll()
+    box.addEventListener('scroll', onScroll, { passive: true })
+    return () => box.removeEventListener('scroll', onScroll)
+  }, [])
   // The tabs beside sit level with the top of what's on screen, so a swipe from far down the list still shows them.
   const peek = () => track.current?.style.setProperty('--market-peek-top', `${scroller()?.scrollTop ?? 0}px`)
   const show = (next: MarketTab) => { setTab(next); setTapped(null) }
@@ -1044,9 +1087,10 @@ export function Market({ market: initialMarket = 'in', tab: initialTab = 'all', 
               </Stack>
               {/* The filter bar hangs under the top bar, over the list, on a fade (white → 80% → clear, 18 Nov): the list
                   scrolls up under it. The list starts its height lower (.page) so nothing is hidden at rest. */}
-              <div className={styles.filterRow}>
+              <div className={styles.filterRow} data-scrolled={scrolled || undefined}>
               <Inset paddingInline="16" paddingBlock="12">
-                <Stack direction="horizontal" align="center" gap="12">
+                {/* No gap: the chips run up to the filter button and fade out under their right edge (18 Nov). */}
+                <Stack direction="horizontal" align="center" gap="00">
                   {applied.length ? (
                     <Stack direction="horizontal" gap="08" className={styles.applied} role="group" aria-label={t('filterBar.appliedLabel')}>
                       {applied.map(({ group, option }) => (
@@ -1108,8 +1152,17 @@ export function Market({ market: initialMarket = 'in', tab: initialTab = 'all', 
 .split {
   display: grid;
   grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
-  height: var(--app-size-filter-body);
-  margin: calc(-1 * var(--l3-spacing-16)) calc(-1 * var(--l3-spacing-16)) calc(-1 * var(--l3-spacing-24));
+  /* The body's height plus the sheet's 16 top and 24 bottom spaces, which this sheet drops (below). */
+  height: calc(var(--app-size-filter-body) + var(--l3-spacing-16) + var(--l3-spacing-24));
+  margin: 0 calc(-1 * var(--l3-spacing-16));
+}
+
+/* 18 Nov fix: the split used to pull itself over the sheet's top / bottom spaces with negative margins, but the sheet
+   body scrolls and clips, so those strips stayed white above and below the grey rail. The sheet's spaces go
+   (L3 marks them data-sheet-space) and the split takes their height, so the rail is grey from the header line to the
+   dock. */
+.sheet > [data-sheet-space] {
+  display: none;
 }
 
 .pane {
@@ -1188,6 +1241,7 @@ export function FilterSheet({ market = 'in', initial, section, resultCount, onAp
 
   return (
     <Sheet
+      className={styles.sheet}
       labelledBy={headingId}
       onClose={onClose}
       header={<BottomSheetHeader headingId={headingId} heading={t('sheet.title')} />}
@@ -26297,58 +26351,6 @@ export const viewUsStock = (symbol: string) => { viewed = symbol }
 export const viewedUsStock = () => viewed
 ```
 
-### `src/shared/data/user.ts`
-
-```ts
-// The sample user every flow uses. FICTIONAL — the live screenshots contain a real customer's details; never copy them.
-export type User = {
-  name: string
-  fatherName: string
-  mobile: string
-  email: string
-  pan: string
-  dob: string
-  occupation: string
-  maritalStatus: string
-}
-
-export const user: User = {
-  name: 'Rohan Mehta',
-  fatherName: 'Suresh Mehta',
-  mobile: '9876543210',
-  email: 'rohan.mehta@gmail.com',
-  pan: 'ABCPM1234K',
-  dob: '14 Aug 1996',
-  occupation: 'Private sector',
-  maritalStatus: 'Single',
-}
-
-export type BankAccount = { bank: string; accountNumber: string; ifsc: string; type: 'Savings' | 'Current'; branch: string }
-
-export const bankAccount: BankAccount = {
-  bank: 'HDFC Bank',
-  accountNumber: '50100234567821',
-  ifsc: 'HDFC0001234',
-  type: 'Savings',
-  branch: 'Andheri West, Mumbai',
-}
-
-/** A linked bank account as the money screens show it: the bank's logo symbol (companies.ts) and the last 4 digits. */
-export type LinkedBank = BankAccount & { id: string; logoSymbol: string; last4: string; primary?: boolean }
-
-/** The user's linked bank accounts, primary first. "User status → Bank accounts" picks how many the prototype shows. */
-export const linkedBanks: LinkedBank[] = [
-  { ...bankAccount, id: 'hdfc', logoSymbol: 'HDFCBANK', last4: '7821', primary: true },
-  { id: 'icici', bank: 'ICICI Bank', accountNumber: '002101554410', ifsc: 'ICIC0000021', type: 'Savings', branch: 'Powai, Mumbai', logoSymbol: 'ICICIBANK', last4: '4410' },
-]
-
-/**
- * A linked account at a bank that can't send money abroad for US Stocks (not an LRS partner) — "User status → Bank
- * accounts: Three" and "SBI only" add it, to show the US Stocks bank step with an account it can't use.
- */
-export const otherBank: LinkedBank = { id: 'sbi', bank: 'State Bank of India', accountNumber: '38201945520', ifsc: 'SBIN0000300', type: 'Savings', branch: 'Fort, Mumbai', logoSymbol: 'SBIN', last4: '5520' }
-```
-
 ### `src/shared/money.module.css`
 
 ```css
@@ -26389,8 +26391,6 @@ import { Tabs } from '@l3/components/Tabs'
 import type { FlowOption } from '../flows/types'
 import { usdInrSnapshot } from './data/usStocks'
 import { liveDrift, useLiveTick } from './data/live'
-import { useFlowOption } from './prototype'
-import { USER_STATUS } from './userStatus'
 import styles from './money.module.css'
 
 // ── The rate ────────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -26471,7 +26471,10 @@ export const moneyOptions: FlowOption[] = [
   },
 ]
 
-const useInrDisplay = () => useFlowOption(USER_STATUS, 'inrDisplay', moneyOptions[0].default) as InrDisplay
+// Archived 18 Nov (the user's call): the "₹ equivalent" setting is no longer offered — US money shows in $ only. The
+// ₹ below / $ ⇄ ₹ switch code stays; set INR_DISPLAY to 'below' or 'switch' to see it (stock and ETF pages keep their ≈ ₹).
+const INR_DISPLAY = moneyOptions[0].default as InrDisplay
+const useInrDisplay = () => INR_DISPLAY
 
 // The currency picked on the switch: one for the whole app, remembered on this device (like a real app's preference).
 const CURRENCY_KEY = 'us-currency'
@@ -27558,152 +27561,5 @@ export function useSwipeBetween({ canGo, onSwitch, page, area, slides, fades }: 
     /** Switch by tap (tabs, market button): the same switch as a swipe, towards `direction`. */
     go: (direction: 1 | -1, commit: () => void) => leave(direction, commit),
   }
-}
-```
-
-### `src/shared/userStatus.ts`
-
-```ts
-// Where the user is in the app — the prototype's app-level settings ("User status" in the preview panel, the phone's
-// settings sheet and a floating card beside the phone). Every screen that depends on it reads it here, so they all stay
-// in sync: pick "User account state: Active · money on the way" once and the Home's US tab, a US stock page and the wallet all
-// show that state. Picking never moves on by itself; taps in the prototype don't change it.
-// In a real app these come from the user's account (KYC status, US Stocks activation, wallet, holdings).
-import type { FlowOption } from '../flows/types'
-import { setFlowOption, useFlowOption } from './prototype'
-import { linkedBanks, otherBank, type LinkedBank } from './data/user'
-
-/** The settings' owner in the preview (as a flow id: where the picks are remembered). */
-export const USER_STATUS = 'app'
-
-export type KycStatus = 'done' | 'pending'
-export type UsActivation = 'kyc' | 'off' | 'review' | 'support' | 'failed' | 'active'
-export type UsWallet = 'empty' | 'onTheWay' | 'funded'
-export type UsHoldings = 'none' | 'some'
-export type BankLinks = 'none' | 'one' | 'two' | 'three' | 'sbi'
-
-/**
- * Screens that change with the user status: the settings float beside the phone on these (desktop preview). The Home,
- * its US tab screens (each one sets the status to its own state on arrival, then follows a pick), a US stock page and
- * the wallet's US tab.
- */
-/** The add-money screens and the wallet: the bank row and its sheet change with the user's linked banks. */
-const BANK_SCREENS = ['deposit-01', 'deposit-06', 'deposit-07', 'deposit-08', 'deposit-09', 'us-stocks-21', 'us-stocks-22', 'us-stocks-23', 'us-stocks-24', 'us-stocks-53', 'us-stocks-54', 'us-stocks-95']
-
-const STATUS_SCREENS = ['stocks-01', 'stocks-09', 'stocks-10', 'stocks-13', 'stocks-14', 'stocks-15', 'stocks-16', 'stocks-17', 'stocks-19', 'stocks-20', 'stocks-21', 'us-stocks-13', 'us-stocks-54']
-
-/** The app-level user status settings. */
-export const userStatusOptions: FlowOption[] = [
-  {
-    // One list for the whole way in, in order — one row of states (18 Nov, the user's call; was three settings: US
-    // Stocks activation, then USD wallet and US holdings under "Active"): not active while the Lemonn KYC is pending
-    // (US Stocks can't be activated until it's done), not active, the activation steps, then active with $0, money on
-    // the way, money in the wallet, US holdings. The values are the UsJourney steps.
-    id: 'account',
-    group: 'User status',
-    label: 'User account state',
-    picker: 'dropdown',
-    values: [
-      { value: 'kyc', label: 'Not active · KYC pending' },
-      { value: 'activate', label: 'Not active' },
-      { value: 'review', label: 'Under review' },
-      { value: 'support', label: 'Under review · contact support' },
-      { value: 'failed', label: 'Activation failed' },
-      { value: 'activated', label: 'Active · $0' },
-      { value: 'onTheWay', label: 'Active · money on the way' },
-      { value: 'ready', label: 'Active · has money' },
-      { value: 'holding', label: 'Active · US holdings' },
-    ],
-    // The prototype opens on a user who's all set: activated, money in the wallet, holding US stocks.
-    default: 'holding',
-    floatOn: STATUS_SCREENS,
-  },
-  {
-    // Bank accounts linked to Lemonn (KYC adds the first). None = the add-money screens ask for one first.
-    id: 'banks',
-    group: 'User status',
-    label: 'Bank accounts',
-    // Three / SBI only: with an account at a bank US Stocks money can't go from (State Bank of India).
-    values: [{ value: 'none', label: 'None' }, { value: 'one', label: 'One' }, { value: 'two', label: 'Two' }, { value: 'three', label: 'Three (+ SBI)' }, { value: 'sbi', label: 'SBI only' }],
-    default: 'three',
-    floatOn: BANK_SCREENS,
-  },
-]
-
-const option = (id: string) => userStatusOptions.find((o) => o.id === id)!
-const useStatus = (id: string) => useFlowOption(USER_STATUS, id, option(id).default)
-
-export type UserStatus = { kyc: KycStatus; us: UsActivation; usWallet: UsWallet; usHoldings: UsHoldings; banks: BankLinks }
-
-/** The user status as picked (settings under one that's off keep their last pick). KYC comes from the activation list. */
-export function useUserStatus(): UserStatus {
-  return { ...statusOf(useStatus('account') as UsJourney), banks: useStatus('banks') as BankLinks }
-}
-
-/** One account state as the activation, wallet and holdings it means. */
-function statusOf(step: UsJourney): Omit<UserStatus, 'banks'> {
-  const us: UsActivation = step === 'activate' ? 'off' : ['kyc', 'review', 'support', 'failed'].includes(step) ? (step as UsActivation) : 'active'
-  return {
-    kyc: us === 'kyc' ? 'pending' : 'done',
-    us,
-    usWallet: step === 'activated' ? 'empty' : step === 'onTheWay' ? 'onTheWay' : 'funded',
-    usHoldings: step === 'holding' ? 'some' : 'none',
-  }
-}
-
-/**
- * The bank accounts the user has linked, as picked in "User status → Bank accounts" (primary first). Money in the USD
- * wallet (on the way or landed) came from a bank, so then "None" counts as one — as in the real app, a user with money
- * moving always has a bank.
- */
-export function useLinkedBanks(): LinkedBank[] {
-  const picked = useStatus('banks') as BankLinks
-  const { us, usWallet } = statusOf(useStatus('account') as UsJourney)
-  const moneyMoved = us === 'active' && usWallet !== 'empty'
-  const banks = picked === 'none' && moneyMoved ? 'one' : picked
-  const linked = { none: [], one: linkedBanks.slice(0, 1), two: linkedBanks, three: [...linkedBanks, otherBank], sbi: [{ ...otherBank, primary: true }] }[banks]
-  return addedBank ? [...linked, addedBank] : linked
-}
-
-// A bank account added in the prototype ("Add bank account" → verified). Kept in memory, so a reload starts without it.
-let addedBank: LinkedBank | undefined
-let addBankOpener: string | undefined
-let addBankForUsStocks = false
-
-/**
- * An add-money screen (₹ or US) or the US Stocks activation opens "Add bank account": remember which, so the verified
- * account comes back to it. `usStocks`: the account is for US Stocks, so it must be at a bank that can send money abroad.
- */
-export const startAddBank = (fromScreen?: string, { usStocks = false }: { usStocks?: boolean } = {}) => { addBankOpener = fromScreen; addBankForUsStocks = usStocks }
-/** "Add bank account" was opened from US Stocks: only the supported banks can be added. */
-export const addBankForUs = () => addBankForUsStocks
-/** The add-money screen that opened "Add bank account" (undefined when it was opened straight from the screen list). */
-export const addBankReturnScreen = () => addBankOpener
-/** The ₹1 check passed: the account joins the linked banks, and the add-money screens pick it. */
-export const linkBank = (bank: LinkedBank) => { addedBank = bank }
-/** The account added in this session, if any. */
-export const newlyLinkedBank = () => addedBank
-
-/**
- * Where the user is with US Stocks, as one step: KYC pending → 'kyc'; not activated → 'activate'; under review /
- * contact support / failed; activated → $0 'activated', 'onTheWay', or with money 'ready' / 'holding'.
- * (The Stocks flow's UsState uses the same names.)
- */
-export type UsJourney = 'kyc' | 'activate' | 'review' | 'support' | 'failed' | 'activated' | 'onTheWay' | 'ready' | 'holding'
-
-export function usJourney({ kyc, us, usWallet, usHoldings }: UserStatus): UsJourney {
-  if (kyc === 'pending' || us === 'kyc') return 'kyc'
-  if (us === 'off') return 'activate'
-  if (us !== 'active') return us
-  if (usWallet === 'empty') return 'activated'
-  if (usWallet === 'onTheWay') return 'onTheWay'
-  return usHoldings === 'some' ? 'holding' : 'ready'
-}
-
-export const useUsJourney = () => usJourney(useUserStatus())
-
-/** Sets the user status to one US Stocks step (a US tab screen showing its own state sets it on arrival). */
-export function setUsJourney(step: UsJourney) {
-  setFlowOption(USER_STATUS, 'account', option('account').default, step)
 }
 ```
