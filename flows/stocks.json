@@ -230,6 +230,96 @@
         "us-stocks-13"
       ],
       "figmaUrl": ""
+    },
+    {
+      "id": "stocks-32",
+      "name": "Stock · Overview",
+      "figma": "",
+      "note": "Rebuilt from the live app (ADB, 2026-11-02). The top part follows the US stock page: change over the chart range, NSE / BSE switch, line chart, ranges.",
+      "goesTo": [
+        "stocks-01"
+      ],
+      "figmaUrl": ""
+    },
+    {
+      "id": "stocks-33",
+      "name": "Stock · depth & about",
+      "figma": "",
+      "note": "Scrolled: the Actionbar shows symbol + price, the tabs stick under it. About Company opened (Read more).",
+      "goesTo": [
+        "stocks-01"
+      ],
+      "figmaUrl": ""
+    },
+    {
+      "id": "stocks-34",
+      "name": "Stock · shareholding & financials",
+      "figma": "",
+      "note": "Quarter chips change the bars; Quarterly ⇅ switches the Financials to yearly; Revenue / Profit / Networth.",
+      "goesTo": [
+        "stocks-01"
+      ],
+      "figmaUrl": ""
+    },
+    {
+      "id": "stocks-35",
+      "name": "Stock · Events",
+      "figma": "",
+      "note": "Events by year, latest first; Filters on the first year; View more lists older years.",
+      "goesTo": [
+        "stocks-01"
+      ],
+      "figmaUrl": ""
+    },
+    {
+      "id": "stocks-36",
+      "name": "Stock · event details",
+      "figma": "",
+      "note": "A tapped event: period and release date.",
+      "goesTo": [
+        "stocks-01"
+      ],
+      "figmaUrl": ""
+    },
+    {
+      "id": "stocks-37",
+      "name": "Stock · event filters",
+      "figma": "",
+      "note": "Choose filter: one checkbox per event type, Done applies.",
+      "goesTo": [
+        "stocks-01"
+      ],
+      "figmaUrl": ""
+    },
+    {
+      "id": "stocks-38",
+      "name": "Performance (ⓘ)",
+      "figma": "",
+      "note": "Daily Performance ⓘ: what each number means.",
+      "goesTo": [
+        "stocks-32"
+      ],
+      "figmaUrl": ""
+    },
+    {
+      "id": "stocks-39",
+      "name": "Glossary · Fundamentals (ⓘ)",
+      "figma": "",
+      "note": "Fundamentals ⓘ: what each ratio means.",
+      "goesTo": [
+        "stocks-32"
+      ],
+      "figmaUrl": ""
+    },
+    {
+      "id": "stocks-40",
+      "name": "Splash",
+      "figma": "",
+      "note": "The launch splash: the Lemonn logo centred for 2 s, then it fades into Home (a tap skips ahead). Hidden at launch for now (src/shared/ui/Splash: SPLASH_SCREENS is empty), so the app opens straight on the home; this page still plays it.",
+      "goesTo": [
+        "stocks-01"
+      ],
+      "figmaUrl": ""
     }
   ],
   "files": [
@@ -298,6 +388,8 @@
     "src/flows/stocks/components/ProductRowF1.module.css",
     "src/flows/stocks/components/ProductRowF1.tsx",
     "src/flows/stocks/components/ShortcutArt.tsx",
+    "src/flows/stocks/components/StockEvents.tsx",
+    "src/flows/stocks/components/StockOverview.tsx",
     "src/flows/stocks/components/TopBar.module.css",
     "src/flows/stocks/components/TopBar.tsx",
     "src/flows/stocks/components/UsIntroStory.module.css",
@@ -327,10 +419,14 @@
     "src/flows/stocks/screens/AnalystPicksPage.tsx",
     "src/flows/stocks/screens/BrandsPage.module.css",
     "src/flows/stocks/screens/BrandsPage.tsx",
+    "src/flows/stocks/screens/Glossary.tsx",
     "src/flows/stocks/screens/Home.module.css",
     "src/flows/stocks/screens/Home.tsx",
+    "src/flows/stocks/screens/StockPage.module.css",
+    "src/flows/stocks/screens/StockPage.tsx",
     "src/flows/stocks/screens/ThemePage.module.css",
-    "src/flows/stocks/screens/ThemePage.tsx"
+    "src/flows/stocks/screens/ThemePage.tsx",
+    "src/flows/stocks/sheets/EventSheets.tsx"
   ],
   "shared": [
     "src/shared/assets/flags/china.svg",
@@ -358,6 +454,7 @@
     "src/shared/data/market-snapshot.json",
     "src/shared/data/market.ts",
     "src/shared/data/marketHandoff.ts",
+    "src/shared/data/openStock.ts",
     "src/shared/data/portfolio.ts",
     "src/shared/data/us-market-snapshot.json",
     "src/shared/data/usDeposit.ts",
@@ -371,6 +468,8 @@
     "src/shared/ui/CenteredTabs.tsx",
     "src/shared/ui/DepositProgressSheet.module.css",
     "src/shared/ui/DepositProgressSheet.tsx",
+    "src/shared/ui/Diwali.module.css",
+    "src/shared/ui/Diwali.tsx",
     "src/shared/ui/Flag.module.css",
     "src/shared/ui/Flag.tsx",
     "src/shared/ui/MainNav.tsx",
@@ -380,12 +479,15 @@
     "src/shared/ui/Screen.tsx",
     "src/shared/ui/Sheet.module.css",
     "src/shared/ui/Sheet.tsx",
+    "src/shared/ui/Splash.module.css",
+    "src/shared/ui/Splash.tsx",
     "src/shared/ui/Spot.module.css",
     "src/shared/ui/Spot.tsx",
     "src/shared/ui/StockListCard.module.css",
     "src/shared/ui/StockListCard.tsx",
     "src/shared/ui/TopBarAction.module.css",
     "src/shared/ui/TopBarAction.tsx",
+    "src/shared/ui/copy.json",
     "src/shared/ui/useSwipeBetween.ts",
     "src/shared/userStatus.ts"
   ]

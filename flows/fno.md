@@ -10,28 +10,33 @@ Prototype: https://lemonnade-design.github.io/lemonn-app-prototype/#/fno · mach
 
 | Id | Screen | Figma | Taps go to | Note |
 |---|---|---|---|---|
+| `fno-34` | Splash | — | `fno-01` | The launch splash: the Lemonn logo centred for 2 s, then it fades into Equity home (a tap skips ahead). Hidden at launch for now (src/shared/ui/Splash: SPLASH_SCREENS is empty), so the app opens straight on the home; this page still plays it. |
 | `fno-01` | Equity home | [11569:41100](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=11569-41100) | — | From the main F&O tab. Home returns to Stocks; DASH, Search, Profile and Wallet open their existing flows. Selectors, chart metrics, filters, sorting and watchlist creation work locally. Destinations outside this frame open an explanatory sheet. |
 | `fno-02` | Home · watchlists & Smart Options | [11569:41100](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=11569-41100) | — | The same long screen, scrolled to watchlists. |
 | `fno-03` | Home · Futures Heatmap | [11569:41100](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=11569-41100) | — |  |
 | `fno-04` | Home · Smart Futures | [11569:41100](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=11569-41100) | — |  |
-| `fno-05` | Scalper | — | `fno-01`, `dash-20` | From ScalpPro on F&O home or the Scalper bottom-nav tab. The chart-tools sheet groups personal DASH AI indicators separately from Lemon indicators. |
-| `fno-06` | Scalper · DASH indicator | — | `fno-01`, `dash-20` | From DASH AI’s View indicator. Opens the chart-tools sheet directly on Indicators, the saved DASH AI indicator under Your indicators with a focus guide. Tap rows to add / remove indicators (several at once); search filters the list. |
-| `fno-07` | Scalper · indicator applied | — | `fno-01`, `dash-20` | With the saved DASH AI indicator on the chart: “1 ▾” at the chart’s top-left and illustrative EMA 9 / 21 lines on the NIFTY 50 candles. |
+| `fno-05` | Scalper | — | `dash-20` | From ScalpPro on F&O home, the Expiring cards, the Expiry calendar or the Scalper bottom-nav tab — always a new page in from the right; back returns to the page it was opened from. The chart-tools sheet groups personal DASH AI indicators separately from Lemon indicators. |
+| `fno-06` | Scalper · DASH indicator | — | `dash-20` | From DASH AI’s View indicator. Opens the chart-tools sheet directly on Indicators, the saved DASH AI indicator under Your indicators with a focus guide. Tap rows to add / remove indicators (several at once); search filters the list. |
+| `fno-07` | Scalper · indicator applied | — | `dash-20` | With the saved DASH AI indicator on the chart: “1 ▾” at the chart’s top-left and illustrative EMA 9 / 21 lines on the NIFTY 50 candles. |
+| `fno-35` | Break Even · position + breakeven line | [11756:78739](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=11756-78739) | `dash-20` | Version C (Boxed chip): an open position on the option chart — TP pill (drag ⠿ to move, ✕ removes), entry row (Exit · +65 · live P&L), SL pill (+ Add Trail), and the yellow dashed breakeven line ending in a “Breakeven ⓘ” chip flush to the price axis (Figma’s “B/E 105.55”: spelled out, no price — designer’s call; the label still reads the price) (tap → How breakeven works). Breakeven = entry + round-trip charges per unit (data.ts breakevenPrice). Buy at Mkt on fno-05 opens a position the same way; the first buy also opens How breakeven works. Exit buttons are 24 tall to sit on the pills (Figma), not Large. |
+| `fno-36` | Break Even · How breakeven works (sheet) | [11783:5569](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=11783-5569) | `dash-20` | Two versions (setting “Breakeven sheet”, floating card beside the phone): Version 2 (default) — heading “What is breakeven price?” + a description, the charges table, no info lines; Version 1 — “How breakeven works” with the two info lines, no table. Opens on the first buy and from the B/E chip’s ⓘ (and Settings → Breakeven line ⓘ). The example card plays once (then stops on the finished chart; a tap replays it) a 9.3 s explainer copied from the designer’s recording: on a white chart the buy at ₹100; the chart zooms in 2× and the orange charges zone fills one band per charge from the F&O options rate card, in ₹ on the ₹100 buy (top down: STT ₹0.15, transaction ₹0.07, stamp duty, SEBI, then brokerage ₹0.02 last at the bottom with a smaller tag; they come in top down — no GST band: it’s charged on the charges; heights by cost), then zooms back out to one thin zone, the tags sliding down under it and stacking into one “Order charges ≈₹0.26” tag (GST included); the dashed B/E line at ₹100.30 draws along its top, an LTP bubble rides the price line up through B/E (a ringed marker pulses) to “Sold at ₹102”, the green Net Profit zone fills, and it stops there. “I understand” is locked until the chart has played once (9.3 s), a loader line filling along its top edge, then turns primary (Figma’s button variants). Reduced motion: the finished chart, button ready. Under the example, the same trade as a calculation table (a card on the secondary surface, no heading, compact L3 key-value rows, one line each, no lines inside): Bought at ₹100.00 · Order charges (incl. GST) ≈₹0.26 — tap the row to open the breakdown (closed by default: STT, transaction, brokerage, stamp duty, SEBI, GST 18%) — and Breakeven price ₹100.30 in bold (L3 total row). Labels are L3’s 12 styles (the recording’s are ~11). The zoomed-in charges aren’t in Figma or the recording (designer’s brief). A V2 (starts zoomed in on a blue ₹0 → ₹100 fill, zooms out true to scale, sold 12% up at ₹112) is archived in fno/archive/BreakevenExplainerV2.tsx. |
+| `fno-37` | Break Even · chart settings (breakeven line) | [11754:69563](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=11754-69563) | `dash-20` | The chart-tools sheet on Settings: Auto TP/SL (animated mark, Applied), Chart type (Candles / Heikin Ashi / Line), Stop Loss Preference (radio), View on chart (Breakeven line ⓘ New, Buy/Sell executions, Sync Charts). Changes are a draft: Apply keeps them (unticking Breakeven line hides the B/E line and chip), Cancel or closing drops them. Figma’s rail (Bolt, Indicators, Drawings, Settings) is the live app’s six groups here. |
 | `fno-08` | Commodities home | [6754:63637](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=6754-63637) | — | The Commodities product tab. Gold / Silver / Crude Oil / Natural Gas shortcuts open the Lot summary (Gold Summary). The chart’s instrument selector (“Gold”) opens the contract picker. Popular commodities: Options ⇕ Futures switch; Futures Heatmap: Bullion / Energy / Metals. |
 | `fno-09` | Commodities · heatmap & Smart Futures | [6754:63637](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=6754-63637) | — | The same long screen, scrolled to the Futures Heatmap. |
 | `fno-10` | Contract picker · Commodities | [6754:65111](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=6754-65111) | — | From the chart’s “Gold ⇕”. Equity / Commodities tabs in the sheet header’s bottom slot, commodity chips (All, Gold, Silver …) under them; contracts grouped by commodity as radio rows (Gold Mini tagged “Lowest Margin”). Picking one updates the chart and closes the sheet. |
 | `fno-11` | Contract picker · Equity | [6754:65054](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=6754-65054) | — | The same sheet on its Equity tab: the 8 index contracts. |
+| `fno-38` | Commodity calendar (View all) | — | `fno-08`, `fno-21`, `fno-17` | From View all on Expiring This Week (fno-08). All / Options / Futures / Events (flat tabs with icons, sticky; All merges them by day). Options rows: option chain (→ fno-17, back returns here) + ScalpPro; futures: ScalpPro only; events: no buttons. Days from today under a month section header (SectionHeader, content-primary): weekday over the date in one grey block (surface-secondary; today inverted (surface-inverted)), beside it one card with that day’s contracts — one day can hold several. A row is only the name with flat ScalpPro (→ fno-05) and open-contract (→ asset page fno-21) icon buttons. Back → Commodities home. Layout after the user’s reference (Expiry Calendar screenshot, 2026-11-17; no Figma frame yet). |
 | `fno-12` | Gold Summary · by price | [6754:65113](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=6754-65113) | `fno-08`, `fno-17` | From a commodity shortcut on fno-08. Gold lot tabs (Gold, Gold Mini, Gold Guinea, Gold Ten, Gold Petal) in the Actionbar’s bottom slot; Futures (View all) and Options (View option chain, expiry month, category pills, Filter, sort). The sort opens a sheet: By Price · By Volume · Margin per lot. |
 | `fno-13` | Gold Summary · by volume | [6754:65288](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=6754-65288) | `fno-08`, `fno-17` | Sorted by volume: each option shows its traded volume, no change. |
 | `fno-14` | Gold Summary · margin per lot | [6754:65444](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=6754-65444) | `fno-08`, `fno-17` | Sorted by margin per lot: each option shows the margin for one lot, no change. |
 | `fno-15` | Strategies · Equity | [6754:64178](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=6754-64178) | — | The Strategies product tab with Equity selected in the pill group: shortcuts, Zing Trades, Smart Invest, Pre-build Strategies (Nifty 50 ⇕, Bullish / Bearish / Neutral / Volatile), Quick Trade. Card footer buttons stay Small (32) as in Figma. |
 | `fno-16` | Strategies · Commodities | [6754:64607](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=6754-64607) | — | The same tab with Commodities selected: commodity Smart Invest baskets, GOLD as the underlying. |
-| `fno-17` | Option chain | [11630:16785](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=11630-16785) | `fno-01`, `fno-21` | From Option chain on the F&O chart (any product tab) or the Option Chain bottom-nav tab; Back → F&O home. Opens scrolled to the spot pill. BankNifty ▾ and Expiry ▾ open sheets; Σ shows delta instead of the day change; the basket and Zing tile open the explanatory sheet. Column heads: Call / Put metric (LTP, OI, OI Chg, IV) and the strike range (All, ±5, ±10). Tap a price to Buy, tap it again to Sell, a third time to clear. |
-| `fno-18` | Option chain · Buy selected | [11630:16184](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=11630-16184) | `fno-01`, `fno-21` | A put price tapped once: B badge, green wash, the order dock with the contract, Balance / Req, quantity in lots and Buy (brand). Buy places a sample order (toast) and clears the selection. |
-| `fno-19` | Option chain · Sell selected | [11695:26269](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=11695-26269) | `fno-01`, `fno-21` | The same put tapped again: S badge, red wash, Sell (secondary) in the dock; Req becomes the margin per lot. |
-| `fno-20` | Option chain · illiquid contract | — | `fno-01`, `fno-21` | Illiquid contracts (deep in-the-money calls, far out-of-the-money puts) carry a block icon beside the price, like Groww. Unlike Groww, a tap never selects them: a tooltip opens just above — “ILLIQUID contract” / “Can’t be traded” ⓘ; tapping away closes it, ⓘ opens a sheet with why it’s blocked, its traded lots and buy–sell gap, and a tip. Opens on the 25,700 put with the tooltip up. |
-| `fno-21` | Asset page · Gold MINI | [6754:61613](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=6754-61613) | `fno-17`, `fno-05` | A commodity contract page. Entry (one of several): the contract name in the option chain order dock (“25,400 Put ›”). Back returns where it came from; Option chain → fno-17; Buy / Sell open the sample sheet. Equity contracts get their own (similar) page later. |
-| `fno-22` | Asset page · illiquid | [6754:61613](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=6754-61613) | `fno-17`, `fno-05` | Product rule (commodities only): an illiquid contract’s page shows the ILLIQUID tag next to its name and Buy / Sell greyed out, with “Trading is not allowed as this contract is illiquid” above them — whatever screen it was opened from. |
+| `fno-17` | Option chain | [11630:16785](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=11630-16785) | `fno-21` | From Option chain on the F&O chart (any product tab), the Expiry calendar’s option-chain button or the Option Chain bottom-nav tab; Back → the page it was opened from (F&O home when opened directly). Opens scrolled to the spot pill. BankNifty ▾ and Expiry ▾ open sheets; Σ shows delta instead of the day change; the basket and Zing tile open the explanatory sheet. Column heads: Call / Put metric (LTP, OI, OI Chg, IV) and the strike range (All, ±5, ±10). Tap a price to Buy, tap it again to Sell, a third time to clear. |
+| `fno-18` | Option chain · Buy selected | [11630:16184](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=11630-16184) | `fno-21` | A put price tapped once: B badge, green wash, the order dock with the contract, Balance / Req, quantity in lots and Buy (brand). Buy places a sample order (toast) and clears the selection. |
+| `fno-19` | Option chain · Sell selected | [11695:26269](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=11695-26269) | `fno-21` | The same put tapped again: S badge, red wash, Sell (secondary) in the dock; Req becomes the margin per lot. |
+| `fno-20` | Option chain · illiquid contract | — | `fno-21` | Illiquid contracts (deep in-the-money calls, far out-of-the-money puts) carry a block icon beside the price, like Groww. Unlike Groww, a tap never selects them: a tooltip opens just above — “ILLIQUID contract” / “Can’t be traded” ⓘ; tapping away closes it, ⓘ opens a sheet with why it’s blocked, its traded lots and buy–sell gap, and a tip. Opens on the 25,700 put with the tooltip up. |
+| `fno-21` | Asset page · Gold MINI | [6754:61613](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=6754-61613) | `fno-17` | A commodity contract page. Entry (one of several): the contract name in the option chain order dock (“25,400 Put ›”). Back returns where it came from; Option chain → fno-17; Buy / Sell open the sample sheet. Equity contracts get their own (similar) page later. |
+| `fno-22` | Asset page · illiquid | [6754:61613](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=6754-61613) | `fno-17` | Product rule (commodities only): an illiquid contract’s page shows the ILLIQUID tag next to its name and Buy / Sell greyed out, with “Trading is not allowed as this contract is illiquid” above them — whatever screen it was opened from. |
 | `fno-23` | Gold Summary · Buy / Sell sheet | — | `fno-08`, `fno-17` | Tapping any futures or option card opens the Buy / Sell sheet (live app, 2026-10-29): name › (asset page fno-21) · price, expiry · change, Buy (brand) / Sell (secondary). |
 | `fno-24` | Gold Summary · illiquid sheet | — | `fno-08`, `fno-17` | Product rule (commodities): an illiquid contract carries the ILLIQUID tag on its card (edge case — illiquid contracts shouldn’t be listed, but the state is built) and in the sheet; Buy / Sell are greyed out with “Trading is not allowed as this contract is illiquid”. Only the name › (asset page fno-22) or tapping outside works. |
 | `fno-25` | Order pad · Buy · Market | [8671:18433](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=8671-18433) | — | Commodity option chain order pad (other order pads differ a little). From Buy on the commodity asset page or the Gold Summary Buy / Sell sheet. Delivery / Intraday tabs, Market / Limit / SL pills, Quantity (⇕ lots) in steps of one lot, Set TPSL, Avail. · Req, Buy. Placing shows a sample toast; no order is sent. |
@@ -59,6 +64,7 @@ The F&O tab, implemented with Lemonnade V3 components from Figma [F&O Home → E
 
 | Id | What it shows | Figma |
 |---|---|---|
+| fno-34 | Splash: the launch splash (`src/shared/ui/Splash`), the Lemonn logo centred (it rises in). Shown for 1.5 s, then it fades into fno-01; plays whenever the app opens or reloads on F&O home | — |
 | fno-01 | Equity home, top | 11569:41100 |
 | fno-02 | The same page, at Watchlists / Smart Options | 11569:41100 |
 | fno-03 | The same page, at Futures Heatmap | 11569:41100 |
@@ -66,6 +72,9 @@ The F&O tab, implemented with Lemonnade V3 components from Figma [F&O Home → E
 | fno-05 | Scalper | Screenshot supplied 2026-10-26 |
 | fno-06 | Scalper, with DASH indicator sheet open | — |
 | fno-07 | Scalper, with the saved indicator applied | — |
+| fno-35 | Scalper, a position open: TP / entry / SL pills and the breakeven line (version C, Boxed chip) | 11756:78739 |
+| fno-36 | Break Even · How breakeven works (animated explainer sheet) | 11783:5569 (dark 11783:6220) |
+| fno-37 | Chart tools sheet on Settings | 11754:69563 (dark 11783:9335) |
 | fno-08 | Commodities home | 6754:63637 |
 | fno-09 | Commodities home, at Futures Heatmap | 6754:63637 |
 | fno-10 | Contract picker sheet, Commodities tab | 6754:65111 |
@@ -86,6 +95,7 @@ The F&O tab, implemented with Lemonnade V3 components from Figma [F&O Home → E
 | fno-25 … 28 | Order pad · Buy (Market, Limit, SL, Intraday) | 8671:18433 |
 | fno-29 … 31 | Order pad · Sell (Market, SL, Intraday) | 8671:18433 |
 | fno-32, 33 | Order pad · ILLIQUID edge case (Buy, Sell) | 8671:18433 + product rule |
+| fno-38 | Commodity calendar — View all on Expiring This Week: expiry days with their contracts | — (user's reference, 2026-11-17) |
 
 ### Structure
 
@@ -135,10 +145,122 @@ The other F&O navbar items open a sheet explaining that those destinations are o
   indicator listed. Picking one closes the sheet and applies it (fno-07): its name under the spot quote and two
   illustrative moving-average lines (EMA 9 / 21 of the sample candles) on the spot chart.
 
+#### Scalper position and breakeven (fno-35 … 37)
+
+Figma: "Scalper screen · C · Boxed chip" (the yellow chip version; A / B are not built).
+
+- **A position on the option chart** (`components/PositionOverlay`, laid over `TradingPane` via its `overlay` prop,
+  which hands it the pane's price ↔ pixel scale):
+  - dashed lines across the plot at TP (up colour), entry (content/primary) and SL (down colour); the entry price is
+    tagged on the axis (inverted), the last price keeps its own tag;
+  - **TP pill** (from 64 in): drag handle ⠿ · green Tag "TP Qty:65" · the P&L if it fills, (TP − entry) × qty · ✕
+    (removes the TP);
+  - **entry row** (from 12 in): Exit · blue Tag "+65" · live P&L, (last − entry) × qty · ✕ (exits too). With TP or SL
+    removed, "+ TP" / "+ SL" buttons appear here and put it back 10 from the price;
+  - **SL pill**: ⠿ · red Tag "SL Qty:65" · the P&L if it fills · ✕ · Add Trail (toggles; "✓ Trailing" when on);
+  - **dragging** a ⠿ (or focusing it and ↑ / ↓, Shift = ×20) moves TP / SL in ₹0.05 ticks. TP stays above the last
+    price and SL below it, both at least 30 px clear of the entry row and 12 px inside the plot. The P&L updates live;
+  - **the breakeven line**: yellow dashed (`border-accent-warning-default`) at the breakeven price, ending in the
+    boxed chip "Breakeven ⓘ" (Figma reads "B/E 105.55"; spelled out without the price, designer's call 2026-11-03 — its accessible label keeps the price) flush to the price axis (Figma 11756:79332: warning-light surface and edge, no right
+    edge, left corners 4, Label/10 in warning, 12 ⓘ). Tap → How breakeven works. Hidden when Settings → Breakeven
+    line is off.
+- **Breakeven price** (`data.ts` `breakevenPrice`): entry + the round trip's charges ÷ quantity, rounded **up** to the
+  ₹0.05 tick, so selling at it is never a loss. Charges (`optionCharges`): brokerage ₹20 × 2 orders, STT 0.1% of the
+  sell premium, NSE transaction 0.03503% of turnover, SEBI ₹10 / crore, stamp 0.003% of the buy, GST 18% on
+  brokerage + exchange + SEBI. 1 lot (65) at ₹104.60 → ₹105.55; at ₹100 → ₹100.95. The API should send the real
+  breakeven (it knows the user's brokerage plan); this is the client-side fallback.
+- **Buy at Mkt** opens a position at the last price (TP / SL 10 either side) or adds to the open one (average entry);
+  **Sell at Mkt** sells the dock's quantity (all of it closes the position). With a position, the option chart shows
+  its last 18 candles and its scale takes in the TP / SL as they were when it opened (not while dragging, or the scale
+  would run away), and the option pane takes 3 parts of the height to the spot pane's 2.
+- **First buy** → How breakeven works opens by itself, once (prototype: remembered in this browser,
+  `fno.breakevenIntroSeen`; in the app, per user).
+- **How breakeven works** (`sheets/BreakevenSheet`, fno-36): L3 sheet, heading only. The example card ("Example:
+  Bought 1 lot at ₹100") plays the explainer once and stops on the finished chart; a tap on it plays it again from the start (`components/BreakevenExplainer`), copied from the
+  designer's screen recording (Figma's own export holds only the intro), plus a charges breakdown before the B/E line
+  (designer's brief, 2026-11-03). Data: `data.ts` `breakevenCharges` — the F&O options rate card worked out in ₹ on
+  the ₹100 buy, one unit so a % reads straight as ₹ (brokerage 0.01% each way ₹0.02, STT 0.15% on the sell ₹0.15, NSE
+  transaction 0.03553% each way ₹0.07, SEBI 0.0001% each way ₹0.0002, stamp 0.003% on the buy ₹0.003). No GST band:
+  GST is charged on the charges, not the trade (designer's call) — but it counts in the total: `exampleGst` = 18% of
+  brokerage + transaction + SEBI (≈₹0.016). `breakevenExample` — bought ₹100, B/E = ₹100 + the charges with GST
+  (≈₹0.26) up to the next tick = ₹100.30, sold ₹102, the price path's five turns.
+
+  **Versions** (F&O setting "Breakeven sheet", also a floating card beside the phone on fno-36; 2026-11-16):
+  **Version 2** (default) — heading "What is breakeven price?" with a one-line description under it (L3 sheet header
+  `description`), the example, then the charges table; the two info lines are hidden. **Version 1** — the sheet as it
+  first shipped: heading "How breakeven works", the example, then the two info lines; no table.
+  **Charges table** (under the example card, `ChargesTable` in the sheet; 2026-11-16): the same trade as a calculation,
+  on a secondary-surface card (radius 12, no edge, no lines inside) so it stands out on the sheet (no heading): compact
+  L3 key-value rows (4 / 16), one line each: Bought at ₹100.00 · Order charges
+  (incl. GST) ≈₹0.26 · Breakeven price ₹100.30 (the L3 total row: bold label, larger value, on the same grey). The
+  charges row is closed by default; a tap anywhere on it (its label is the toggle, ⌄ turns) opens the breakdown under it
+  as sm rows on a tertiary-surface panel (radius 8): STT, Transaction, Brokerage, Stamp duty, SEBI, GST (18%).
+
+  **Charges, zoomed in:** at the normal scale the charges zone is ~13 tall, so the chart zooms in 2× (106 per rupee;
+  the zone ~27 tall; ₹100 stays at y 209, ₹102–₹103 move up out of view — only 2× so the charges don't look big) and
+  the zone fills one band per charge, top down — STT, Transaction, Stamp duty, SEBI, then Brokerage last at the bottom. They come in top down, so Brokerage comes in last (its tag the small one: Label/10, 1 / 4 padding — designer's call, brokerage is a small part) — each band, stacked bottom to top Brokerage → Stamp duty, as tall as its share
+  of the charges (at least 2; 1 apart), in the charges-zone orange. Each band gets a white tag like the B/E chip (name
+  Label/12 primary · ₹ amount secondary: ₹0.15, the tiny ones to their first digit, ₹0.003) in a column 140 from the plot's right, at least 24 apart and 10 from the top,
+  joined by an orange leader to a dot at its band's middle. Zooming out, the bands close into one zone and the tags
+  slide straight down, stacking into one tag that reads "Order charges ≈₹0.26" (orange name, the total secondary with ≈ as it's rounded; white pill) 6 under the zone, in
+  the same column — the zone is too thin to hold a label (so the label comes from the charges, not out of nowhere). By
+  the rate card brokerage is ~8 % of the charges (STT ~62 %, transaction ~29 %, stamp ~1 %, SEBI ~0.1 %), so its band
+  is thin next to STT's — the numbers aren't bent to make it the smallest.
+
+  The stage is white (surface/primary), 286 tall. Plot: ₹100 at y 209, 53 per rupee; gridlines from x 53.5 to 12.5 short
+  of the right edge (dashed 4 / 3 border/light; ₹100 solid); axis labels at x 12.5 (₹101–103 Description/12 tertiary,
+  ₹100 Label/12 primary). Orange charges zone ₹100 → B/E; green net-profit zone B/E → ₹102 (green 100 → 50 → 40 % fade);
+  dashed orange B/E line with a white chip at the right ("B/E" tag on orange, ₹100.25). The price line (1.75, primary)
+  turns at 2.9 / 23.9 / 40.7 / 60.8 / 86 % across the plot (₹100, 100.10, 100.25, 101.10, 102). Callouts are white pills
+  with a light edge and a soft shadow: "Bought at ₹100" 12.5 under the buy dot (notch up), "Sold at ₹102" 10 left of the
+  sell dot (green edge and text, check icon, tail right), LTP 8.5 above the line's head.
+
+  | t (ms) | What |
+  |---|---|
+  | 150 | axis and gridlines fade in (250) |
+  | 400 | buy dot pops in (200, back-out); 650 "Bought at ₹100" fades in and rises 4 → 0 (150) |
+  | 1000 | zoom in on ₹100 → B/E (500, ease-in-out): 53 → 283 per rupee, around ₹100 |
+  | 1550 | the bands fill up one every 350 (STT, transaction, stamp duty, SEBI, then brokerage): each grows up from the one below (300, ease-out) as its tag fades in rising 4 → 0 with its leader; the last is in by 3600 |
+  | 4100 | zoom out (600, ease-in-out); the leaders fade (150); the whole zone fades in over the bands, closing their gaps; the tags slide to the zone's label spot (8.5 in, 10.5 under B/E), top tag first, each 30 later (450, ease-in-out), stacking up |
+  | 4600 | the stacked tags cross-fade (150) into one white "Order charges" tag in the charges orange; 4950 its pill fades (250), leaving the label |
+  | 4750 | B/E line draws left → right along the zone's top (450, ease-in-out); 5200 its chip fades and scales 0.9 → 1 (200) |
+  | 5550 | LTP bubble pops in at ₹100.00 (150) |
+  | 5800 | the price line draws at a steady pace to ₹102 (2150); the bubble rides its head showing the last turn passed (cross-fades 100 ms at each); at B/E a ringed marker appears and pulses (r 7.5 → 14, fading, 400 ms) |
+  | 7950 | the line ends: a green ring; 8000 the bubble fades (150), the green dot pops in (200), 8200 it pulses (500) |
+  | 8250 | "Sold at ₹102" fades in sliding 6 → 0 from the right (150) |
+  | 8450 | net-profit zone grows up from B/E to ₹102 (550, ease-out); 9150 "Net Profit" fades in (150) |
+  | 9300 | it stops on the finished chart. A tap (or Enter / Space) plays it again from 0. The recording's intro (11750: the Breakeven mark, INTRODUCING, Breakeven Line, the one-liner; 15000: fade and loop) is kept in the code but not reached |
+
+  **V2 — archived 2026-11-04, not in the app** (`archive/BreakevenExplainerV2.tsx` + its CSS, with the steps to bring it
+  back): starts zoomed in, the line rises from the bottom to the buy at ₹100 over a blue ₹0 → ₹100 fill, the charges
+  fill and merge into Order charges, then it zooms out true to scale (₹100 stays put, the chart shrinks down to ₹0) and
+  runs 12% up to "Sold at ₹112" (10.25 s). Copy `breakeven.chartLabelV2` is kept for it.
+
+  "I understand" is disabled until the chart has played once (Figma's button variants 11783:12460, dark 11805:374): a
+  4 track (surface/tertiary) across the button's top edge fills (surface/inverted, linear) over 9.3 s, then the button
+  turns primary. Reduced motion: the finished chart, no loop, the button ready. Dark mode (the recording is light only):
+  L3's warning / success colours. The info rows (20 icons, Description/12 with bold parts) are as Figma.
+- **Chart tools → Settings** (`sheets/ChartSettingsPanel`, fno-37): Auto TP/SL card row (animated mark · Applied tag
+  · ›; nothing behind it yet), Chart type (Candles / Heikin Ashi / Line, selected = discover tint; the chart doesn't
+  redraw yet), Stop Loss Preference (At Market Price / At Limit Price, radio cards), View on chart (Breakeven line ⓘ
+  New, Buy/Sell executions, Sync Charts, checkbox cards). Edits are a draft: the sheet's dock shows Cancel · Apply
+  only while Settings is open; Apply keeps them, Cancel / closing the sheet drops them. The ⓘ opens How breakeven works.
+- **Auto TP/SL mark** (`components/AutoTpSlIcon`) — Figma's motion (11756:79819 / 79827 / 79835): 1.198 s, played
+  forward then back. Candle: opacity 0 → 1 and scaleY 0.15 → 1 by 29%, ease-out. TP bar: from 25% to 46% it fades in
+  (ease-out) and slides 5 → 0 (cubic-bezier(0.2, 0, 0.2, 1.3), a slight overshoot). SL bar: the same from 38% to 58%.
+
 #### Commodities (fno-08 … 14)
 
-- Product tabs: Equity → fno-01, Commodities → fno-08, Strategies → fno-15. The header and tabs don't move; only the content below slides (forward = from the right, back = from the left).
+- Product tabs: Equity → fno-01, Commodities → fno-08, Strategies → fno-15. The header and tabs don't move; only the content below slides (forward = from the right, back = from the left). On scroll the tabs stick right under the top bar (`position: sticky` in the page — they sit mid-page under the overview, so not in the Actionbar's bottom slot); a tab switch while scrolled lines the new content up under them. Once stuck, the tab row takes the scrolled top bar's colour (surface/primary, not the active tab's gradient); the active tab stays as it is.
 - **Shortcuts** Gold · Silver · Crude Oil · Natural Gas (artwork, name, day change in up / down colour) → Gold Summary (fno-12).
+- **Expiring This Week** (`ExpiringThisWeek`, between the shortcuts and the chart): a sideways rail of contracts expiring soon (`expiringThisWeek` in `commodities/data.ts`), in three variants (`kind`): **option**, **future** (one GOLDM future sits second, for testing) and **event** (third), snapping to the 16 inset. Each card: the symbol (GOLDM) over the expiry as plain description text (12) — option “OPT Expiry Today / Tomorrow / <weekday>”, future “FUT Expiry 3 Dec” (no Tag; the future's expiry line is not shown); on the right the trend read-out (`TrendBadge`, the same component as the chart's header: Strong Uptrend / Downtrend in up / down colour over “Since 3:25 PM” (description 12 here, 10 in the chart), double arrow); a hairline; then two columns, label (description 12) over value — the ATM option (₹ premium + change) — or LTP (₹ + change) for a future — left, Margin Per Lot right. Action footer (no fill, 16 under the details like the other parts): ScalpPro (secondary, Medium) → fno-05 and Buy (primary, Medium) → the contract sheet. A tap on the card → the contract's asset page (fno-21). The trend read-out (the whole top right — label, since, the i, the arrow; hit area grown 12 around it) → the **trend info sheet** (`TrendInfoSheet`, live app reference 2026-11-17): no header; the trend on the left (arrow first, text left-aligned) and the symbol with its day change on the right over a hairline, Dash's two bullets on what's behind the trend (`trendNotes` in `commodities/data.ts`), a grey disclaimer (warning icon, “Disclaimer:”), a dashed rule, “Analyzed by Dash” with the Dash orb (24), then Okay (Large). The event card's Bullish read-out has the i too and opens the same sheet. The read-out is a `role="button"` span, not a button, because the card body is already a button; its tap doesn't open the card. The commodity art is hidden (`SHOW_ART = false`, kept). Prototype setting “Expiring card buttons” (Commodities, toggle, default Shown) hides the whole button footer; on a phone (app mode) a floating “BTN ON / BTN OFF” switch on the Commodities home (fno-08 … 10) flips it in one tap.
+- **Expiring This Week, Version 2** (`ExpiringCalendar`; prototype setting “Expiring This Week”, Commodities, Version 1 = the card rail above, default): the same section as a short calendar. The calendar's first 3 entries (`expiryPreview(3)` in `commodities/data.ts`) on their days, drawn like the calendar page (`CalendarDay`, shared with fno-38): the grey date block left (today not marked, not sticky here), one card per day, so it's three rows on one day or spread over two or three days. Within a day events come first (they're timed) and stay short (name over time, then the asset cards; the readings are on the calendar page). Contract rows as on fno-38: kind under the name, option chain (options) → fno-17 and ScalpPro → fno-05, row → asset page fno-21. View all → the Commodity calendar (fno-38).
+- **Expiring This Week, Version 3** (`ExpiringCalendarCard`): Version 2's three entries in **one card**. Each day is a band: the date (weekday over the number, every date the same weight) as the card's grey left column, attached edge to edge and as tall as that day's rows, the rows beside it. Hairlines between days (across the date column too) and between a day's rows. Rows behave as in Version 2; View all → fno-38.
+- **Calendar days** (prototype setting, Commodities; Versions 2 and 3): which week the short calendar shows, to see how the days split — **3 today** (the real calendar), **2 today · 1 tomorrow** (default), **1 a day** (three days). Sample weeks in `expiryPreviewSamples` (`commodities/data.ts`): the first two days hold only option / future contracts and an event (EIA crude oil) comes on the third day only — so it shows in **1 a day**; the other two fill the 3 rows before it. The calendar page keeps the real calendar. The cap stays 3 entries.
+  - **Event card** (third; data from the user's reference card, its layout kept to the option card's): a market event
+    on the contract's commodity today. NATGASMINI over “NG storage · Today 9:00 PM”; the trend read-out says the outlook
+    (“Bullish” over “Smaller build”, up arrow, no info icon); hairline; then the ATM option (305 CE ATM ₹7.40 +4.20%) and Margin Per Lot (₹1,850), and
+    the same ScalpPro / Buy footer. The same report sits today on the Commodity calendar's Events tab (fno-38).
 - **Chart**: same as Equity, the instrument selector reads “Gold ⇕” and opens the contract picker (fno-10). Picking a contract renames the chart and closes the sheet.
 - **Contract picker** (`ContractPickerSheet`): header “Choose options contract”, underline tabs Equity (8) / Commodities (7) in its bottom slot; on Commodities, pill chips All / Gold / Silver / Crude Oil / Natural Gas / Copper / Aluminium / Zinc filter the groups. Rows: ListCell Small with artwork, name, price + change, a “Lowest Margin” discover Tag where it applies, Radio. The selected row is highlighted (ListCell `selected`).
 - **Watchlist** — same as Equity.
@@ -146,6 +268,42 @@ The other F&O navbar items open a sheet explaining that those destinations are o
 - **Futures Heatmap**: Bullion / Energy / Metals pills, 3-column tiles in profit / loss surfaces; a tile opens its details.
 - **Smart Futures**: the Equity section with commodity contracts.
 - **Gold Summary** (`LotSummary`): Actionbar back (→ fno-08) + “Gold Summary”; lot tabs with artwork (Gold, Gold Mini, Gold Guinea, Gold Ten, Gold Petal) in the bottom slot, scrolling sideways. Futures (View all) — two future cards. Options (View option chain → the F&O options list) — expiry month pill (October ⌄ → month sheet), divider, Top traded / Most active / OI gainers / Top gainers, Filter, sort. Sort opens a sheet: **By Price** (price + change), **By Volume** (traded volume only), **Margin per lot** (₹ per lot only) — fno-12 / 13 / 14 open on each. Filter Puts shows the empty state (the sample has calls only).
+
+#### Commodity calendar (fno-38)
+
+- **Entry:** View all on Expiring This Week (fno-08). Back → Commodities home. Layout after the user's reference
+  (an Expiry Calendar screenshot, 2026-11-17): only names and simple buttons, no prices.
+- **Tabs:** All · Options · Futures · Events — flat L3 Tabs (underline) with a 16 icon each (apps, candlestick chart,
+  trending up, event), in the Actionbar's bottom slot (sticky). The body slides with the tabs: a tap slides the new tab's list in from its
+  side, and a left / right swipe on the list drags it to the next / previous tab (rubber-band at the ends; shared
+  `useSwipeBetween`, as on Market's tabs and the stocks theme page). All (default) merges the three by day — options, then
+  futures, then events — and says under each name which it is ("Options", "Futures", "Event").
+- **Events:** for now only the US EIA weekly reports that move MCX energy — crude oil inventories (Wed 9:00 PM IST)
+  and natural gas storage (Thu 9:00 PM IST). There is no event page, so the row shows everything upfront — the fields every
+  economic calendar carries (Investing.com, Zerodha's markets calendar, broker commodity dailies):
+  - top: event icon (Avatar 24), the event's name (up to two lines, then ellipsis), under it the release time in IST ("9:00 PM"); no buttons, no country, no impact tag;
+  - Previous / Forecast / Actual in a 3-column Grid (caption secondary over label 14); Actual reads "Due" until it's
+    out. Left out for an event with no number;
+  - what it moves, one per commodity in a row that scrolls sideways; tap → that asset's page (fno-21): an L3 Tag
+    (tertiary, small, profit / loss colour) with an up / down arrow (msArrowUpward / msArrowDownward) and the name — the
+    arrow says bullish / bearish, so the tag stays small. 10 below the readings.
+    An event can move several commodities in different directions (crude inventories: down Crude Oil, Natural Gas; up
+    Gold). One tag per commodity, never its contract sizes — Gold and Gold Mini move together, so it's just "Gold"
+    (same for Crude Oil, Natural Gas, Silver). Data `moves: {name, trend}[]`. No buttons on an event row, no line on how it moves prices.
+  The details line up with the name (indented past the icon). The row itself isn't tappable.
+- **Days** (`ExpiryTimeline`, data `expiryCalendar`) run from today under a month section header (L3 SectionHeader, content-primary:
+  "Nov 2026"; repeated when the month turns), 24 apart. Left (48 wide): one date block (surface-secondary,
+  radius 12, padding 08 / 04) with the weekday (description 12, secondary) over the date (label 16); today adds a
+  border-dark ring. Right: one static card
+  (flat) with that day's contracts — one day can hold several, split by hairlines.
+- **Contract row** (tappable → asset page fno-21; hover and press turn the row surface-secondary, clipped to the card's corners; 12 from every side of the card, content centred vertically): the commodity's icon (L3 Avatar 24, circle, without its 1px edge — the commodity art from `assets/`; Zinc, Copper,
+  Aluminium and Lead have no art yet, so their Avatar shows the chemical symbol as initials: ZN, CU, AL, PB), 12 gap, then the contract's name (label 14) and icon-only Tertiary Small buttons, flat (`raised="none"`, no shadow). Options: option chain (link icon → option chain
+  fno-17, its back returns here) on the left, ScalpPro (→ Scalper fno-05) on the right. Futures: ScalpPro only (no option chain). Small, not Large: they sit inside a list row, like the reference.
+- **Sticky while scrolling:** each month's section header sticks at the top of the page (surface-default behind it)
+  until the next month's pushes it out; each day's date block sticks 08 under it for as long as that day's card is in
+  view (a day with several contracts keeps its date until its last row has scrolled past). Section-level stickiness in
+  the page itself, not the Actionbar's bottom slot: it changes as you scroll, unlike the tabs.
+- **Data:** `inDays` from today, so the dates always lead from today.
 
 #### Strategies (fno-15, 16)
 
@@ -232,8 +390,50 @@ The source uses old D2 controls alongside L3; their code equivalents are L3 comp
 - The Zing trader photo is replaced by initials (fictional trader); the Smart Invest logo by the basket's initials.
 - Equity (8) in the picker lists 8 indices (Figma draws 6). Copper, Aluminium and Zinc have no artwork yet, so their chips and rows show the name only.
 
+#### Scalper position and breakeven vs Figma
+
+- Pills, Exit and Add Trail are 24 tall (L3 Secondary Small resized to sit on the pills, as in Figma), not Large.
+- Figma's rail (Bolt · Indicators · Drawings · Settings) is the live app's six groups here; its chart-type cards read
+  "Line, Heiken Ashi, Line" — built as Candles, Heikin Ashi, Line.
+- How breakeven works: Figma's explainer is a video fill (11802:369) whose export holds only the intro; the loop
+  (chart + intro) is rebuilt from the designer's screen recording, measured frame by frame (theme-aware, no video
+  file). The recording's labels are ~11 px; here they're L3's 12 styles (Label/12, Description/12, Label/14), so text
+  runs ~8 % wider. Its orange (charges zone, B/E line and tag) isn't L3's warning (a yellow) — kept as local tokens.
+  The zoomed-in charges (3 s, before the B/E line, which now draws after the zone instead of before it) aren't in
+  Figma or the recording: added from the designer's brief with the F&O options rate card; everything after is the
+  recording's timing moved 3 s later.
+- Figma's breakeven marks and the Auto TP/SL mark couldn't be downloaded (asset links fail here), so they're drawn in
+  SVG on L3 tokens to match (`BreakevenIcon`, `AutoTpSlIcon`).
+- The explainer card's stage keeps the sheet's 24 gap (L3 Stack has no 20; Figma 20).
+- Figma's entry tag reads 119.20 and B/E 13.86 (placeholder numbers); here they're worked out from the sample position.
+- The charts tick (prototype): every second the last candle's close steps (a random walk pulled back to the sample
+  price), its high / low stretch, and every 15 steps a new candle opens and the oldest drops off (`useLiveInstrument`).
+  The header price, change, %, the last-price tag (green up / red down) and the entry pill's live P&L follow. In the
+  app this is the market feed.
+- Candles are at most 4 wide, however few there are. With a position open the option chart shows the 19 candles since
+  the 13:55 spike with 8 empty slots after them (Figma: the candles stop about three quarters across).
+
+#### L3 gaps (Scalper position and breakeven)
+- An expandable key-value row (a row that opens a breakdown under it, e.g. order charges): built from KeyValueRow with a button label stretched over the row and a breakdown panel (`BreakevenSheet` `ChargesTable`). And a table / calculation layout (compact rows on a surface card): local CSS on KeyValueRow.
+
+- No chart overlay parts: position pill (handle · tag · P&L · ✕), price lines, axis tags, the boxed B/E chip.
+- No breakeven / Auto TP/SL icons; no overline text style ("INTRODUCING": heading-12 + `--app-overline-tracking`).
+- No "button with a loader" (a locked button that unlocks after a timer): drawn as a track over L3 Button.
+- Motion timings for the Auto TP/SL mark (`--app-auto-tpsl-loop`, `--app-auto-tpsl-ease`) and the breakeven explainer's
+  sequence (`--app-be-*`; the chart's own timeline is in `BreakevenExplainer`): L3 has no stagger / sequence timings.
+- No chart callouts (a white pill with a notch / tail pointing at a point, the LTP bubble) or chart zones; no orange
+  accent (`--app-be-charges-zone`, `--app-be-orange`, `--app-be-orange-text`, `--app-be-tag`) and no green 100 semantic
+  (`--app-be-profit-top`).
+- Stack has no 20 gap.
+
 #### L3 gaps (Commodities & Strategies)
 
+- Avatar has no borderless option: fno-38 hides its 1px edge locally (`.calendarAvatar`).
+- Commodity art: no images for the base metals (Zinc, Copper, Aluminium, Lead); fno-38 shows L3 Avatar initials until art exists.
+- Expiry calendar: L3 has no calendar / date-grouped list (Steps is a progress list). fno-38 draws its own date column (weekday + date in one grey block) and the hairlines between a day's rows with L3 tokens (`.calendar*` in `Commodities.module.css`).
+- Card action footer spacing: the unfilled footer sits 12 under the body (the body's padding) with no prop to change it; the Expiring cards want 16, so `Commodities.module.css` adds 4 on top of the footer (`.expiryCard`).
+- Card action footer hover: L3 greys only the tap body on hover, so details and buttons read as two parts; the Expiring cards grey the whole card (`.expiryCard` in `Commodities.module.css`).
+- No-shadow clickable cards: L3 gives every clickable Card / card ListCell elevation-soft with no prop to turn it off; F&O wants all its cards flat (border only), so every F&O screen carries `flatCards.module.css` (Screen className), which keeps only the 1px border.
 - Commodity artwork (L3/Image/Commodities/… in Figma) isn't in the code package — exported PNGs live in `commodities/assets`; Copper / Aluminium / Zinc missing.
 - Outlined Buy / Sell buttons (Quick Trade): L3 Button has filled Buy / Sell only; the flow tints Secondary with the up / down tokens.
 - Payoff sketch on strategy cards: no L3 mini payoff chart; drawn as a small SVG on L3 tokens.
@@ -241,6 +441,34 @@ The source uses old D2 controls alongside L3; their code equivalents are L3 comp
 
 ### Changelog
 
+- 2026-11-17 — Expiring This Week: events card third in the rail (EIA natural gas storage today on NATGASMINI: outlook, ATM option, margin — like the other cards; the readings stay on the calendar); the calendar's gas report moved to today with the same readings.
+- 2026-11-17 — Event assets: the arrow tags are the only version; the earlier cards (Bullish / Bearish over the name) and the "Event assets" setting are archived (removed).
+- 2026-11-17 — Event assets: one per commodity (no Mini alongside the full size); natural gas storage moves Natural Gas, Crude Oil; crude inventories Crude Oil, Natural Gas, Gold.
+- 2026-11-17 — Event assets Version 2 (default): L3 Tags with an up / down arrow and the asset; the cards are kept as Version 1.
+- 2026-11-17 — Expiry calendar: the body slides with the tabs (tap or swipe), like Market's tabs.
+- 2026-11-17 — Event rows: country (US), impact tag and the how-it-moves line removed; no buttons; "Moves …" is now one small card per asset (Bullish / Bearish over the name, radius 8, scrolling row, tap → asset page); an event can move several assets.
+- 2026-11-17 — Expiry calendar: All · Options · Futures · Events tabs with icons (All default); Events = the EIA crude and natural gas reports with time (IST) · country, impact, previous / forecast / actual, how it moves prices and what it moves; futures rows have ScalpPro only; option chain (→ option chain page fno-17) left, ScalpPro right; Option chain's back now returns to the page it was opened from. ScalpPro anywhere in F&O now opens the Scalper as a new page (in from the right) and its back returns to the page it was opened from.
+- 2026-11-17 — Commodities: View all on Expiring This Week opens a new Expiry calendar (fno-38): Options / Futures tabs, expiry days (weekday + grey date pill) each with one card of contract names (several per day), each row with the commodity's icon (Avatar 24), its name, and ScalpPro and open-contract icon buttons.
+- 2026-11-17 — Commodities: new Expiring This Week section between the shortcuts and the chart (sideways contract cards: symbol over its option expiry day, trend, ATM premium and margin per lot as label-over-value columns, ScalpPro + Buy in a grey footer; card → asset page fno-21; art hidden). Product tabs stick under the top bar on scroll (their row then takes the top bar's colour). The trend read-out is one shared component (`TrendBadge`) in the chart header and the Expiring cards. Expiring cards: option and future variants (a GOLDM future second for testing); the expiry as plain text under the symbol (no Tag); trend “Since” at 12 (the chart keeps 10) with the info (eye) icon after it, content-secondary; buttons without the grey strip, the card's three parts 16 apart; card → asset page fno-21; “Expiring card buttons” setting hides the button footer. All F&O cards lose their shadow (border only).
+- 2026-11-16 — Breakeven sheet Version 2 (default): heading What is breakeven price? + a description, the charges table, info lines hidden; Version 1 (the first sheet) kept behind the new F&O setting "Breakeven sheet".
+- 2026-11-16 — The three breakeven screens are named “Break Even · …” in the screen list (fno-35, fno-36, fno-37), so a search for break even finds them; the sheet's heading stays How breakeven works.
+- 2026-11-16 — How breakeven works: a charges table under the example (bought at, order charges incl. GST, breakeven price in bold, one line each, on a grey card); the charges row opens the breakdown. GST now counts in the example: order charges ≈₹0.26, B/E ₹100.30 (was ≈₹0.24 / ₹100.25).
+
+- 2026-11-04 — How breakeven works V2 (F&O setting "Breakeven explainer", V2 by default; V1 kept): starts zoomed in, the line rises from the bottom to the buy at ₹100 with a blue ₹0 → ₹100 fill, the charges fill and merge into Order charges, then it zooms out true to scale (₹100 stays put, the chart shrinks down to ₹0 at the bottom): the ₹0.25 of charges a hairline on the blue ₹100, the run up 12% to Sold at ₹112, Net Profit. 10.25 s, then it stops.
+- 2026-11-04 — V2 archived (`archive/BreakevenExplainerV2.tsx`) and the "Breakeven explainer" setting removed: V1 ships.
+- 2026-11-04 — How breakeven works: the explainer plays once and stops on the finished chart (no loop, no intro); a tap replays it. The launch splash is hidden.
+- 2026-11-04 — How breakeven works: the charges stack STT on top, then transaction, stamp duty, SEBI, and brokerage last at the bottom, so brokerage no longer sits on STT's band; they come in top down (brokerage last), its tag the small one.
+- 2026-11-03 — How breakeven works: the Order charges tag shows the total (≈₹0.24).
+- 2026-11-03 — How breakeven works: the charges in ₹ on the ₹100 buy (no %), no GST band, B/E ₹100.25 (a thinner charges zone); zooms in only 2×; "Order charges" stays a tag under the zone.
+- 2026-11-03 — How breakeven works: before the B/E line the chart zooms in and the charges zone fills one band per charge (brokerage first at the bottom, then STT, transaction, GST, SEBI, stamp duty — F&O options rate card, heights by cost, each tagged with its rate), then zooms out to one zone, the tags stacking into its "Order charges" label; loop 15 s, button lock 9.3 s. Breakeven mark tile flat surface/inverted; the Scalper's ribbon tab has no outline.
+- 2026-11-03 — Scalper charts: thin candles (max 4), the charts tick live, the last-price tag turns red on a down candle; TP line grey and SL line light red as in Figma C.
+- 2026-11-03 — Scalper breakeven (Figma version C, Boxed chip): positions on the option chart with draggable TP / SL pills, Exit, Add Trail and the yellow breakeven line + chip (fno-35); the How breakeven works sheet, its 12 s explainer (chart building up to a sell above the breakeven line, then the intro) copied from the designer's recording, with the locked "I understand" (fno-36); the Auto TP/SL mark on Figma's exact easings; chart tools → Settings with Auto TP/SL, chart type, stop-loss preference and View on chart, Cancel / Apply (fno-37).
+
+- 2026-11-02 — Diwali, final: the Garland splash and the Diwali search bar are what ship (both on by default; settings are now two switches). The Lanterns splash and the profile avatar's diya flip are archived (`src/shared/ui/archive/`). Spec for developers: `docs/DIWALI.md`.
+- 2026-11-02 — Splash (fno-34): the launch splash as a page, listed first.
+- 2026-11-02 — Diwali (App settings → Diwali, on by default for now): a Diwali splash, and the home's profile avatar flips to a diya twice (`src/shared/ui/Diwali`).
+- 2026-11-02 — Diwali splash: a quiet night scene in L3 dark with "Happy Diwali" in gold, in two versions (Lanterns / Garland); the avatar's diya is now a lotus diya.
+- 2026-11-02 — The splash lasts 1.5 s (was 2 s) and its logo rises in; the Diwali splash's art, lights and wish come in within it. Diwali *Diya flip*: Off / Profile / Search bar (default) — the search pill's icon and label slide up and fade out, and a diya and "Happy Green Diwali" slide up and fade in (held 3 s, twice, each time the home shows, once the splash starts leaving), with a slow sparkler round its edge whose sparks rise out of the edge and sink back in; here, beside DASH, the pill is too narrow for the whole wish, so it slides along once to show its end.
 - 2026-11-01 — US MARKETS · LIVE banner on the Equity home (fno-01…04), under the quick actions and above the chart (teammate's design 9001:3). One tap target → US Stocks home, US tab (`stocks-09`). Equity only. Component `components/UsBanner`; flag is a static still (`assets/us-flag.png`) of the animated GIF; the sparkle stars are left out. L3 gap: no banner component, so a card-like button from L3 tokens (blue-900 background, `--l3-border-accent-discover-light` ring).
 - 2026-10-29 — Commodity options order pad (fno-25 … 31) from Figma 8671:18433; asset page and Gold Summary Buy / Sell open it.
 - 2026-10-29 — Illiquid explainer simplified (small header, three icon points like the Pine Script sheet) and shared: opens from the chain's ⓘ and from every ILLIQUID tag.
@@ -261,9 +489,939 @@ The source uses old D2 controls alongside L3; their code equivalents are L3 comp
 - 2026-10-26 — Grouped the chart-tools list into Your indicators and Lemon indicators; linked DASH AI's View indicator
   action to the saved custom indicator in the open sheet.
 - 2026-11-17 — Header: 48 tall (`--app-topbar-height`, like every navbar tab's Actionbar), and the wallet is the shared round `TopBarAction`.
+- 2026-11-17 — Expiring cards: the trend read-out (Strong Uptrend / Downtrend, and the event card's Bullish, which gets the i) is one tap target over the whole top right and opens the new trend info sheet (trend + symbol and change, Dash's bullets, disclaimer, Analyzed by Dash, Okay).
+- 2026-11-17 — Expiring This Week Version 2 (setting “Expiring This Week”): a short calendar of the first 3 entries on their days, events first; View all → fno-38. The calendar day (date block + card) is one shared part, `CalendarDay`, for fno-38 and the home.
+- 2026-11-17 — Expiring This Week Version 3: the short calendar in one card, dates as its attached grey left column (`ExpiringCalendarCard`; `CalendarDate` / `CalendarEntry` split out of `CalendarDay`).
+- 2026-11-17 — Prototype setting “Calendar days” for Expiring This Week v2 / v3: 3 today · 2 today + 1 tomorrow · 1 a day.
+- 2026-11-17 — Calendar days: “2 today · 1 tomorrow” is the default.
+- 2026-11-17 — Calendar today: on the calendar page (fno-38) today's date block is inverted (surface-inverted, content-inverted text) instead of ringed; the home's short calendar no longer marks today.
 
 
 ## Source — this flow
+
+### `src/flows/fno/archive/BreakevenExplainerV2.module.css`
+
+```css
+/*
+ * How breakeven works · the example (copied from the designer's recording). L3 tokens; the orange and the profit fade
+ * are local tokens (src/local-tokens.css: the recording's orange isn't in L3). Positions come from BreakevenExplainer:
+ * each callout gets its anchor as --x / --y and places itself around it.
+ */
+.stage {
+  position: relative;
+  overflow: hidden;
+  background: var(--l3-surface-primary);
+  cursor: pointer; /* a tap plays it again */
+  -webkit-tap-highlight-color: transparent;
+}
+
+.chart {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
+/* ---- Price axis: ₹101–₹103 grey on dashed gridlines; ₹100 (the buy) bold on a solid line. ---- */
+.gridline,
+.baseline {
+  stroke: var(--l3-border-light);
+  stroke-width: 1;
+}
+
+.gridline {
+  stroke-dasharray: 4 3;
+}
+
+.axisLabel,
+.axisEntry,
+.zoneLabel,
+.chip,
+.bought,
+.sold,
+.ltp {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  white-space: nowrap;
+}
+
+.axisLabel,
+.axisEntry,
+.zoneLabel {
+  transform: translateY(-50%);
+}
+
+.axisLabel {
+  color: var(--l3-content-tertiary);
+  font: var(--l3-text-description-12);
+}
+
+.axisEntry {
+  color: var(--l3-content-primary);
+  font: var(--l3-text-label-12);
+}
+
+/* V2: what the buy cost (₹0 → ₹100), L3's light blue. */
+.boughtZone {
+  fill: var(--l3-surface-accent-discover-light);
+}
+
+/* ---- Zones: orange charges (₹100 → B/E), a green fade for the net profit (B/E → ₹102). ---- */
+.chargesZone {
+  fill: var(--app-be-charges-zone);
+}
+
+.profitTop {
+  stop-color: var(--app-be-profit-top);
+}
+
+.profitMid,
+.profitBottom {
+  stop-color: var(--l3-surface-accent-success-light);
+}
+
+.profitBottom {
+  stop-opacity: 0.4;
+}
+
+.zoneLabel {
+  font: var(--l3-text-label-12);
+}
+
+.zoneLabel[data-zone='charges'] {
+  isolation: isolate;
+  display: inline-flex;
+  gap: var(--l3-spacing-04);
+  color: var(--app-be-orange-text);
+}
+
+/* "Order charges" is the tag the charge tags stack into (the same white pill, behind its text), under the zone. */
+.zoneLabel[data-zone='charges']::before {
+  content: '';
+  position: absolute;
+  inset: calc(-1 * var(--l3-spacing-02) - 1px) calc(-1 * var(--l3-spacing-06) - 1px);
+  z-index: -1;
+  border: 1px solid var(--l3-border-light);
+  border-radius: var(--l3-radius-06);
+  background: var(--l3-surface-primary);
+  box-shadow: var(--l3-shadow-elevation-low);
+}
+
+.zoneLabel[data-zone='bought'] {
+  color: var(--l3-content-accent-discover-default);
+}
+
+.zoneLabel[data-zone='profit'] {
+  color: var(--l3-content-accent-success-default);
+}
+
+/* ---- The breakeven line and its chip (white, a B/E tag then the price), the chip's right edge on the plot's. ---- */
+.breakevenLine {
+  stroke: var(--app-be-orange);
+  stroke-width: 1.25;
+  stroke-dasharray: 4 3;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--l3-spacing-04);
+  padding: var(--l3-spacing-02) var(--l3-spacing-04) var(--l3-spacing-02) var(--l3-spacing-02);
+  border: 1px solid var(--l3-border-light);
+  border-radius: var(--l3-radius-06);
+  background: var(--l3-surface-primary);
+  box-shadow: var(--l3-shadow-elevation-low);
+  color: var(--l3-content-primary);
+  font: var(--l3-text-label-12);
+  transform: translate(-100%, -50%);
+  transform-origin: right center;
+}
+
+.chipTag {
+  padding: 1px var(--l3-spacing-02);
+  border-radius: var(--l3-radius-02);
+  background: var(--app-be-tag);
+  color: var(--l3-static-black); /* like L3's warning Tag: black on the solid, in both modes */
+  font: var(--l3-text-heading-10);
+}
+
+/* ---- The price line, the buy dot, the ringed crossing marker, the green sell dot and their pulses. ---- */
+.priceLine {
+  fill: none;
+  stroke: var(--l3-content-primary);
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.buyDot {
+  fill: var(--l3-content-primary);
+}
+
+.crossingRing {
+  fill: var(--app-be-charges-zone);
+  stroke: var(--app-be-orange);
+  stroke-width: 1.25;
+}
+
+.crossingPulse {
+  fill: var(--app-be-orange);
+}
+
+.sellRing,
+.sellRingDrawing {
+  fill: var(--l3-surface-accent-success-light);
+  stroke-width: 1.25;
+}
+
+.sellRing {
+  stroke: var(--l3-border-accent-success-light);
+}
+
+.sellRingDrawing {
+  stroke: var(--l3-border-accent-success-default);
+}
+
+.sellDot,
+.sellPulse {
+  fill: var(--l3-surface-accent-success-default);
+}
+
+/* ---- Callouts: white pills with a light edge and a soft shadow. ---- */
+.bought,
+.sold,
+.ltp {
+  border: 1px solid var(--l3-border-light);
+  border-radius: var(--l3-radius-08);
+  background: var(--l3-surface-primary);
+  box-shadow: var(--l3-shadow-elevation-low);
+}
+
+/* "Bought at ₹100": under the buy dot, a notch on top pointing at it. */
+.bought {
+  padding: var(--l3-spacing-04) var(--l3-spacing-08);
+  color: var(--l3-content-primary);
+  font: var(--l3-text-label-12);
+}
+
+.bought::before,
+.sold::after {
+  content: '';
+  position: absolute;
+  width: var(--l3-spacing-08);
+  height: var(--l3-spacing-08);
+  background: var(--l3-surface-primary);
+  rotate: 45deg;
+}
+
+.bought::before {
+  top: calc(var(--l3-spacing-04) * -1 - 1px);
+  left: var(--l3-spacing-16);
+  border-top: 1px solid var(--l3-border-light);
+  border-left: 1px solid var(--l3-border-light);
+}
+
+/* "Sold at ₹102": left of the sell dot, green edge and text, a tail pointing right at the dot. */
+.sold {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--l3-spacing-06);
+  padding: var(--l3-spacing-04) var(--l3-spacing-08) var(--l3-spacing-04) var(--l3-spacing-06);
+  border-color: var(--l3-border-accent-success-light);
+  box-shadow: none;
+  color: var(--l3-content-accent-success-default);
+  font: var(--l3-text-label-12);
+  transform: translate(-100%, -50%);
+}
+
+.sold::after {
+  top: calc(50% - var(--l3-spacing-04));
+  right: calc(var(--l3-spacing-04) * -1 - 1px);
+  border-top: 1px solid var(--l3-border-accent-success-light);
+  border-right: 1px solid var(--l3-border-accent-success-light);
+}
+
+/* V2: the sell sits on a thin strip next to the B/E chip, so "Sold" goes above the dot (its right edge 10 past it), no tail. */
+.sold[data-place='above'] {
+  transform: translate(-100%, -100%);
+}
+
+.sold[data-place='above']::after {
+  content: none;
+}
+
+/* LTP: rides the line's head, centred above it — the last price the line passed. */
+.ltp {
+  display: flex;
+  flex-direction: column;
+  padding: var(--l3-spacing-02) var(--l3-spacing-08);
+  transform: translate(-50%, -100%);
+  transform-origin: center bottom;
+}
+
+.ltpName {
+  color: var(--l3-content-secondary);
+  font: var(--l3-text-description-10);
+}
+
+.ltpValue {
+  color: var(--l3-content-primary);
+  font: var(--l3-text-label-14);
+}
+
+/*
+ * The intro the loop ends on (the stage cuts to surface/secondary): Figma's reveal (the video on 11802:369, 1.23 s,
+ * measured frame by frame) —
+ * - the mark: opacity 0 → 1 from 30 ms over 250 ms (linear); scale 0.55 → 1 from 100 ms over 400 ms on L3's pop easing;
+ * - INTRODUCING, Breakeven Line, the one-liner: from 300 / 470 / 670 ms, each 400 ms (L3 long): opacity 0 → 1 linear,
+ *   8 up → 0 ease-out.
+ */
+.intro {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--l3-spacing-24) var(--l3-spacing-16);
+  background: var(--l3-surface-secondary);
+  text-align: center;
+}
+
+.introIcon {
+  margin-bottom: var(--l3-spacing-16);
+  animation:
+    fadeIn var(--app-be-icon-fade) linear var(--app-be-icon-fade-delay) both,
+    popIn var(--l3-motion-duration-ai-pop) var(--l3-motion-easing-ai-pop) var(--app-be-icon-pop-delay) both;
+}
+
+.overline,
+.introTitle,
+.introText {
+  animation:
+    fadeIn var(--l3-motion-duration-long) linear var(--app-be-rise-delay) both,
+    riseIn var(--l3-motion-duration-long) ease-out var(--app-be-rise-delay) both;
+}
+
+.overline { --app-be-rise-delay: var(--app-be-overline-delay); }
+.introTitle { --app-be-rise-delay: var(--app-be-title-delay); }
+.introText { --app-be-rise-delay: var(--app-be-tagline-delay); }
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes popIn {
+  from {
+    scale: 0.55;
+  }
+}
+
+@keyframes riseIn {
+  from {
+    translate: 0 var(--l3-spacing-08);
+  }
+}
+
+/* INTRODUCING: 12 bold, tracking 0.96 (Figma) — L3 has no overline style: heading-12 + local tracking. */
+.overline {
+  margin: 0;
+  color: var(--l3-content-tertiary);
+  font: var(--l3-text-heading-12);
+  letter-spacing: var(--app-overline-tracking);
+  text-transform: uppercase;
+}
+
+.introTitle {
+  margin: var(--l3-spacing-04) 0 var(--l3-spacing-08);
+  color: var(--l3-content-primary);
+  font: var(--l3-text-heading-24);
+}
+
+.introText {
+  margin: 0;
+  max-width: calc(var(--l3-size-128) * 1.75);
+  color: var(--l3-content-secondary);
+  font: var(--l3-text-label-12);
+}
+
+/*
+ * Zoomed in, the charges (designer's brief, 2026-11-03): a tag per band — white like the B/E chip, the name then the
+ * rate — joined to its band by an orange leader and dot.
+ */
+.chargeTag {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--l3-spacing-04);
+  padding: var(--l3-spacing-02) var(--l3-spacing-06);
+  border: 1px solid var(--l3-border-light);
+  border-radius: var(--l3-radius-06);
+  background: var(--l3-surface-primary);
+  box-shadow: var(--l3-shadow-elevation-low);
+  color: var(--l3-content-primary);
+  font: var(--l3-text-label-12);
+  white-space: nowrap;
+  transform: translateY(-50%);
+}
+
+/* Brokerage's tag is the small one (designer's call: Lemonn's brokerage is a small part of the charges). */
+.chargeTag[data-size='small'] {
+  gap: var(--l3-spacing-02);
+  padding: 1px var(--l3-spacing-04);
+  font: var(--l3-text-label-10);
+}
+
+.chargeRate {
+  color: var(--l3-content-secondary);
+}
+
+.leader line {
+  stroke: var(--app-be-orange);
+  stroke-width: 1;
+}
+
+.leader circle {
+  fill: var(--app-be-orange);
+}
+```
+
+### `src/flows/fno/archive/BreakevenExplainerV2.tsx`
+
+```tsx
+import { useEffect, useId, useLayoutEffect, useRef, useState, type CSSProperties } from 'react'
+import { Icon } from '@l3/components/Icon'
+import { msCheckCircleFill } from '@l3/icons/material'
+import { inr } from '../../../shared/data/format'
+import { t } from '../copy'
+import { breakevenCharges, breakevenExample, exampleChargesTotal } from '../data'
+import { BreakevenIcon } from '../components/BreakevenIcon'
+import styles from './BreakevenExplainerV2.module.css'
+
+/*
+ * ARCHIVED 2026-11-04 — not in the app. V2 of the How breakeven works explainer (and V1, the version that ships, as it
+ * was then). To bring it back: move this file and its CSS to components/ (as BreakevenExplainer), put
+ * `breakevenExampleV2` back in data.ts, and add the F&O option `breakevenExplainer` (V1 / V2) that BreakevenSheet reads
+ * with useFlowOption, passing `version` and `explainerLength(version)` for the button's lock.
+ */
+
+/**
+ * V2 of the explainer, true to scale once it zooms out: ₹0 → ₹100 (the buy), the ₹0.25 of charges on it, and a 12% gain
+ * to the sell at ₹112. `path` runs after the buy (`at` 0 → 1 of the plot after it).
+ */
+const breakevenExampleV2 = {
+  entry: breakevenExample.entry,
+  breakeven: breakevenExample.breakeven,
+  exit: 112,
+  axis: [100, 0],
+  path: [
+    { at: 0, price: breakevenExample.entry },
+    { at: 0.1, price: 100.1 },
+    { at: 0.2, price: breakevenExample.breakeven },
+    { at: 0.36, price: 103.5 },
+    { at: 0.48, price: 102.6 },
+    { at: 0.66, price: 107 },
+    { at: 0.76, price: 106 },
+    { at: 0.9, price: 112 },
+  ],
+}
+
+/**
+ * The example in How breakeven works — copied from the designer's recording of the explainer (measured frame by frame),
+ * plus the charges breakdown (designer's brief, 2026-11-03). A 15 s loop on a white stage:
+ * 1. the price axis (₹100–₹103) and its dashed gridlines fade in; the buy dot pops in at ₹100 with "Bought at ₹100";
+ * 2. the chart zooms in 2× on ₹100 → ₹100.25 (the charges are thin at the normal scale): ₹102–₹103 move up out
+ *    of view and the charges zone fills one charge at a time, each a band as tall as its share of the charges, with a
+ *    tag (name · ₹ on the ₹100 buy). Top down: STT, transaction, stamp duty, SEBI, and brokerage last at
+ *    the bottom. They come in top down, so brokerage comes in last (₹0.02, a thin band, its tag the small one);
+ * 3. it zooms back out: the bands close into one orange charges zone and the tags slide down under it, stacking into one
+ *    tag that reads "Order charges" and stays under the zone; the breakeven line draws across its top at ₹100.25
+ *    and its B/E chip comes in;
+ * 3. an LTP bubble rides the price line as it draws up to ₹102 (showing the last price it passed); where it crosses the
+ *    breakeven line a ringed marker pulses;
+ * 4. at ₹102 the bubble goes, a green dot pulses, "Sold at ₹102" slides in and the green net-profit zone grows from the
+ *    breakeven line up to the sell price, labelled "Net Profit"; it holds;
+ * 5. it plays once and stops on the finished chart (at 9.3 s); a tap on it plays it again from the start.
+ * (The recording looped on into an intro — the Breakeven mark, INTRODUCING, Breakeven Line, the one-liner — at 11.75 s;
+ * kept below but not reached while it stops on the chart.)
+ * `still` (reduced motion) shows the finished chart and no intro.
+ */
+export function BreakevenExplainer({ still = false, version = 'v1' }: { still?: boolean; version?: ExplainerVersion }) {
+  const stageRef = useRef<HTMLDivElement>(null)
+  const width = useWidth(stageRef, FIGMA_WIDTH)
+  const [run, setRun] = useState(0)
+  const played = explainerLength(version)
+  const elapsed = useElapsed(!still, played, run)
+  const loop = Math.floor(elapsed / LOOP)
+  const time = still ? played : elapsed % LOOP
+  const replay = () => { if (!still && elapsed >= played) setRun(run + 1) }
+
+  return (
+    <div
+      ref={stageRef}
+      className={styles.stage}
+      style={{ height: HEIGHT }}
+      role="button"
+      tabIndex={0}
+      aria-label={`${t(version === 'v2' ? 'breakeven.chartLabelV2' : 'breakeven.chartLabel')} ${t('breakeven.replay')}`}
+      onClick={replay}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); replay() } }}
+    >
+      <ExampleChart time={time} width={width} version={version} />
+      {!still && time >= INTRO_AT && <Intro key={loop} />}
+      {!still && loop > 0 && time < INTRO_OUT && <Intro key={loop - 1} fade={1 - ramp(time, [0, INTRO_OUT])} />}
+    </div>
+  )
+}
+
+/**
+ * V1: the recording's order — the buy, zoom in for the charges, zoom out. V2 (designer's brief, 2026-11-04): it starts
+ * zoomed in; the price line rises from the bottom of the chart to the buy at ₹100 ("Bought at ₹100") and a blue fill
+ * rises under it to the ₹100 line (₹0 → ₹100, what the buy cost), the charges fill and close into one "Order charges"
+ * zone, and only then it zooms out — all the way, true to scale (₹100 stays put, the chart shrinks down to ₹0): the blue ₹100, the ₹0.25 of charges
+ * a hairline on it, then the B/E line, the run up 12% to "Sold at ₹112" and the green Net Profit.
+ */
+export type ExplainerVersion = 'v1' | 'v2'
+type Timeline = Record<keyof typeof SHOT_V1, [number, number]>
+
+/**
+ * Where each part comes in: [start, duration] in ms (t = 0 is the chart starting on a blank stage). From the B/E line
+ * on, it's the recording's timing moved 3 s later for the charges breakdown. `leadIn` (V2 only) is the line rising to
+ * the buy; a start of -1 means already there at t = 0.
+ */
+const SHOT_V1 = {
+  axis: [150, 250],
+  leadIn: [-1, 1],
+  boughtZone: [Infinity, 1], // V2 only
+  buyDot: [400, 200],
+  bought: [650, 150],
+  boughtOut: [Infinity, 1], // V2 only
+  boughtLabel: [Infinity, 1], // V2 only
+  zoomIn: [1000, 500],
+  chargeFill: [1550, 300], // the top band and its tag first; each one below CHARGE_STEP later, brokerage last
+  zoomOut: [4100, 600],
+  leadersOut: [4100, 150],
+  zoneMerge: [4100, 600], // the bands close into one zone
+  tagsMerge: [4100, 450], // the top tag first; each one below TAG_MERGE_STEP later
+  tagsOut: [4600, 150], // the stacked tags cross-fade into the one "Order charges" tag under the zone
+  chargesLabel: [4600, 150],
+  breakevenLine: [4750, 450],
+  breakevenChip: [5200, 200],
+  ltpIn: [5550, 150],
+  priceLine: [5800, 2150],
+  crossingPulse: [120, 400], // after the line reaches the crossing
+  ltpOut: [8000, 150],
+  sellDot: [8000, 200],
+  sellPulse: [8200, 500],
+  sold: [8250, 150],
+  profitZone: [8450, 550],
+  profitLabel: [9150, 150],
+} satisfies Record<string, [number, number]>
+
+/** V2: zoomed in from the start; the line rises to the buy, the charges fill and merge, then it zooms out. */
+const SHOT_V2: Timeline = {
+  axis: [100, 250],
+  leadIn: [300, 1100],
+  boughtZone: [1400, 450], // the blue ₹0 → ₹100 fill rises from the bottom to the buy
+  buyDot: [1400, 200],
+  bought: [1600, 150],
+  boughtOut: [4600, 150], // the callout hands over to the blue zone's own label (the Order charges tag takes its place)
+  boughtLabel: [5600, 200], // zoomed out: "Bought at ₹100" inside the blue zone
+  zoomIn: [-1, 1],
+  chargeFill: [2000, 300],
+  leadersOut: [4100, 150],
+  zoneMerge: [4100, 450],
+  tagsMerge: [4100, 450],
+  tagsOut: [4600, 150],
+  chargesLabel: [4600, 150],
+  zoomOut: [5000, 600],
+  breakevenLine: [5700, 450],
+  breakevenChip: [6150, 200],
+  ltpIn: [6500, 150],
+  priceLine: [6750, 2150],
+  crossingPulse: [120, 400],
+  ltpOut: [8950, 150],
+  sellDot: [8950, 200],
+  sellPulse: [9150, 500],
+  sold: [9200, 150],
+  profitZone: [9400, 550],
+  profitLabel: [10100, 150],
+}
+const SHOTS: Record<ExplainerVersion, Timeline> = { v1: SHOT_V1, v2: SHOT_V2 }
+/**
+ * V2's line before the buy: rising from the bottom of the chart to ₹100, in the plot's first 28% (the trade after the
+ * buy takes the rest). It comes in from the left, above "Bought at ₹100", so the callout stays clear.
+ */
+const BUY_AT: Record<ExplainerVersion, number> = { v1: 0, v2: 0.28 }
+const LEAD_IN: Record<ExplainerVersion, { at: number; price: number }[]> = {
+  v1: [],
+  v2: [
+    { at: 0, price: 99.28 },
+    { at: 0.06, price: 99.5 },
+    { at: 0.1, price: 99.42 },
+    { at: 0.15, price: 99.62 },
+    { at: 0.2, price: 99.9 },
+    { at: 0.28, price: 100 },
+  ],
+}
+const CHARGE_STEP = 350
+const TAG_MERGE_STEP = 30
+const LOOP = 15000
+/** How long one play takes (ms): it stops on the finished chart, its Net Profit label in. */
+export function explainerLength(version: ExplainerVersion) {
+  const { profitLabel } = SHOTS[version]
+  return profitLabel[0] + profitLabel[1]
+}
+/** The hard cut to the intro, and how long the intro takes to fade when the loop starts again. */
+const INTRO_AT = 11750
+const INTRO_OUT = 200
+/** The LTP value cross-fades for this long when the line passes a turn. */
+const LTP_SWAP = 100
+
+/** The plot, in px (measured at the card's 326 width in Figma; it stretches with the card). */
+const FIGMA_WIDTH = 326
+const HEIGHT = 286
+const PLOT_LEFT = 53.5
+const PLOT_RIGHT_INSET = 12.5
+const AXIS_X = 12.5
+const ZONE_LABEL_INSET = 8.5
+/**
+ * "Order charges" is a tag in the charge tags' column, 6 under the zone (its middle 17 under ₹100): the zone, ₹0.25
+ * tall, is too thin to hold it. A tag's text starts 7 in (its 6 padding and 1 edge).
+ */
+const CHARGES_LABEL_DROP = 17
+const TAG_TEXT_INSET = 7
+/** Callouts around their dots: "Bought" hangs 12.5 below with its notch 20 in; "Sold" ends 10 left; LTP sits 8.5 above. */
+const BOUGHT_GAP = 12.5
+const BOUGHT_NOTCH_X = 20
+const SOLD_GAP = 10
+const LTP_GAP = 8.5
+/** V2's green strip is too thin to hold its label: "Net Profit" sits 10 above it. */
+const PROFIT_LABEL_ABOVE = 10
+/** ₹100 sits at 209 and every rupee is 53 higher; zoomed in, 2× that (the charges zone twice its final height). */
+const BASELINE = 209
+const RUPEE = 53
+const ZOOM = 2
+const ZOOMED_RUPEE = RUPEE * ZOOM
+const priceY = (price: number, perRupee: number) => BASELINE - (price - breakevenExample.entry) * perRupee
+/**
+ * V2 zoomed out, true to scale: ₹100 stays where it was and the chart shrinks down to it — ₹0 comes up to 12 above the
+ * stage's bottom, so everything (the ₹0.25 of charges, the 12% to ₹112) is at that scale.
+ */
+const TRUE_ZERO_Y = HEIGHT - 12
+const TRUE_RUPEE = (TRUE_ZERO_Y - BASELINE) / breakevenExampleV2.entry
+const EXAMPLES = { v1: breakevenExample, v2: breakevenExampleV2 }
+/**
+ * Zoomed in, each charge is a band of the zone, as tall as its share of the charges (at least 2, so SEBI's ~0.1% still
+ * shows; the rest shrink to make room), 1 apart. Their tags sit in a column 140 from the plot's right, at least 24
+ * apart and 10 from the top, each joined by a leader to a dot 20 left of it at its band's middle.
+ */
+const MIN_BAND = 2
+const BAND_GAP = 1
+const TAG_COLUMN = 140
+const TAG_SPACING = 24
+const TAG_TOP = 10
+const LEADER = 20
+const BANDS = chargeBands()
+
+function ExampleChart({ time, width, version }: { time: number; width: number; version: ExplainerVersion }) {
+  const gradientId = useId()
+  const SHOT = SHOTS[version]
+  const { entry, breakeven, exit, axis, path } = EXAMPLES[version]
+  const zoomIn = ramp(time, SHOT.zoomIn, easeInOut)
+  const zoomOut = ramp(time, SHOT.zoomOut, easeInOut)
+  // V1 zooms out to 1 rupee = 53; V2 all the way to true scale (on a log scale, so the 50× zoom reads as one move).
+  const perRupee = version === 'v2'
+    ? ZOOMED_RUPEE * (TRUE_RUPEE / ZOOMED_RUPEE) ** zoomOut
+    : RUPEE + (ZOOMED_RUPEE - RUPEE) * zoomIn * (1 - zoomOut)
+  const y = (price: number) => priceY(price, perRupee)
+  const plotRight = width - PLOT_RIGHT_INSET
+  const buyAt = BUY_AT[version]
+  const plotX = (at: number) => PLOT_LEFT + at * (plotRight - PLOT_LEFT)
+  const points = path.map((p) => ({ x: plotX(buyAt + p.at * (1 - buyAt)), y: y(p.price), price: p.price }))
+  const leadIn = LEAD_IN[version].map((p) => ({ x: plotX(p.at), y: y(p.price) }))
+  const leadInDrawn = leadIn.length ? lineTo(leadIn, ramp(time, SHOT.leadIn)) : []
+  const start = points[0]
+  const end = points[points.length - 1]
+  const crossing = points.find((p) => p.price === breakeven) ?? points[0]
+
+  // The price line draws at a steady pace across the plot; its head is where the LTP bubble rides.
+  const drawn = ramp(time, SHOT.priceLine)
+  const headX = start.x + drawn * (end.x - start.x)
+  const passed = points.filter((p) => p.x <= headX)
+  const next = points[passed.length]
+  const last = passed[passed.length - 1] ?? start
+  const head = next ? { x: headX, y: last.y + ((headX - last.x) / (next.x - last.x)) * (next.y - last.y) } : end
+  const crossedAt = SHOT.priceLine[0] + ((crossing.x - start.x) / (end.x - start.x)) * SHOT.priceLine[1]
+  const lastTurnAt = SHOT.priceLine[0] + ((last.x - start.x) / (end.x - start.x)) * SHOT.priceLine[1]
+
+  const axisIn = ramp(time, SHOT.axis)
+  const boughtZone = ramp(time, SHOT.boughtZone, easeOut)
+  const zoneBottom = Math.min(y(0), HEIGHT)
+  const profitZone = ramp(time, SHOT.profitZone, easeOut) * (y(breakeven) - y(exit))
+  const ltp = ramp(time, SHOT.ltpIn, easeOut) * (1 - ramp(time, SHOT.ltpOut))
+  const sellIn = ramp(time, SHOT.sellDot, easeOutBack)
+  const chargeIn = (order: number) => SHOT.chargeFill[0] + (BANDS.length - 1 - order) * CHARGE_STEP
+  const bandFill = (order: number) => ramp(time, [chargeIn(order), SHOT.chargeFill[1]], easeOut)
+  const leadersShown = 1 - ramp(time, SHOT.leadersOut)
+  const tagsShown = 1 - ramp(time, SHOT.tagsOut)
+  const tagX = plotRight - TAG_COLUMN
+  const labelX = tagX + TAG_TEXT_INSET
+  const labelY = y(entry) + CHARGES_LABEL_DROP
+  const tagMerge = (order: number) =>
+    ramp(time, [SHOT.tagsMerge[0] + (BANDS.length - 1 - order) * TAG_MERGE_STEP, SHOT.tagsMerge[1]], easeInOut)
+
+  return (
+    <>
+      <svg className={styles.chart} width={width} height={HEIGHT} viewBox={`0 0 ${width} ${HEIGHT}`} aria-hidden>
+        <defs>
+          <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" className={styles.profitTop} />
+            <stop offset="0.6" className={styles.profitMid} />
+            <stop offset="1" className={styles.profitBottom} />
+          </linearGradient>
+        </defs>
+        {/* V2: what the buy cost, ₹0 → ₹100 — blue up from the bottom of the chart to the ₹100 line. */}
+        <rect className={styles.boughtZone} x={PLOT_LEFT} width={plotRight - PLOT_LEFT} y={zoneBottom - boughtZone * (zoneBottom - y(entry))} height={boughtZone * (zoneBottom - y(entry))} />
+        <g opacity={axisIn}>
+          {axis.map((price) => (
+            <line key={price} className={price === entry ? styles.baseline : styles.gridline} x1={PLOT_LEFT} x2={plotRight} y1={y(price)} y2={y(price)} />
+          ))}
+        </g>
+        {/* The charges zone: the bands fill up one by one; zooming out, the whole zone fades in over them and closes the gaps. */}
+        {BANDS.map((band, order) => {
+          const top = y(band.from + (band.to - band.from) * bandFill(order))
+          const height = Math.max(0, y(band.from) - top - BAND_GAP)
+          return height > 0 && <rect key={band.charge.id} className={styles.chargesZone} x={PLOT_LEFT} width={plotRight - PLOT_LEFT} y={top} height={height} />
+        })}
+        <rect className={styles.chargesZone} x={PLOT_LEFT} width={plotRight - PLOT_LEFT} y={y(breakeven)} height={y(entry) - y(breakeven)} opacity={ramp(time, SHOT.zoneMerge, easeInOut)} />
+        {leadersShown > 0 &&
+          BANDS.map((band, order) => {
+            const shown = ramp(time, [chargeIn(order), SHOT.chargeFill[1]]) * leadersShown
+            const middle = y((band.from + band.to) / 2)
+            return (
+              shown > 0 && (
+                <g key={band.charge.id} className={styles.leader} opacity={shown}>
+                  <line x1={tagX - LEADER} y1={middle} x2={tagX} y2={band.tagY} />
+                  <circle cx={tagX - LEADER} cy={middle} r={2} />
+                </g>
+              )
+            )
+          })}
+        <rect fill={`url(#${gradientId})`} x={PLOT_LEFT} width={plotRight - PLOT_LEFT} y={y(breakeven) - profitZone} height={profitZone} />
+        <line
+          className={styles.breakevenLine}
+          x1={PLOT_LEFT}
+          x2={PLOT_LEFT + ramp(time, SHOT.breakevenLine, easeInOut) * (plotRight - PLOT_LEFT)}
+          y1={y(breakeven)}
+          y2={y(breakeven)}
+        />
+        {leadInDrawn.length > 1 && <polyline className={styles.priceLine} points={leadInDrawn.map((p) => `${p.x},${p.y}`).join(' ')} />}
+        {drawn > 0 && <polyline className={styles.priceLine} points={[...passed, head].map((p) => `${p.x},${p.y}`).join(' ')} />}
+        <circle className={styles.buyDot} cx={start.x} cy={start.y} r={4.5 * ramp(time, SHOT.buyDot, easeOutBack)} />
+        {time >= crossedAt && (
+          <g>
+            <Pulse cx={crossing.x} cy={crossing.y} time={time - crossedAt} shot={SHOT.crossingPulse} className={styles.crossingPulse} />
+            <circle className={styles.crossingRing} cx={crossing.x} cy={crossing.y} r={7.5} />
+            <circle className={styles.buyDot} cx={crossing.x} cy={crossing.y} r={4} />
+          </g>
+        )}
+        {drawn >= 1 && (
+          <g>
+            <Pulse cx={end.x} cy={end.y} time={time} shot={SHOT.sellPulse} className={styles.sellPulse} />
+            <circle className={sellIn > 0 ? styles.sellRing : styles.sellRingDrawing} cx={end.x} cy={end.y} r={7.5} />
+            <circle className={styles.sellDot} cx={end.x} cy={end.y} r={4.5 * sellIn} />
+          </g>
+        )}
+      </svg>
+
+      {axis.map((price) => (
+        <span key={price} className={price === entry ? styles.axisEntry : styles.axisLabel} style={at(AXIS_X, y(price), axisIn)}>
+          {inr(price, 0)}
+        </span>
+      ))}
+
+      <span className={styles.chip} style={{ ...at(plotRight, y(breakeven), ramp(time, SHOT.breakevenChip, easeOut)), scale: `${0.9 + 0.1 * ramp(time, SHOT.breakevenChip, easeOut)}` }}>
+        <span className={styles.chipTag}>{t('breakeven.beTag')}</span>
+        {inr(breakeven)}
+      </span>
+
+      <span
+        className={styles.zoneLabel}
+        style={at(labelX, labelY, ramp(time, SHOT.chargesLabel))}
+        data-zone="charges"
+      >
+        {t('breakeven.charges')}
+        <span className={styles.chargeRate}>{t('breakeven.chargesTotal', { amount: chargeInr(exampleChargesTotal) })}</span>
+      </span>
+      <span className={styles.zoneLabel} style={at(PLOT_LEFT + ZONE_LABEL_INSET, version === 'v2' ? y(exit) - PROFIT_LABEL_ABOVE : y(exit) + 32.5, ramp(time, SHOT.profitLabel))} data-zone="profit">
+        {t('breakeven.netProfit')}
+      </span>
+      <span className={styles.zoneLabel} style={at(PLOT_LEFT + ZONE_LABEL_INSET, (y(entry) + zoneBottom) / 2, ramp(time, SHOT.boughtLabel))} data-zone="bought">
+        {t('breakeven.bought', { price: inr(entry, 0) })}
+      </span>
+
+      {/* Zooming out, the tags slide into the zone and stack where its "Order charges" label comes in. */}
+      {tagsShown > 0 &&
+        BANDS.map((band, order) => {
+          const shown = ramp(time, [chargeIn(order), SHOT.chargeFill[1]], easeOut)
+          const merge = tagMerge(order)
+          const tagY = band.tagY + (labelY - band.tagY) * merge
+          return (
+            shown > 0 && (
+              <span key={band.charge.id} className={styles.chargeTag} data-size={band.charge.id === 'brokerage' ? 'small' : undefined} style={{ ...rise(at(tagX, tagY), shown, 0, 4), opacity: shown * tagsShown }}>
+                {t(`breakeven.charge.${band.charge.id}`)}
+                <span className={styles.chargeRate}>{chargeInr(band.charge.amount)}</span>
+              </span>
+            )
+          )
+        })}
+
+      <span className={styles.bought} style={rise(at(start.x - BOUGHT_NOTCH_X, start.y + BOUGHT_GAP), ramp(time, SHOT.bought, easeOut) * (1 - ramp(time, SHOT.boughtOut)), 0, 4)}>
+        {t('breakeven.bought', { price: inr(entry, 0) })}
+      </span>
+      <span
+        className={styles.sold}
+        data-place={version === 'v2' ? 'above' : undefined}
+        style={version === 'v2'
+          ? rise(at(end.x + SOLD_GAP, end.y - SOLD_GAP), ramp(time, SHOT.sold, easeOut), 0, 4)
+          : rise(at(end.x - SOLD_GAP, end.y), ramp(time, SHOT.sold, easeOut), 6, 0)}
+      >
+        <Icon icon={msCheckCircleFill} size={16} />
+        {t('breakeven.sold', { price: inr(exit, 0) })}
+      </span>
+
+      {ltp > 0 && (
+        <span className={styles.ltp} style={{ ...at(head.x, head.y - LTP_GAP, ltp), scale: `${0.9 + 0.1 * ltp}` }}>
+          <span className={styles.ltpName}>{t('breakeven.ltp')}</span>
+          <span key={last.price} className={styles.ltpValue} style={{ opacity: last === start ? 1 : ramp(time, [lastTurnAt, LTP_SWAP]) }}>
+            {inr(last.price)}
+          </span>
+        </span>
+      )}
+    </>
+  )
+}
+
+/**
+ * The charges as bands of the zone, bottom to top (in rupees, so they follow the zoom), and where each tag sits when
+ * zoomed in: at its band's middle, pushed up to stay TAG_SPACING apart, then back down to stay under TAG_TOP.
+ */
+function chargeBands() {
+  const { entry, breakeven } = breakevenExample
+  const zone = breakeven - entry
+  const total = breakevenCharges.reduce((sum, charge) => sum + charge.amount, 0)
+  const heights = breakevenCharges.map((charge) => Math.max((charge.amount / total) * zone, MIN_BAND / ZOOMED_RUPEE))
+  const fit = zone / heights.reduce((sum, height) => sum + height, 0)
+  let from = entry
+  const bands = breakevenCharges.map((charge, order) => {
+    const band = { charge, from, to: from + heights[order] * fit, tagY: 0 }
+    from = band.to
+    return band
+  })
+  bands.forEach((band, order) => {
+    const middle = priceY((band.from + band.to) / 2, ZOOMED_RUPEE)
+    band.tagY = order === 0 ? middle : Math.min(middle, bands[order - 1].tagY - TAG_SPACING)
+  })
+  for (let order = bands.length - 1; order >= 0; order--) {
+    const above = bands[order + 1]
+    bands[order].tagY = Math.max(bands[order].tagY, above ? above.tagY + TAG_SPACING : TAG_TOP)
+  }
+  return bands
+}
+
+/** The polyline `points` drawn `progress` (0 → 1) of the way along x, ending at its moving head. */
+function lineTo(points: { x: number; y: number }[], progress: number) {
+  const first = points[0]
+  const headX = first.x + progress * (points[points.length - 1].x - first.x)
+  const passed = points.filter((p) => p.x <= headX)
+  const next = points[passed.length]
+  if (!next || passed.length === 0) return passed
+  const last = passed[passed.length - 1]
+  return [...passed, { x: headX, y: last.y + ((headX - last.x) / (next.x - last.x)) * (next.y - last.y) }]
+}
+
+/** A charge in ₹: paise to 2 places (₹0.15); the tiny ones to their first digit (₹0.003, ₹0.0002). */
+function chargeInr(amount: number) {
+  return `₹${amount >= 0.01 ? amount.toFixed(2) : Number(amount.toPrecision(1))}`
+}
+
+/** A ring that grows from the marker (7.5 → 14) and fades. */
+function Pulse({ cx, cy, time, shot, className }: { cx: number; cy: number; time: number; shot: [number, number]; className: string }) {
+  const p = ramp(time, shot, easeOut)
+  if (p <= 0 || p >= 1) return null
+  return <circle className={className} cx={cx} cy={cy} r={7.5 + 6.5 * p} opacity={0.4 * (1 - p)} />
+}
+
+/** The intro the loop ends on: Figma's reveal (its timings are CSS animations, so it plays each time it mounts). */
+function Intro({ fade = 1 }: { fade?: number }) {
+  return (
+    <div className={styles.intro} style={{ opacity: fade }}>
+      <BreakevenIcon variant="tile" className={styles.introIcon} />
+      <p className={styles.overline}>{t('breakeven.introducing')}</p>
+      <p className={styles.introTitle}>{t('breakeven.lineName')}</p>
+      <p className={styles.introText}>{t('breakeven.tagline')}</p>
+    </div>
+  )
+}
+
+/** A callout anchored at (x, y) on the stage; each callout's CSS places itself around that point. */
+function at(x: number, y: number, opacity = 1): CSSProperties {
+  return { '--x': `${x}px`, '--y': `${y}px`, opacity } as CSSProperties
+}
+
+/** Comes in by `progress`, moving from (dx, dy) px away to its place. */
+function rise(style: CSSProperties, progress: number, dx: number, dy: number): CSSProperties {
+  return { ...style, opacity: progress, translate: `${dx * (1 - progress)}px ${dy * (1 - progress)}px` }
+}
+
+/** 0 → 1 over [start, duration], eased. */
+function ramp(time: number, [start, duration]: [number, number], ease = linear) {
+  return ease(Math.min(1, Math.max(0, (time - start) / duration)))
+}
+const linear = (x: number) => x
+const easeOut = (x: number) => 1 - (1 - x) ** 3
+const easeInOut = (x: number) => (x < 0.5 ? 4 * x ** 3 : 1 - (-2 * x + 2) ** 3 / 2)
+const easeOutBack = (x: number) => 1 + 2.70158 * (x - 1) ** 3 + 1.70158 * (x - 1) ** 2
+
+/** Milliseconds since the play started, every frame, stopping at `until`; a new `run` plays it again from 0. */
+function useElapsed(playing: boolean, until: number, run: number) {
+  const [elapsed, setElapsed] = useState(0)
+  useEffect(() => {
+    if (!playing) return
+    let frame = 0
+    let start: number | undefined
+    setElapsed(0)
+    const tick = (now: number) => {
+      start ??= now
+      const passed = Math.min(now - start, until)
+      setElapsed(passed)
+      if (passed < until) frame = requestAnimationFrame(tick)
+    }
+    frame = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(frame)
+  }, [playing, until, run])
+  return elapsed
+}
+
+/** The element's width, kept current. */
+function useWidth(ref: React.RefObject<HTMLElement | null>, fallback: number) {
+  const [width, setWidth] = useState(fallback)
+  useLayoutEffect(() => {
+    const element = ref.current
+    if (!element) return
+    const observer = new ResizeObserver(() => setWidth(element.clientWidth))
+    observer.observe(element)
+    setWidth(element.clientWidth)
+    return () => observer.disconnect()
+  }, [ref])
+  return width
+}
+```
 
 ### `src/flows/fno/assets/commodities.svg`
 
@@ -1180,6 +2338,134 @@ sl��-�""	d ί��n������'�O�gt�s:�#E>�_��
 �)_+���+M;`�oV�t�+�x��<Pw��������G'-���2u�٤�*�����ȍF<��P�)�؜ȗ�:��?�ȇ/��L��3���i9��mx�h�*�Jq&�U���Pʍ���M��vVM�Y��N�������OzP��j"�� �HS�5o:�    IEND�B`�
 ```
 
+### `src/flows/fno/commodities/components/CalendarDay.tsx`
+
+```tsx
+import { Avatar } from '@l3/components/Avatar'
+import { Button } from '@l3/components/Button'
+import { Card } from '@l3/components/Card'
+import { Grid } from '@l3/components/Grid'
+import { Icon } from '@l3/components/Icon'
+import { MaskIcon } from '@l3/components/MaskIcon'
+import { Stack } from '@l3/components/Stack'
+import { msArrowDownward, msArrowUpward, msEvent, msLink } from '@l3/icons/material'
+import { Tag } from '@l3/components/Tag'
+import { t } from '../../copy'
+import type { ExpiryDay, ExpiryEntry } from '../data'
+import scalper from '../../assets/scalppro.svg'
+import styles from './Commodities.module.css'
+
+/** The day `inDays` from today. */
+export function dayFrom(inDays: number) {
+  const date = new Date()
+  date.setDate(date.getDate() + inDays)
+  return date
+}
+
+/**
+ * One day of the Commodity calendar: on the left the grey date block (weekday over the date, today ringed), on the
+ * right one card with that day's entries split by hairlines. Used by the calendar page (fno-38) and the home's
+ * Expiring This Week, version 2.
+ * - A contract row: art, name (and its kind when `showKind`), option chain (options only) and ScalpPro icon buttons;
+ *   the row opens the asset page.
+ * - An event row: event icon, name (two lines), time; no buttons. Under it one tag per commodity it moves
+ *   (an L3 Tag with an up / down arrow and the commodity; tap → asset page); with `eventDetails` also previous / forecast / actual above
+ *   (the calendar page — the home keeps events to one line). No country, impact tag or why line. Not tappable.
+ * `sticky` keeps the date block under the calendar page's month header while the day is in view.
+ */
+export function CalendarDay({ day, showKind, eventDetails = true, sticky = true, onAsset, onOptionChain, onScalper }: {
+  day: ExpiryDay
+  showKind: boolean
+  eventDetails?: boolean
+  sticky?: boolean
+  onAsset: () => void
+  onOptionChain: () => void
+  onScalper: () => void
+}) {
+  return <Stack direction="horizontal" gap="12" align="start">
+    <CalendarDate inDays={day.inDays} className={styles.calendarDate} sticky={sticky} />
+    <Card padding="none" className={styles.calendarCard}>
+      {day.entries.map((c) => <CalendarEntry key={c.id} entry={c} showKind={showKind} eventDetails={eventDetails} onAsset={onAsset} onOptionChain={onOptionChain} onScalper={onScalper} />)}
+    </Card>
+  </Stack>
+}
+
+/** The date block: weekday over the date (today inverted on the calendar page — dark fill, light text — not marked on the home). The page / v2 draw it as a grey block; v3 as the card's left column. */
+export function CalendarDate({ inDays, className, sticky = false }: { inDays: number; className: string; sticky?: boolean }) {
+  const date = dayFrom(inDays)
+  return <Stack gap="00" align="center" className={className} data-static={!sticky || undefined} data-today={inDays === 0 || undefined}>
+    <span className={styles.calendarWeekday}>{date.toLocaleDateString('en-IN', { weekday: 'short' })}</span>
+    <span className={styles.calendarDay}>{date.getDate()}</span>
+  </Stack>
+}
+
+/** One calendar row — a contract (art, name, kind, option chain + ScalpPro, tap → asset page) or an event (see CalendarDay). */
+export function CalendarEntry({ entry: c, showKind, eventDetails = true, onAsset, onOptionChain, onScalper }: {
+  entry: ExpiryEntry
+  showKind: boolean
+  eventDetails?: boolean
+  onAsset: () => void
+  onOptionChain: () => void
+  onScalper: () => void
+}) {
+    if (c.event) {
+      // An event: everything upfront — there's no event page, so the row isn't tappable and has no buttons; each asset it moves is.
+      const e = c.event
+      const stats = ([['previous', e.previous], ['forecast', e.forecast], ['actual', e.actual]] as const)
+      return <Stack gap="08" className={styles.calendarRow}>
+        <Stack direction="horizontal" gap="12" align="center">
+          <Avatar icon={<Icon icon={msEvent} size={14} />} size={24} className={styles.calendarAvatar} />
+          <Stack gap="00" className={styles.calendarText}>
+            <p className={styles.calendarName} data-wrap>{c.name}</p>
+            <span className={styles.calendarExchange}>
+              {[showKind ? t('expiryAll.kind.event') : null, e.time].filter(Boolean).join(' · ')}
+            </span>
+          </Stack>
+        </Stack>
+        <Stack gap="08" className={styles.calendarEventBody}>
+          {eventDetails && e.previous && <Grid columns={3} gap="08">
+            {stats.map(([key, value]) => <Stack key={key} gap="00">
+              <span className={styles.calendarExchange}>{t(`expiryAll.${key}`)}</span>
+              <span className={styles.calendarStat}>{value ?? t('expiryAll.due')}</span>
+            </Stack>)}
+          </Grid>}
+          {/* What it moves, one tag per commodity (arrow = bullish / bearish); tap → its asset page.
+              One row that scrolls sideways when they don't fit. */}
+          <Stack direction="horizontal" gap="08" className={styles.calendarMoves}>
+            {e.moves.map((m) => {
+              const label = t(m.trend === 'up' ? 'expiryAll.bullishFor' : 'expiryAll.bearishFor', { name: m.name })
+              // A small L3 Tag: up / down arrow (profit / loss colour) and the commodity; tappable.
+              return <Tag key={m.name} variant="tertiary" size="sm" color={m.trend === 'up' ? 'profit' : 'loss'}
+                iconLeft={<Icon icon={m.trend === 'up' ? msArrowUpward : msArrowDownward} />}
+                role="button" tabIndex={0} aria-label={label} className={styles.calendarMoveTag}
+                onClick={onAsset} onKeyDown={(ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); onAsset() } }}>{m.name}</Tag>
+            })}
+          </Stack>
+        </Stack>
+      </Stack>
+    }
+    return <Stack direction="horizontal" gap="12" align="center" className={styles.calendarRow}
+      data-tappable onClick={onAsset}>
+      <Avatar src={c.image} initials={c.initials} size={24} className={styles.calendarAvatar} />
+      <Stack gap="00" className={styles.calendarText}>
+        <p className={styles.calendarName}>{c.name}</p>
+        {/* When kinds are mixed, say which each row is. */}
+        {showKind && <span className={styles.calendarExchange}>{t(`expiryAll.kind.${c.kind}`)}</span>}
+      </Stack>
+      {/* Option chain: options only — futures have no chain. */}
+      <RowActions name={c.name} chain={c.kind === 'option'} onOptionChain={onOptionChain} onScalper={onScalper} />
+    </Stack>
+}
+
+/** The row's two icon buttons: option chain (when `chain`) and ScalpPro. They stop the tap so the row doesn't open too. */
+function RowActions({ name, chain, onOptionChain, onScalper }: { name: string; chain: boolean; onOptionChain: () => void; onScalper: () => void }) {
+  return <Stack direction="horizontal" gap="08" align="center">
+    {chain && <Button variant="tertiary" size="sm" raised="none" aria-label={t('expiryAll.chain', { name })} iconLeft={<Icon icon={msLink} size={16} />} onClick={(ev) => { ev.stopPropagation(); onOptionChain() }} />}
+    <Button variant="tertiary" size="sm" raised="none" aria-label={t('expiryAll.scalper', { name })} iconLeft={<span className={styles.calendarIcon}><MaskIcon src={scalper} /></span>} onClick={(ev) => { ev.stopPropagation(); onScalper() }} />
+  </Stack>
+}
+```
+
 ### `src/flows/fno/commodities/components/Commodities.module.css`
 
 ```css
@@ -1209,6 +2495,103 @@ sl��-�""	d ί��n������'�O�gt�s:�#E>�_��
 /* ILLIQUID tag on a card: its own tap target (explains illiquid) inside the card's button. */
 .tagTap { position: relative; display: inline-flex; cursor: pointer; }
 .tagTap::before { content: ''; position: absolute; inset: calc(-1 * var(--l3-spacing-12)) calc(-1 * var(--l3-spacing-04)); }
+
+/* Expiring This Week: a sideways rail of contract cards, each with its expiry tag sitting on the card's top edge.
+   The rail runs to the screen edges (cards snap to the 16 inset); the top padding makes room for the tag. */
+.expiryRail { display: flex; gap: var(--l3-spacing-12); overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-inline: var(--l3-spacing-16); margin-inline: calc(-1 * var(--l3-spacing-16)); padding: 0 var(--l3-spacing-16) var(--l3-spacing-04); scrollbar-width: none; }
+.expiryRail::-webkit-scrollbar { display: none; }
+.expiryItem { position: relative; flex: none; width: calc(100% - var(--l3-spacing-32)); scroll-snap-align: start; }
+.expiryItem:only-child { width: 100%; }
+.expiryArt { display: block; width: var(--l3-size-32); height: var(--l3-size-32); object-fit: contain; }
+.expiryLogo { display: inline-flex; flex: none; align-items: center; justify-content: center; width: var(--l3-size-48); height: var(--l3-size-48); border-radius: var(--l3-radius-full); background: var(--l3-surface-secondary); }
+.expirySymbol { font: var(--l3-text-heading-16); white-space: nowrap; }
+.expiryRule { height: 1px; background: var(--l3-border-light); }
+.expiryLabel { font: var(--l3-text-description-12); color: var(--l3-content-secondary); white-space: nowrap; }
+.expiryValue { font: var(--l3-text-heading-14); white-space: nowrap; }
+/* The action footer sits 16 under the details, like the card's other parts (L3's footer gives 12: the body's bottom
+   padding; local 4 on top — L3 gap, Card has no footer spacing prop). */
+.expiryCard[data-footer] > :last-child { padding-top: var(--l3-spacing-04); }
+/* Hover greys the whole card (details + buttons), not only the tap body as L3's footer card does — L3 gap. */
+@media (hover: hover) {
+  .expiryCard[data-footer][data-interactive]:hover {
+    background-image: linear-gradient(var(--l3-state-layer-dark-hover), var(--l3-state-layer-dark-hover));
+  }
+  .expiryCard[data-footer][data-interactive] > :first-child:hover { background-image: none; }
+}
+.expiryActionIcon { display: inline-flex; width: var(--l3-size-20); height: var(--l3-size-20); }
+
+/* ---- Expiry calendar (fno-38) -----------------------------------------------------------------------------------
+ * L3 has no calendar / timeline list (Steps is a progress list) — L3 gap. Left (48): one surface-secondary date block,
+ * the weekday over the date (today adds a border-dark ring); beside it one static card per day, its rows split by
+ * hairlines, each row 12 from every side with its content centred. */
+.calendar { display: flex; flex-direction: column; gap: var(--l3-spacing-16); padding: var(--l3-spacing-16) var(--l3-spacing-16) 0; }
+/* Sticky month header: covers what scrolls under it (screen background), 08 above and below the title. */
+.calendarMonthHead { position: sticky; top: 0; z-index: 1; padding-block: var(--l3-spacing-08); background: var(--l3-surface-default); }
+.calendarMonth { display: flex; flex-direction: column; gap: var(--l3-spacing-08); }
+.calendarDate {
+  position: sticky; top: calc(var(--calendar-head) + var(--l3-spacing-08)); /* under the month header, while its day is in view */
+  box-sizing: border-box; flex: none; width: var(--l3-spacing-48); padding: var(--l3-spacing-08) var(--l3-spacing-04);
+  border-radius: var(--l3-radius-12); background: var(--l3-surface-secondary);
+}
+.calendarDate[data-static] { position: static; } /* the home's Expiring This Week v2: no month header to stick under */
+/* Today on the calendar page: the date block inverted (dark fill, light text). The home's short calendar (data-static)
+   doesn't mark today. */
+.calendarDate[data-today]:not([data-static]) { background: var(--l3-surface-inverted); }
+.calendarDate[data-today]:not([data-static]) .calendarWeekday,
+.calendarDate[data-today]:not([data-static]) .calendarDay { color: var(--l3-content-inverted); }
+.calendarWeekday { font: var(--l3-text-description-12); color: var(--l3-content-secondary); }
+.calendarDay { font: var(--l3-text-label-16); color: var(--l3-content-primary); }
+.calendarCard.calendarCard { flex: 1; min-width: 0; gap: 0; } /* rows touch: L3 Card's 08 row gap would open a strip between them — the hairline is the only split */
+/* L3 Card draws its border as an inset shadow, which a row's hover / press fill would paint over: redraw the same
+   border on top of the rows so it stays visible. */
+.calendarCard.calendarCard { position: relative; }
+.calendarCard::after { content: ''; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 0 1px var(--l3-border-light); pointer-events: none; } /* 1px: Figma stroke weight */
+.calendarCard > * + * { box-shadow: inset 0 1px 0 var(--l3-border-light); } /* 1px hairline between rows */
+.calendarRow { padding: var(--l3-spacing-12); }
+.calendarRow[data-tappable] { cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; } /* the same 12 from every side of the card */
+/* Each contract row is the tap target: hover and press turn it surface-secondary (the card clips it to its corners). */
+.calendarRow[data-tappable]:active { background: var(--l3-surface-secondary); }
+@media (hover: hover) { .calendarRow[data-tappable]:hover { background: var(--l3-surface-secondary); } }
+.calendarText { flex: 1; min-width: 0; }
+.calendarName { flex: 1; min-width: 0; margin: 0; font: var(--l3-text-label-14); color: var(--l3-content-primary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* An event's name is long ("EIA crude oil inventories"): it wraps to two lines, then ellipsis. */
+.calendarName[data-wrap] { white-space: normal; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.calendarStat { font: var(--l3-text-label-14); color: var(--l3-content-primary); }
+.calendarWhy { margin: 0; font: var(--l3-text-description-12); color: var(--l3-content-secondary); }
+/* An event's details line up with its name: past the 24 icon and the 12 gap. */
+/* An event's commodities: one row of tags that scrolls sideways (no scrollbar). */
+.calendarMoves { overflow-x: auto; scrollbar-width: none; overscroll-behavior-x: contain; }
+.calendarMoves::-webkit-scrollbar { display: none; }
+/* Under the Previous / Forecast / Actual readings: 10 above the tags (the body's 8 + 2), not tight under the numbers. */
+.calendarMoves:not(:first-child) { margin-block-start: var(--l3-spacing-02); }
+/* Each commodity as an L3 Tag (arrow + name); it's tappable, so it doesn't shrink and shows a pointer. */
+.calendarMoveTag { flex: none; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.calendarEventBody { padding-inline-start: calc(var(--l3-size-24) + var(--l3-spacing-12)); }
+.calendarExchange { font: var(--l3-text-description-12); color: var(--l3-content-secondary); }
+.calendarIcon { display: inline-flex; width: var(--l3-size-16); height: var(--l3-size-16); }
+
+/* Commodity icon without L3 Avatar's 1px edge (the art has its own shape). L3 gap: Avatar has no borderless option. */
+.calendarAvatar::after { box-shadow: none; }
+/* Expiring This Week, version 2 (home): the first days of the calendar, 12 between days. */
+.expiryCalendarPreview { display: flex; flex-direction: column; gap: var(--l3-spacing-12); }
+/* Expiring This Week, version 3 (home): the same days in ONE card. Each day is a band: the date as the card's grey
+   left column (full height of the day, attached edge to edge), the day's rows beside it; hairlines between days
+   (full width, across the date column too) and between rows (rows only). Every date has the same weight (no today marker). */
+.calendarJoined.calendarJoined { position: relative; gap: 0; overflow: hidden; }
+.calendarJoined::after { content: ''; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 0 1px var(--l3-border-light); pointer-events: none; } /* 1px card edge over the fills */
+.calendarJoinedDay { display: flex; align-items: stretch; }
+.calendarJoinedDay + .calendarJoinedDay { border-top: 1px solid var(--l3-border-light); } /* 1px between days: a border, so it also crosses the grey date column */
+.calendarJoinedDate.calendarJoinedDate { flex: none; box-sizing: border-box; width: var(--l3-spacing-48); justify-content: center; padding: var(--l3-spacing-08) var(--l3-spacing-04); background: var(--l3-surface-secondary); }
+.calendarJoinedRows { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.calendarJoinedRows > * + * { box-shadow: inset 0 1px 0 var(--l3-border-light); } /* 1px between rows of a day */
+
+/* fno-38: the body slides with the tabs. The track holds the current tab's body with the tabs next door just off-screen
+   either side (clip, not hidden, so the sticky month / date blocks still stick to the page's scroll). */
+.calendarViewport { overflow-x: clip; min-height: 100%; }
+.calendarTrack { position: relative; min-height: 100%; }
+.calendarPanel[data-side='before'], .calendarPanel[data-side='after'] { position: absolute; inset-block-start: 0; inline-size: 100%; }
+.calendarPanel[data-side='before'] { inset-inline-start: -100%; }
+.calendarPanel[data-side='after'] { inset-inline-start: 100%; }
 ```
 
 ### `src/flows/fno/commodities/components/CommoditiesFeed.tsx`
@@ -1220,9 +2603,13 @@ import { Watchlists } from '../../components/Discovery'
 import { TradingChart } from '../../components/TradingChart'
 import type { Contract, Watchlist } from '../../data'
 import { t } from '../../copy'
-import { smartFutures, type Commodity } from '../data'
+import { smartFutures, type Commodity, type ExpiringContract } from '../data'
 import { CommodityHeatmap } from './CommodityHeatmap'
 import { CommodityShortcuts } from './CommodityShortcuts'
+import { ExpiringCalendar } from './ExpiringCalendar'
+import { ExpiringCalendarCard } from './ExpiringCalendarCard'
+import { ExpiringThisWeek } from './ExpiringThisWeek'
+import { useFlowOption } from '../../../../shared/prototype'
 import { PopularCommodities } from './PopularCommodities'
 import parts from '../../components/HomeParts.module.css'
 
@@ -1231,6 +2618,7 @@ type Props = {
   instrument: string
   lists: Watchlist[]
   onCommodity: (commodity: Commodity) => void
+  onAsset: () => void
   onPicker: () => void
   onChoose: Choose
   onContract: (contract: Contract) => void
@@ -1238,12 +2626,24 @@ type Props = {
   onAddWatchlist: () => void
   onChain: () => void
   onScalper: () => void
+  /** Expiring This Week's View all → the Upcoming expiries timeline. */
+  onExpiries: () => void
+  /** An Expiring card's trend read-out → the trend info sheet. */
+  onTrendInfo: (contract: ExpiringContract) => void
 }
 
 /** The Commodities tab of F&O home (Figma 6754:63637), under the shared header, P&L, indices and product tabs. */
-export function CommoditiesFeed({ instrument, lists, onCommodity, onPicker, onChoose, onContract, onDestination, onAddWatchlist, onChain, onScalper }: Props) {
+export function CommoditiesFeed({ instrument, lists, onCommodity, onAsset, onPicker, onChoose, onContract, onDestination, onAddWatchlist, onChain, onScalper, onExpiries, onTrendInfo }: Props) {
+  // Prototype setting “Expiring This Week”: Version 1 = the card rail, Version 2 = the short calendar,
+  // Version 3 = that calendar in one card (dates attached as its left column).
+  const expiringVersion = useFlowOption('fno', 'expiringVersion', 'v1')
   return <Stack gap="32" className={parts.feed}>
     <CommodityShortcuts onOpen={onCommodity} />
+    {expiringVersion === 'v3'
+      ? <ExpiringCalendarCard onAsset={onAsset} onOptionChain={onChain} onScalper={onScalper} onViewAll={onExpiries} />
+      : expiringVersion === 'v2'
+      ? <ExpiringCalendar onAsset={onAsset} onOptionChain={onChain} onScalper={onScalper} onViewAll={onExpiries} />
+      : <ExpiringThisWeek onAsset={onAsset} onContract={onContract} onScalper={onScalper} onViewAll={onExpiries} onTrendInfo={onTrendInfo} />}
     <TradingChart instrument={instrument} onInstrument={onPicker} onChoose={onChoose} onDestination={onDestination} onChain={onChain} onScalper={onScalper} />
     <div className={parts.divider} />
     <div data-fno="watchlists"><Watchlists lists={lists} onAdd={onAddWatchlist} onOpen={onDestination} /></div>
@@ -1299,6 +2699,161 @@ export function CommodityShortcuts({ onOpen }: { onOpen: (commodity: Commodity) 
       <span className={[styles.change, commodity.change < 0 ? parts.down : parts.up].join(' ')}>{commodity.change > 0 ? '+' : ''}{commodity.change.toFixed(2)}%</span>
     </Stack>
   </Stack>)}</div>
+}
+```
+
+### `src/flows/fno/commodities/components/ExpiringCalendar.tsx`
+
+```tsx
+import { SectionHeader } from '@l3/components/SectionHeader'
+import { t } from '../../copy'
+import { useFlowOption } from '../../../../shared/prototype'
+import { expiryPreview, expiryPreviewSamples, type ExpiryPreviewSample } from '../data'
+import { CalendarDay } from './CalendarDay'
+import parts from '../../components/HomeParts.module.css'
+import styles from './Commodities.module.css'
+
+/**
+ * Expiring This Week, version 2 — the Commodities home section as a short calendar instead of the card rail: the
+ * calendar's first 3 entries (`expiryPreview`), on their days (the grey date block on the left, one card per day), so
+ * it's three rows on one day or spread over two or three days. Events first within a day and on one line (time ·
+ * country, impact); contracts as on the calendar page (option chain + ScalpPro, row → asset page). View all → the
+ * Commodity calendar (fno-38) with everything. Prototype setting "Expiring This Week" picks Version 1 (cards) or 2.
+ */
+export function ExpiringCalendar({ onAsset, onOptionChain, onScalper, onViewAll }: { onAsset: () => void; onOptionChain: () => void; onScalper: () => void; onViewAll: () => void }) {
+  // Prototype setting “Calendar days”: which week to show (the real calendar, 2 today + 1 tomorrow, or 1 a day).
+  const sample = useFlowOption('fno', 'expiringDays', 'split') as ExpiryPreviewSample
+  return <section className={parts.contractSection} aria-label={t('expiring.title')}>
+    <SectionHeader title={t('expiring.title')} action={{ type: 'view-all', label: t('viewAll'), onClick: onViewAll }} />
+    <div className={styles.expiryCalendarPreview}>
+      {expiryPreview(3, expiryPreviewSamples[sample] ?? expiryPreviewSamples.calendar).map((day) => <CalendarDay key={day.inDays} day={day} showKind sticky={false} eventDetails={false} onAsset={onAsset} onOptionChain={onOptionChain} onScalper={onScalper} />)}
+    </div>
+  </section>
+}
+```
+
+### `src/flows/fno/commodities/components/ExpiringCalendarCard.tsx`
+
+```tsx
+import { Card } from '@l3/components/Card'
+import { SectionHeader } from '@l3/components/SectionHeader'
+import { t } from '../../copy'
+import { useFlowOption } from '../../../../shared/prototype'
+import { expiryPreview, expiryPreviewSamples, type ExpiryPreviewSample } from '../data'
+import { CalendarDate, CalendarEntry } from './CalendarDay'
+import parts from '../../components/HomeParts.module.css'
+import styles from './Commodities.module.css'
+
+/**
+ * Expiring This Week, version 3 — the version 2 short calendar (the calendar's first 3 entries on their days, events
+ * first and on one line) in ONE card: each day is a band with the date as the card's grey left column, attached edge
+ * to edge and as tall as the day's rows, and the rows beside it; hairlines between days and between rows. Rows act as
+ * on the calendar page (option chain + ScalpPro, row → asset page). View all → the Commodity calendar (fno-38).
+ */
+export function ExpiringCalendarCard({ onAsset, onOptionChain, onScalper, onViewAll }: { onAsset: () => void; onOptionChain: () => void; onScalper: () => void; onViewAll: () => void }) {
+  // Prototype setting “Calendar days”: which week to show (the real calendar, 2 today + 1 tomorrow, or 1 a day).
+  const sample = useFlowOption('fno', 'expiringDays', 'split') as ExpiryPreviewSample
+  return <section className={parts.contractSection} aria-label={t('expiring.title')}>
+    <SectionHeader title={t('expiring.title')} action={{ type: 'view-all', label: t('viewAll'), onClick: onViewAll }} />
+    <Card padding="none" className={styles.calendarJoined}>
+      {expiryPreview(3, expiryPreviewSamples[sample] ?? expiryPreviewSamples.calendar).map((day) => <div key={day.inDays} className={styles.calendarJoinedDay}>
+        <CalendarDate inDays={day.inDays} className={styles.calendarJoinedDate} />
+        <div className={styles.calendarJoinedRows}>
+          {day.entries.map((c) => <CalendarEntry key={c.id} entry={c} showKind eventDetails={false} onAsset={onAsset} onOptionChain={onOptionChain} onScalper={onScalper} />)}
+        </div>
+      </div>)}
+    </Card>
+  </section>
+}
+```
+
+### `src/flows/fno/commodities/components/ExpiringThisWeek.tsx`
+
+```tsx
+import { Button } from '@l3/components/Button'
+import { Card } from '@l3/components/Card'
+import { MaskIcon } from '@l3/components/MaskIcon'
+import { PriceChange } from '@l3/components/PriceChange'
+import { SectionHeader } from '@l3/components/SectionHeader'
+import { Stack } from '@l3/components/Stack'
+import { inr } from '../../../../shared/data/format'
+import { useFlowOption } from '../../../../shared/prototype'
+import type { Contract } from '../../data'
+import { t } from '../../copy'
+import { expiringThisWeek, type ExpiringContract } from '../data'
+import scalper from '../../assets/scalppro.svg'
+import { TrendBadge } from '../../components/TrendBadge'
+import { trendLabel, trendSince } from '../sheets/TrendInfoSheet'
+import parts from '../../components/HomeParts.module.css'
+import styles from './Commodities.module.css'
+
+/** The commodity art on the left of each card — hidden for now (kept, not deleted). */
+const SHOW_ART = false
+
+/** The expiry line's day: Today, Tomorrow, then the weekday ("Thu"). */
+function expiryDay(days: number) {
+  if (days === 0) return t('expiring.today')
+  if (days === 1) return t('expiring.tomorrow')
+  const date = new Date()
+  date.setDate(date.getDate() + days)
+  return date.toLocaleDateString('en-IN', { weekday: 'short' })
+}
+
+/** The card as a contract, for the contract sheet (Buy). */
+const asContract = (c: ExpiringContract): Contract => c.kind !== 'future'
+  ? { id: c.id, name: `${c.symbol} ${c.option}`, description: c.description, price: c.price, change: c.priceChange, volume: 0, side: c.option.includes(' PE') ? 'put' : 'call' }
+  : { id: c.id, name: c.symbol, description: c.description, price: c.price, change: c.priceChange, volume: 0 }
+
+/** The card's variant: the expiry line under the symbol and the left column's label (the option, or LTP for a future). */
+const expiryLine = (c: ExpiringContract) =>
+  c.kind === 'option' ? t('expiring.tag', { day: expiryDay(c.expiresInDays) })
+  : c.kind === 'event' ? t('expiring.eventTag', { event: c.event, day: expiryDay(c.eventInDays), time: c.eventTime })
+  : t('expiring.futTag', { date: c.expiryDate })
+const priceLabel = (c: ExpiringContract) => c.kind === 'future' ? t('expiring.ltp') : c.option
+
+/**
+ * Expiring This Week — the Commodities tab's section between the commodity shortcuts and the chart: a sideways rail
+ * of contracts whose options expire this week. Each card: the commodity with when its options expire (plain text,
+ * "OPT Expiry Today" / "FUT Expiry 3 Dec"), the trend since when it started, the option's premium or the future's LTP
+ * (left) and the margin per lot
+ * (right), each a label over its value, then
+ * View all opens the Upcoming expiries timeline (fno-38). The trend read-out (top right, with its i) opens the trend info sheet. ScalpPro and Buy in the card's action footer (no fill); the three parts sit 16 apart. A tap on the card opens the contract's asset page.
+ */
+export function ExpiringThisWeek({ onAsset, onContract, onScalper, onViewAll, onTrendInfo }: { onAsset: () => void; onContract: (contract: Contract) => void; onScalper: () => void; /** The trend read-out (Strong Uptrend / Bullish …, the whole top right) → the trend info sheet. */ onTrendInfo: (contract: ExpiringContract) => void; /** View all → the Upcoming expiries timeline (fno-38). */ onViewAll: () => void }) {
+  // Prototype setting “Expiring card buttons”: off hides the whole ScalpPro + Buy footer.
+  const showButtons = useFlowOption('fno', 'expiringButtons', 'on') === 'on'
+  return <section className={parts.contractSection} aria-label={t('expiring.title')}>
+    <SectionHeader title={t('expiring.title')} action={{ type: 'view-all', label: t('viewAll'), onClick: onViewAll }} />
+    <div className={styles.expiryRail}>
+      {expiringThisWeek.map((c) => <div key={c.id} className={styles.expiryItem}>
+        <Card
+          className={styles.expiryCard}
+          onClick={onAsset}
+          aria-label={`${c.symbol} ${priceLabel(c)}`}
+          footer={showButtons ? <>
+            <Button variant="secondary" size="md" fullWidth iconLeft={<span className={styles.expiryActionIcon}><MaskIcon src={scalper} /></span>} onClick={onScalper}>{t('chart.scalper')}</Button>
+            <Button variant="primary" size="md" fullWidth onClick={() => onContract(asContract(c))}>{t('expiring.buy')}</Button>
+          </> : undefined}
+        >
+          <Stack gap="16">
+            <Stack direction="horizontal" gap="12" align="center">
+              {SHOW_ART && <span className={styles.expiryLogo}><img className={styles.expiryArt} src={c.image} alt="" /></span>}
+              <Stack gap="04" className={parts.grow}>
+                <p className={styles.expirySymbol}>{c.symbol}</p>
+                <p className={parts.description}>{expiryLine(c)}</p>
+              </Stack>
+              <TrendBadge trend={c.trend} label={trendLabel(c)} since={trendSince(c)} largeSince info={t('expiring.sinceInfo')} onInfo={() => onTrendInfo(c)} />
+            </Stack>
+            <div className={styles.expiryRule} />
+            <Stack direction="horizontal" gap="12" justify="between">
+              <Stack gap="04"><span className={styles.expiryLabel}>{priceLabel(c)}</span><Stack direction="horizontal" gap="08" align="center"><span className={styles.expiryValue}>{inr(c.price)}</span><PriceChange value={c.priceChange} unit="percent" size="md" /></Stack></Stack>
+              <Stack gap="04" align="end"><span className={styles.expiryLabel}>{t('expiring.margin')}</span><span className={styles.expiryValue}>{inr(c.margin)}</span></Stack>
+            </Stack>
+          </Stack>
+        </Card>
+      </div>)}
+    </div>
+  </section>
 }
 ```
 
@@ -1508,6 +3063,172 @@ export const assetCandles = assetCloses.map((close, i) => {
   const open = i ? assetCloses[i - 1] : close + 120
   return { open, close, high: Math.max(open, close) + 90 + (i % 3) * 40, low: Math.min(open, close) - 80 - (i % 4) * 30, volume: 20 + ((i * 37) % 60) }
 })
+
+/**
+ * Expiring This Week (F&O home → Commodities, between the shortcuts and the chart): commodity contracts expiring soon.
+ * One card, two variants (`kind`):
+ * - `option`: the ATM option (`option`, e.g. "132000 CE ATM") with its premium; the expiry line is "OPT Expiry <day>",
+ *   the day from `expiresInDays` (0 = Today, 1 = Tomorrow, then the weekday).
+ * - `future`: the future's last traded price (LTP); the expiry line is "FUT Expiry <expiryDate>" ("3 Dec").
+ * `price` / `priceChange` are the option's premium or the future's LTP with the day change (%); `margin` is the margin
+ * per lot (₹); `trend` / `since` feed the trend read-out.
+ * - `event`: a market event on the contract's commodity today (the EIA natural gas storage report): the line under the
+ *   symbol is the event and its time ("NG storage · Today 9:00 PM"), the trend read-out is the outlook ("Bullish" over
+ *   "Smaller build"), then the ATM option like an
+ *   `option` card (the readings are on the calendar's Events tab). Data from the user's reference card (2026-11-17).
+ */
+type ExpiringBase = {
+  id: string; symbol: string; /** The Commodity it belongs to. */ commodity: Commodity['id']; image: string; description: string
+  trend: 'up' | 'down'; since: string; price: number; priceChange: number; margin: number
+  /** What's behind the trend, in two short lines — the trend info sheet's bullets (Dash's read-out). */
+  trendNotes: string[]
+}
+export type ExpiringContract =
+  | (ExpiringBase & { kind: 'option'; option: string; expiresInDays: number })
+  | (ExpiringBase & { kind: 'future'; expiryDate: string })
+  | (ExpiringBase & {
+      kind: 'event'; option: string
+      /** The event's short name and when it's out (IST). */
+      event: string; eventInDays: number; eventTime: string
+      /** The outlook ahead of it ("Bullish") and why, in a few words ("Smaller build"). */
+      outlook: string; reason: string
+    })
+export const expiringThisWeek: ExpiringContract[] = [
+  { kind: 'option', id: 'exp-goldm', symbol: 'GOLDM', commodity: 'gold', image: gold, description: 'Fut | 3 Dec 26', expiresInDays: 0, trend: 'up', since: '3:25 PM', option: '132000 CE ATM', price: 118, priceChange: 14.56, margin: 1180, trendNotes: ['EMA(9) on the 15m candles has stayed above EMA(21) since 3:25 PM, and every dip has been bought', 'Momentum is with buyers. Trailing a stop under the last swing low works better than chasing'] },
+  // Second for testing the futures variant (sample from the live card, 2026-11-17).
+  { kind: 'future', id: 'exp-goldm-fut', symbol: 'GOLDM', commodity: 'gold', image: gold, description: 'Fut | 3 Dec 26', expiryDate: '3 Dec', trend: 'up', since: '2:40 PM', price: 132640, priceChange: 1.24, margin: 14020, trendNotes: ['Price has held above EMA(9) on the 15m candles since 2:40 PM, with higher lows each hour', 'The trend is steady rather than stretched. Entries on pullbacks to the average carry less risk'] },
+  // Third: the events card (data from the user's reference, 2026-11-17).
+  { kind: 'event', id: 'exp-natgasmini-event', symbol: 'NATGASMINI', commodity: 'gas', image: naturalGas, description: 'Fut | 24 Nov 26', event: 'NG storage', eventInDays: 0, eventTime: '9:00 PM', trend: 'up', since: '', outlook: 'Bullish', reason: 'Smaller build', option: '305 CE ATM', price: 7.4, priceChange: 4.2, margin: 1850, trendNotes: ['EIA storage is expected at +38 Bcf tonight against +56 Bcf last week, a smaller build than usual', 'A smaller build means tighter supply. Prices can move sharply in the minutes after the 9:00 PM release'] },
+  { kind: 'option', id: 'exp-silverm', symbol: 'SILVERM', commodity: 'silver', image: silver, description: 'Fut | 27 Feb 27', expiresInDays: 1, trend: 'down', since: '1:10 PM', option: '158000 PE ATM', price: 642.5, priceChange: 8.2, margin: 3212.5, trendNotes: ['EMA(9) on the 15m candles crossed below EMA(21) at 1:10 PM, and lower highs keep forming', 'Sellers are in control. Bounces into the moving averages have been sold so far'] },
+  { kind: 'option', id: 'exp-crudeoilm', symbol: 'CRUDEOILM', commodity: 'crude', image: crudeOil, description: 'Fut | 18 Dec 26', expiresInDays: 2, trend: 'up', since: '11:40 AM', option: '5400 CE ATM', price: 96.4, priceChange: 21.03, margin: 964, trendNotes: ['EMA(9) on the 15m candles turned up at 11:40 AM and price has stayed above it since', 'Buyers are stepping in on every dip. A close back under the average would weaken the trend'] },
+  { kind: 'option', id: 'exp-naturalgas', symbol: 'NATURALGAS', commodity: 'gas', image: naturalGas, description: 'Fut | 24 Dec 26', expiresInDays: 3, trend: 'down', since: '10:05 AM', option: '320 PE ATM', price: 12.85, priceChange: 6.74, margin: 16062.5, trendNotes: ['Price slipped under EMA(9) on the 15m candles at 10:05 AM and has not reclaimed it', 'Each rally is fading below the average. Selective entries beat chasing the move lower'] },
+]
+
+/**
+ * Expiry calendar (fno-38, View all on Expiring This Week): the days commodity contracts expire, plus the market events
+ * that move them. Each day holds everything on it (one day can have several). Just the name — no prices. Options rows
+ * have ScalpPro and option-chain buttons, futures rows only ScalpPro, events none. `inDays` = days from today
+ * (0 = today), so the dates always lead from today. The All tab merges the three by day.
+ */
+export type ExpiryKind = 'option' | 'future' | 'event'
+export type ExpiryEntry = {
+  id: string
+  kind: ExpiryKind
+  name: string
+  /** Events: everything shows on the card (there's no event page). */
+  event?: ExpiryEvent
+  /** The commodity's art, shown as a 24 avatar before the name. Base metals have no art yet: `initials` instead. */
+  image?: string
+  /** Chemical symbol for metals without art (Zn, Cu, Al, Pb). */
+  initials?: string
+}
+/**
+ * A market event that moves commodity prices — the fields every economic calendar shows (Investing.com, Zerodha
+ * Markets calendar, broker commodity dailies): when (IST), where, how much it usually moves prices, the last reading,
+ * what's expected and, once out, what came in. Plus which MCX commodities it moves and one line on how.
+ */
+export type ExpiryEvent = {
+  /** Release time in IST ("9:00 PM"). */
+  time: string
+  /** Who releases it: "US", "China", "OPEC+". */
+  country: string
+  impact: 'high' | 'medium' | 'low'
+  /** The last reading, the consensus forecast and (once released) the actual, with units. None for meetings with no number (OPEC+). */
+  previous?: string
+  forecast?: string
+  actual?: string
+  /** The MCX commodities it moves and which way it's expected to push each (up = bullish, down = bearish). One entry per
+   *  commodity, never its contract sizes: Gold and Gold Mini move together, so it's just "Gold" (likewise Crude Oil,
+   *  Natural Gas, Silver). */
+  moves: { name: string; trend: 'up' | 'down' }[]
+  /** How it usually moves them, in one line. */
+  why: string
+}
+export type ExpiryDay = { inDays: number; entries: ExpiryEntry[] }
+const expiryArt: Record<string, Pick<ExpiryEntry, 'image' | 'initials'>> = {
+  'Gold': { image: gold }, 'Gold Mini': { image: goldMini }, 'Gold Guinea': { image: goldGuinea }, 'Gold Petal': { image: goldPetal },
+  'Silver': { image: silver }, 'Silver Mini': { image: silver }, 'Silver Micro': { image: silver },
+  'Crude Oil': { image: crudeOil }, 'Crude Oil Mini': { image: crudeOil },
+  'Natural Gas': { image: naturalGas }, 'Natural Gas Mini': { image: naturalGas },
+  'Zinc': { initials: 'Zn' }, 'Copper': { initials: 'Cu' }, 'Aluminium': { initials: 'Al' }, 'Lead': { initials: 'Pb' },
+}
+const contracts = (kind: 'option' | 'future', names: string[]): ExpiryEntry[] =>
+  names.map((name) => ({ id: `${kind}-${name}`, kind, name, ...expiryArt[name] }))
+const event = (name: string, details: ExpiryEvent): ExpiryEntry => ({ id: `event-${name}`, kind: 'event', name, event: details })
+export const expiryCalendar: Record<ExpiryKind, ExpiryDay[]> = {
+  option: [
+    { inDays: 0, entries: contracts('option', ['Gold Mini', 'Crude Oil Mini', 'Crude Oil']) },
+    { inDays: 1, entries: contracts('option', ['Natural Gas']) },
+    { inDays: 2, entries: contracts('option', ['Silver Mini']) },
+    { inDays: 3, entries: contracts('option', ['Natural Gas', 'Natural Gas Mini']) },
+    { inDays: 6, entries: contracts('option', ['Zinc', 'Copper', 'Aluminium', 'Lead']) },
+    { inDays: 10, entries: contracts('option', ['Silver', 'Silver Micro']) },
+    { inDays: 16, entries: contracts('option', ['Gold', 'Gold Guinea', 'Gold Petal']) },
+  ],
+  future: [
+    { inDays: 2, entries: contracts('future', ['Natural Gas', 'Natural Gas Mini']) },
+    { inDays: 9, entries: contracts('future', ['Crude Oil', 'Crude Oil Mini']) },
+    { inDays: 13, entries: contracts('future', ['Zinc', 'Copper', 'Aluminium']) },
+    { inDays: 16, entries: contracts('future', ['Gold', 'Gold Mini', 'Silver', 'Silver Mini']) },
+  ],
+  // For now only the two EIA weekly reports (sample readings, not live). Times are IST in winter (US standard time):
+  // natural gas storage today, crude tomorrow, both 9:00 PM.
+  event: [
+    { inDays: 0, entries: [event('EIA natural gas storage', { time: '9:00 PM', country: 'US', impact: 'high', previous: '+56 Bcf', forecast: '+38 Bcf', moves: [{ name: 'Natural Gas', trend: 'up' }, { name: 'Crude Oil', trend: 'up' }], why: 'A smaller injection than expected usually lifts natural gas.' })] },
+    { inDays: 1, entries: [event('EIA crude oil inventories', { time: '9:00 PM', country: 'US', impact: 'high', previous: '−3.4M bbl', forecast: '−1.8M bbl', moves: [{ name: 'Crude Oil', trend: 'down' }, { name: 'Natural Gas', trend: 'down' }, { name: 'Gold', trend: 'up' }], why: 'Falling stocks usually lift crude; a surprise build pulls it down.' })] },
+  ],
+}
+/** All tab: every kind on each day — options, then futures, then events. */
+export const expiryCalendarAll: ExpiryDay[] = (() => {
+  const byDay = new Map<number, ExpiryEntry[]>()
+  for (const kind of ['option', 'future', 'event'] as const)
+    for (const day of expiryCalendar[kind]) byDay.set(day.inDays, [...(byDay.get(day.inDays) ?? []), ...day.entries])
+  return [...byDay].sort((a, b) => a[0] - b[0]).map(([inDays, entries]) => ({ inDays, entries }))
+})()
+
+/**
+ * Expiring This Week, version 2 (home): the calendar's first `count` entries (3), keeping them on their days — three on
+ * one day, or spread over two or three days. Events come first within a day: they're timed, so they matter most today.
+ * Everything else is on the calendar page (View all).
+ */
+export function expiryPreview(count = 3, source: ExpiryDay[] = expiryCalendarAll): ExpiryDay[] {
+  const days: ExpiryDay[] = []
+  let left = count
+  for (const day of source) {
+    if (left === 0) break
+    const ordered = [...day.entries].sort((a, b) => Number(b.kind === 'event') - Number(a.kind === 'event'))
+    const entries = ordered.slice(0, left)
+    days.push({ inDays: day.inDays, entries })
+    left -= entries.length
+  }
+  return days
+}
+
+/**
+ * Prototype: how the home's short calendar (Expiring This Week v2 / v3) looks when the week splits differently — the
+ * setting “Calendar days”. Sample weeks: the first two days hold only option / future contracts, an event comes on the
+ * third day only. `calendar` = 3 today (all contracts); `split` = 2 today + 1 tomorrow; `spread` = 1 a day, so the
+ * third row is the event. The calendar page (fno-38) keeps the real calendar.
+ */
+export type ExpiryPreviewSample = 'calendar' | 'split' | 'spread'
+const crudeStock = expiryCalendar.event[1].entries[0]
+export const expiryPreviewSamples: Record<ExpiryPreviewSample, ExpiryDay[]> = {
+  calendar: [
+    { inDays: 0, entries: [...contracts('option', ['Gold Mini', 'Crude Oil Mini']), ...contracts('future', ['Natural Gas'])] },
+    { inDays: 1, entries: contracts('option', ['Natural Gas']) },
+    { inDays: 2, entries: [crudeStock] },
+  ],
+  split: [
+    { inDays: 0, entries: [...contracts('option', ['Gold Mini']), ...contracts('future', ['Crude Oil Mini'])] },
+    { inDays: 1, entries: [...contracts('option', ['Natural Gas']), ...contracts('future', ['Natural Gas Mini'])] },
+    { inDays: 2, entries: [crudeStock] },
+  ],
+  spread: [
+    { inDays: 0, entries: contracts('option', ['Gold Mini']) },
+    { inDays: 1, entries: contracts('future', ['Natural Gas Mini']) },
+    { inDays: 2, entries: [crudeStock] },
+  ],
+}
 ```
 
 ### `src/flows/fno/commodities/screens/AssetPage.module.css`
@@ -1622,6 +3343,7 @@ import { assetCandles, type AssetPage as Asset } from '../data'
 import scalppro from '../../assets/scalppro.svg'
 import styles from './AssetPage.module.css'
 import { TopBarAction } from '../../../../shared/ui/TopBarAction'
+import flat from '../../flatCards.module.css'
 
 type Props = { asset: Asset; onBack: () => void; onChain: () => void; /** ScalpPro (Scalper) — disabled for an illiquid contract. */ onScalper: () => void; /** Buy / Sell open the commodity order pad. */ onOrder: (side: 'buy' | 'sell') => void }
 
@@ -1674,7 +3396,7 @@ export function AssetPage({ asset, onBack, onChain, onScalper, onOrder }: Props)
       : <><Button variant="buy" onClick={() => onOrder('buy')}>{t('asset.buy')}</Button><Button variant="sell" onClick={() => onOrder('sell')}>{t('asset.sell')}</Button></>}
   </ButtonGroup>
 
-  return <Screen
+  return <Screen className={flat.flatCards}
     top={<Actionbar className={styles.bar} elevated={scrolled} onBack={onBack} backLabel={t('asset.back')} actions={<TopBarAction icon={saved ? msStarFill : msStar} label={t('asset.watchlist')} pressed={saved} onClick={() => setSaved(!saved)} />} />}
     bottom={dock}
     sheet={explain ? <IlliquidSheet contract={`${asset.name} ${asset.contract}`} onClose={() => setExplain(false)} /> : detail ? <DetailSheet title={detail} onClose={() => setDetail(null)} /> : undefined}>
@@ -1763,6 +3485,116 @@ export function AssetPage({ asset, onBack, onChain, onScalper, onOrder }: Props)
 }
 ```
 
+### `src/flows/fno/commodities/screens/ExpiryTimeline.tsx`
+
+```tsx
+import { useLayoutEffect, useRef, useState, type CSSProperties } from 'react'
+import { Actionbar } from '@l3/components/Actionbar'
+import { Icon } from '@l3/components/Icon'
+import { SectionHeader } from '@l3/components/SectionHeader'
+import { Stack } from '@l3/components/Stack'
+import { Tabs } from '@l3/components/Tabs'
+import { msApps, msCandlestickChart, msEvent, msTrendingUp } from '@l3/icons/material'
+import { Screen } from '../../../../shared/ui/Screen'
+import { neighbour, useSwipeBetween } from '../../../../shared/ui/useSwipeBetween'
+import { t } from '../../copy'
+import { expiryCalendar, expiryCalendarAll, type ExpiryKind } from '../data'
+import { CalendarDay, dayFrom } from '../components/CalendarDay'
+import styles from '../components/Commodities.module.css'
+import flat from '../../flatCards.module.css'
+
+type Tab = 'all' | ExpiryKind
+const TABS: Tab[] = ['all', 'option', 'future', 'event']
+const TAB_ICONS: Record<Tab, string> = { all: msApps, option: msCandlestickChart, future: msTrendingUp, event: msEvent }
+
+const monthOf = (date: Date) => date.toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })
+
+/**
+ * fno-38 · Expiry calendar — View all on Expiring This Week (Commodities). All / Options / Futures / Events (flat tabs with icons, sticky, in the
+ * Actionbar's bottom slot). The days run from today under a month section header (L3 SectionHeader, content-primary: "Nov 2026", repeated when the month turns):
+ * on the left one grey block (surface-secondary) holding the weekday over the date (today inverted on the calendar page — dark fill, light text — not marked on the home), on the right one card with that day's contracts — one day can hold
+ * several, split by hairlines. Scrolling, the month header sticks at the top until the next month's pushes it out, and
+ * each day's date block sticks under it for as long as that day's card is in view. A row is only the contract's name with two flat (no shadow) icon
+ * buttons, centred vertically, the row 12 in from every side: options get option chain (→ option chain page) then ScalpPro (→ Scalper);
+ * Changing tab slides the body with it (tap: the new tab's body slides in from its side; swipe left / right on the body drags it
+ * to the next / previous tab, rubber-band at the ends — shared useSwipeBetween).
+ * futures ScalpPro only; events show everything upfront (time IST, previous / forecast / actual, one arrow tag per commodity it moves → asset page), no buttons. All tags each row with its kind. Cards are flat (border, no shadow).
+ */
+export function ExpiryTimeline({ onBack, onAsset, onOptionChain, onScalper }: { onBack: () => void; onAsset: () => void; onOptionChain: () => void; onScalper: () => void }) {
+  const [tab, setTab] = useState<Tab>('all')
+  // The tab being tapped, so the tabs answer at once while the body is still sliding.
+  const [tapped, setTapped] = useState<Tab | null>(null)
+  // The body slides with the tabs (the shared useSwipeBetween, like Market's tabs and the stocks theme page): the tab
+  // next door's body sits just off-screen on either side, so a swipe drags it into view and a tap slides it across.
+  const body = useRef<HTMLDivElement>(null)
+  const comingFrom = useRef<1 | -1 | 0>(0)
+  const swipe = useSwipeBetween({
+    page: tab,
+    canGo: (direction) => neighbour(TABS, tab, direction) !== null,
+    onSwitch: (direction) => { const next = neighbour(TABS, tab, direction); if (next) { setTab(next); setTapped(null) } },
+    slides: () => (body.current ? [body.current] : []),
+    fades: () => [],
+  })
+  // A tap on a tab. Next door: the same slide as a swipe. Further away: it slides straight in from its side.
+  const pick = (next: Tab) => {
+    const step = TABS.indexOf(next) - TABS.indexOf(tab)
+    if (!step || next === tapped) return
+    setTapped(next)
+    if (Math.abs(step) === 1) return swipe.go(step as 1 | -1, () => { setTab(next); setTapped(null) })
+    comingFrom.current = step > 0 ? 1 : -1
+    setTab(next)
+    setTapped(null)
+  }
+  useLayoutEffect(() => {
+    const from = comingFrom.current
+    comingFrom.current = 0
+    const el = body.current
+    if (!from || !el || matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    el.animate([{ translate: `${from * el.offsetWidth}px 0` }, { translate: '0 0' }], { duration: 280, easing: 'cubic-bezier(0.2, 0, 0, 1)' })
+  }, [tab])
+  const props = { onAsset, onOptionChain, onScalper }
+  return <Screen className={flat.flatCards} top={<Actionbar title={t('expiryAll.title')} onBack={onBack} backLabel={t('lot.back')}
+    bottom={<Tabs aria-label={t('expiryAll.filter')} value={tapped ?? tab} onChange={(v) => pick(v as Tab)}
+      items={TABS.map((value) => ({ value, label: t(`expiryAll.tab.${value}`), iconLeft: <Icon icon={TAB_ICONS[value]} size={16} /> }))} />} />}>
+    <div className={styles.calendarViewport}>
+      <div ref={(el) => { body.current = el; swipe.bind(el) }} className={styles.calendarTrack}>
+        {/* Keyed by tab: the body that slides in stays the same once it becomes the current one. */}
+        {[neighbour(TABS, tab, -1), tab, neighbour(TABS, tab, 1)].map((panelTab, at) => panelTab && (
+          <div key={panelTab} className={styles.calendarPanel} data-side={['before', 'current', 'after'][at]} inert={at !== 1} aria-hidden={at !== 1 || undefined}>
+            <CalendarBody tab={panelTab} {...props} />
+          </div>
+        ))}
+      </div>
+    </div>
+  </Screen>
+}
+
+/** One tab's days, grouped by month. */
+function CalendarBody({ tab, onAsset, onOptionChain, onScalper }: { tab: Tab; onAsset: () => void; onOptionChain: () => void; onScalper: () => void }) {
+  const days = tab === 'all' ? expiryCalendarAll : expiryCalendar[tab]
+  // The days grouped by month ("Nov 2026", "Dec 2026"), in order.
+  const months: { month: string; days: typeof days }[] = []
+  for (const day of days) {
+    const month = monthOf(dayFrom(day.inDays))
+    if (months.at(-1)?.month === month) months.at(-1)!.days.push(day)
+    else months.push({ month, days: [day] })
+  }
+  // The sticky date blocks stop just under the sticky month header: measure its height once it's drawn.
+  const headRef = useRef<HTMLDivElement>(null)
+  const [headHeight, setHeadHeight] = useState(0)
+  useLayoutEffect(() => { setHeadHeight(headRef.current?.offsetHeight ?? 0) }, [tab])
+  return <div className={styles.calendar} style={{ '--calendar-head': `${headHeight}px` } as CSSProperties}>
+    {months.map((m, mi) => <section key={m.month} className={styles.calendarMonth} aria-label={m.month}>
+      {/* Sticky: the month stays at the top until the next month's header pushes it out. */}
+      <div ref={mi === 0 ? headRef : undefined} className={styles.calendarMonthHead}><SectionHeader title={m.month} /></div>
+      <Stack gap="24">
+        {m.days.map((day) => <CalendarDay key={day.inDays} day={day} showKind={tab === 'all'} onAsset={onAsset} onOptionChain={onOptionChain} onScalper={onScalper} />)}
+      </Stack>
+    </section>)}
+  </div>
+}
+```
+
 ### `src/flows/fno/commodities/screens/LotSummary.tsx`
 
 ```tsx
@@ -1789,6 +3621,7 @@ import { t } from '../../copy'
 import { expiryMonths, goldLots, lotFutures, lotOptions, type LotOption, type LotSort } from '../data'
 import parts from '../../components/HomeParts.module.css'
 import styles from '../components/Commodities.module.css'
+import flat from '../../flatCards.module.css'
 
 type Modal = { kind: 'detail'; title: string; contract?: Contract } | { kind: 'contract'; contract: Contract & { illiquid?: boolean } } | { kind: 'illiquid'; contract: string } | { kind: 'choice'; title: string; values: string[]; value: string; onPick: (v: string) => void }
 
@@ -1825,7 +3658,7 @@ export function LotSummary({ sort: initialSort = 'price', initialSheet, onBack, 
   const options = lotOptions.filter((o) => filter === t('filter.puts') ? o.side === 'put' : true)
   const lotName = goldLots.find((l) => l.id === lot)!.name
   const sheet = modal?.kind === 'illiquid' ? <IlliquidSheet contract={modal.contract} onClose={close} /> : modal?.kind === 'contract' ? <ContractSheet contract={modal.contract} onClose={close} onIlliquid={() => setModal({ kind: 'illiquid', contract: modal.contract.name })} onAsset={() => { close(); onAsset(!!modal.contract.illiquid) }} onBuy={() => { close(); onOrder('buy') }} onSell={() => { close(); onOrder('sell') }} /> : modal?.kind === 'detail' ? <DetailSheet title={modal.title} contract={modal.contract} onClose={close} /> : modal?.kind === 'choice' ? <ChoiceSheet {...modal} onClose={close} /> : undefined
-  return <Screen sheet={sheet} top={<Actionbar title={t('lot.title', { name: goldLots[0].name })} onBack={onBack} backLabel={t('lot.back')}
+  return <Screen className={flat.flatCards} sheet={sheet} top={<Actionbar title={t('lot.title', { name: goldLots[0].name })} onBack={onBack} backLabel={t('lot.back')}
     bottom={<Tabs aria-label={t('lot.lots')} value={lot} onChange={setLot} width="hug" items={goldLots.map((l) => ({ value: l.id, label: l.name, iconLeft: <img className={styles.tabArt} src={l.image} alt="" /> }))} />} />}>
     <Stack gap="32" className={styles.lotBody}>
       <section className={parts.contractSection} aria-label={t('lot.futures')}>
@@ -1967,6 +3800,1097 @@ export function ContractSheet({ contract, onAsset, onIlliquid, onBuy, onSell, on
 }
 ```
 
+### `src/flows/fno/commodities/sheets/TrendInfoSheet.module.css`
+
+```css
+/* Trend info sheet (live app reference, 2026-11-17) on L3 tokens. */
+/* The trend row: a hairline under it, 16 to the bullets (the Stack's gap). */
+.summary { padding-bottom: var(--l3-spacing-16); border-bottom: 1px solid var(--l3-border-light); }
+.symbol { font: var(--l3-text-heading-16); color: var(--l3-content-primary); white-space: nowrap; }
+.notes { display: flex; flex-direction: column; gap: var(--l3-spacing-12); margin: 0; padding-left: var(--l3-spacing-20); font: var(--l3-text-description-14); color: var(--l3-content-primary); }
+/* The disclaimer: a grey note (surface-secondary, radius 12), warning icon + title over the line. */
+.disclaimer { padding: var(--l3-spacing-12) var(--l3-spacing-16); border-radius: var(--l3-radius-12); background: var(--l3-surface-secondary); }
+.disclaimerTitle { font: var(--l3-text-label-12); color: var(--l3-content-primary); }
+.disclaimerText { margin: 0; font: var(--l3-text-description-12); color: var(--l3-content-secondary); }
+/* "Analyzed by Dash": a dashed rule above, the Dash orb at 24 next to the line. */
+.byDash { padding-top: var(--l3-spacing-16); border-top: 1px dashed var(--l3-border-light); font: var(--l3-text-label-14); color: var(--l3-content-secondary); }
+.byDash [data-size] { --orb-box: var(--l3-size-24); }
+```
+
+### `src/flows/fno/commodities/sheets/TrendInfoSheet.tsx`
+
+```tsx
+import { Button } from '@l3/components/Button'
+import { ButtonGroup } from '@l3/components/ButtonGroup'
+import { Icon } from '@l3/components/Icon'
+import { PriceChange } from '@l3/components/PriceChange'
+import { Stack } from '@l3/components/Stack'
+import { msWarning } from '@l3/icons/material'
+import { Sheet } from '../../../../shared/ui/Sheet'
+import { DashOrb } from '../../../../shared/ui/dash/DashOrb'
+import { t } from '../../copy'
+import { TrendBadge } from '../../components/TrendBadge'
+import type { ExpiringContract } from '../data'
+import styles from './TrendInfoSheet.module.css'
+
+/** The trend read-out's label and second line, as on the card: the outlook for an event card, else Strong Up / Downtrend. */
+export const trendLabel = (c: ExpiringContract) => c.kind === 'event' ? c.outlook : t(c.trend === 'up' ? 'expiring.up' : 'expiring.down')
+export const trendSince = (c: ExpiringContract) => c.kind === 'event' ? c.reason : t('expiring.since', { time: c.since })
+
+/**
+ * Why this trend — from the trend read-out on an Expiring This Week card (Strong Uptrend / Downtrend, or an event's
+ * Bullish). Live app reference (phone screenshot, 2026-11-17): the trend (arrow, then label over since, left-aligned) on the left and the
+ * contract with its day change on the right, a hairline, Dash's two bullets on what's behind it, the grey disclaimer,
+ * a dashed rule, "Analyzed by Dash", then Okay. No sheet header: the trend row is the top (the dialog is named by
+ * aria-label). Opens through the shared Sheet, so it stays inside the screen (the phone frame on desktop).
+ */
+export function TrendInfoSheet({ contract, onClose }: { contract: ExpiringContract; onClose: () => void }) {
+  const label = trendLabel(contract)
+  return (
+    <Sheet
+      onClose={onClose}
+      label={t('trendInfo.label', { trend: label, symbol: contract.symbol })}
+      footer={<ButtonGroup aria-label={t('trendInfo.label', { trend: label, symbol: contract.symbol })}><Button size="lg" onClick={onClose}>{t('trendInfo.okay')}</Button></ButtonGroup>}
+    >
+      <Stack gap="16">
+        <Stack direction="horizontal" gap="12" align="center" justify="between" className={styles.summary}>
+          <TrendBadge trend={contract.trend} label={label} since={trendSince(contract)} largeSince iconStart />
+          <Stack gap="04" align="end">
+            <span className={styles.symbol}>{contract.symbol}</span>
+            <PriceChange value={contract.priceChange} unit="percent" size="md" />
+          </Stack>
+        </Stack>
+        <ul className={styles.notes}>{contract.trendNotes.map((note) => <li key={note}>{note}</li>)}</ul>
+        <Stack gap="08" className={styles.disclaimer}>
+          <Stack direction="horizontal" gap="04" align="center" className={styles.disclaimerTitle}><Icon icon={msWarning} size={16} /><span>{t('trendInfo.disclaimerTitle')}</span></Stack>
+          <p className={styles.disclaimerText}>{t('trendInfo.disclaimer')}</p>
+        </Stack>
+        <Stack direction="horizontal" gap="08" align="center" justify="center" className={styles.byDash}>
+          <DashOrb size="sm" halo={false} />
+          <span>{t('trendInfo.byDash')}</span>
+        </Stack>
+      </Stack>
+    </Sheet>
+  )
+}
+```
+
+### `src/flows/fno/components/AutoTpSlIcon.module.css`
+
+```css
+/*
+ * Auto TP/SL mark — Figma motion (get_motion_context, 11783:10106 / 10114 / 10122), 1.198 s, boomerang (alternate):
+ * candle: opacity 0 → 1 and scaleY 0.15 → 1 by 0.2922, ease-out, then holds;
+ * tp: opacity holds 0 until 0.2504, then 0 → 1 by 0.4591 ease-out; x holds 5 until 0.2504, then 5 → 0 by 0.4591 on
+ *     cubic-bezier(0.2, 0, 0.2, 1.3) (overshoots a little);
+ * sl: the same between 0.3756 and 0.5843.
+ * Opacity and x have different easings, so each is its own animation.
+ */
+.icon {
+  display: block;
+  flex: none;
+}
+
+.candle line {
+  stroke: var(--l3-content-primary);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+
+.candle rect {
+  fill: var(--l3-content-primary);
+}
+
+.candle {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: candle var(--app-auto-tpsl-loop) linear infinite alternate both;
+}
+
+.tp {
+  fill: var(--l3-surface-accent-indicator-up-default);
+  animation:
+    tpFade var(--app-auto-tpsl-loop) linear infinite alternate both,
+    tpSlide var(--app-auto-tpsl-loop) linear infinite alternate both;
+}
+
+.sl {
+  fill: var(--l3-surface-accent-indicator-down-default);
+  animation:
+    slFade var(--app-auto-tpsl-loop) linear infinite alternate both,
+    slSlide var(--app-auto-tpsl-loop) linear infinite alternate both;
+}
+
+@keyframes candle {
+  0% {
+    opacity: 0;
+    scale: 1 0.15;
+    animation-timing-function: ease-out;
+  }
+  29.22%,
+  100% {
+    opacity: 1;
+    scale: 1 1;
+  }
+}
+
+@keyframes tpFade {
+  0%,
+  25.04% {
+    opacity: 0;
+    animation-timing-function: ease-out;
+  }
+  45.91%,
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes tpSlide {
+  0%,
+  25.04% {
+    translate: 5px 0;
+    animation-timing-function: var(--app-auto-tpsl-ease);
+  }
+  45.91%,
+  100% {
+    translate: 0 0;
+  }
+}
+
+@keyframes slFade {
+  0%,
+  37.56% {
+    opacity: 0;
+    animation-timing-function: ease-out;
+  }
+  58.43%,
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes slSlide {
+  0%,
+  37.56% {
+    translate: 5px 0;
+    animation-timing-function: var(--app-auto-tpsl-ease);
+  }
+  58.43%,
+  100% {
+    translate: 0 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .candle,
+  .tp,
+  .sl {
+    animation: none;
+  }
+}
+```
+
+### `src/flows/fno/components/AutoTpSlIcon.tsx`
+
+```tsx
+import styles from './AutoTpSlIcon.module.css'
+
+/**
+ * The Auto TP/SL mark in chart Settings (Figma 11756:79819 / 79827 / 79835), animated as in Figma: the candle grows up
+ * from its base, then the TP bar (green, above) and the SL bar (red, below) slide in from the right; 1.198 s, played
+ * forward then back, on a loop. Drawn in SVG on L3 tokens (Figma's export can't be downloaded here).
+ */
+export function AutoTpSlIcon() {
+  return (
+    <svg className={styles.icon} viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+      <g className={styles.candle}>
+        <line x1="9" y1="5" x2="9" y2="19" />
+        <rect x="6.5" y="8" width="5" height="8" rx="1" />
+      </g>
+      <rect className={styles.tp} x="14" y="5" width="8" height="3" rx="1.5" />
+      <rect className={styles.sl} x="14" y="16" width="8" height="3" rx="1.5" />
+    </svg>
+  )
+}
+```
+
+### `src/flows/fno/components/BreakevenExplainer.module.css`
+
+```css
+/*
+ * How breakeven works · the example (copied from the designer's recording). L3 tokens; the orange and the profit fade
+ * are local tokens (src/local-tokens.css: the recording's orange isn't in L3). Positions come from BreakevenExplainer:
+ * each callout gets its anchor as --x / --y and places itself around it.
+ */
+.stage {
+  position: relative;
+  overflow: hidden;
+  background: var(--l3-surface-primary);
+  cursor: pointer; /* a tap plays it again */
+  -webkit-tap-highlight-color: transparent;
+}
+
+.chart {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
+/* ---- Price axis: ₹101–₹103 grey on dashed gridlines; ₹100 (the buy) bold on a solid line. ---- */
+.gridline,
+.baseline {
+  stroke: var(--l3-border-light);
+  stroke-width: 1;
+}
+
+.gridline {
+  stroke-dasharray: 4 3;
+}
+
+.axisLabel,
+.axisEntry,
+.zoneLabel,
+.chip,
+.bought,
+.sold,
+.ltp {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  white-space: nowrap;
+}
+
+.axisLabel,
+.axisEntry,
+.zoneLabel {
+  transform: translateY(-50%);
+}
+
+.axisLabel {
+  color: var(--l3-content-tertiary);
+  font: var(--l3-text-description-12);
+}
+
+.axisEntry {
+  color: var(--l3-content-primary);
+  font: var(--l3-text-label-12);
+}
+
+/* V2: what the buy cost (₹0 → ₹100), L3's light blue. */
+/* ---- Zones: orange charges (₹100 → B/E), a green fade for the net profit (B/E → ₹102). ---- */
+.chargesZone {
+  fill: var(--app-be-charges-zone);
+}
+
+.profitTop {
+  stop-color: var(--app-be-profit-top);
+}
+
+.profitMid,
+.profitBottom {
+  stop-color: var(--l3-surface-accent-success-light);
+}
+
+.profitBottom {
+  stop-opacity: 0.4;
+}
+
+.zoneLabel {
+  font: var(--l3-text-label-12);
+}
+
+.zoneLabel[data-zone='charges'] {
+  isolation: isolate;
+  display: inline-flex;
+  gap: var(--l3-spacing-04);
+  color: var(--app-be-orange-text);
+}
+
+/* "Order charges" is the tag the charge tags stack into (the same white pill, behind its text), under the zone. */
+.zoneLabel[data-zone='charges']::before {
+  content: '';
+  position: absolute;
+  inset: calc(-1 * var(--l3-spacing-02) - 1px) calc(-1 * var(--l3-spacing-06) - 1px);
+  z-index: -1;
+  border: 1px solid var(--l3-border-light);
+  border-radius: var(--l3-radius-06);
+  background: var(--l3-surface-primary);
+  box-shadow: var(--l3-shadow-elevation-low);
+}
+
+.zoneLabel[data-zone='profit'] {
+  color: var(--l3-content-accent-success-default);
+}
+
+/* ---- The breakeven line and its chip (white, a B/E tag then the price), the chip's right edge on the plot's. ---- */
+.breakevenLine {
+  stroke: var(--app-be-orange);
+  stroke-width: 1.25;
+  stroke-dasharray: 4 3;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--l3-spacing-04);
+  padding: var(--l3-spacing-02) var(--l3-spacing-04) var(--l3-spacing-02) var(--l3-spacing-02);
+  border: 1px solid var(--l3-border-light);
+  border-radius: var(--l3-radius-06);
+  background: var(--l3-surface-primary);
+  box-shadow: var(--l3-shadow-elevation-low);
+  color: var(--l3-content-primary);
+  font: var(--l3-text-label-12);
+  transform: translate(-100%, -50%);
+  transform-origin: right center;
+}
+
+.chipTag {
+  padding: 1px var(--l3-spacing-02);
+  border-radius: var(--l3-radius-02);
+  background: var(--app-be-tag);
+  color: var(--l3-static-black); /* like L3's warning Tag: black on the solid, in both modes */
+  font: var(--l3-text-heading-10);
+}
+
+/* ---- The price line, the buy dot, the ringed crossing marker, the green sell dot and their pulses. ---- */
+.priceLine {
+  fill: none;
+  stroke: var(--l3-content-primary);
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.buyDot {
+  fill: var(--l3-content-primary);
+}
+
+.crossingRing {
+  fill: var(--app-be-charges-zone);
+  stroke: var(--app-be-orange);
+  stroke-width: 1.25;
+}
+
+.crossingPulse {
+  fill: var(--app-be-orange);
+}
+
+.sellRing,
+.sellRingDrawing {
+  fill: var(--l3-surface-accent-success-light);
+  stroke-width: 1.25;
+}
+
+.sellRing {
+  stroke: var(--l3-border-accent-success-light);
+}
+
+.sellRingDrawing {
+  stroke: var(--l3-border-accent-success-default);
+}
+
+.sellDot,
+.sellPulse {
+  fill: var(--l3-surface-accent-success-default);
+}
+
+/* ---- Callouts: white pills with a light edge and a soft shadow. ---- */
+.bought,
+.sold,
+.ltp {
+  border: 1px solid var(--l3-border-light);
+  border-radius: var(--l3-radius-08);
+  background: var(--l3-surface-primary);
+  box-shadow: var(--l3-shadow-elevation-low);
+}
+
+/* "Bought at ₹100": under the buy dot, a notch on top pointing at it. */
+.bought {
+  padding: var(--l3-spacing-04) var(--l3-spacing-08);
+  color: var(--l3-content-primary);
+  font: var(--l3-text-label-12);
+}
+
+.bought::before,
+.sold::after {
+  content: '';
+  position: absolute;
+  width: var(--l3-spacing-08);
+  height: var(--l3-spacing-08);
+  background: var(--l3-surface-primary);
+  rotate: 45deg;
+}
+
+.bought::before {
+  top: calc(var(--l3-spacing-04) * -1 - 1px);
+  left: var(--l3-spacing-16);
+  border-top: 1px solid var(--l3-border-light);
+  border-left: 1px solid var(--l3-border-light);
+}
+
+/* "Sold at ₹102": left of the sell dot, green edge and text, a tail pointing right at the dot. */
+.sold {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--l3-spacing-06);
+  padding: var(--l3-spacing-04) var(--l3-spacing-08) var(--l3-spacing-04) var(--l3-spacing-06);
+  border-color: var(--l3-border-accent-success-light);
+  box-shadow: none;
+  color: var(--l3-content-accent-success-default);
+  font: var(--l3-text-label-12);
+  transform: translate(-100%, -50%);
+}
+
+.sold::after {
+  top: calc(50% - var(--l3-spacing-04));
+  right: calc(var(--l3-spacing-04) * -1 - 1px);
+  border-top: 1px solid var(--l3-border-accent-success-light);
+  border-right: 1px solid var(--l3-border-accent-success-light);
+}
+
+/* V2: the sell sits on a thin strip next to the B/E chip, so "Sold" goes above the dot (its right edge 10 past it), no tail. */
+/* LTP: rides the line's head, centred above it — the last price the line passed. */
+.ltp {
+  display: flex;
+  flex-direction: column;
+  padding: var(--l3-spacing-02) var(--l3-spacing-08);
+  transform: translate(-50%, -100%);
+  transform-origin: center bottom;
+}
+
+.ltpName {
+  color: var(--l3-content-secondary);
+  font: var(--l3-text-description-10);
+}
+
+.ltpValue {
+  color: var(--l3-content-primary);
+  font: var(--l3-text-label-14);
+}
+
+/*
+ * The intro the loop ends on (the stage cuts to surface/secondary): Figma's reveal (the video on 11802:369, 1.23 s,
+ * measured frame by frame) —
+ * - the mark: opacity 0 → 1 from 30 ms over 250 ms (linear); scale 0.55 → 1 from 100 ms over 400 ms on L3's pop easing;
+ * - INTRODUCING, Breakeven Line, the one-liner: from 300 / 470 / 670 ms, each 400 ms (L3 long): opacity 0 → 1 linear,
+ *   8 up → 0 ease-out.
+ */
+.intro {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--l3-spacing-24) var(--l3-spacing-16);
+  background: var(--l3-surface-secondary);
+  text-align: center;
+}
+
+.introIcon {
+  margin-bottom: var(--l3-spacing-16);
+  animation:
+    fadeIn var(--app-be-icon-fade) linear var(--app-be-icon-fade-delay) both,
+    popIn var(--l3-motion-duration-ai-pop) var(--l3-motion-easing-ai-pop) var(--app-be-icon-pop-delay) both;
+}
+
+.overline,
+.introTitle,
+.introText {
+  animation:
+    fadeIn var(--l3-motion-duration-long) linear var(--app-be-rise-delay) both,
+    riseIn var(--l3-motion-duration-long) ease-out var(--app-be-rise-delay) both;
+}
+
+.overline { --app-be-rise-delay: var(--app-be-overline-delay); }
+.introTitle { --app-be-rise-delay: var(--app-be-title-delay); }
+.introText { --app-be-rise-delay: var(--app-be-tagline-delay); }
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes popIn {
+  from {
+    scale: 0.55;
+  }
+}
+
+@keyframes riseIn {
+  from {
+    translate: 0 var(--l3-spacing-08);
+  }
+}
+
+/* INTRODUCING: 12 bold, tracking 0.96 (Figma) — L3 has no overline style: heading-12 + local tracking. */
+.overline {
+  margin: 0;
+  color: var(--l3-content-tertiary);
+  font: var(--l3-text-heading-12);
+  letter-spacing: var(--app-overline-tracking);
+  text-transform: uppercase;
+}
+
+.introTitle {
+  margin: var(--l3-spacing-04) 0 var(--l3-spacing-08);
+  color: var(--l3-content-primary);
+  font: var(--l3-text-heading-24);
+}
+
+.introText {
+  margin: 0;
+  max-width: calc(var(--l3-size-128) * 1.75);
+  color: var(--l3-content-secondary);
+  font: var(--l3-text-label-12);
+}
+
+/*
+ * Zoomed in, the charges (designer's brief, 2026-11-03): a tag per band — white like the B/E chip, the name then the
+ * rate — joined to its band by an orange leader and dot.
+ */
+.chargeTag {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--l3-spacing-04);
+  padding: var(--l3-spacing-02) var(--l3-spacing-06);
+  border: 1px solid var(--l3-border-light);
+  border-radius: var(--l3-radius-06);
+  background: var(--l3-surface-primary);
+  box-shadow: var(--l3-shadow-elevation-low);
+  color: var(--l3-content-primary);
+  font: var(--l3-text-label-12);
+  white-space: nowrap;
+  transform: translateY(-50%);
+}
+
+/* Brokerage's tag is the small one (designer's call: Lemonn's brokerage is a small part of the charges). */
+.chargeTag[data-size='small'] {
+  gap: var(--l3-spacing-02);
+  padding: 1px var(--l3-spacing-04);
+  font: var(--l3-text-label-10);
+}
+
+.chargeRate {
+  color: var(--l3-content-secondary);
+}
+
+.leader line {
+  stroke: var(--app-be-orange);
+  stroke-width: 1;
+}
+
+.leader circle {
+  fill: var(--app-be-orange);
+}
+```
+
+### `src/flows/fno/components/BreakevenExplainer.tsx`
+
+```tsx
+import { useEffect, useId, useLayoutEffect, useRef, useState, type CSSProperties } from 'react'
+import { Icon } from '@l3/components/Icon'
+import { msCheckCircleFill } from '@l3/icons/material'
+import { inr } from '../../../shared/data/format'
+import { t } from '../copy'
+import { breakevenCharges, breakevenExample, exampleChargesTotal } from '../data'
+import { BreakevenIcon } from './BreakevenIcon'
+import styles from './BreakevenExplainer.module.css'
+
+/**
+ * The example in How breakeven works — copied from the designer's recording of the explainer (measured frame by frame),
+ * plus the charges breakdown (designer's brief, 2026-11-03). A 15 s loop on a white stage:
+ * 1. the price axis (₹100–₹103) and its dashed gridlines fade in; the buy dot pops in at ₹100 with "Bought at ₹100";
+ * 2. the chart zooms in 2× on ₹100 → ₹100.30 (the charges are thin at the normal scale): ₹102–₹103 move up out
+ *    of view and the charges zone fills one charge at a time, each a band as tall as its share of the charges, with a
+ *    tag (name · ₹ on the ₹100 buy). Top down: STT, transaction, stamp duty, SEBI, and brokerage last at
+ *    the bottom. They come in top down, so brokerage comes in last (₹0.02, a thin band, its tag the small one);
+ * 3. it zooms back out: the bands close into one orange charges zone and the tags slide down under it, stacking into one
+ *    tag that reads "Order charges" and stays under the zone; the breakeven line draws across its top at ₹100.30
+ *    and its B/E chip comes in;
+ * 3. an LTP bubble rides the price line as it draws up to ₹102 (showing the last price it passed); where it crosses the
+ *    breakeven line a ringed marker pulses;
+ * 4. at ₹102 the bubble goes, a green dot pulses, "Sold at ₹102" slides in and the green net-profit zone grows from the
+ *    breakeven line up to the sell price, labelled "Net Profit"; it holds;
+ * 5. it plays once and stops on the finished chart (at 9.3 s); a tap on it plays it again from the start.
+ * (The recording looped on into an intro — the Breakeven mark, INTRODUCING, Breakeven Line, the one-liner — at 11.75 s;
+ * kept below but not reached while it stops on the chart.)
+ * `still` (reduced motion) shows the finished chart and no intro.
+ */
+export function BreakevenExplainer({ still = false }: { still?: boolean }) {
+  const stageRef = useRef<HTMLDivElement>(null)
+  const width = useWidth(stageRef, FIGMA_WIDTH)
+  const [run, setRun] = useState(0)
+  const elapsed = useElapsed(!still, PLAYED, run)
+  const loop = Math.floor(elapsed / LOOP)
+  const time = still ? PLAYED : elapsed % LOOP
+  const replay = () => { if (!still && elapsed >= PLAYED) setRun(run + 1) }
+
+  return (
+    <div
+      ref={stageRef}
+      className={styles.stage}
+      style={{ height: HEIGHT }}
+      role="button"
+      tabIndex={0}
+      aria-label={`${t('breakeven.chartLabel')} ${t('breakeven.replay')}`}
+      onClick={replay}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); replay() } }}
+    >
+      <ExampleChart time={time} width={width} />
+      {!still && time >= INTRO_AT && <Intro key={loop} />}
+      {!still && loop > 0 && time < INTRO_OUT && <Intro key={loop - 1} fade={1 - ramp(time, [0, INTRO_OUT])} />}
+    </div>
+  )
+}
+
+/**
+ * Where each part comes in: [start, duration] in ms (t = 0 is the chart starting on a blank stage). From the B/E line
+ * on, it's the recording's timing moved 3 s later for the charges breakdown. */
+const SHOT = {
+  axis: [150, 250],
+  buyDot: [400, 200],
+  bought: [650, 150],
+  zoomIn: [1000, 500],
+  chargeFill: [1550, 300], // the top band and its tag first; each one below CHARGE_STEP later, brokerage last
+  zoomOut: [4100, 600],
+  leadersOut: [4100, 150],
+  zoneMerge: [4100, 600], // the bands close into one zone
+  tagsMerge: [4100, 450], // the top tag first; each one below TAG_MERGE_STEP later
+  tagsOut: [4600, 150], // the stacked tags cross-fade into the one "Order charges" tag under the zone
+  chargesLabel: [4600, 150],
+  breakevenLine: [4750, 450],
+  breakevenChip: [5200, 200],
+  ltpIn: [5550, 150],
+  priceLine: [5800, 2150],
+  crossingPulse: [120, 400], // after the line reaches the crossing
+  ltpOut: [8000, 150],
+  sellDot: [8000, 200],
+  sellPulse: [8200, 500],
+  sold: [8250, 150],
+  profitZone: [8450, 550],
+  profitLabel: [9150, 150],
+} satisfies Record<string, [number, number]>
+
+const CHARGE_STEP = 350
+const TAG_MERGE_STEP = 30
+const LOOP = 15000
+/** How long one play takes (ms): it stops on the finished chart, its Net Profit label in. */
+export const EXPLAINER_LENGTH = SHOT.profitLabel[0] + SHOT.profitLabel[1]
+const PLAYED = EXPLAINER_LENGTH
+/** The hard cut to the intro, and how long the intro takes to fade when the loop starts again. */
+const INTRO_AT = 11750
+const INTRO_OUT = 200
+/** The LTP value cross-fades for this long when the line passes a turn. */
+const LTP_SWAP = 100
+
+/** The plot, in px (measured at the card's 326 width in Figma; it stretches with the card). */
+const FIGMA_WIDTH = 326
+const HEIGHT = 286
+const PLOT_LEFT = 53.5
+const PLOT_RIGHT_INSET = 12.5
+const AXIS_X = 12.5
+const ZONE_LABEL_INSET = 8.5
+/**
+ * "Order charges" is a tag in the charge tags' column, 6 under the zone (its middle 17 under ₹100): the zone, ₹0.25
+ * tall, is too thin to hold it. A tag's text starts 7 in (its 6 padding and 1 edge).
+ */
+const CHARGES_LABEL_DROP = 17
+const TAG_TEXT_INSET = 7
+/** Callouts around their dots: "Bought" hangs 12.5 below with its notch 20 in; "Sold" ends 10 left; LTP sits 8.5 above. */
+const BOUGHT_GAP = 12.5
+const BOUGHT_NOTCH_X = 20
+const SOLD_GAP = 10
+const LTP_GAP = 8.5
+/** ₹100 sits at 209 and every rupee is 53 higher; zoomed in, 2× that (the charges zone twice its final height). */
+const BASELINE = 209
+const RUPEE = 53
+const ZOOM = 2
+const ZOOMED_RUPEE = RUPEE * ZOOM
+const priceY = (price: number, perRupee: number) => BASELINE - (price - breakevenExample.entry) * perRupee
+/**
+ * Zoomed in, each charge is a band of the zone, as tall as its share of the charges (at least 2, so SEBI's ~0.1% still
+ * shows; the rest shrink to make room), 1 apart. Their tags sit in a column 140 from the plot's right, at least 24
+ * apart and 10 from the top, each joined by a leader to a dot 20 left of it at its band's middle.
+ */
+const MIN_BAND = 2
+const BAND_GAP = 1
+const TAG_COLUMN = 140
+const TAG_SPACING = 24
+const TAG_TOP = 10
+const LEADER = 20
+const BANDS = chargeBands()
+
+function ExampleChart({ time, width }: { time: number; width: number }) {
+  const gradientId = useId()
+  const { entry, breakeven, exit, axis, path } = breakevenExample
+  const zoomIn = ramp(time, SHOT.zoomIn, easeInOut)
+  const zoomOut = ramp(time, SHOT.zoomOut, easeInOut)
+  const perRupee = RUPEE + (ZOOMED_RUPEE - RUPEE) * zoomIn * (1 - zoomOut)
+  const y = (price: number) => priceY(price, perRupee)
+  const plotRight = width - PLOT_RIGHT_INSET
+  const points = path.map((p) => ({ x: PLOT_LEFT + p.at * (plotRight - PLOT_LEFT), y: y(p.price), price: p.price }))
+  const start = points[0]
+  const end = points[points.length - 1]
+  const crossing = points.find((p) => p.price === breakeven) ?? points[0]
+
+  // The price line draws at a steady pace across the plot; its head is where the LTP bubble rides.
+  const drawn = ramp(time, SHOT.priceLine)
+  const headX = start.x + drawn * (end.x - start.x)
+  const passed = points.filter((p) => p.x <= headX)
+  const next = points[passed.length]
+  const last = passed[passed.length - 1] ?? start
+  const head = next ? { x: headX, y: last.y + ((headX - last.x) / (next.x - last.x)) * (next.y - last.y) } : end
+  const crossedAt = SHOT.priceLine[0] + ((crossing.x - start.x) / (end.x - start.x)) * SHOT.priceLine[1]
+  const lastTurnAt = SHOT.priceLine[0] + ((last.x - start.x) / (end.x - start.x)) * SHOT.priceLine[1]
+
+  const axisIn = ramp(time, SHOT.axis)
+  const profitZone = ramp(time, SHOT.profitZone, easeOut) * (y(breakeven) - y(exit))
+  const ltp = ramp(time, SHOT.ltpIn, easeOut) * (1 - ramp(time, SHOT.ltpOut))
+  const sellIn = ramp(time, SHOT.sellDot, easeOutBack)
+  const chargeIn = (order: number) => SHOT.chargeFill[0] + (BANDS.length - 1 - order) * CHARGE_STEP
+  const bandFill = (order: number) => ramp(time, [chargeIn(order), SHOT.chargeFill[1]], easeOut)
+  const leadersShown = 1 - ramp(time, SHOT.leadersOut)
+  const tagsShown = 1 - ramp(time, SHOT.tagsOut)
+  const tagX = plotRight - TAG_COLUMN
+  const labelX = tagX + TAG_TEXT_INSET
+  const labelY = y(entry) + CHARGES_LABEL_DROP
+  const tagMerge = (order: number) =>
+    ramp(time, [SHOT.tagsMerge[0] + (BANDS.length - 1 - order) * TAG_MERGE_STEP, SHOT.tagsMerge[1]], easeInOut)
+
+  return (
+    <>
+      <svg className={styles.chart} width={width} height={HEIGHT} viewBox={`0 0 ${width} ${HEIGHT}`} aria-hidden>
+        <defs>
+          <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" className={styles.profitTop} />
+            <stop offset="0.6" className={styles.profitMid} />
+            <stop offset="1" className={styles.profitBottom} />
+          </linearGradient>
+        </defs>
+        <g opacity={axisIn}>
+          {axis.map((price) => (
+            <line key={price} className={price === entry ? styles.baseline : styles.gridline} x1={PLOT_LEFT} x2={plotRight} y1={y(price)} y2={y(price)} />
+          ))}
+        </g>
+        {/* The charges zone: the bands fill up one by one; zooming out, the whole zone fades in over them and closes the gaps. */}
+        {BANDS.map((band, order) => {
+          const top = y(band.from + (band.to - band.from) * bandFill(order))
+          const height = Math.max(0, y(band.from) - top - BAND_GAP)
+          return height > 0 && <rect key={band.charge.id} className={styles.chargesZone} x={PLOT_LEFT} width={plotRight - PLOT_LEFT} y={top} height={height} />
+        })}
+        <rect className={styles.chargesZone} x={PLOT_LEFT} width={plotRight - PLOT_LEFT} y={y(breakeven)} height={y(entry) - y(breakeven)} opacity={ramp(time, SHOT.zoneMerge, easeInOut)} />
+        {leadersShown > 0 &&
+          BANDS.map((band, order) => {
+            const shown = ramp(time, [chargeIn(order), SHOT.chargeFill[1]]) * leadersShown
+            const middle = y((band.from + band.to) / 2)
+            return (
+              shown > 0 && (
+                <g key={band.charge.id} className={styles.leader} opacity={shown}>
+                  <line x1={tagX - LEADER} y1={middle} x2={tagX} y2={band.tagY} />
+                  <circle cx={tagX - LEADER} cy={middle} r={2} />
+                </g>
+              )
+            )
+          })}
+        <rect fill={`url(#${gradientId})`} x={PLOT_LEFT} width={plotRight - PLOT_LEFT} y={y(breakeven) - profitZone} height={profitZone} />
+        <line
+          className={styles.breakevenLine}
+          x1={PLOT_LEFT}
+          x2={PLOT_LEFT + ramp(time, SHOT.breakevenLine, easeInOut) * (plotRight - PLOT_LEFT)}
+          y1={y(breakeven)}
+          y2={y(breakeven)}
+        />
+        {drawn > 0 && <polyline className={styles.priceLine} points={[...passed, head].map((p) => `${p.x},${p.y}`).join(' ')} />}
+        <circle className={styles.buyDot} cx={start.x} cy={start.y} r={4.5 * ramp(time, SHOT.buyDot, easeOutBack)} />
+        {time >= crossedAt && (
+          <g>
+            <Pulse cx={crossing.x} cy={crossing.y} time={time - crossedAt} shot={SHOT.crossingPulse} className={styles.crossingPulse} />
+            <circle className={styles.crossingRing} cx={crossing.x} cy={crossing.y} r={7.5} />
+            <circle className={styles.buyDot} cx={crossing.x} cy={crossing.y} r={4} />
+          </g>
+        )}
+        {drawn >= 1 && (
+          <g>
+            <Pulse cx={end.x} cy={end.y} time={time} shot={SHOT.sellPulse} className={styles.sellPulse} />
+            <circle className={sellIn > 0 ? styles.sellRing : styles.sellRingDrawing} cx={end.x} cy={end.y} r={7.5} />
+            <circle className={styles.sellDot} cx={end.x} cy={end.y} r={4.5 * sellIn} />
+          </g>
+        )}
+      </svg>
+
+      {axis.map((price) => (
+        <span key={price} className={price === entry ? styles.axisEntry : styles.axisLabel} style={at(AXIS_X, y(price), axisIn)}>
+          {inr(price, 0)}
+        </span>
+      ))}
+
+      <span className={styles.chip} style={{ ...at(plotRight, y(breakeven), ramp(time, SHOT.breakevenChip, easeOut)), scale: `${0.9 + 0.1 * ramp(time, SHOT.breakevenChip, easeOut)}` }}>
+        <span className={styles.chipTag}>{t('breakeven.beTag')}</span>
+        {inr(breakeven)}
+      </span>
+
+      <span
+        className={styles.zoneLabel}
+        style={at(labelX, labelY, ramp(time, SHOT.chargesLabel))}
+        data-zone="charges"
+      >
+        {t('breakeven.charges')}
+        <span className={styles.chargeRate}>{t('breakeven.chargesTotal', { amount: chargeInr(exampleChargesTotal) })}</span>
+      </span>
+      <span className={styles.zoneLabel} style={at(PLOT_LEFT + ZONE_LABEL_INSET, y(exit) + 32.5, ramp(time, SHOT.profitLabel))} data-zone="profit">
+        {t('breakeven.netProfit')}
+      </span>
+
+      {/* Zooming out, the tags slide into the zone and stack where its "Order charges" label comes in. */}
+      {tagsShown > 0 &&
+        BANDS.map((band, order) => {
+          const shown = ramp(time, [chargeIn(order), SHOT.chargeFill[1]], easeOut)
+          const merge = tagMerge(order)
+          const tagY = band.tagY + (labelY - band.tagY) * merge
+          return (
+            shown > 0 && (
+              <span key={band.charge.id} className={styles.chargeTag} data-size={band.charge.id === 'brokerage' ? 'small' : undefined} style={{ ...rise(at(tagX, tagY), shown, 0, 4), opacity: shown * tagsShown }}>
+                {t(`breakeven.charge.${band.charge.id}`)}
+                <span className={styles.chargeRate}>{chargeInr(band.charge.amount)}</span>
+              </span>
+            )
+          )
+        })}
+
+      <span className={styles.bought} style={rise(at(start.x - BOUGHT_NOTCH_X, start.y + BOUGHT_GAP), ramp(time, SHOT.bought, easeOut), 0, 4)}>
+        {t('breakeven.bought', { price: inr(entry, 0) })}
+      </span>
+      <span className={styles.sold} style={rise(at(end.x - SOLD_GAP, end.y), ramp(time, SHOT.sold, easeOut), 6, 0)}>
+        <Icon icon={msCheckCircleFill} size={16} />
+        {t('breakeven.sold', { price: inr(exit, 0) })}
+      </span>
+
+      {ltp > 0 && (
+        <span className={styles.ltp} style={{ ...at(head.x, head.y - LTP_GAP, ltp), scale: `${0.9 + 0.1 * ltp}` }}>
+          <span className={styles.ltpName}>{t('breakeven.ltp')}</span>
+          <span key={last.price} className={styles.ltpValue} style={{ opacity: last === start ? 1 : ramp(time, [lastTurnAt, LTP_SWAP]) }}>
+            {inr(last.price)}
+          </span>
+        </span>
+      )}
+    </>
+  )
+}
+
+/**
+ * The charges as bands of the zone, bottom to top (in rupees, so they follow the zoom), and where each tag sits when
+ * zoomed in: at its band's middle, pushed up to stay TAG_SPACING apart, then back down to stay under TAG_TOP.
+ */
+function chargeBands() {
+  const { entry, breakeven } = breakevenExample
+  const zone = breakeven - entry
+  const total = breakevenCharges.reduce((sum, charge) => sum + charge.amount, 0)
+  const heights = breakevenCharges.map((charge) => Math.max((charge.amount / total) * zone, MIN_BAND / ZOOMED_RUPEE))
+  const fit = zone / heights.reduce((sum, height) => sum + height, 0)
+  let from = entry
+  const bands = breakevenCharges.map((charge, order) => {
+    const band = { charge, from, to: from + heights[order] * fit, tagY: 0 }
+    from = band.to
+    return band
+  })
+  bands.forEach((band, order) => {
+    const middle = priceY((band.from + band.to) / 2, ZOOMED_RUPEE)
+    band.tagY = order === 0 ? middle : Math.min(middle, bands[order - 1].tagY - TAG_SPACING)
+  })
+  for (let order = bands.length - 1; order >= 0; order--) {
+    const above = bands[order + 1]
+    bands[order].tagY = Math.max(bands[order].tagY, above ? above.tagY + TAG_SPACING : TAG_TOP)
+  }
+  return bands
+}
+
+/** A charge in ₹: paise to 2 places (₹0.15); the tiny ones to their first digit (₹0.003, ₹0.0002). */
+export function chargeInr(amount: number) {
+  return `₹${amount >= 0.01 ? amount.toFixed(2) : Number(amount.toPrecision(1))}`
+}
+
+/** A ring that grows from the marker (7.5 → 14) and fades. */
+function Pulse({ cx, cy, time, shot, className }: { cx: number; cy: number; time: number; shot: [number, number]; className: string }) {
+  const p = ramp(time, shot, easeOut)
+  if (p <= 0 || p >= 1) return null
+  return <circle className={className} cx={cx} cy={cy} r={7.5 + 6.5 * p} opacity={0.4 * (1 - p)} />
+}
+
+/** The intro the loop ends on: Figma's reveal (its timings are CSS animations, so it plays each time it mounts). */
+function Intro({ fade = 1 }: { fade?: number }) {
+  return (
+    <div className={styles.intro} style={{ opacity: fade }}>
+      <BreakevenIcon variant="tile" className={styles.introIcon} />
+      <p className={styles.overline}>{t('breakeven.introducing')}</p>
+      <p className={styles.introTitle}>{t('breakeven.lineName')}</p>
+      <p className={styles.introText}>{t('breakeven.tagline')}</p>
+    </div>
+  )
+}
+
+/** A callout anchored at (x, y) on the stage; each callout's CSS places itself around that point. */
+function at(x: number, y: number, opacity = 1): CSSProperties {
+  return { '--x': `${x}px`, '--y': `${y}px`, opacity } as CSSProperties
+}
+
+/** Comes in by `progress`, moving from (dx, dy) px away to its place. */
+function rise(style: CSSProperties, progress: number, dx: number, dy: number): CSSProperties {
+  return { ...style, opacity: progress, translate: `${dx * (1 - progress)}px ${dy * (1 - progress)}px` }
+}
+
+/** 0 → 1 over [start, duration], eased. */
+function ramp(time: number, [start, duration]: [number, number], ease = linear) {
+  return ease(Math.min(1, Math.max(0, (time - start) / duration)))
+}
+const linear = (x: number) => x
+const easeOut = (x: number) => 1 - (1 - x) ** 3
+const easeInOut = (x: number) => (x < 0.5 ? 4 * x ** 3 : 1 - (-2 * x + 2) ** 3 / 2)
+const easeOutBack = (x: number) => 1 + 2.70158 * (x - 1) ** 3 + 1.70158 * (x - 1) ** 2
+
+/** Milliseconds since the play started, every frame, stopping at `until`; a new `run` plays it again from 0. */
+function useElapsed(playing: boolean, until: number, run: number) {
+  const [elapsed, setElapsed] = useState(0)
+  useEffect(() => {
+    if (!playing) return
+    let frame = 0
+    let start: number | undefined
+    setElapsed(0)
+    const tick = (now: number) => {
+      start ??= now
+      const passed = Math.min(now - start, until)
+      setElapsed(passed)
+      if (passed < until) frame = requestAnimationFrame(tick)
+    }
+    frame = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(frame)
+  }, [playing, until, run])
+  return elapsed
+}
+
+/** The element's width, kept current. */
+function useWidth(ref: React.RefObject<HTMLElement | null>, fallback: number) {
+  const [width, setWidth] = useState(fallback)
+  useLayoutEffect(() => {
+    const element = ref.current
+    if (!element) return
+    const observer = new ResizeObserver(() => setWidth(element.clientWidth))
+    observer.observe(element)
+    setWidth(element.clientWidth)
+    return () => observer.disconnect()
+  }, [ref])
+  return width
+}
+```
+
+### `src/flows/fno/components/BreakevenIcon.module.css`
+
+```css
+/* Breakeven marks (How breakeven works). L3 colour tokens only. */
+
+/* 48 tile: flat surface/inverted, radius 12 (designer's call, 2026-11-03: Figma's quaternary → inverted gradient
+   washed out to white at the top). */
+.tile {
+  display: grid;
+  place-items: center;
+  width: var(--l3-size-48);
+  height: var(--l3-size-48);
+  border-radius: var(--l3-radius-12);
+  background: var(--l3-surface-inverted);
+}
+
+.dashed {
+  stroke: var(--l3-content-inverted);
+  stroke-width: 1.5;
+  stroke-dasharray: 3 3;
+  opacity: 0.7;
+}
+
+.arrow {
+  fill: none;
+  stroke: var(--l3-content-accent-brand-default);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.small {
+  display: block;
+  flex: none;
+}
+
+.smallDashed {
+  stroke: var(--l3-border-accent-warning-default);
+  stroke-width: 1.5;
+  stroke-dasharray: 2.5 2;
+}
+
+.chip {
+  fill: var(--l3-surface-accent-warning-light);
+  stroke: var(--l3-border-accent-warning-default);
+  stroke-width: 1;
+}
+
+.small[data-variant='up'] .smallDashed {
+  stroke: var(--l3-content-tertiary);
+}
+
+.smallArrow {
+  fill: none;
+  stroke: var(--l3-content-accent-success-default);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+```
+
+### `src/flows/fno/components/BreakevenIcon.tsx`
+
+```tsx
+import styles from './BreakevenIcon.module.css'
+
+type BreakevenIconProps = {
+  /**
+   * tile: the 48 "Breakeven" mark (Figma 11783:12564) — a dark tile, a lime arrow rising through a dashed line;
+   * line: 20, the yellow breakeven line with its chip (11783:12573); up: 20, a green arrow over the line (11783:12586).
+   */
+  variant: 'tile' | 'line' | 'up'
+  className?: string
+}
+
+/**
+ * The breakeven marks of How breakeven works. Figma's exports can't be downloaded here, so they're drawn to match in
+ * SVG on L3 colour tokens (listed as an L3 gap: no breakeven icon in the icon set).
+ */
+export function BreakevenIcon({ variant, className }: BreakevenIconProps) {
+  if (variant === 'tile') {
+    return (
+      <span className={`${styles.tile} ${className ?? ''}`} aria-hidden="true">
+        <svg viewBox="0 0 48 48" width="48" height="48">
+          <line className={styles.dashed} x1="6" y1="27" x2="42" y2="27" />
+          <path className={styles.arrow} d="M24 36V13M16 21l8-8 8 8" />
+        </svg>
+      </span>
+    )
+  }
+  return (
+    <svg className={`${styles.small} ${className ?? ''}`} data-variant={variant} viewBox="0 0 20 20" width="20" height="20" aria-hidden="true">
+      <line className={styles.smallDashed} x1="1" y1="12" x2="19" y2="12" />
+      {variant === 'line' ? (
+        <rect className={styles.chip} x="11" y="8.5" width="8" height="7" rx="1.5" />
+      ) : (
+        <path className={styles.smallArrow} d="M10 17V4M6 8l4-4 4 4" />
+      )}
+    </svg>
+  )
+}
+```
+
 ### `src/flows/fno/components/ContractSection.tsx`
 
 ```tsx
@@ -2100,6 +5024,7 @@ export function FnoNav({ onHome, onDestination, onChain, onScalper }: { onHome: 
 import { Icon } from '@l3/components/Icon'
 import { msAccountBalanceWallet, msSearch } from '@l3/icons/material'
 import { DashEntry } from '../../../shared/ui/dash/DashEntry'
+import { DiwaliSearchFace, useDiwaliSearch } from '../../../shared/ui/Diwali'
 import { t } from '../copy'
 import styles from './Header.module.css'
 import { TopBarAction } from '../../../shared/ui/TopBarAction'
@@ -2115,9 +5040,16 @@ type HeaderProps = {
 
 /** F&O's local instance of the Stocks home header: profile, search, DASH and wallet. */
 export function Header({ initials, scrolled = false, onProfile, onSearch, onWallet, onDash }: HeaderProps) {
+  // Diwali (App settings → Diwali → Diwali search bar): the search pill's icon and label turn into the diya and "Happy
+  // Green Diwali" twice when F&O home shows (docs/DIWALI.md).
+  const diwali = useDiwaliSearch()
   return <header className={styles.bar} data-scrolled={scrolled || undefined}>
     <button type="button" className={styles.profile} aria-label={t('top.profile')} onClick={onProfile}>{initials}</button>
-    <button type="button" className={styles.search} onClick={onSearch}><Icon icon={msSearch} size={20} /><span className={styles.placeholder}>{t('top.search')}</span></button>
+    <button type="button" className={[styles.search, diwali.className].filter(Boolean).join(' ')} data-turning={diwali.turning} onClick={onSearch}>
+      {diwali.diya
+        ? <DiwaliSearchFace labelClassName={styles.placeholder} />
+        : <><Icon icon={msSearch} size={20} /><span className={styles.placeholder}>{t('top.search')}</span></>}
+    </button>
     <DashEntry label={t('top.dash')} ariaLabel={t('top.dash')} onClick={onDash} />
     <TopBarAction icon={msAccountBalanceWallet} label={t('top.wallet')} onClick={onWallet} />
   </header>
@@ -2187,6 +5119,7 @@ export function Heatmap({ onOpen, onViewAll }: { onOpen: (name: string) => void;
 :global([data-mode='dark']) .asset { filter: invert(1); }
 .chartSection { display: flex; flex-direction: column; gap: var(--l3-spacing-16); padding-inline: var(--l3-spacing-16); }
 .trendIcon { display: inline-flex; width: var(--l3-size-20); height: var(--l3-size-20); color: var(--l3-content-accent-indicator-down-default); }
+.trendIcon[data-trend='up'] { color: var(--l3-content-accent-indicator-up-default); transform: scaleY(-1); }
 .chart { width: 100%; display: block; }
 .divider { border-top: 1px solid var(--l3-border-light); }
 .watchlists, .heatmapSection { display: flex; flex-direction: column; gap: var(--l3-spacing-16); }
@@ -2214,12 +5147,24 @@ export function Heatmap({ onOpen, onViewAll }: { onOpen: (name: string) => void;
 .productTabs.productTabs [role='tab'][aria-selected='true'] { --tab-border: var(--l3-border-accent-success-default); --tab-surface: var(--l3-surface-default); background-image: linear-gradient(180deg, var(--l3-surface-accent-success-light) 3%, var(--l3-surface-default)); }
 
 /* A product tab switch: only the content under the tabs slides in, from the chosen tab's side. */
+/* The product tabs stay put under the top bar once the page scrolls past them (they sit mid-page, so not in the
+   Actionbar's bottom slot). */
+.stickyTabs { position: sticky; top: 0; z-index: 2; }
+/* Once stuck, the row (what the inactive tabs sit on) takes the scrolled top bar's colour (Header .bar[data-scrolled]);
+   the active tab keeps its own gradient. */
+.stickyTabs .productTabs.productTabs { transition: background-color var(--l3-motion-duration-short) var(--l3-motion-easing-standard); }
+.stickyTabs[data-stuck] .productTabs.productTabs { background-color: var(--l3-surface-primary); }
 .productContent { overflow-x: clip; }
 .productContent[data-slide='from-end'] > * { animation: fno-in-from-end var(--l3-motion-duration-long) var(--l3-motion-easing-standard) both; }
 .productContent[data-slide='from-start'] > * { animation: fno-in-from-start var(--l3-motion-duration-long) var(--l3-motion-easing-standard) both; }
 @keyframes fno-in-from-end { from { transform: translateX(100%); } to { transform: none; } }
 @keyframes fno-in-from-start { from { transform: translateX(-100%); } to { transform: none; } }
 @media (prefers-reduced-motion: reduce) { .productContent > * { animation: none !important; } }
+/* The trend read-out as one tap target (opens the trend info sheet): label, since, i and arrow, with the hit area
+   grown 12 around it (top right of the Expiring card) so it's easy to hit. */
+.trendButton { position: relative; display: inline-flex; align-items: center; gap: var(--l3-spacing-04); cursor: pointer; border-radius: var(--l3-radius-08); }
+.trendButton::before { content: ''; position: absolute; inset: calc(-1 * var(--l3-spacing-12)); }
+.trendButton:focus-visible { outline: var(--l3-spacing-02) solid var(--l3-border-dark); outline-offset: var(--l3-spacing-04); }
 ```
 
 ### `src/flows/fno/components/Overview.tsx`
@@ -2262,6 +5207,332 @@ export function Overview({ onDestination }: { onDestination: (name: string) => v
 }
 ```
 
+### `src/flows/fno/components/PositionOverlay.module.css`
+
+```css
+/*
+ * A position on the option chart (Figma "Scalper screen · C · Boxed chip", 11756:78739). Laid over the plot; only the
+ * pills, buttons and the breakeven chip take taps, so the chart under them still scrolls / zooms.
+ */
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+/* Dashed lines across the plot. 1px hairlines. */
+.line {
+  position: absolute;
+  left: 0;
+  height: 0;
+  border-top: 1px dashed var(--l3-border-dark);
+}
+
+.line[data-kind='tp'] {
+  border-top-color: var(--l3-border-dark);
+}
+
+.line[data-kind='entry'] {
+  border-top-color: var(--l3-content-primary);
+}
+
+.line[data-kind='sl'] {
+  border-top-color: var(--l3-border-accent-indicator-down-light);
+}
+
+/* Breakeven: yellow, a longer dash than the others (Figma 4 / 4). */
+.line[data-kind='be'] {
+  border-top: 0;
+  height: 1px;
+  background: repeating-linear-gradient(90deg, var(--l3-border-accent-warning-default) 0 var(--l3-spacing-04), transparent var(--l3-spacing-04) var(--l3-spacing-08));
+}
+
+/* The entry price on the axis: inverted, as tall as the last price's tag. */
+.axisTag {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  height: var(--l3-size-16);
+  padding-left: var(--l3-spacing-02);
+  border-radius: var(--l3-radius-02);
+  background: var(--l3-surface-inverted);
+  color: var(--l3-content-inverted);
+  font: var(--l3-text-label-12);
+  translate: 0 -50%;
+}
+
+/* A row of pills centred on its line: TP and SL from 64 in (past the entry row's Exit), the entry row from 12. */
+.row {
+  position: absolute;
+  left: var(--l3-spacing-64);
+  display: flex;
+  align-items: center;
+  gap: var(--l3-spacing-08);
+  translate: 0 -50%;
+}
+
+.row[data-kind='entry'] {
+  left: var(--l3-spacing-12);
+}
+
+.pill {
+  display: flex;
+  align-items: center;
+  gap: var(--l3-spacing-04);
+  height: var(--l3-size-24);
+  padding-inline: var(--l3-spacing-02) var(--l3-spacing-04);
+  border: 1px solid var(--l3-border-light);
+  border-radius: var(--l3-radius-04);
+  background: var(--l3-surface-primary);
+  box-shadow: var(--l3-shadow-elevation-low);
+  pointer-events: auto;
+}
+
+.row[data-kind='entry'] .pill {
+  padding-left: var(--l3-spacing-04);
+}
+
+.pnl {
+  font: var(--l3-text-label-12);
+  white-space: nowrap;
+}
+
+.pnl[data-tone='up'] {
+  color: var(--l3-content-accent-indicator-up-default);
+}
+
+.pnl[data-tone='down'] {
+  color: var(--l3-content-accent-indicator-down-default);
+}
+
+.pnl[data-tone='flat'] {
+  color: var(--l3-content-secondary);
+}
+
+/* The drag handle and ✕: bare 16 icons; the handle is the pill's grip (vertical drag, no page scroll). */
+.handle,
+.close {
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--l3-content-primary);
+  cursor: pointer;
+}
+
+.handle {
+  touch-action: none;
+  cursor: ns-resize;
+}
+
+.handle:focus-visible,
+.close:focus-visible,
+.breakeven:focus-visible {
+  outline: 2px solid var(--l3-border-accent-discover-default);
+  outline-offset: 1px;
+}
+
+/* Exit / Add Trail / Add TP: L3 Secondary Small, 24 tall here to sit on the 24 pills (Figma). */
+.exit.exit {
+  --btn-height: var(--l3-size-24);
+  --btn-padding-block: 0;
+  --btn-padding-inline: var(--l3-spacing-08);
+  --btn-radius: var(--l3-radius-04);
+  --btn-font: var(--l3-text-label-12);
+  --btn-icon-size: var(--l3-icon-size-14);
+  pointer-events: auto;
+}
+
+/* "B/E 105.55 ⓘ" — Figma 11756:79332: warning-light box, edged top / bottom / left only, flush to the price axis,
+   left corners rounded 4, padding 2 4 2 6, Label/10 in warning, a 12 ⓘ, gap 2. */
+.breakeven {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: var(--l3-spacing-02);
+  padding: var(--l3-spacing-02) var(--l3-spacing-04) var(--l3-spacing-02) var(--l3-spacing-06);
+  border: 1px solid var(--l3-border-accent-warning-light);
+  border-right: 0;
+  border-radius: var(--l3-radius-04) 0 0 var(--l3-radius-04);
+  background: var(--l3-surface-accent-warning-light);
+  color: var(--l3-content-accent-warning-default);
+  font: var(--l3-text-label-10);
+  white-space: nowrap;
+  translate: 0 -50%;
+  cursor: pointer;
+  pointer-events: auto;
+}
+```
+
+### `src/flows/fno/components/PositionOverlay.tsx`
+
+```tsx
+import { useRef, type KeyboardEvent, type PointerEvent } from 'react'
+import { Button } from '@l3/components/Button'
+import { Icon } from '@l3/components/Icon'
+import { Tag } from '@l3/components/Tag'
+import { msAdd, msCheck, msClose, msDragIndicator, msInfo } from '@l3/icons/material'
+import { t } from '../copy'
+import { OPTION_TICK, SCALPER_TP_SL_GAP, type ScalperPosition } from '../data'
+import type { PaneScale } from './TradingPane'
+import styles from './PositionOverlay.module.css'
+
+type PositionOverlayProps = {
+  scale: PaneScale
+  position: ScalperPosition
+  /** The option's last traded price: the entry row's live P&L, and the side TP / SL must stay on. */
+  last: number
+  /** The breakeven price, or null when the Breakeven line is off (Settings → View on chart). */
+  breakeven: number | null
+  onChange: (position: ScalperPosition) => void
+  /** Exit (or the entry pill's ✕): sell the whole position at market. */
+  onExit: () => void
+  /** The ⓘ on the breakeven chip: How breakeven works. */
+  onBreakevenInfo: () => void
+}
+
+/** The pills can't come closer than this to the entry row (px), so they never overlap it. */
+const MIN_GAP = 30
+/** …nor closer than this to the plot's top or bottom edge (px). */
+const EDGE = 12
+
+/**
+ * A position on the option chart (Scalper "C · Boxed chip"): dashed lines across the plot at the take-profit, the
+ * entry and the stop-loss, each with its pill at the left —
+ * - TP: drag handle · green "TP Qty:65" · the P&L if it fills · ✕ (removes the TP);
+ * - entry: Exit · blue "+65" (the quantity) · the live P&L · ✕ (exits too); "Add TP" / "Add SL" when one is removed;
+ * - SL: drag handle · red "SL Qty:65" · the P&L if it fills · ✕ · Add Trail (the stop-loss follows the price up).
+ * Drag a handle (or focus it and use ↑ / ↓) to move TP or SL: they stay on their side of the price and clear of the
+ * entry row, in ₹0.05 steps. The breakeven line (yellow, dashed) ends in a boxed chip flush to the price axis:
+ * "B/E 105.55 ⓘ"; tapping it opens How breakeven works.
+ */
+export function PositionOverlay({ scale, position, last, breakeven, onChange, onExit, onBreakevenInfo }: PositionOverlayProps) {
+  const { y, price, plotW, plotH, axis } = scale
+  const { entry, quantity, takeProfit, stopLoss, trailing } = position
+  const root = useRef<HTMLDivElement>(null)
+
+  /** Keep a dragged price on its side of the market, clear of the entry row and inside the plot, on the tick. */
+  const clampTp = (p: number) => tick(Math.min(Math.max(p, last + OPTION_TICK, price(y(entry) - MIN_GAP)), price(EDGE)))
+  const clampSl = (p: number) => tick(Math.max(Math.min(p, last - OPTION_TICK, price(y(entry) + MIN_GAP)), price(plotH - EDGE)))
+  const move = (kind: 'tp' | 'sl', p: number) =>
+    onChange(kind === 'tp' ? { ...position, takeProfit: clampTp(p) } : { ...position, stopLoss: clampSl(p) })
+
+  const drag = (kind: 'tp' | 'sl') => ({
+    onPointerDown: (e: PointerEvent<HTMLButtonElement>) => {
+      e.currentTarget.setPointerCapture(e.pointerId)
+      e.preventDefault()
+    },
+    onPointerMove: (e: PointerEvent<HTMLButtonElement>) => {
+      if (!e.currentTarget.hasPointerCapture(e.pointerId) || !root.current) return
+      move(kind, price(e.clientY - root.current.getBoundingClientRect().top))
+    },
+    onKeyDown: (e: KeyboardEvent<HTMLButtonElement>) => {
+      const step = e.key === 'ArrowUp' ? OPTION_TICK : e.key === 'ArrowDown' ? -OPTION_TICK : 0
+      if (!step) return
+      e.preventDefault()
+      move(kind, (kind === 'tp' ? takeProfit : stopLoss)! + step * (e.shiftKey ? 20 : 1))
+    },
+  })
+
+  const pnl = (exit: number) => (exit - entry) * quantity
+  const live = pnl(last)
+
+  return (
+    <div ref={root} className={styles.overlay} style={{ width: plotW + axis, height: plotH }}>
+      {/* Lines first, so every pill sits above every line. */}
+      {takeProfit !== null && <span className={styles.line} data-kind="tp" style={{ top: y(takeProfit), width: plotW }} aria-hidden="true" />}
+      <span className={styles.line} data-kind="entry" style={{ top: y(entry), width: plotW }} aria-hidden="true" />
+      {stopLoss !== null && <span className={styles.line} data-kind="sl" style={{ top: y(stopLoss), width: plotW }} aria-hidden="true" />}
+      {breakeven !== null && <span className={styles.line} data-kind="be" style={{ top: y(breakeven), width: plotW }} aria-hidden="true" />}
+
+      {/* The entry price on the axis (the last price keeps its own green / red tag). */}
+      <span className={styles.axisTag} style={{ top: y(entry), left: plotW + 1, width: axis }} aria-hidden="true">{entry.toFixed(2)}</span>
+
+      {takeProfit !== null && (
+        <div className={styles.row} style={{ top: y(takeProfit) }}>
+          <div className={styles.pill}>
+            <button type="button" className={styles.handle} aria-label={t('position.moveTp', { price: takeProfit.toFixed(2) })} {...drag('tp')}>
+              <Icon icon={msDragIndicator} size={16} />
+            </button>
+            <Tag variant="primary" color="profit" size="sm">{t('position.tp', { quantity })}</Tag>
+            <span className={styles.pnl} data-tone={tone(pnl(takeProfit))}>{rupees(pnl(takeProfit))}</span>
+            <button type="button" className={styles.close} aria-label={t('position.removeTp')} onClick={() => onChange({ ...position, takeProfit: null })}>
+              <Icon icon={msClose} size={16} />
+            </button>
+          </div>
+        </div>
+      )}
+
+      <div className={styles.row} data-kind="entry" style={{ top: y(entry) }}>
+        <Button variant="secondary" size="sm" onClick={onExit} className={styles.exit}>{t('position.exit')}</Button>
+        <div className={styles.pill}>
+          <Tag variant="primary" color="discover" size="sm">{`+${quantity}`}</Tag>
+          <span className={styles.pnl} data-tone={tone(live)} aria-label={t('position.livePnl', { amount: rupees(live) })}>{rupees(live)}</span>
+          <button type="button" className={styles.close} aria-label={t('position.close')} onClick={onExit}>
+            <Icon icon={msClose} size={16} />
+          </button>
+        </div>
+        {takeProfit === null && (
+          <Button variant="secondary" size="sm" iconLeft={<Icon icon={msAdd} />} className={styles.exit} onClick={() => onChange({ ...position, takeProfit: clampTp(Math.max(last, entry) + SCALPER_TP_SL_GAP) })}>
+            {t('position.addTp')}
+          </Button>
+        )}
+        {stopLoss === null && (
+          <Button variant="secondary" size="sm" iconLeft={<Icon icon={msAdd} />} className={styles.exit} onClick={() => onChange({ ...position, stopLoss: clampSl(Math.min(last, entry) - SCALPER_TP_SL_GAP), trailing: false })}>
+            {t('position.addSl')}
+          </Button>
+        )}
+      </div>
+
+      {stopLoss !== null && (
+        <div className={styles.row} style={{ top: y(stopLoss) }}>
+          <div className={styles.pill}>
+            <button type="button" className={styles.handle} aria-label={t('position.moveSl', { price: stopLoss.toFixed(2) })} {...drag('sl')}>
+              <Icon icon={msDragIndicator} size={16} />
+            </button>
+            <Tag variant="primary" color="loss" size="sm">{t('position.sl', { quantity })}</Tag>
+            <span className={styles.pnl} data-tone={tone(pnl(stopLoss))}>{rupees(pnl(stopLoss))}</span>
+            <button type="button" className={styles.close} aria-label={t('position.removeSl')} onClick={() => onChange({ ...position, stopLoss: null, trailing: false })}>
+              <Icon icon={msClose} size={16} />
+            </button>
+          </div>
+          <Button
+            variant="secondary"
+            size="sm"
+            iconLeft={trailing ? <Icon icon={msCheck} /> : undefined}
+            aria-pressed={trailing}
+            onClick={() => onChange({ ...position, trailing: !trailing })}
+            className={styles.exit}
+          >
+            {trailing ? t('position.trailing') : t('position.addTrail')}
+          </Button>
+        </div>
+      )}
+
+      {breakeven !== null && (
+        <button type="button" className={styles.breakeven} style={{ top: y(breakeven), right: axis }} onClick={onBreakevenInfo} aria-label={t('breakeven.chipLabel', { price: breakeven.toFixed(2) })}>
+          {t('breakeven.chip')}
+          <Icon icon={msInfo} size={12} />
+        </button>
+      )}
+    </div>
+  )
+}
+
+/** Round to the option tick (₹0.05), clear of float noise. */
+const tick = (p: number) => Math.round(Math.round(p / OPTION_TICK) * OPTION_TICK * 100) / 100
+
+const tone = (v: number) => (v > 0 ? 'up' : v < 0 ? 'down' : 'flat')
+
+/** "+₹766", "-₹468", "₹0" — whole rupees, Indian grouping, as on the live app's position pills. */
+export const rupees = (v: number) => {
+  const r = Math.round(v)
+  return `${r > 0 ? '+' : r < 0 ? '-' : ''}₹${Math.abs(r).toLocaleString('en-IN')}`
+}
+```
+
 ### `src/flows/fno/components/TradingChart.tsx`
 
 ```tsx
@@ -2276,7 +5547,7 @@ import { chartSeries } from '../data'
 import { t } from '../copy'
 import chain from '../assets/option-chain.svg'
 import scalper from '../assets/scalppro.svg'
-import downtrend from '../assets/downtrend.svg'
+import { TrendBadge } from './TrendBadge'
 import styles from './HomeParts.module.css'
 
 /** `instrument` + `onInstrument`: the Commodities tab shows its own instrument and opens the contract picker instead of the index sheet. */
@@ -2288,7 +5559,7 @@ export function TradingChart({ instrument, onInstrument, onChoose, onDestination
   return <section className={styles.chartSection} aria-label={t('chart.label', { index, metric })}>
     <Stack direction="horizontal" justify="between" align="center">
       <Stack direction="horizontal" gap="08" align="center"><Select size="lg" aria-label={t('chart.index')} onClick={onInstrument ?? (() => onChoose(t('chart.index'), ['NIFTY 50', 'BANK NIFTY', 'SENSEX'], index, setIndex))}>{index}</Select><span className={styles.down}>5.17%</span></Stack>
-      <Stack direction="horizontal" gap="04" align="center"><Stack gap="04" align="end"><span className={styles.down}>{t('chart.trend')}</span><span className={styles.caption}>{t('chart.since')}</span></Stack><span className={styles.trendIcon}><MaskIcon src={downtrend} /></span></Stack>
+      <TrendBadge trend="down" label={t('chart.trend')} since={t('chart.since')} />
     </Stack>
     <Tabs aria-label="Chart metric" appearance="pill" size="sm" items={items} value={metric} onChange={setMetric} />
     <Chart data={chartSeries(metric, index)} label={t('chart.label', { index, metric: items.find((i) => i.value === metric)!.label })} type={metric === 'price' ? 'candle' : 'line'} showLastPrice={false} showVolume={metric === 'price'} className={styles.chart} />
@@ -2354,6 +5625,14 @@ export function TradingChart({ instrument, onInstrument, onChoose, onDestination
 
 .lastTag {
   fill: var(--l3-surface-accent-indicator-up-default);
+}
+
+[data-tone='down'] > .lastLine {
+  stroke: var(--l3-content-accent-indicator-down-default);
+}
+
+[data-tone='down'] > .lastTag {
+  fill: var(--l3-surface-accent-indicator-down-default);
 }
 
 .lastText {
@@ -2422,7 +5701,7 @@ export function TradingChart({ instrument, onInstrument, onChoose, onDestination
 ### `src/flows/fno/components/TradingPane.tsx`
 
 ```tsx
-import { useLayoutEffect, useRef, useState } from 'react'
+import { useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import { Button } from '@l3/components/Button'
 import type { ChartCandle } from '@l3/components/Chart'
 import { Icon } from '@l3/components/Icon'
@@ -2433,7 +5712,7 @@ import styles from './TradingPane.module.css'
 /** A line drawn over the candles (an applied indicator), one value per candle. */
 export type PaneLine = { values: number[]; tone: 'fast' | 'slow' }
 
-type TradingPaneProps = {
+export type TradingPaneProps = {
   candles: ChartCandle[]
   /** The first candle's time ("11:30") and the candle length in minutes: the time axis is worked out from them. */
   start: string
@@ -2441,7 +5720,16 @@ type TradingPaneProps = {
   /** Accessible name, e.g. "NIFTY 50, today, 5-minute candles". */
   label: string
   lines?: PaneLine[]
+  /** Prices the scale must show besides the candles (an open position's TP / SL), so their lines stay on the chart. */
+  include?: number[]
+  /** Things laid over the plot at prices (a position's lines and pills, the breakeven line), placed with `scale`. */
+  overlay?: (scale: PaneScale) => ReactNode
+  /** Empty candle slots after the last candle (room for the price to run into). Default 3. */
+  room?: number
 }
+
+/** The pane's price ↔ pixel scale, for an overlay: `y(price)` from the pane's top, `price(y)` back. */
+export type PaneScale = { y: (price: number) => number; price: (y: number) => number; plotW: number; plotH: number; axis: number }
 
 // Geometry in CSS px, measured on the live app's screenshot (392 wide).
 const AXIS = 50 // the price axis on the right, past its separator line
@@ -2449,6 +5737,7 @@ const TIME = 30 // the time axis under the plot
 const PAD_TOP = 26 // the session high sits this far under the top
 const PAD_BOTTOM = 34 // …and the low this far above the time axis
 const EMPTY_SLOTS = 3 // room after the last candle
+const MAX_BODY = 4 // candles never get wider than this, however few there are (Figma: thin candles)
 const TIME_EVERY = 10 // a time label every 10 candles (50 minutes)
 const MARKER = 18 // the high / low marker's line length
 
@@ -2458,7 +5747,7 @@ const MARKER = 18 // the high / low marker's line length
  * Drawn at the pane's real size (it fills its parent), so the text never stretches. Colours are L3 tokens.
  * L3's Chart is a fixed 360 × 200 picture without high / low markers, zoom or a timeframe — listed as an L3 gap.
  */
-export function TradingPane({ candles, start, minutes, label, lines = [] }: TradingPaneProps) {
+export function TradingPane({ candles, start, minutes, label, lines = [], include = [], overlay, room = EMPTY_SLOTS }: TradingPaneProps) {
   const box = useRef<HTMLDivElement>(null)
   const [size, setSize] = useState({ w: 0, h: 0 })
   useLayoutEffect(() => {
@@ -2475,15 +5764,20 @@ export function TradingPane({ candles, start, minutes, label, lines = [] }: Trad
   const plotH = Math.max(0, size.h - TIME)
   const highs = candles.map((c) => c.high)
   const lows = candles.map((c) => c.low)
-  const hi = Math.max(...highs)
-  const lo = Math.min(...lows)
-  const slot = plotW / (candles.length + EMPTY_SLOTS)
+  const candleHi = Math.max(...highs)
+  const candleLo = Math.min(...lows)
+  const hi = Math.max(candleHi, ...include)
+  const lo = Math.min(candleLo, ...include)
+  const slot = plotW / (candles.length + room)
+  const bodyW = Math.min(slot * 0.6, MAX_BODY)
   const x = (i: number) => slot * (i + 0.5)
   const y = (v: number) => PAD_TOP + ((hi - v) / (hi - lo || 1)) * (plotH - PAD_TOP - PAD_BOTTOM)
+  const span = plotH - PAD_TOP - PAD_BOTTOM
+  const price = (py: number) => hi - ((py - PAD_TOP) / (span || 1)) * (hi - lo)
   const last = candles[candles.length - 1]
   const ticks = niceTicks(lo, hi).filter((v) => y(v) > 8 && y(v) < plotH - 8 && Math.abs(y(v) - y(last.close)) > 14)
-  const hiIndex = highs.indexOf(hi)
-  const loIndex = lows.indexOf(lo)
+  const hiIndex = highs.indexOf(candleHi)
+  const loIndex = lows.indexOf(candleLo)
   const fmt = (v: number) => v.toFixed(2)
   const times = candles.map((_, i) => i).filter((i) => (i + 1) % TIME_EVERY === 0 || i === candles.length - 1)
 
@@ -2506,7 +5800,7 @@ export function TradingPane({ candles, start, minutes, label, lines = [] }: Trad
             return (
               <g key={i} className={up ? styles.up : styles.down}>
                 <line x1={x(i)} x2={x(i)} y1={y(c.high)} y2={y(c.low)} />
-                <rect x={x(i) - slot * 0.32} y={top} width={slot * 0.64} height={body} />
+                <rect x={x(i) - bodyW / 2} y={top} width={bodyW} height={body} rx={0.5} />
               </g>
             )
           })}
@@ -2515,13 +5809,15 @@ export function TradingPane({ candles, start, minutes, label, lines = [] }: Trad
             <path key={l.tone} className={styles[l.tone]} d={l.values.map((v, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join('')} />
           ))}
 
-          {/* last price: a dashed line to the axis, then the tag */}
-          <line className={styles.lastLine} x1={x(candles.length - 1) + slot * 0.5} y1={y(last.close)} x2={plotW} y2={y(last.close)} />
-          <rect className={styles.lastTag} x={plotW + 1} y={y(last.close) - 8} width={AXIS} height={16} rx={2} />
-          <text className={styles.lastText} x={plotW + 3} y={y(last.close)} dominantBaseline="central">{fmt(last.close)}</text>
+          {/* last price: a dashed line to the axis, then the tag — green while the candle is up, red while it's down */}
+          <g data-tone={last.close >= last.open ? 'up' : 'down'}>
+            <line className={styles.lastLine} x1={x(candles.length - 1) + slot * 0.5} y1={y(last.close)} x2={plotW} y2={y(last.close)} />
+            <rect className={styles.lastTag} x={plotW + 1} y={y(last.close) - 8} width={AXIS} height={16} rx={2} />
+            <text className={styles.lastText} x={plotW + 3} y={y(last.close)} dominantBaseline="central">{fmt(last.close)}</text>
+          </g>
 
-          <Marker x={x(hiIndex)} y={y(hi)} value={fmt(hi)} towardRight={hiIndex < candles.length / 2} />
-          <Marker x={x(loIndex)} y={y(lo)} value={fmt(lo)} towardRight={loIndex < candles.length / 2} />
+          <Marker x={x(hiIndex)} y={y(candleHi)} value={fmt(candleHi)} towardRight={hiIndex < candles.length / 2} />
+          <Marker x={x(loIndex)} y={y(candleLo)} value={fmt(candleLo)} towardRight={loIndex < candles.length / 2} />
 
           {times.map((i) => (
             <g key={i}>
@@ -2531,6 +5827,7 @@ export function TradingPane({ candles, start, minutes, label, lines = [] }: Trad
           ))}
         </svg>
       )}
+      {size.w > 0 && overlay?.({ y, price, plotW, plotH, axis: AXIS })}
       <div className={styles.zoom} style={{ right: AXIS + 2, height: plotH }}>
         <Button variant="ghost" size="sm" iconLeft={<Icon icon={msZoomIn} />} aria-label={t('scalper.zoomIn')} className={styles.zoomButton} />
         <Button variant="ghost" size="sm" iconLeft={<Icon icon={msZoomOut} />} aria-label={t('scalper.zoomOut')} className={styles.zoomButton} />
@@ -2575,6 +5872,56 @@ function clock(start: string, add: number) {
   const [h, m] = start.split(':').map(Number)
   const total = h * 60 + m + add
   return `${Math.floor(total / 60)}:${String(total % 60).padStart(2, '0')}`
+}
+```
+
+### `src/flows/fno/components/TrendBadge.tsx`
+
+```tsx
+import type { KeyboardEvent, MouseEvent } from 'react'
+import { Icon } from '@l3/components/Icon'
+import { MaskIcon } from '@l3/components/MaskIcon'
+import { Stack } from '@l3/components/Stack'
+import { msInfo } from '@l3/icons/material'
+import downtrend from '../assets/downtrend.svg'
+import styles from './HomeParts.module.css'
+
+/**
+ * The trend read-out: "Strong Uptrend / Downtrend" in up / down colour over "Since <time>" (caption 10 in the chart; `largeSince` = description 12, the Expiring cards), with the double
+ * arrow on the right. One component for the chart's header and the Expiring This Week cards, so they stay identical.
+ * The up arrow is the down artwork turned over. `info` (the Expiring cards) adds the info (i) icon after "Since", in
+ * content-secondary like the line. With `onInfo` the whole read-out (label, since, i, arrow) is one tap target that
+ * opens the trend info sheet — it sits inside a tappable card, so the tap stops there and doesn't open the card too.
+ */
+export function TrendBadge({ trend, label, since, largeSince = false, info, onInfo, iconStart = false }: {
+  trend: 'up' | 'down'; label: string; since: string; largeSince?: boolean
+  /** The arrow on the left and the text left-aligned (the trend info sheet's top row); default arrow right, text right-aligned. */
+  iconStart?: boolean
+  /** Label of the info icon after "Since"; none = no icon. */
+  info?: string
+  /** Opens the trend info sheet; makes the whole read-out tappable. */
+  onInfo?: () => void
+}) {
+  const sinceClass = largeSince ? styles.description : styles.caption
+  const arrow = <span className={styles.trendIcon} data-trend={trend}><MaskIcon src={downtrend} /></span>
+  const content = <>
+    {iconStart && arrow}
+    <Stack gap="04" align={iconStart ? 'start' : 'end'}><span className={trend === 'up' ? styles.up : styles.down}>{label}</span>{info
+      ? <Stack direction="horizontal" gap="04" align="center" className={sinceClass}><span>{since}</span><Icon icon={msInfo} size={12} /></Stack>
+      : <span className={sinceClass}>{since}</span>}</Stack>
+    {!iconStart && arrow}
+  </>
+  if (!onInfo) return <Stack direction="horizontal" gap={iconStart ? '08' : '04'} align="center">{content}</Stack>
+  // A span with the button role: the card's body is already a <button>, and a button can't hold another one.
+  const open = (event: MouseEvent | KeyboardEvent) => { event.stopPropagation(); event.preventDefault(); onInfo() }
+  return <span
+    role="button"
+    tabIndex={0}
+    aria-label={`${label}, ${since}. ${info ?? ''}`}
+    className={styles.trendButton}
+    onClick={open}
+    onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') open(event) }}
+  >{content}</span>
 }
 ```
 
@@ -2627,6 +5974,72 @@ export function UsBanner({ onOpen }: { onOpen: () => void }) {
       <span className={styles.arrow} aria-hidden="true"><Icon icon={msChevronRight} size={24} /></span>
     </button>
   </div>
+}
+```
+
+### `src/flows/fno/components/useLiveInstrument.ts`
+
+```ts
+import { useEffect, useState } from 'react'
+import type { ChartCandle } from '@l3/components/Chart'
+import type { ScalperInstrument } from '../data'
+
+type LiveOptions = {
+  /** The price step (₹0.05 for NIFTY and its options). */
+  tick: number
+  /** A new price every this many ms. */
+  everyMs?: number
+  /** A new candle starts after this many prices (prototype: ~15 s, so the chart visibly moves; the axis keeps 5m). */
+  pricesPerCandle?: number
+}
+
+/**
+ * Makes a Scalper chart feel live (prototype): every second the last candle's close takes a small step, stretching its
+ * high / low; every `pricesPerCandle` steps a new candle opens at that close and the oldest drops off, so the window
+ * keeps its length and its time axis moves on. The steps lean back toward the sample price, so the chart stays around
+ * the design's numbers (and an open position's TP / SL stay on their sides). The header's price, change and % follow.
+ * In the real app this is the market feed.
+ */
+export function useLiveInstrument(base: ScalperInstrument, { tick, everyMs = 1000, pricesPerCandle = 15 }: LiveOptions): ScalperInstrument {
+  const [state, setState] = useState(() => ({ candles: base.candles, opened: 0, steps: 0 }))
+
+  useEffect(() => {
+    const typicalRange = base.candles.reduce((sum, c) => sum + c.high - c.low, 0) / base.candles.length
+    const id = window.setInterval(() => {
+      setState(({ candles, opened, steps }) => {
+        const last = candles[candles.length - 1]
+        const pull = (base.price - last.close) * 0.08
+        const close = snap(last.close + pull + (Math.random() - 0.5) * typicalRange * 0.12, tick)
+        const updated: ChartCandle = { ...last, close, high: Math.max(last.high, close), low: Math.min(last.low, close) }
+        if ((steps + 1) % pricesPerCandle === 0) {
+          const next: ChartCandle = { open: close, high: close, low: close, close }
+          return { candles: [...candles.slice(1, -1), updated, next], opened: opened + 1, steps: steps + 1 }
+        }
+        return { candles: [...candles.slice(0, -1), updated], opened, steps: steps + 1 }
+      })
+    }, everyMs)
+    return () => window.clearInterval(id)
+  }, [base, tick, everyMs, pricesPerCandle])
+
+  const price = state.candles[state.candles.length - 1].close
+  const previousClose = base.price - base.change
+  const change = Math.round((price - previousClose) * 100) / 100
+  return {
+    ...base,
+    candles: state.candles,
+    start: addMinutes(base.start, state.opened * base.minutes),
+    price,
+    change,
+    percent: (change / previousClose) * 100,
+  }
+}
+
+const snap = (p: number, tick: number) => Math.round(Math.round(p / tick) * tick * 100) / 100
+
+function addMinutes(start: string, add: number) {
+  const [h, m] = start.split(':').map(Number)
+  const total = h * 60 + m + add
+  return `${Math.floor(total / 60)}:${String(total % 60).padStart(2, '0')}`
 }
 ```
 
@@ -2979,7 +6392,112 @@ export function UsBanner({ onOpen }: { onOpen: () => void }) {
   "order.required": "Req",
   "order.buy": "Buy",
   "order.sell": "Sell",
-  "order.placed": "{side} order placed · {name} {contract}"
+  "order.placed": "{side} order placed · {name} {contract}",
+  "position.tp": "TP Qty:{quantity}",
+  "position.sl": "SL Qty:{quantity}",
+  "position.moveTp": "Take-profit at ₹{price}. Drag or use the arrow keys to move it",
+  "position.moveSl": "Stop-loss at ₹{price}. Drag or use the arrow keys to move it",
+  "position.removeTp": "Remove take-profit",
+  "position.removeSl": "Remove stop-loss",
+  "position.exit": "Exit",
+  "position.close": "Exit position",
+  "position.livePnl": "P&L {amount}",
+  "position.addTp": "TP",
+  "position.addSl": "SL",
+  "position.addTrail": "Add Trail",
+  "position.trailing": "Trailing",
+  "breakeven.chip": "Breakeven",
+  "breakeven.chipLabel": "Breakeven ₹{price}. How breakeven works",
+  "breakeven.title": "How breakeven works",
+  "breakeven.titleV2": "What is breakeven price?",
+  "breakeven.descriptionV2": "The price your trade must sell above to cover what you paid plus all order charges. Sell above it and you make a profit.",
+  "breakeven.understand": "I understand",
+  "breakeven.playing": "Example playing",
+  "breakeven.exampleLabel": "Example",
+  "breakeven.example": "Example:",
+  "breakeven.exampleTrade": "Bought 1 lot at {price}",
+  "breakeven.introducing": "Introducing",
+  "breakeven.lineName": "Breakeven Line",
+  "breakeven.tagline": "Sell above this line and your Net P&L stays positive",
+  "breakeven.replay": "Tap to play it again.",
+  "breakeven.chartLabelV2": "Example chart: bought at ₹100, the order charges stack up on it (STT ₹0.15, transaction ₹0.07, stamp duty and SEBI under a paisa, brokerage ₹0.02) into the breakeven line at ₹100.25 — a sliver of the ₹100; sold 12% higher at ₹112 for a net profit",
+  "breakeven.chartLabel": "Example chart: bought at ₹100, the order charges stack up (STT ₹0.15, transaction ₹0.07, stamp duty and SEBI under a paisa, brokerage ₹0.02, plus GST) into the breakeven line at ₹100.30; sold at ₹102 above it for a net profit",
+  "breakeven.bought": "Bought at {price}",
+  "breakeven.sold": "Sold at {price}",
+  "breakeven.ltp": "LTP",
+  "breakeven.netProfit": "Net Profit",
+  "breakeven.charges": "Order charges",
+  "breakeven.chargesTotal": "≈{amount}",
+  "breakeven.charge.brokerage": "Brokerage",
+  "breakeven.charge.stt": "STT",
+  "breakeven.charge.transaction": "Transaction",
+  "breakeven.charge.sebi": "SEBI",
+  "breakeven.charge.stamp": "Stamp duty",
+  "breakeven.beTag": "B/E",
+  "breakeven.tableLabel": "Breakeven for the example",
+  "breakeven.tableBought": "Bought at",
+  "breakeven.tableCharges": "Order charges (incl. GST)",
+  "breakeven.tableShow": "Show the charges breakdown",
+  "breakeven.tableHide": "Hide the charges breakdown",
+  "breakeven.charge.gst": "GST (18%)",
+  "breakeven.tableBreakeven": "Breakeven price",
+  "breakeven.info1": "See your **Breakeven price** live on your ScalpPro",
+  "breakeven.info2": "For a positive P&L after charges, always **sell above your breakeven line**",
+  "settings.title": "Chart settings",
+  "settings.autoTpSl": "Auto TP/SL",
+  "settings.applied": "Applied",
+  "settings.chartType": "Chart type",
+  "settings.type.candles": "Candles",
+  "settings.type.heikinAshi": "Heikin Ashi",
+  "settings.type.line": "Line",
+  "settings.stopLoss": "Stop Loss Preference",
+  "settings.sl.market": "At Market Price",
+  "settings.sl.limit": "At Limit Price",
+  "settings.view": "View on chart",
+  "settings.breakeven": "Breakeven line",
+  "settings.new": "New",
+  "settings.executions": "Buy/Sell executions",
+  "settings.sync": "Sync Charts",
+  "settings.cancel": "Cancel",
+  "settings.apply": "Apply",
+  "expiring.title": "Expiring This Week",
+  "expiring.tag": "OPT Expiry {day}",
+  "expiring.today": "Today",
+  "expiring.tomorrow": "Tomorrow",
+  "expiring.up": "Strong Uptrend",
+  "expiring.down": "Strong Downtrend",
+  "expiring.since": "Since {time}",
+  "expiring.futTag": "FUT Expiry {date}",
+  "expiring.ltp": "LTP",
+  "expiring.sinceInfo": "About the trend",
+  "expiring.margin": "Margin Per Lot",
+  "expiring.buy": "Buy",
+  "expiring.eventTag": "{event} · {day} {time}",
+  "trendInfo.label": "{trend} on {symbol}",
+  "trendInfo.disclaimerTitle": "Disclaimer:",
+  "trendInfo.disclaimer": "Dash AI provides descriptive market data visualisation only and does not issue trading signals or investment advice.",
+  "trendInfo.byDash": "Analyzed by Dash",
+  "trendInfo.okay": "Okay",
+  "expiryAll.title": "Commodity Calendar",
+  "expiryAll.filter": "Contract type",
+  "expiryAll.tab.all": "All",
+  "expiryAll.tab.option": "Options",
+  "expiryAll.tab.future": "Futures",
+  "expiryAll.tab.event": "Events",
+  "expiryAll.kind.option": "Options",
+  "expiryAll.kind.future": "Futures",
+  "expiryAll.kind.event": "Event",
+  "expiryAll.impact.high": "High impact",
+  "expiryAll.impact.medium": "Medium impact",
+  "expiryAll.impact.low": "Low impact",
+  "expiryAll.previous": "Previous",
+  "expiryAll.forecast": "Forecast",
+  "expiryAll.actual": "Actual",
+  "expiryAll.due": "Due",
+  "expiryAll.bullishFor": "Bullish for {name}",
+  "expiryAll.bearishFor": "Bearish for {name}",
+  "expiryAll.scalper": "Open {name} in ScalpPro",
+  "expiryAll.chain": "Open the {name} option chain"
 }
 ```
 
@@ -3085,6 +6603,133 @@ export const scalperOption: ScalperInstrument = {
 
 /** The Lemonn indicators in the chart-tools sheet (the live app's list, alphabetical). */
 export const lemonnIndicators = ['5 EMA Sell - Power Of Stocks', '5/20 EMA by AbhishekX Trades', 'ADX', 'ALMA', 'ASP by TradersPath Academy', 'ATR', 'Bollinger Band Width', 'Bollinger Bands', 'CPR', 'DEMA', 'EMA', 'Ichimoku Cloud', 'MACD', 'Nifty 5-Star Indicator by Dr. Gokul Chhabra', 'Opening Range Breakout (ORB)', 'RSI', 'Supertrend', 'VWAP']
+
+/**
+ * A position on the Scalper's option chart: bought `quantity` units at `entry` (the average price). Take-profit and
+ * stop-loss are exit prices (null = not set). `trailing`: the stop-loss follows the price up (Add Trail).
+ */
+export type ScalperPosition = {
+  entry: number
+  quantity: number
+  takeProfit: number | null
+  stopLoss: number | null
+  trailing: boolean
+}
+
+/** The sample open position (fno-35): 1 lot bought at ₹104.60 a little earlier, TP and SL set. */
+export const scalperPosition: ScalperPosition = { entry: 104.6, quantity: 65, takeProfit: 115.2, stopLoss: 96.4, trailing: false }
+
+/** A new order's TP and SL start this far from the entry (₹ per unit); the user drags them from there. */
+export const SCALPER_TP_SL_GAP = 10
+
+/**
+ * Round-trip charges for buying and later selling `quantity` options at `entry` (NSE options, Lemonn's flat brokerage).
+ * The sell side is priced at the entry too — at breakeven the sell price is only a few paise higher, so the difference
+ * is far below a paisa per unit.
+ */
+export const optionCharges = {
+  brokeragePerOrder: 20, // ₹ per executed order: one to buy, one to sell
+  stt: 0.001, // 0.1% of the sell premium
+  exchange: 0.0003503, // NSE transaction charge, 0.03503% of premium turnover (buy + sell)
+  sebi: 10 / 1e7, // ₹10 per crore of turnover
+  stamp: 0.00003, // 0.003% of the buy premium
+  gst: 0.18, // 18% on brokerage + exchange + SEBI charges
+}
+
+/** Total ₹ charges for a round trip (buy and sell) of `quantity` units at `entry`. */
+export function roundTripCharges(entry: number, quantity: number) {
+  const c = optionCharges
+  const buy = entry * quantity
+  const turnover = buy * 2
+  const brokerage = c.brokeragePerOrder * 2
+  const exchange = turnover * c.exchange
+  const sebi = turnover * c.sebi
+  return brokerage + exchange + sebi + buy * c.stt + buy * c.stamp + (brokerage + exchange + sebi) * c.gst
+}
+
+/**
+ * Breakeven: the sell price at which the Net P&L (after every charge) is zero — the entry plus the charges spread over
+ * every unit, rounded up to the option tick (₹0.05) so selling at it never ends in a loss.
+ */
+export function breakevenPrice(entry: number, quantity: number) {
+  const exact = entry + roundTripCharges(entry, quantity) / quantity
+  return Math.round(Math.ceil(exact / OPTION_TICK - 1e-9) * OPTION_TICK * 100) / 100
+}
+
+/** Options trade in steps of ₹0.05. */
+export const OPTION_TICK = 0.05
+
+/**
+ * What the example pays, in ₹ on its ₹100 buy (the rate card, as a % of ₹100 — one unit, so a % reads straight as ₹):
+ * brokerage 0.01% each way (₹0.02), STT 0.15% on the sell (₹0.15), NSE transaction 0.03553% each way (₹0.07), SEBI
+ * 0.0001% each way (₹0.0002), stamp 0.003% on the buy (₹0.003). GST isn't a band of its own: it's charged on the
+ * charges, not the trade. Bottom to top, in the order they stack up: brokerage last at the bottom, then the rest
+smallest to biggest, so STT sits on top under the breakeven line and brokerage stays clear of it.
+ */
+export type ExampleChargeId = 'brokerage' | 'stt' | 'transaction' | 'sebi' | 'stamp'
+export type ExampleCharge = { id: ExampleChargeId; amount: number }
+
+const EXAMPLE_ENTRY = 100
+const ofEntry = (percent: number) => (percent / 100) * EXAMPLE_ENTRY
+
+export const breakevenCharges: ExampleCharge[] = [
+  { id: 'brokerage', amount: 2 * ofEntry(0.01) },
+  { id: 'sebi', amount: 2 * ofEntry(0.0001) },
+  { id: 'stamp', amount: ofEntry(0.003) },
+  { id: 'transaction', amount: 2 * ofEntry(0.03553) },
+  { id: 'stt', amount: ofEntry(0.15) },
+]
+
+/** GST, 18% on brokerage + transaction + SEBI (not a band of the chart: it's charged on the charges). */
+export const exampleGst = optionCharges.gst * breakevenCharges.filter((c) => c.id === 'brokerage' || c.id === 'transaction' || c.id === 'sebi').reduce((sum, charge) => sum + charge.amount, 0)
+/** Everything the example pays, GST included (≈₹0.26). */
+export const exampleChargesTotal = breakevenCharges.reduce((sum, charge) => sum + charge.amount, 0) + exampleGst
+/** ₹100 + the charges with GST (₹0.26), up to the next tick: ₹100.30. */
+const exampleBreakeven = Math.round(Math.ceil((EXAMPLE_ENTRY + exampleChargesTotal) / OPTION_TICK - 1e-9) * OPTION_TICK * 100) / 100
+
+/**
+ * How breakeven works — the example trade its explainer plays (the recorded Figma explainer): 1 lot bought at ₹100,
+ * breakeven ₹100.30 after charges (GST included), sold at ₹102. `path` is the price line: where each turn sits across the plot (0 = its
+ * left edge, 1 = its right) and the price there; it crosses the breakeven line at its 3rd point.
+ */
+export const breakevenExample = {
+  entry: EXAMPLE_ENTRY,
+  breakeven: exampleBreakeven,
+  exit: 102,
+  axis: [103, 102, 101, 100],
+  path: [
+    { at: 0.029, price: EXAMPLE_ENTRY },
+    { at: 0.239, price: 100.1 },
+    { at: 0.407, price: exampleBreakeven },
+    { at: 0.608, price: 101.1 },
+    { at: 0.86, price: 102 },
+  ],
+}
+
+/** The chart's display settings (chart-tools sheet → Settings). */
+export type ChartType = 'candles' | 'heikinAshi' | 'line'
+export type StopLossPreference = 'market' | 'limit'
+export type ChartSettings = {
+  chartType: ChartType
+  stopLoss: StopLossPreference
+  breakevenLine: boolean
+  executions: boolean
+  syncCharts: boolean
+}
+export const defaultChartSettings: ChartSettings = { chartType: 'candles', stopLoss: 'market', breakevenLine: true, executions: true, syncCharts: false }
+```
+
+### `src/flows/fno/flatCards.module.css`
+
+```css
+/*
+ * F&O: no shadow on any card. L3 gives clickable cards (Card, card ListCells) elevation-soft; in this flow they keep
+ * only their 1px border. Put on every F&O screen's root (Screen className), so its sheets are covered too. Repeated
+ * class: above L3's own (selected) card rules.
+ */
+.flatCards.flatCards [data-interactive][data-padding] { box-shadow: var(--card-border); }
+.flatCards.flatCards [data-interactive][data-variant='card'] { box-shadow: inset 0 0 0 1px var(--l3-border-light); } /* 1px hairline */
+.flatCards.flatCards [data-interactive][data-variant='card'][data-selected] { box-shadow: inset 0 0 0 1px var(--l3-border-dark); } /* 1px hairline */
 ```
 
 ### `src/flows/fno/index.tsx`
@@ -3094,27 +6739,51 @@ import type { Flow, Go } from '../types'
 import { Home, type HomePart, type Product } from './screens/Home'
 import { LotSummary } from './commodities/screens/LotSummary'
 import { AssetPage } from './commodities/screens/AssetPage'
+import { ExpiryTimeline } from './commodities/screens/ExpiryTimeline'
 import { goldMiniAsset, illiquidAsset } from './commodities/data'
 import { OptionChain } from './option-chain/screens/OptionChain'
 import { OrderPad } from './order-pad/screens/OrderPad'
 import type { Segment } from './strategies/data'
+import { scalperPosition } from './data'
 import { Scalper } from './screens/Scalper'
+import { SplashScreen } from '../../shared/ui/Splash'
+import { markMove } from '../../shared/prototype'
 
 /**
  * Each product tab is its own screen, all in group 'home': one page in different states, so a tab switch keeps the
  * header and the product tabs in place and only the content under the tabs slides (Home animates it).
  */
+/**
+ * ScalpPro (home cards, Expiry calendar …) always opens the Scalper as a new page, in from the right — even from screens
+ * listed after it, which app order alone would read as back. Its back returns to that page (`backOr`).
+ */
+const openScalper = (go: Go) => { markMove('fno-05', 'forward'); go('fno-05') }
 /** Back to wherever the asset page was opened from (option chain, Gold Summary, Search…); `fallback` when opened directly. */
 const backOr = (go: Go, fallback: string) => { if (window.history.length > 1) window.history.back(); else go(fallback) }
 
 const tabScreen = (product: Product, segment?: Segment) => product === 'equity' ? 'fno-01' : product === 'commodities' ? 'fno-08' : segment === 'commodities' ? 'fno-16' : 'fno-15'
 type HomeOptions = { scrollTo?: HomePart; product?: Product; segment?: Segment; picker?: 'equity' | 'commodities' }
-const home = (go: Go, scrollTo?: HomePart, options: HomeOptions = {}) => <Home scrollTo={scrollTo} product={options.product} segment={options.segment} picker={options.picker} onProduct={(product, segment) => go(tabScreen(product, segment))} onCommodity={() => go('fno-12')} onHome={() => go('stocks-01')} onSearch={() => go('search-25')} onProfile={() => go('profile-01')} onWallet={() => go('deposit-01')} onDash={() => go('dash-02')} onUsStocks={() => go('stocks-09')} onOptions={() => go('search-26')} onFutures={() => go('search-27')} onChain={() => go('fno-17')} onScalper={() => go('fno-05')} />
+const home = (go: Go, scrollTo?: HomePart, options: HomeOptions = {}) => <Home scrollTo={scrollTo} product={options.product} segment={options.segment} picker={options.picker} onProduct={(product, segment) => go(tabScreen(product, segment))} onCommodity={() => go('fno-12')} onAsset={() => go('fno-21')} onExpiries={() => go('fno-38')} onHome={() => go('stocks-01')} onSearch={() => go('search-25')} onProfile={() => go('profile-01')} onWallet={() => go('deposit-01')} onDash={() => go('dash-02')} onUsStocks={() => go('stocks-09')} onOptions={() => go('search-26')} onFutures={() => go('search-27')} onChain={() => go('fno-17')} onScalper={() => openScalper(go)} />
 
 export const fno: Flow = {
   id: 'fno', title: 'F&O',
   description: 'Equity F&O home: P&L, indices, chart metrics, watchlists, Smart Options, Futures Heatmap and Smart Futures.',
   figmaFile: 'nLs24dTJdPz9A5pu3AWMbe',
+  options: [
+    // The breakeven sheet (fno-36): Version 2 (default) = What is breakeven price? + a description + the charges table,
+    // no info lines; Version 1 = the sheet as it first shipped (How breakeven works, two info lines, no table).
+    { id: 'breakevenSheet', group: 'Scalper', label: 'Breakeven sheet', values: [{ value: 'v1', label: 'Version 1' }, { value: 'v2', label: 'Version 2' }], default: 'v2', floatOn: ['fno-36'] },
+    // Expiring This Week (Commodities, fno-08): Version 1 = the sideways card rail; Version 2 = a short calendar (the
+    // calendar's first 3 entries on their days, View all → fno-38); Version 3 = that calendar in one card.
+    { id: 'expiringVersion', group: 'Commodities', label: 'Expiring This Week', values: [{ value: 'v1', label: 'Version 1' }, { value: 'v2', label: 'Version 2' }, { value: 'v3', label: 'Version 3' }], default: 'v1', floatOn: ['fno-08', 'fno-09', 'fno-10'] },
+    // Expiring This Week v2 / v3: which sample week the short calendar shows, to see how the days split — 3 today,
+    // 2 today + 1 tomorrow, or 1 a day. Contracts only on the first two days; the event comes on day 3.
+    { id: 'expiringDays', group: 'Commodities', label: 'Calendar days', values: [{ value: 'calendar', label: '3 today' }, { value: 'split', label: '2 today · 1 tomorrow' }, { value: 'spread', label: '1 a day' }], default: 'split', floatOn: ['fno-08', 'fno-09', 'fno-10'] },
+    // Expiring This Week (Commodities, fno-08): show or hide the cards' ScalpPro + Buy footer (the whole grey strip).
+    { id: 'expiringButtons', group: 'Commodities', label: 'Expiring card buttons', picker: 'toggle', values: [{ value: 'off', label: 'Hidden' }, { value: 'on', label: 'Shown' }], default: 'on', floatOn: ['fno-08', 'fno-09', 'fno-10'],
+      // Phone app mode: a floating one-tap switch on the Commodities home, so it flips without opening the settings sheet.
+      quickSwitch: { on: ['fno-08', 'fno-09', 'fno-10'], values: [{ value: 'on', label: 'Shown', short: 'BTN ON' }, { value: 'off', label: 'Hidden', short: 'BTN OFF' }] } },
+  ],
   // The F&O tab's parts, as the preview lists them (like the tab's own pages). Positions isn't built yet.
   sections: [
     { id: 'home', title: 'Home' },
@@ -3124,28 +6793,33 @@ export const fno: Flow = {
     { id: 'order', title: 'Order pad' },
   ],
   screens: [
+    { id: 'fno-34', section: 'home', name: 'Splash', figma: '', badge: 'new', tab: true, note: 'The launch splash: the Lemonn logo centred for 2 s, then it fades into Equity home (a tap skips ahead). Hidden at launch for now (src/shared/ui/Splash: SPLASH_SCREENS is empty), so the app opens straight on the home; this page still plays it.', render: (go) => <SplashScreen onDone={() => go('fno-01')} home={home(go)} /> },
     { id: 'fno-01', section: 'home', group: 'home', name: 'Equity home', badge: 'changed', badgeNote: 'New US Markets · Live banner under the shortcuts; opens US Stocks', figma: '11569:41100', tab: true, note: 'From the main F&O tab. Home returns to Stocks; DASH, Search, Profile and Wallet open their existing flows. Selectors, chart metrics, filters, sorting and watchlist creation work locally. Destinations outside this frame open an explanatory sheet.', render: (go) => home(go) },
     { id: 'fno-02', section: 'home', group: 'home', name: 'Home · watchlists & Smart Options', figma: '11569:41100', tab: true, note: 'The same long screen, scrolled to watchlists.', render: (go) => home(go, 'watchlists') },
     { id: 'fno-03', section: 'home', group: 'home', name: 'Home · Futures Heatmap', figma: '11569:41100', tab: true, render: (go) => home(go, 'heatmap') },
     { id: 'fno-04', section: 'home', group: 'home', name: 'Home · Smart Futures', figma: '11569:41100', tab: true, render: (go) => home(go, 'futures') },
-    { id: 'fno-05', section: 'scalper', name: 'Scalper', figma: '', note: 'From ScalpPro on F&O home or the Scalper bottom-nav tab. The chart-tools sheet groups personal DASH AI indicators separately from Lemon indicators.', render: (go) => <Scalper onBack={() => go('fno-01')} onCreateIndicator={() => go('dash-20')} /> },
-    { id: 'fno-06', section: 'scalper', group: 'scalper', name: 'Scalper · DASH indicator', figma: '', note: 'From DASH AI’s View indicator. Opens the chart-tools sheet directly on Indicators, the saved DASH AI indicator under Your indicators with a focus guide. Tap rows to add / remove indicators (several at once); search filters the list.', render: (go) => <Scalper onBack={() => go('fno-01')} createdIndicator="Supertrend (10, 3) with EMA 20" onCreateIndicator={() => go('dash-20')} /> },
-    { id: 'fno-07', section: 'scalper', group: 'scalper', name: 'Scalper · indicator applied', figma: '', note: 'With the saved DASH AI indicator on the chart: “1 ▾” at the chart’s top-left and illustrative EMA 9 / 21 lines on the NIFTY 50 candles.', render: (go) => <Scalper onBack={() => go('fno-01')} createdIndicator="Supertrend (10, 3) with EMA 20" openIndicators={false} initialIndicator="Supertrend (10, 3) with EMA 20" onCreateIndicator={() => go('dash-20')} /> },
+    { id: 'fno-05', section: 'scalper', name: 'Scalper', figma: '', note: 'From ScalpPro on F&O home, the Expiring cards, the Expiry calendar or the Scalper bottom-nav tab — always a new page in from the right; back returns to the page it was opened from. The chart-tools sheet groups personal DASH AI indicators separately from Lemon indicators.', render: (go) => <Scalper onBack={() => backOr(go, 'fno-01')} onCreateIndicator={() => go('dash-20')} /> },
+    { id: 'fno-06', section: 'scalper', group: 'scalper', name: 'Scalper · DASH indicator', figma: '', note: 'From DASH AI’s View indicator. Opens the chart-tools sheet directly on Indicators, the saved DASH AI indicator under Your indicators with a focus guide. Tap rows to add / remove indicators (several at once); search filters the list.', render: (go) => <Scalper onBack={() => backOr(go, 'fno-01')} createdIndicator="Supertrend (10, 3) with EMA 20" onCreateIndicator={() => go('dash-20')} /> },
+    { id: 'fno-07', section: 'scalper', group: 'scalper', name: 'Scalper · indicator applied', figma: '', note: 'With the saved DASH AI indicator on the chart: “1 ▾” at the chart’s top-left and illustrative EMA 9 / 21 lines on the NIFTY 50 candles.', render: (go) => <Scalper onBack={() => backOr(go, 'fno-01')} createdIndicator="Supertrend (10, 3) with EMA 20" openIndicators={false} initialIndicator="Supertrend (10, 3) with EMA 20" onCreateIndicator={() => go('dash-20')} /> },
+    { id: 'fno-35', section: 'scalper', group: 'scalper', name: 'Break Even · position + breakeven line', figma: '11756:78739', badge: 'new', note: 'Version C (Boxed chip): an open position on the option chart — TP pill (drag ⠿ to move, ✕ removes), entry row (Exit · +65 · live P&L), SL pill (+ Add Trail), and the yellow dashed breakeven line ending in a “Breakeven ⓘ” chip flush to the price axis (Figma’s “B/E 105.55”: spelled out, no price — designer’s call; the label still reads the price) (tap → How breakeven works). Breakeven = entry + round-trip charges per unit (data.ts breakevenPrice). Buy at Mkt on fno-05 opens a position the same way; the first buy also opens How breakeven works. Exit buttons are 24 tall to sit on the pills (Figma), not Large.', render: (go) => <Scalper onBack={() => backOr(go, 'fno-01')} onCreateIndicator={() => go('dash-20')} initialPosition={scalperPosition} /> },
+    { id: 'fno-36', section: 'scalper', group: 'scalper', name: 'Break Even · How breakeven works (sheet)', figma: '11783:5569', badge: 'new', note: 'Two versions (setting “Breakeven sheet”, floating card beside the phone): Version 2 (default) — heading “What is breakeven price?” + a description, the charges table, no info lines; Version 1 — “How breakeven works” with the two info lines, no table. Opens on the first buy and from the B/E chip’s ⓘ (and Settings → Breakeven line ⓘ). The example card plays once (then stops on the finished chart; a tap replays it) a 9.3 s explainer copied from the designer’s recording: on a white chart the buy at ₹100; the chart zooms in 2× and the orange charges zone fills one band per charge from the F&O options rate card, in ₹ on the ₹100 buy (top down: STT ₹0.15, transaction ₹0.07, stamp duty, SEBI, then brokerage ₹0.02 last at the bottom with a smaller tag; they come in top down — no GST band: it’s charged on the charges; heights by cost), then zooms back out to one thin zone, the tags sliding down under it and stacking into one “Order charges ≈₹0.26” tag (GST included); the dashed B/E line at ₹100.30 draws along its top, an LTP bubble rides the price line up through B/E (a ringed marker pulses) to “Sold at ₹102”, the green Net Profit zone fills, and it stops there. “I understand” is locked until the chart has played once (9.3 s), a loader line filling along its top edge, then turns primary (Figma’s button variants). Reduced motion: the finished chart, button ready. Under the example, the same trade as a calculation table (a card on the secondary surface, no heading, compact L3 key-value rows, one line each, no lines inside): Bought at ₹100.00 · Order charges (incl. GST) ≈₹0.26 — tap the row to open the breakdown (closed by default: STT, transaction, brokerage, stamp duty, SEBI, GST 18%) — and Breakeven price ₹100.30 in bold (L3 total row). Labels are L3’s 12 styles (the recording’s are ~11). The zoomed-in charges aren’t in Figma or the recording (designer’s brief). A V2 (starts zoomed in on a blue ₹0 → ₹100 fill, zooms out true to scale, sold 12% up at ₹112) is archived in fno/archive/BreakevenExplainerV2.tsx.', render: (go) => <Scalper onBack={() => backOr(go, 'fno-01')} onCreateIndicator={() => go('dash-20')} initialPosition={scalperPosition} initialSheet="breakeven" /> },
+    { id: 'fno-37', section: 'scalper', group: 'scalper', name: 'Break Even · chart settings (breakeven line)', figma: '11754:69563', badge: 'new', note: 'The chart-tools sheet on Settings: Auto TP/SL (animated mark, Applied), Chart type (Candles / Heikin Ashi / Line), Stop Loss Preference (radio), View on chart (Breakeven line ⓘ New, Buy/Sell executions, Sync Charts). Changes are a draft: Apply keeps them (unticking Breakeven line hides the B/E line and chip), Cancel or closing drops them. Figma’s rail (Bolt, Indicators, Drawings, Settings) is the live app’s six groups here.', render: (go) => <Scalper onBack={() => backOr(go, 'fno-01')} onCreateIndicator={() => go('dash-20')} initialPosition={scalperPosition} initialSheet="settings" openIndicators={false} /> },
     { id: 'fno-08', section: 'home', group: 'home', name: 'Commodities home', figma: '6754:63637', tab: true, note: 'The Commodities product tab. Gold / Silver / Crude Oil / Natural Gas shortcuts open the Lot summary (Gold Summary). The chart’s instrument selector (“Gold”) opens the contract picker. Popular commodities: Options ⇕ Futures switch; Futures Heatmap: Bullion / Energy / Metals.', render: (go) => home(go, undefined, { product: 'commodities' }) },
     { id: 'fno-09', section: 'home', group: 'home', name: 'Commodities · heatmap & Smart Futures', figma: '6754:63637', tab: true, note: 'The same long screen, scrolled to the Futures Heatmap.', render: (go) => home(go, 'heatmap', { product: 'commodities' }) },
     { id: 'fno-10', section: 'home', group: 'home', name: 'Contract picker · Commodities', figma: '6754:65111', tab: true, note: 'From the chart’s “Gold ⇕”. Equity / Commodities tabs in the sheet header’s bottom slot, commodity chips (All, Gold, Silver …) under them; contracts grouped by commodity as radio rows (Gold Mini tagged “Lowest Margin”). Picking one updates the chart and closes the sheet.', render: (go) => home(go, undefined, { product: 'commodities', picker: 'commodities' }) },
     { id: 'fno-11', section: 'home', group: 'home', name: 'Contract picker · Equity', figma: '6754:65054', tab: true, note: 'The same sheet on its Equity tab: the 8 index contracts.', render: (go) => home(go, undefined, { product: 'commodities', picker: 'equity' }) },
+    { id: 'fno-38', section: 'home', name: 'Commodity calendar (View all)', figma: '', badge: 'new', note: 'From View all on Expiring This Week (fno-08). All / Options / Futures / Events (flat tabs with icons, sticky; All merges them by day). Options rows: option chain (→ fno-17, back returns here) + ScalpPro; futures: ScalpPro only; events: no buttons. Days from today under a month section header (SectionHeader, content-primary): weekday over the date in one grey block (surface-secondary; today inverted (surface-inverted)), beside it one card with that day’s contracts — one day can hold several. A row is only the name with flat ScalpPro (→ fno-05) and open-contract (→ asset page fno-21) icon buttons. Back → Commodities home. Layout after the user’s reference (Expiry Calendar screenshot, 2026-11-17; no Figma frame yet).', render: (go) => <ExpiryTimeline onBack={() => go('fno-08')} onAsset={() => go('fno-21')} onOptionChain={() => { markMove('fno-17', 'forward'); go('fno-17') }} onScalper={() => openScalper(go)} /> },
     { id: 'fno-12', section: 'asset', group: 'lot', name: 'Gold Summary · by price', figma: '6754:65113', note: 'From a commodity shortcut on fno-08. Gold lot tabs (Gold, Gold Mini, Gold Guinea, Gold Ten, Gold Petal) in the Actionbar’s bottom slot; Futures (View all) and Options (View option chain, expiry month, category pills, Filter, sort). The sort opens a sheet: By Price · By Volume · Margin per lot.', render: (go) => <LotSummary onBack={() => go('fno-08')} onChain={() => go('fno-17')} onAsset={(illiquid) => go(illiquid ? 'fno-22' : 'fno-21')} onOrder={(side) => go(side === 'buy' ? 'fno-25' : 'fno-29')} /> },
     { id: 'fno-13', section: 'asset', group: 'lot', name: 'Gold Summary · by volume', figma: '6754:65288', note: 'Sorted by volume: each option shows its traded volume, no change.', render: (go) => <LotSummary sort="volume" onBack={() => go('fno-08')} onChain={() => go('fno-17')} onAsset={(illiquid) => go(illiquid ? 'fno-22' : 'fno-21')} onOrder={(side) => go(side === 'buy' ? 'fno-25' : 'fno-29')} /> },
     { id: 'fno-14', section: 'asset', group: 'lot', name: 'Gold Summary · margin per lot', figma: '6754:65444', note: 'Sorted by margin per lot: each option shows the margin for one lot, no change.', render: (go) => <LotSummary sort="margin" onBack={() => go('fno-08')} onChain={() => go('fno-17')} onAsset={(illiquid) => go(illiquid ? 'fno-22' : 'fno-21')} onOrder={(side) => go(side === 'buy' ? 'fno-25' : 'fno-29')} /> },
     { id: 'fno-15', section: 'home', group: 'home', name: 'Strategies · Equity', figma: '6754:64178', tab: true, note: 'The Strategies product tab with Equity selected in the pill group: shortcuts, Zing Trades, Smart Invest, Pre-build Strategies (Nifty 50 ⇕, Bullish / Bearish / Neutral / Volatile), Quick Trade. Card footer buttons stay Small (32) as in Figma.', render: (go) => home(go, undefined, { product: 'strategies', segment: 'equity' }) },
     { id: 'fno-16', section: 'home', group: 'home', name: 'Strategies · Commodities', figma: '6754:64607', tab: true, note: 'The same tab with Commodities selected: commodity Smart Invest baskets, GOLD as the underlying.', render: (go) => home(go, undefined, { product: 'strategies', segment: 'commodities' }) },
-    { id: 'fno-17', section: 'chain', group: 'chain', name: 'Option chain', figma: '11630:16785', note: 'From Option chain on the F&O chart (any product tab) or the Option Chain bottom-nav tab; Back → F&O home. Opens scrolled to the spot pill. BankNifty ▾ and Expiry ▾ open sheets; Σ shows delta instead of the day change; the basket and Zing tile open the explanatory sheet. Column heads: Call / Put metric (LTP, OI, OI Chg, IV) and the strike range (All, ±5, ±10). Tap a price to Buy, tap it again to Sell, a third time to clear.', render: (go) => <OptionChain onBack={() => go('fno-01')} onAsset={() => go('fno-21')} /> },
-    { id: 'fno-18', section: 'chain', group: 'chain', name: 'Option chain · Buy selected', figma: '11630:16184', note: 'A put price tapped once: B badge, green wash, the order dock with the contract, Balance / Req, quantity in lots and Buy (brand). Buy places a sample order (toast) and clears the selection.', render: (go) => <OptionChain initialSelection={{ strike: 25400, side: 'put', action: 'buy', ltp: 160.54 }} onBack={() => go('fno-01')} onAsset={() => go('fno-21')} /> },
-    { id: 'fno-19', section: 'chain', group: 'chain', name: 'Option chain · Sell selected', figma: '11695:26269', note: 'The same put tapped again: S badge, red wash, Sell (secondary) in the dock; Req becomes the margin per lot.', render: (go) => <OptionChain initialSelection={{ strike: 25400, side: 'put', action: 'sell', ltp: 160.54 }} onBack={() => go('fno-01')} onAsset={() => go('fno-21')} /> },
-    { id: 'fno-20', section: 'chain', group: 'chain', name: 'Option chain · illiquid contract', figma: '', note: 'Illiquid contracts (deep in-the-money calls, far out-of-the-money puts) carry a block icon beside the price, like Groww. Unlike Groww, a tap never selects them: a tooltip opens just above — “ILLIQUID contract” / “Can’t be traded” ⓘ; tapping away closes it, ⓘ opens a sheet with why it’s blocked, its traded lots and buy–sell gap, and a tip. Opens on the 25,700 put with the tooltip up.', render: (go) => <OptionChain initialIlliquid={{ strike: 25700, side: 'put' }} onBack={() => go('fno-01')} onAsset={() => go('fno-21')} /> },
-    { id: 'fno-21', section: 'asset', group: 'asset', name: 'Asset page · Gold MINI', figma: '6754:61613', note: 'A commodity contract page. Entry (one of several): the contract name in the option chain order dock (“25,400 Put ›”). Back returns where it came from; Option chain → fno-17; Buy / Sell open the sample sheet. Equity contracts get their own (similar) page later.', render: (go) => <AssetPage asset={goldMiniAsset} onBack={() => backOr(go, 'fno-18')} onChain={() => go('fno-17')} onScalper={() => go('fno-05')} onOrder={(side) => go(side === 'buy' ? 'fno-25' : 'fno-29')} /> },
-    { id: 'fno-22', section: 'asset', group: 'asset', name: 'Asset page · illiquid', figma: '6754:61613', note: 'Product rule (commodities only): an illiquid contract’s page shows the ILLIQUID tag next to its name and Buy / Sell greyed out, with “Trading is not allowed as this contract is illiquid” above them — whatever screen it was opened from.', render: (go) => <AssetPage asset={illiquidAsset} onBack={() => backOr(go, 'fno-17')} onChain={() => go('fno-17')} onScalper={() => go('fno-05')} onOrder={(side) => go(side === 'buy' ? 'fno-25' : 'fno-29')} /> },
+    { id: 'fno-17', section: 'chain', group: 'chain', name: 'Option chain', figma: '11630:16785', note: 'From Option chain on the F&O chart (any product tab), the Expiry calendar’s option-chain button or the Option Chain bottom-nav tab; Back → the page it was opened from (F&O home when opened directly). Opens scrolled to the spot pill. BankNifty ▾ and Expiry ▾ open sheets; Σ shows delta instead of the day change; the basket and Zing tile open the explanatory sheet. Column heads: Call / Put metric (LTP, OI, OI Chg, IV) and the strike range (All, ±5, ±10). Tap a price to Buy, tap it again to Sell, a third time to clear.', render: (go) => <OptionChain onBack={() => backOr(go, 'fno-01')} onAsset={() => go('fno-21')} /> },
+    { id: 'fno-18', section: 'chain', group: 'chain', name: 'Option chain · Buy selected', figma: '11630:16184', note: 'A put price tapped once: B badge, green wash, the order dock with the contract, Balance / Req, quantity in lots and Buy (brand). Buy places a sample order (toast) and clears the selection.', render: (go) => <OptionChain initialSelection={{ strike: 25400, side: 'put', action: 'buy', ltp: 160.54 }} onBack={() => backOr(go, 'fno-01')} onAsset={() => go('fno-21')} /> },
+    { id: 'fno-19', section: 'chain', group: 'chain', name: 'Option chain · Sell selected', figma: '11695:26269', note: 'The same put tapped again: S badge, red wash, Sell (secondary) in the dock; Req becomes the margin per lot.', render: (go) => <OptionChain initialSelection={{ strike: 25400, side: 'put', action: 'sell', ltp: 160.54 }} onBack={() => backOr(go, 'fno-01')} onAsset={() => go('fno-21')} /> },
+    { id: 'fno-20', section: 'chain', group: 'chain', name: 'Option chain · illiquid contract', figma: '', note: 'Illiquid contracts (deep in-the-money calls, far out-of-the-money puts) carry a block icon beside the price, like Groww. Unlike Groww, a tap never selects them: a tooltip opens just above — “ILLIQUID contract” / “Can’t be traded” ⓘ; tapping away closes it, ⓘ opens a sheet with why it’s blocked, its traded lots and buy–sell gap, and a tip. Opens on the 25,700 put with the tooltip up.', render: (go) => <OptionChain initialIlliquid={{ strike: 25700, side: 'put' }} onBack={() => backOr(go, 'fno-01')} onAsset={() => go('fno-21')} /> },
+    { id: 'fno-21', section: 'asset', group: 'asset', name: 'Asset page · Gold MINI', figma: '6754:61613', note: 'A commodity contract page. Entry (one of several): the contract name in the option chain order dock (“25,400 Put ›”). Back returns where it came from; Option chain → fno-17; Buy / Sell open the sample sheet. Equity contracts get their own (similar) page later.', render: (go) => <AssetPage asset={goldMiniAsset} onBack={() => backOr(go, 'fno-18')} onChain={() => go('fno-17')} onScalper={() => openScalper(go)} onOrder={(side) => go(side === 'buy' ? 'fno-25' : 'fno-29')} /> },
+    { id: 'fno-22', section: 'asset', group: 'asset', name: 'Asset page · illiquid', figma: '6754:61613', note: 'Product rule (commodities only): an illiquid contract’s page shows the ILLIQUID tag next to its name and Buy / Sell greyed out, with “Trading is not allowed as this contract is illiquid” above them — whatever screen it was opened from.', render: (go) => <AssetPage asset={illiquidAsset} onBack={() => backOr(go, 'fno-17')} onChain={() => go('fno-17')} onScalper={() => openScalper(go)} onOrder={(side) => go(side === 'buy' ? 'fno-25' : 'fno-29')} /> },
     { id: 'fno-23', section: 'asset', group: 'lot', name: 'Gold Summary · Buy / Sell sheet', figma: '', note: 'Tapping any futures or option card opens the Buy / Sell sheet (live app, 2026-10-29): name › (asset page fno-21) · price, expiry · change, Buy (brand) / Sell (secondary).', render: (go) => <LotSummary initialSheet="lo-0" onBack={() => go('fno-08')} onChain={() => go('fno-17')} onAsset={(illiquid) => go(illiquid ? 'fno-22' : 'fno-21')} onOrder={(side) => go(side === 'buy' ? 'fno-25' : 'fno-29')} /> },
     { id: 'fno-24', section: 'asset', group: 'lot', name: 'Gold Summary · illiquid sheet', figma: '', note: 'Product rule (commodities): an illiquid contract carries the ILLIQUID tag on its card (edge case — illiquid contracts shouldn’t be listed, but the state is built) and in the sheet; Buy / Sell are greyed out with “Trading is not allowed as this contract is illiquid”. Only the name › (asset page fno-22) or tapping outside works.', render: (go) => <LotSummary initialSheet="lo-5" onBack={() => go('fno-08')} onChain={() => go('fno-17')} onAsset={(illiquid) => go(illiquid ? 'fno-22' : 'fno-21')} onOrder={(side) => go(side === 'buy' ? 'fno-25' : 'fno-29')} /> },
     { id: 'fno-25', section: 'order', group: 'order', name: 'Order pad · Buy · Market', figma: '8671:18433', note: 'Commodity option chain order pad (other order pads differ a little). From Buy on the commodity asset page or the Gold Summary Buy / Sell sheet. Delivery / Intraday tabs, Market / Limit / SL pills, Quantity (⇕ lots) in steps of one lot, Set TPSL, Avail. · Req, Buy. Placing shows a sample toast; no order is sent.', render: (go) => <OrderPad side="buy" onBack={() => backOr(go, 'fno-21')} /> },
@@ -3433,6 +7107,7 @@ import { chainFor, expiries, ranges, underlyings, type Action, type Metric, type
 import { OrderDock, type Selection } from '../components/OrderDock'
 import { IlliquidSheet } from '../../sheets/IlliquidSheet'
 import styles from './OptionChain.module.css'
+import flat from '../../flatCards.module.css'
 
 type Modal = { kind: 'choice'; title: string; values: string[]; value: string; onPick: (v: string) => void } | { kind: 'detail'; title: string } | { kind: 'illiquid'; contract: string; quote: OptionQuote }
 
@@ -3562,7 +7237,7 @@ export function OptionChain({ initialSelection, initialIlliquid, onBack, onAsset
     </div>
   </div>
 
-  return <Screen top={top} sheet={sheet}
+  return <Screen className={flat.flatCards} top={top} sheet={sheet}
     bottom={selection ? <OrderDock key={`${selection.strike}-${selection.side}`} selection={selection} lotSize={underlying.lotSize} onContract={onAsset} onOptions={() => setModal({ kind: 'detail', title: `${t('chain.orderOptions')} · ${t('chain.tpsl')}` })} onPlace={(action: Action) => { setPlaced(t('chain.placed', { action: t(action === 'buy' ? 'chain.buy' : 'chain.sell'), contract: t('chain.contract', { strike: selection.strike.toLocaleString('en-IN'), side: t(`chain.${selection.side}`) }) })); setSelection(null) }} /> : undefined}
     toast={placed ? <Aerobar floating type="success" heading={placed} onDismiss={() => setPlaced(null)} /> : undefined}>
     <div className={styles.chain} data-chain role="list" aria-label={t('chain.title')}>
@@ -3710,6 +7385,7 @@ import { IlliquidSheet } from '../../sheets/IlliquidSheet'
 import { t } from '../../copy'
 import { funds, intradayCloseTime, orderContract, sellMargin, validities, type OrderProduct, type OrderSide, type OrderType } from '../data'
 import styles from './OrderPad.module.css'
+import flat from '../../flatCards.module.css'
 
 type Props = {
   side: OrderSide
@@ -3773,7 +7449,7 @@ export function OrderPad({ side, product: initialProduct = 'delivery', type: ini
     </div>
   </div>
 
-  return <Screen top={top} bottom={dock} sheet={sheet}
+  return <Screen className={flat.flatCards} top={top} bottom={dock} sheet={sheet}
     toast={placed ? <Aerobar floating type="success" heading={t('order.placed', { side: t(buy ? 'order.buy' : 'order.sell'), name: c.name, contract: c.contract })} onDismiss={() => setPlaced(false)} /> : undefined}>
     <Stack gap="16" className={styles.body}>
       <Stack direction="horizontal" align="center" justify="between">
@@ -3817,7 +7493,8 @@ import { TradingChart } from '../components/TradingChart'
 import { ChoiceSheet, CreateWatchlistSheet, DetailSheet } from '../sheets/HomeSheets'
 import { CommoditiesFeed } from '../commodities/components/CommoditiesFeed'
 import { ContractPickerSheet } from '../commodities/sheets/ContractPickerSheet'
-import type { Commodity } from '../commodities/data'
+import type { Commodity, ExpiringContract } from '../commodities/data'
+import { TrendInfoSheet } from '../commodities/sheets/TrendInfoSheet'
 import { StrategiesFeed } from '../strategies/components/StrategiesFeed'
 import type { Segment } from '../strategies/data'
 import { watchlists, type Contract } from '../data'
@@ -3826,6 +7503,7 @@ import equity from '../assets/equity.svg'
 import commodities from '../assets/commodities.svg'
 import strategies from '../assets/strategies.svg'
 import styles from '../components/HomeParts.module.css'
+import flat from '../flatCards.module.css'
 
 export type HomePart = 'top' | 'watchlists' | 'options' | 'heatmap' | 'futures'
 /** The product tab: Equity (fno-01…04), Commodities (fno-08…11), Strategies (fno-15, 16). */
@@ -3838,21 +7516,31 @@ type Props = {
   picker?: 'equity' | 'commodities'
   onProduct: (product: Product, segment?: Segment) => void
   onCommodity: (commodity: Commodity) => void
+  /** A contract card (Expiring This Week) → that contract's asset page. */
+  onAsset: () => void
+  /** Expiring This Week's View all → the Upcoming expiries timeline (fno-38). */
+  onExpiries: () => void
   scrollTo?: HomePart; onHome: () => void; onSearch: () => void; onProfile: () => void; onWallet: () => void; onDash: () => void; onUsStocks?: () => void; onOptions: () => void; onFutures: () => void; onChain: () => void; onScalper: () => void }
-type Modal = { kind: 'detail'; title: string; contract?: Contract } | { kind: 'create' } | { kind: 'choice'; title: string; values: string[]; value: string; onPick: (v: string) => void } | { kind: 'picker'; segment: 'equity' | 'commodities' }
+type Modal = { kind: 'detail'; title: string; contract?: Contract } | { kind: 'create' } | { kind: 'choice'; title: string; values: string[]; value: string; onPick: (v: string) => void } | { kind: 'picker'; segment: 'equity' | 'commodities' } | { kind: 'trend'; contract: ExpiringContract }
 
 /** fno-01 … 04 · one scrollable Equity home, with board frames for the lower sections. */
-export function Home({ product = 'equity', segment = 'equity', picker, onProduct, onCommodity, scrollTo = 'top', onHome, onSearch, onProfile, onWallet, onDash, onUsStocks, onOptions, onFutures, onChain, onScalper }: Props) {
+export function Home({ product = 'equity', segment = 'equity', picker, onProduct, onCommodity, onAsset, onExpiries, scrollTo = 'top', onHome, onSearch, onProfile, onWallet, onDash, onUsStocks, onOptions, onFutures, onChain, onScalper }: Props) {
   const root = useRef<HTMLDivElement>(null)
   const [modal, setModal] = useState<Modal | null>(picker ? { kind: 'picker', segment: picker } : null)
   const [instrument, setInstrument] = useState('Gold')
   const [lists, setLists] = useState(watchlists)
   const [created, setCreated] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  // The product tabs are stuck under the top bar: their row takes the scrolled top bar's colour.
+  const [tabsStuck, setTabsStuck] = useState(false)
   useEffect(() => {
     const body = root.current?.parentElement
     if (!body) return
-    const onScroll = () => setScrolled(body.scrollTop > 0)
+    const tabs = root.current?.querySelector('[data-fno="tabs"]')
+    const onScroll = () => {
+      setScrolled(body.scrollTop > 0)
+      setTabsStuck(!!tabs && body.scrollTop > 0 && tabs.getBoundingClientRect().top <= body.getBoundingClientRect().top + 1)
+    }
     onScroll()
     body.addEventListener('scroll', onScroll, { passive: true })
     return () => body.removeEventListener('scroll', onScroll)
@@ -3866,7 +7554,7 @@ export function Home({ product = 'equity', segment = 'equity', picker, onProduct
     if (body && target) body.scrollTo({ top: body.scrollTop + target.getBoundingClientRect().top - body.getBoundingClientRect().top, behavior: 'smooth' })
   }
   // A product tab switch slides only the content under the tabs, toward the chosen tab's side. If the page was
-  // scrolled past the tabs, it stops with the tabs at the top so the new content starts in view.
+  // scrolled past the tabs (they stick under the top bar), it stops with the new content's start right under them.
   const order: Product[] = ['equity', 'commodities', 'strategies']
   const shownProduct = useRef(product)
   const [slide, setSlide] = useState<'from-end' | 'from-start' | null>(null)
@@ -3877,8 +7565,10 @@ export function Home({ product = 'equity', segment = 'equity', picker, onProduct
   useLayoutEffect(() => {
     const body = root.current?.parentElement
     const tabs = root.current?.querySelector('[data-fno="tabs"]')
-    if (!slide || !body || !tabs) return
-    const offset = tabs.getBoundingClientRect().top - body.getBoundingClientRect().top
+    const content = root.current?.querySelector('[data-fno="content"]')
+    if (!slide || !body || !tabs || !content) return
+    // The tabs stick under the top bar, so measure the new content against their bottom edge.
+    const offset = content.getBoundingClientRect().top - tabs.getBoundingClientRect().bottom
     if (offset < 0) body.scrollTop += offset
   }, [product])
   useEffect(() => { if (picker) setModal({ kind: 'picker', segment: picker }) }, [picker])
@@ -3887,12 +7577,12 @@ export function Home({ product = 'equity', segment = 'equity', picker, onProduct
     const target = root.current?.querySelector(`[data-fno="${scrollTo}"]`)
     if (body && target && scrollTo !== 'top') body.scrollTop += target.getBoundingClientRect().top - body.getBoundingClientRect().top
   }, [scrollTo])
-  const sheet = modal?.kind === 'detail' ? <DetailSheet title={modal.title} contract={modal.contract} onClose={close} /> : modal?.kind === 'choice' ? <ChoiceSheet {...modal} onClose={close} /> : modal?.kind === 'picker' ? <ContractPickerSheet segment={modal.segment} value={instrument} onPick={setInstrument} onClose={close} /> : modal?.kind === 'create' ? <CreateWatchlistSheet onClose={close} onCreate={(name) => { setLists((ls) => [...ls, { id: `custom-${ls.length}`, name, count: 0 }]); close(); setCreated(true) }} /> : undefined
-  return <Screen top={<Header scrolled={scrolled} initials={user.name.split(' ').map((name) => name[0]).join('')} onSearch={onSearch} onProfile={onProfile} onWallet={onWallet} onDash={onDash} />} bottom={<FnoNav onHome={onHome} onDestination={open} onChain={onChain} onScalper={onScalper} />} sheet={sheet} toast={created ? <Aerobar floating type="success" heading={t('watchlists.created')} onDismiss={() => setCreated(false)} /> : undefined}>
+  const sheet = modal?.kind === 'detail' ? <DetailSheet title={modal.title} contract={modal.contract} onClose={close} /> : modal?.kind === 'choice' ? <ChoiceSheet {...modal} onClose={close} /> : modal?.kind === 'picker' ? <ContractPickerSheet segment={modal.segment} value={instrument} onPick={setInstrument} onClose={close} /> : modal?.kind === 'trend' ? <TrendInfoSheet contract={modal.contract} onClose={close} /> : modal?.kind === 'create' ? <CreateWatchlistSheet onClose={close} onCreate={(name) => { setLists((ls) => [...ls, { id: `custom-${ls.length}`, name, count: 0 }]); close(); setCreated(true) }} /> : undefined
+  return <Screen className={flat.flatCards} top={<Header scrolled={scrolled} initials={user.name.split(' ').map((name) => name[0]).join('')} onSearch={onSearch} onProfile={onProfile} onWallet={onWallet} onDash={onDash} />} bottom={<FnoNav onHome={onHome} onDestination={open} onChain={onChain} onScalper={onScalper} />} sheet={sheet} toast={created ? <Aerobar floating type="success" heading={t('watchlists.created')} onDismiss={() => setCreated(false)} /> : undefined}>
     <Stack ref={root}>
       <div data-fno="top"><Overview onDestination={open} /></div>
-      <div data-fno="tabs"><Tabs aria-label="F&O products" appearance="ribbon" size="md" className={styles.productTabs} value={product} onChange={(v) => onProduct(v)} items={[{ value: 'equity', label: t('equity'), iconLeft: <span className={styles.ribbonIcon}><MaskIcon src={equity} /></span> }, { value: 'commodities', label: t('commodities'), iconLeft: <span className={styles.ribbonIcon}><MaskIcon src={commodities} /></span> }, { value: 'strategies', label: t('strategies'), iconLeft: <span className={styles.ribbonIcon}><MaskIcon src={strategies} /></span> }]} /></div>
-      <div key={product} className={styles.productContent} data-slide={slide ?? undefined}>
+      <div data-fno="tabs" className={styles.stickyTabs} data-stuck={tabsStuck || undefined}><Tabs aria-label="F&O products" appearance="ribbon" size="md" className={styles.productTabs} value={product} onChange={(v) => onProduct(v)} items={[{ value: 'equity', label: t('equity'), iconLeft: <span className={styles.ribbonIcon}><MaskIcon src={equity} /></span> }, { value: 'commodities', label: t('commodities'), iconLeft: <span className={styles.ribbonIcon}><MaskIcon src={commodities} /></span> }, { value: 'strategies', label: t('strategies'), iconLeft: <span className={styles.ribbonIcon}><MaskIcon src={strategies} /></span> }]} /></div>
+      <div key={product} data-fno="content" className={styles.productContent} data-slide={slide ?? undefined}>
       {product === 'equity' && <Stack gap="32" className={styles.feed}>
         <Shortcuts onWatchlist={() => scroll('watchlists')} onDestination={open} />
         {onUsStocks && <UsBanner onOpen={onUsStocks} />}
@@ -3903,7 +7593,7 @@ export function Home({ product = 'equity', segment = 'equity', picker, onProduct
         <div data-fno="heatmap"><Heatmap onOpen={open} onViewAll={() => open(t('heatmap.title'))} /></div>
         <div data-fno="futures"><ContractSection kind="futures" onChoose={choose} onContract={(contract) => setModal({ kind: 'detail', title: contract.name, contract })} onViewAll={onFutures} /></div>
       </Stack>}
-      {product === 'commodities' && <CommoditiesFeed instrument={instrument} lists={lists} onCommodity={onCommodity} onPicker={() => setModal({ kind: 'picker', segment: 'commodities' })} onChoose={choose} onContract={(contract) => setModal({ kind: 'detail', title: contract.name, contract })} onDestination={open} onAddWatchlist={() => setModal({ kind: 'create' })} onChain={onChain} onScalper={onScalper} />}
+      {product === 'commodities' && <CommoditiesFeed instrument={instrument} lists={lists} onCommodity={onCommodity} onAsset={onAsset} onPicker={() => setModal({ kind: 'picker', segment: 'commodities' })} onChoose={choose} onContract={(contract) => setModal({ kind: 'detail', title: contract.name, contract })} onDestination={open} onAddWatchlist={() => setModal({ kind: 'create' })} onChain={onChain} onScalper={onScalper} onExpiries={onExpiries} onTrendInfo={(contract) => setModal({ kind: 'trend', contract })} />}
       {product === 'strategies' && <StrategiesFeed segment={segment} onSegment={(next) => onProduct('strategies', next)} onChoose={choose} onDestination={open} onWatchlist={() => open(t('shortcut.watchlist'))} />}
       </div>
     </Stack>
@@ -3956,9 +7646,9 @@ export function Home({ product = 'equity', segment = 'equity', picker, onProduct
   box-shadow: none;
 }
 
-.strategies [aria-selected='true'] {
+.strategies.strategies [role='tab'][aria-selected='true'] { /* beats L3's ribbon selector (0,3,0) */
   --tab-surface: var(--l3-surface-primary);
-  --tab-border: var(--l3-border-light);
+  --tab-border: var(--tab-surface); /* no outline (designer's call, 2026-11-03): sides and flares in the fill colour */
 }
 
 .addStrategies {
@@ -4238,6 +7928,12 @@ export function Home({ product = 'equity', segment = 'equity', picker, onProduct
 .sheet.sheet.sheet {
   box-shadow: var(--l3-shadow-elevation-high);
 }
+
+/* An open position (fno-35): the option pane takes 3 parts of the height to the spot pane's 2, so the TP, entry and
+   SL pills clear each other (Figma C). */
+.panel[data-tall] {
+  flex: 1.5;
+}
 ```
 
 ### `src/flows/fno/screens/Scalper.tsx`
@@ -4245,6 +7941,7 @@ export function Home({ product = 'equity', segment = 'equity', picker, onProduct
 ```tsx
 import { useMemo, useState } from 'react'
 import { Button } from '@l3/components/Button'
+import { ButtonGroup } from '@l3/components/ButtonGroup'
 import type { ChartCandle } from '@l3/components/Chart'
 import { Icon } from '@l3/components/Icon'
 import { Stack } from '@l3/components/Stack'
@@ -4253,11 +7950,15 @@ import { Tabs } from '@l3/components/Tabs'
 import { msAdd, msArrowBack, msJoin, msLink, msMonitoring, msPlaylistAdd, msReceiptLong, msKeyboardArrowDown, msRefresh, msSwapHoriz, msUnfoldMore } from '@l3/icons/material'
 import { Screen } from '../../../shared/ui/Screen'
 import { Sheet } from '../../../shared/ui/Sheet'
-import { TradingPane, type PaneLine } from '../components/TradingPane'
+import { PositionOverlay } from '../components/PositionOverlay'
+import { TradingPane, type PaneLine, type TradingPaneProps } from '../components/TradingPane'
+import { useLiveInstrument } from '../components/useLiveInstrument'
 import { t } from '../copy'
-import { scalperOption, scalperSpot, type ScalperInstrument } from '../data'
-import { ChartToolsSheet } from '../sheets/ChartToolsSheet'
+import { breakevenPrice, defaultChartSettings, OPTION_TICK, SCALPER_TP_SL_GAP, scalperOption, scalperSpot, type ChartSettings, type ScalperInstrument, type ScalperPosition } from '../data'
+import { BreakevenSheet } from '../sheets/BreakevenSheet'
+import { ChartToolsSheet, type ToolsSection } from '../sheets/ChartToolsSheet'
 import styles from './Scalper.module.css'
+import flat from '../flatCards.module.css'
 
 type ScalperProps = {
   onBack: () => void
@@ -4269,6 +7970,10 @@ type ScalperProps = {
   initialIndicator?: string
   onCreateIndicator?: () => void
   onApplyIndicator?: (name: string) => void
+  /** An open position on the option chart (TP / SL pills, the breakeven line). Default: none — Buy opens one. */
+  initialPosition?: ScalperPosition
+  /** Open with How breakeven works up, or the chart-tools sheet on Settings. */
+  initialSheet?: 'breakeven' | 'settings'
 }
 
 const LOT = 65
@@ -4281,18 +7986,59 @@ const LOT = 65
  * - the order dock: Market / Limit-Trigger, Buy at Mkt · quantity in lots · Sell at Mkt, the margin each needs.
  * The spot pane's "add" button opens the chart-tools sheet (indicators). Prices are sample data.
  */
-export function Scalper({ onBack, createdIndicator, openIndicators, initialIndicator, onCreateIndicator, onApplyIndicator }: ScalperProps) {
-  const [sheetOpen, setSheetOpen] = useState(openIndicators ?? Boolean(createdIndicator))
+export function Scalper({ onBack, createdIndicator, openIndicators, initialIndicator, onCreateIndicator, onApplyIndicator, initialPosition, initialSheet }: ScalperProps) {
+  const [sheetOpen, setSheetOpen] = useState(initialSheet === 'settings' || (openIndicators ?? Boolean(createdIndicator)))
+  const [toolsSection, setToolsSection] = useState<ToolsSection>(initialSheet === 'settings' ? 'settings' : 'indicators')
+  /** The chart's settings, and the copy being edited in the sheet's Settings (Apply keeps it, Cancel drops it). */
+  const [settings, setSettings] = useState<ChartSettings>(defaultChartSettings)
+  const [draft, setDraft] = useState<ChartSettings>(defaultChartSettings)
+  const [position, setPosition] = useState<ScalperPosition | null>(initialPosition ?? null)
+  /** The option chart's scale takes in the TP / SL as they were set when the position opened (not while one is being
+   * dragged — the scale would run away with it; dragging stays inside the chart). */
+  const [scaleFor, setScaleFor] = useState<number[]>(() => tpSl(initialPosition))
+  const [breakevenOpen, setBreakevenOpen] = useState(initialSheet === 'breakeven')
   /** Indicators on the NIFTY 50 chart (the sheet adds and removes them, several at once). */
   // An indicator saved with DASH is applied straight away (and a favourite in the sheet), so it's already on the chart.
   const [applied, setApplied] = useState<string[]>(() => [...new Set([initialIndicator, createdIndicator].filter((n): n is string => Boolean(n)))])
   const [orderType, setOrderType] = useState<'market' | 'limit'>('market')
   const [quantity, setQuantity] = useState(LOT)
-  const overlay = useMemo<PaneLine[]>(() => (applied.length ? [{ values: ema(scalperSpot.candles, 9), tone: 'fast' }, { values: ema(scalperSpot.candles, 21), tone: 'slow' }] : []), [applied.length])
+  /** Both charts tick (prototype: a random walk around the sample prices; the real app's market feed). */
+  const spot = useLiveInstrument(scalperSpot, { tick: OPTION_TICK })
+  const option = useLiveInstrument(scalperOption, { tick: OPTION_TICK })
+  const last = option.price
+  const breakeven = position ? breakevenPrice(position.entry, position.quantity) : null
+
+  /** Buy at Mkt: opens a position at the last price with a TP and SL 10 either side (or adds to the open one, averaging
+   * the entry). The first buy ever opens How breakeven works. */
+  const buy = () => {
+    if (position) {
+      setPosition({ ...position, entry: round2((position.entry * position.quantity + last * quantity) / (position.quantity + quantity)), quantity: position.quantity + quantity })
+    } else {
+      const opened = { entry: last, quantity, takeProfit: round2(last + SCALPER_TP_SL_GAP), stopLoss: round2(last - SCALPER_TP_SL_GAP), trailing: false }
+      setPosition(opened)
+      setScaleFor(tpSl(opened))
+    }
+    if (!breakevenIntroSeen()) {
+      markBreakevenIntroSeen()
+      setBreakevenOpen(true)
+    }
+  }
+  /** Sell at Mkt: sells the dock's quantity from the open position (all of it closes the position). */
+  const sell = () => setPosition((p) => (p && p.quantity > quantity ? { ...p, quantity: p.quantity - quantity } : null))
+  const closeTools = () => {
+    setSheetOpen(false)
+    setDraft(settings)
+  }
+  const openTools = () => {
+    setDraft(settings)
+    setSheetOpen(true)
+  }
+
+  const overlay = useMemo<PaneLine[]>(() => (applied.length ? [{ values: ema(spot.candles, 9), tone: 'fast' }, { values: ema(spot.candles, 21), tone: 'slow' }] : []), [applied.length, spot.candles])
 
   return (
     <Screen
-      className={styles.screen}
+      className={`${styles.screen} ${flat.flatCards}`}
       top={
         <div className={styles.top}>
           <div className={styles.header}>
@@ -4332,7 +8078,7 @@ export function Scalper({ onBack, createdIndicator, openIndicators, initialIndic
           />
           <div className={styles.order}>
             <div className={styles.side}>
-              <Button variant="buy" size="md" fullWidth className={styles.buy}>{t('scalper.buy')}</Button>
+              <Button variant="buy" size="md" fullWidth className={styles.buy} onClick={buy}>{t('scalper.buy')}</Button>
               <span className={styles.req}>{t('scalper.required', { amount: '₹7,059.75' })}</span>
             </div>
             <div className={styles.qty}>
@@ -4340,16 +8086,43 @@ export function Scalper({ onBack, createdIndicator, openIndicators, initialIndic
               <span className={styles.funds}>{t('scalper.funds', { amount: '₹-39.96' })}</span>
             </div>
             <div className={styles.side}>
-              <Button variant="sell" size="md" fullWidth className={styles.sell}>{t('scalper.sell')}</Button>
+              <Button variant="sell" size="md" fullWidth className={styles.sell} onClick={sell}>{t('scalper.sell')}</Button>
               <span className={styles.req}>{t('scalper.required', { amount: '₹1,57,436.49' })}</span>
             </div>
           </div>
         </div>
       }
       sheet={
-        sheetOpen && (
-          <Sheet label={t('scalper.chartTools')} onClose={() => setSheetOpen(false)} className={styles.sheet}>
+        breakevenOpen ? (
+          <BreakevenSheet onClose={() => setBreakevenOpen(false)} />
+        ) : sheetOpen && (
+          <Sheet
+            label={t('scalper.chartTools')}
+            onClose={closeTools}
+            className={styles.sheet}
+            footer={
+              toolsSection === 'settings' ? (
+                <ButtonGroup aria-label={t('settings.title')} direction="horizontal">
+                  <Button variant="secondary" onClick={closeTools}>{t('settings.cancel')}</Button>
+                  <Button
+                    variant="brand"
+                    onClick={() => {
+                      setSettings(draft)
+                      setSheetOpen(false)
+                    }}
+                  >
+                    {t('settings.apply')}
+                  </Button>
+                </ButtonGroup>
+              ) : undefined
+            }
+          >
             <ChartToolsSheet
+              section={toolsSection}
+              onSectionChange={setToolsSection}
+              settings={draft}
+              onSettingsChange={setDraft}
+              onBreakevenInfo={() => setBreakevenOpen(true)}
               yourIndicators={createdIndicator ? [createdIndicator] : []}
               applied={applied}
               guide={Boolean(createdIndicator) && openIndicators !== false}
@@ -4365,20 +8138,42 @@ export function Scalper({ onBack, createdIndicator, openIndicators, initialIndic
         )
       }
     >
-      <ChartPanel instrument={scalperSpot} lines={overlay} applied={applied.length} onTools={() => setSheetOpen(true)} />
+      <ChartPanel instrument={spot} lines={overlay} applied={applied.length} onTools={openTools} />
       <div className={styles.split}>
         <button type="button" className={styles.handle} aria-label={t('scalper.resize')} />
       </div>
-      <ChartPanel instrument={scalperOption} refresh onTools={() => setSheetOpen(true)} />
+      <ChartPanel
+        instrument={position ? { ...option, ...recent(option, POSITION_CANDLES) } : option}
+        room={position ? POSITION_ROOM : undefined}
+        include={position ? scaleFor : undefined}
+        tall={Boolean(position)}
+        refresh
+        onTools={openTools}
+        overlay={
+          position
+            ? (scale) => (
+                <PositionOverlay
+                  scale={scale}
+                  position={position}
+                  last={last}
+                  breakeven={settings.breakevenLine ? breakeven : null}
+                  onChange={setPosition}
+                  onExit={() => setPosition(null)}
+                  onBreakevenInfo={() => setBreakevenOpen(true)}
+                />
+              )
+            : undefined
+        }
+      />
     </Screen>
   )
 }
 
 /** One chart pane: the instrument (name ⇅, segment ⇅, link), its price and change, the pane's buttons, the chart. */
-function ChartPanel({ instrument, lines, applied = 0, refresh, onTools }: { instrument: ScalperInstrument; lines?: PaneLine[]; /** Indicators on this chart: "N ▾" at its top-left (opens the sheet). */ applied?: number; /** The live app's reset button, bottom centre of the option chart. */ refresh?: boolean; onTools: () => void }) {
+function ChartPanel({ instrument, lines, applied = 0, refresh, onTools, overlay, include, room, tall }: { instrument: ScalperInstrument; lines?: PaneLine[]; overlay?: TradingPaneProps['overlay']; include?: number[]; room?: number; /** With a position open the option pane takes more of the height, so its pills have room (Figma C). */ tall?: boolean; /** Indicators on this chart: "N ▾" at its top-left (opens the sheet). */ applied?: number; /** The live app's reset button, bottom centre of the option chart. */ refresh?: boolean; onTools: () => void }) {
   const { name, segment, side, price, change, percent } = instrument
   return (
-    <section className={styles.panel} aria-label={name}>
+    <section className={styles.panel} data-tall={tall || undefined} aria-label={name}>
       <div className={styles.panelHead}>
         <div className={styles.instrument}>
           <div className={styles.nameRow}>
@@ -4408,7 +8203,7 @@ function ChartPanel({ instrument, lines, applied = 0, refresh, onTools }: { inst
         </Stack>
       </div>
       <div className={styles.chart}>
-        <TradingPane candles={instrument.candles} start={instrument.start} minutes={instrument.minutes} lines={lines} label={t('scalper.chartLabel', { name })} />
+        <TradingPane candles={instrument.candles} start={instrument.start} minutes={instrument.minutes} lines={lines} include={include} room={room} overlay={overlay} label={t('scalper.chartLabel', { name })} />
         {applied > 0 && (
           <Button variant="ghost" size="sm" iconRight={<Icon icon={msKeyboardArrowDown} />} aria-label={t('scalper.indicatorCount', { count: applied })} onClick={onTools} className={styles.indicatorCount}>
             {applied}
@@ -4426,6 +8221,455 @@ const inr = (v: number) => v.toLocaleString('en-IN', { minimumFractionDigits: 2,
 function ema(candles: ChartCandle[], period: number) {
   const k = 2 / (period + 1)
   return candles.reduce<number[]>((out, c, i) => [...out, i ? c.close * k + out[i - 1] * (1 - k) : c.close], [])
+}
+
+/** With a position open, the option chart shows the candles since the 13:55 spike (its last 19), thin, with room after
+ * them for the price to run into (Figma C: the candles stop about three quarters across). */
+const POSITION_CANDLES = 19
+const POSITION_ROOM = 8
+function recent(instrument: ScalperInstrument, count: number) {
+  const skip = Math.max(0, instrument.candles.length - count)
+  const [h, m] = instrument.start.split(':').map(Number)
+  const total = h * 60 + m + skip * instrument.minutes
+  return { candles: instrument.candles.slice(skip), start: `${Math.floor(total / 60)}:${String(total % 60).padStart(2, '0')}` }
+}
+
+const tpSl = (p?: ScalperPosition | null) => (p ? [p.takeProfit, p.stopLoss].filter((v): v is number => v !== null) : [])
+
+const round2 = (v: number) => Math.round(v * 100) / 100
+
+/** How breakeven works opens by itself on the first buy only (prototype: once per browser). */
+const BREAKEVEN_INTRO_KEY = 'fno.breakevenIntroSeen'
+function breakevenIntroSeen() {
+  try { return localStorage.getItem(BREAKEVEN_INTRO_KEY) === '1' } catch { return false }
+}
+function markBreakevenIntroSeen() {
+  try { localStorage.setItem(BREAKEVEN_INTRO_KEY, '1') } catch { /* storage off: it may show again next time */ }
+}
+```
+
+### `src/flows/fno/sheets/BreakevenSheet.module.css`
+
+```css
+/* How breakeven works (Figma 11783:5569). L3 tokens; the explainer's timings are local tokens (src/local-tokens.css). */
+
+/* The example card: 1px light edge, radius 12, a header line then the stage. */
+.example {
+  overflow: hidden;
+  border: 1px solid var(--l3-border-light);
+  border-radius: var(--l3-radius-12);
+}
+
+.exampleHead {
+  margin: 0;
+  padding: var(--l3-spacing-12) var(--l3-spacing-16);
+  border-bottom: 1px solid var(--l3-border-light);
+  color: var(--l3-content-primary);
+  font: var(--l3-text-heading-12);
+}
+
+.exampleTag {
+  color: var(--l3-content-secondary);
+}
+
+/* ---- The charges table: a calculation, built on L3 key-value rows (L3 has no table) ----
+   A secondary-surface card (radius 12, no edge, no heading, no lines inside) so it stands apart from the white sheet:
+   compact rows (4 / 16), the total last — L3's total row (bold label, larger value) on the same grey. */
+.table {
+  overflow: hidden;
+  border-radius: var(--l3-radius-12);
+  background: var(--l3-surface-secondary);
+}
+
+.tableRows {
+  margin: 0;
+  padding: var(--l3-spacing-08) 0;
+}
+
+.tableRow {
+  padding: var(--l3-spacing-04) var(--l3-spacing-16);
+  white-space: nowrap;
+}
+
+/* The total: L3's total row (bold label, larger value), no tint and no divider (L3's inset line off). */
+.tableTotal.tableTotal {
+  margin-top: var(--l3-spacing-04);
+  padding-top: var(--l3-spacing-04);
+  box-shadow: none;
+}
+
+/* The charges row opens the breakdown: its label is the toggle, stretched over the whole row so a tap anywhere works. */
+.chargesRow {
+  position: relative;
+  cursor: pointer;
+}
+
+.chargesToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--l3-spacing-04);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.chargesToggle::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+
+.chargesToggle:focus-visible {
+  outline: none;
+}
+
+.chargesRow:has(.chargesToggle:focus-visible) {
+  outline: var(--l3-spacing-02) solid var(--l3-border-dark);
+  outline-offset: calc(-1 * var(--l3-spacing-02));
+}
+
+.chevron {
+  display: inline-flex;
+  transition: transform var(--l3-motion-duration-short) var(--l3-motion-easing-standard);
+}
+
+.chevron[data-open] {
+  transform: rotate(180deg);
+}
+
+/* The breakdown: sm rows on a tertiary-surface panel inside the table (it sits on secondary). */
+.breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: var(--l3-spacing-08);
+  margin: var(--l3-spacing-04) var(--l3-spacing-16);
+  padding: var(--l3-spacing-08) var(--l3-spacing-12);
+  border-radius: var(--l3-radius-08);
+  background: var(--l3-surface-tertiary);
+}
+
+.breakdown[hidden] {
+  display: none;
+}
+
+/* ---- Info rows ---- */
+.infoIcon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: var(--l3-size-20);
+  height: var(--l3-size-20);
+}
+
+.infoText {
+  margin: 0;
+  color: var(--l3-content-secondary);
+  font: var(--l3-text-description-12);
+}
+
+.infoText strong {
+  color: var(--l3-content-primary);
+  font-weight: var(--l3-text-heading-12-weight);
+}
+
+/* ---- "I understand" with its loader (Figma 11783:12460): a 4 track across the button's top edge fills while the
+   example chart plays once (6.3 s), then the button unlocks (BreakevenSheet listens for the fill's animationend). ---- */
+.loader {
+  position: relative;
+  display: grid;
+  width: 100%;
+  overflow: hidden;
+  border-radius: var(--l3-radius-12);
+}
+
+.track {
+  position: absolute;
+  inset: 0 0 auto;
+  height: var(--l3-spacing-04);
+  background: var(--l3-surface-tertiary);
+}
+
+.fill {
+  display: block;
+  height: 100%;
+  background: var(--l3-surface-inverted);
+  transform-origin: left;
+  animation: fill var(--app-be-explainer) linear both;
+}
+
+@keyframes fill {
+  from {
+    scale: 0 1;
+  }
+}
+```
+
+### `src/flows/fno/sheets/BreakevenSheet.tsx`
+
+```tsx
+import { Fragment, useId, useState, type CSSProperties } from 'react'
+import { BottomSheetHeader } from '@l3/components/BottomSheet'
+import { Button } from '@l3/components/Button'
+import { Icon } from '@l3/components/Icon'
+import { msKeyboardArrowDown } from '@l3/components/icons/glyphs'
+import { KeyValueRow } from '@l3/components/KeyValueList'
+import { ButtonGroup } from '@l3/components/ButtonGroup'
+import { Stack } from '@l3/components/Stack'
+import { useFlowOption } from '../../../shared/prototype'
+import { Sheet } from '../../../shared/ui/Sheet'
+import { BreakevenExplainer, chargeInr, EXPLAINER_LENGTH } from '../components/BreakevenExplainer'
+import { BreakevenIcon } from '../components/BreakevenIcon'
+import { t } from '../copy'
+import { breakevenCharges, breakevenExample, exampleChargesTotal, exampleGst } from '../data'
+import styles from './BreakevenSheet.module.css'
+
+/**
+ * How breakeven works (Figma 11783:5569, dark 11783:6220) — opens the first time the user buys on the Scalper, and from
+ * the ⓘ on the chart's breakeven chip.
+ * - The example card ("Example: Bought 1 lot at ₹100") plays the explainer once and stops on the finished chart; a tap plays it again (BreakevenExplainer — copied from
+ *   the designer's recording: the chart builds up to a sell above the breakeven line, then the Breakeven Line intro).
+ * - "I understand" is locked while it plays (Figma's button variants 11783:12460: a loader line fills along the
+ *   button's top edge, then the button turns primary) until the chart has played once (9.3 s). Reduced motion: the
+ *   finished chart, the button ready.
+ * - Under it, the same example as a table: bought at, order charges with GST (tap to open the breakdown, closed by
+ *   default) and the breakeven price.
+ */
+export function BreakevenSheet({ onClose }: { onClose: () => void }) {
+  const headingId = useId()
+  const [still] = useState(prefersReducedMotion)
+  const [ready, setReady] = useState(still)
+  // Prototype setting "Breakeven sheet": v2 (default) = new heading + description + charges table, no info lines;
+  // v1 = the sheet as it first shipped (How breakeven works, the two info lines, no table).
+  const v1 = useFlowOption('fno', 'breakevenSheet', 'v2') === 'v1'
+
+  return (
+    <Sheet
+      labelledBy={headingId}
+      onClose={onClose}
+      header={v1
+        ? <BottomSheetHeader size="sm" headingId={headingId} heading={t('breakeven.title')} />
+        : <BottomSheetHeader size="sm" headingId={headingId} heading={t('breakeven.titleV2')} description={t('breakeven.descriptionV2')} />}
+      footer={
+        <ButtonGroup aria-label={t('breakeven.title')}>
+          <div className={styles.loader} style={{ '--app-be-explainer': `${EXPLAINER_LENGTH}ms` } as CSSProperties}>
+            <Button fullWidth disabled={!ready} onClick={onClose}>{t('breakeven.understand')}</Button>
+            {!ready && (
+              <span className={styles.track} role="progressbar" aria-label={t('breakeven.playing')}>
+                <span className={styles.fill} onAnimationEnd={() => setReady(true)} />
+              </span>
+            )}
+          </div>
+        </ButtonGroup>
+      }
+    >
+      <Stack gap="24">
+        <section className={styles.example} aria-label={t('breakeven.exampleLabel')}>
+          <p className={styles.exampleHead}>
+            <span className={styles.exampleTag}>{t('breakeven.example')}</span> {t('breakeven.exampleTrade', { price: '₹100' })}
+          </p>
+          <BreakevenExplainer still={still} />
+        </section>
+        {v1 ? (
+          <Stack gap="12">
+            <InfoRow icon={<BreakevenIcon variant="line" />} text={t('breakeven.info1')} />
+            <InfoRow icon={<BreakevenIcon variant="up" />} text={t('breakeven.info2')} />
+          </Stack>
+        ) : <ChargesTable />}
+      </Stack>
+    </Sheet>
+  )
+}
+
+/** Breakdown order: what the trader pays most first, GST last (it's charged on the others). */
+const BREAKDOWN_ORDER = ['stt', 'transaction', 'brokerage', 'stamp', 'sebi'] as const
+
+/**
+ * The example as a calculation table on a grey card (no heading, no lines), one row each —
+ * Bought at, Order charges (incl. GST), Breakeven price (bold, L3's total row). The charges row opens and closes the breakdown (closed by default) — a tap anywhere on it.
+ */
+function ChargesTable() {
+  const [open, setOpen] = useState(false)
+  const breakdownId = useId()
+  const { entry, breakeven } = breakevenExample
+  const amountOf = (id: (typeof BREAKDOWN_ORDER)[number]) => breakevenCharges.find((c) => c.id === id)?.amount ?? 0
+  const charges = `≈${chargeInr(exampleChargesTotal)}`
+  return (
+    <section className={styles.table} aria-label={t('breakeven.tableLabel')}>
+      <dl className={styles.tableRows}>
+        <KeyValueRow className={styles.tableRow} label={t('breakeven.tableBought')} value={inr(entry)} />
+        <KeyValueRow
+          className={`${styles.tableRow} ${styles.chargesRow}`}
+          label={
+            <button type="button" className={styles.chargesToggle} aria-expanded={open} aria-controls={breakdownId}
+              aria-label={`${t('breakeven.tableCharges')}. ${t(open ? 'breakeven.tableHide' : 'breakeven.tableShow')}`} onClick={() => setOpen(!open)}>
+              {t('breakeven.tableCharges')}
+              <span className={styles.chevron} data-open={open || undefined}><Icon icon={msKeyboardArrowDown} size={16} /></span>
+            </button>
+          }
+          value={charges}
+        />
+        <div id={breakdownId} className={styles.breakdown} hidden={!open}>
+          {BREAKDOWN_ORDER.map((id) => <KeyValueRow key={id} size="sm" label={t(`breakeven.charge.${id}`)} value={chargeInr(amountOf(id))} />)}
+          <KeyValueRow size="sm" label={t('breakeven.charge.gst')} value={chargeInr(exampleGst)} />
+        </div>
+        <KeyValueRow total className={`${styles.tableRow} ${styles.tableTotal}`} label={t('breakeven.tableBreakeven')} value={inr(breakeven)} />
+      </dl>
+    </section>
+  )
+}
+
+const inr = (amount: number) => `₹${amount.toFixed(2)}`
+
+/** A line of the explainer: a 20 icon and text with **bold** parts. */
+function InfoRow({ icon, text }: { icon: React.ReactNode; text: string }) {
+  return (
+    <Stack direction="horizontal" gap="12" align="start">
+      <span className={styles.infoIcon}>{icon}</span>
+      <p className={styles.infoText}>
+        {text.split('**').map((part, k) => (k % 2 ? <strong key={k}>{part}</strong> : <Fragment key={k}>{part}</Fragment>))}
+      </p>
+    </Stack>
+  )
+}
+
+function prefersReducedMotion() {
+  return typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+}
+```
+
+### `src/flows/fno/sheets/ChartSettingsPanel.tsx`
+
+```tsx
+import { Card } from '@l3/components/Card'
+import { Checkbox, Radio } from '@l3/components/Checkbox'
+import { Grid } from '@l3/components/Grid'
+import { Icon } from '@l3/components/Icon'
+import { ListCell } from '@l3/components/ListCell'
+import { Stack } from '@l3/components/Stack'
+import { Tag } from '@l3/components/Tag'
+import { msBarChart, msCandlestickChart, msChevronRight, msInfo, msShowChart } from '@l3/icons/material'
+import { AutoTpSlIcon } from '../components/AutoTpSlIcon'
+import { t } from '../copy'
+import type { ChartSettings, ChartType, StopLossPreference } from '../data'
+import styles from './ChartToolsSheet.module.css'
+
+type ChartSettingsPanelProps = {
+  /** The settings as edited in the sheet (a draft: Apply keeps them, Cancel drops them). */
+  value: ChartSettings
+  onChange: (value: ChartSettings) => void
+  /** The ⓘ after Breakeven line: How breakeven works. */
+  onBreakevenInfo: () => void
+}
+
+const chartTypes: { value: ChartType; icon: typeof msShowChart }[] = [
+  { value: 'candles', icon: msCandlestickChart },
+  { value: 'heikinAshi', icon: msBarChart },
+  { value: 'line', icon: msShowChart },
+]
+
+const stopLossOptions: StopLossPreference[] = ['market', 'limit']
+
+/**
+ * Chart tools → Settings (Figma 11754:69563, dark 11783:9335):
+ * - Auto TP/SL: a card row with the animated mark, "Applied" (blue tag) and a chevron;
+ * - Chart type: three cards — Candles, Heikin Ashi, Line — one selected (blue);
+ * - Stop Loss Preference: At Market Price / At Limit Price (radio cards);
+ * - View on chart: Breakeven line ⓘ (New), Buy/Sell executions, Sync Charts (checkbox cards).
+ * Changes are a draft until Apply in the sheet's dock (Cancel leaves the chart as it was).
+ */
+export function ChartSettingsPanel({ value, onChange, onBreakevenInfo }: ChartSettingsPanelProps) {
+  const set = <K extends keyof ChartSettings>(key: K, v: ChartSettings[K]) => onChange({ ...value, [key]: v })
+  const views = [
+    { key: 'breakevenLine', label: t('settings.breakeven'), info: true, isNew: true },
+    { key: 'executions', label: t('settings.executions') },
+    { key: 'syncCharts', label: t('settings.sync') },
+  ] as const
+
+  return (
+    <Stack gap="24">
+      <ListCell
+        variant="card"
+        size="sm"
+        as="button"
+        iconLeft={<AutoTpSlIcon />}
+        label={t('settings.autoTpSl')}
+        trailing={<Tag variant="secondary" color="discover" size="sm">{t('settings.applied')}</Tag>}
+        iconRight={<Icon icon={msChevronRight} />}
+        onClick={() => {}}
+        className={styles.row}
+      />
+
+      <Stack as="section" gap="12" aria-labelledby="settings-chart-type">
+        <h3 id="settings-chart-type" className={styles.subTitle}>{t('settings.chartType')}</h3>
+        <Grid columns={3} gap="08">
+          {chartTypes.map((type) => (
+            <Card key={type.value} selected={value.chartType === type.value} onClick={() => set('chartType', type.value)} aria-label={t(`settings.type.${type.value}`)} className={styles.typeCard}>
+              <Stack gap="04" align="center">
+                <Icon icon={type.icon} size={20} />
+                <span className={styles.typeLabel}>{t(`settings.type.${type.value}`)}</span>
+              </Stack>
+            </Card>
+          ))}
+        </Grid>
+      </Stack>
+
+      <Stack as="section" gap="12" aria-labelledby="settings-sl">
+        <h3 id="settings-sl" className={styles.subTitle}>{t('settings.stopLoss')}</h3>
+        <Stack gap="08" role="radiogroup" aria-labelledby="settings-sl">
+          {stopLossOptions.map((option) => (
+            <ListCell
+              key={option}
+              variant="card"
+              size="sm"
+              as="label"
+              label={t(`settings.sl.${option}`)}
+              selected={value.stopLoss === option}
+              trailing={<Radio name="chart-sl-preference" checked={value.stopLoss === option} onChange={() => set('stopLoss', option)} />}
+              className={styles.row}
+            />
+          ))}
+        </Stack>
+      </Stack>
+
+      <Stack as="section" gap="12" aria-labelledby="settings-view">
+        <h3 id="settings-view" className={styles.subTitle}>{t('settings.view')}</h3>
+        <Stack gap="08">
+          {views.map((view) => (
+            <ListCell
+              key={view.key}
+              variant="card"
+              size="sm"
+              as="label"
+              label={
+                'info' in view ? (
+                  <span className={styles.settingLabel}>
+                    {view.label}
+                    <button
+                      type="button"
+                      className={styles.infoButton}
+                      aria-label={t('breakeven.title')}
+                      onClick={(e) => {
+                        e.preventDefault()
+                        onBreakevenInfo()
+                      }}
+                    >
+                      <Icon icon={msInfo} size={16} />
+                    </button>
+                    <Tag variant="primary" color="success" size="sm">{t('settings.new')}</Tag>
+                  </span>
+                ) : view.label
+              }
+              trailing={<Checkbox checked={value[view.key]} onChange={(e) => set(view.key, e.target.checked)} aria-label={view.label} />}
+              className={styles.row}
+            />
+          ))}
+        </Stack>
+      </Stack>
+    </Stack>
+  )
 }
 ```
 
@@ -4649,6 +8893,49 @@ function ema(candles: ChartCandle[], period: number) {
     animation: none;
   }
 }
+
+/* ---- Settings (Figma 11754:69563) ---- */
+
+/* Chart type: three small cards, icon over label; the chosen one is L3's selected card in the discover tint (Figma). */
+.typeCard.typeCard {
+  padding: var(--l3-spacing-12) var(--l3-spacing-04);
+  border-radius: var(--l3-radius-08);
+  color: var(--l3-content-primary);
+}
+
+.typeCard.typeCard[data-selected],
+.typeCard.typeCard[aria-pressed='true'] {
+  background: var(--l3-surface-accent-discover-light);
+  box-shadow: inset 0 0 0 1px var(--l3-border-accent-discover-default); /* 1px: Figma stroke weight has no variable */
+  color: var(--l3-content-accent-discover-default);
+}
+
+.typeLabel {
+  font: var(--l3-text-label-12);
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* "Breakeven line ⓘ New": the label, a tappable ⓘ (How breakeven works) and the New tag on one line. */
+.settingLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--l3-spacing-04);
+}
+
+.infoButton {
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--l3-content-secondary);
+  cursor: pointer;
+}
+
+.settingLabel > :last-child {
+  margin-left: var(--l3-spacing-04);
+}
 ```
 
 ### `src/flows/fno/sheets/ChartToolsSheet.tsx`
@@ -4665,11 +8952,12 @@ import { TextField } from '@l3/components/TextField'
 import { Tooltip } from '@l3/components/Tooltip'
 import { msAdd, msBookmarkFill, msClose, msDelete, msDraw, msFunction, msSearch, msSettings, msSpaceBar, msStar, msStarFill, msSwapHoriz } from '@l3/icons/material'
 import { t } from '../copy'
-import { lemonnIndicators } from '../data'
+import { lemonnIndicators, type ChartSettings } from '../data'
+import { ChartSettingsPanel } from './ChartSettingsPanel'
 import { IndicatorDetailsSheet } from './IndicatorDetailsSheet'
 import styles from './ChartToolsSheet.module.css'
 
-type Section = 'range' | 'zing' | 'indicators' | 'drawings' | 'templates' | 'settings'
+export type ToolsSection = 'range' | 'zing' | 'indicators' | 'drawings' | 'templates' | 'settings'
 
 type ChartToolsSheetProps = {
   /** Indicators the user made with DASH AI (Your indicators). */
@@ -4686,6 +8974,13 @@ type ChartToolsSheetProps = {
    * one-line tooltip above it and a ✕. ✕ (or picking one) ends it. Shown once only.
    */
   guide?: boolean
+  /** The open group, when the screen keeps it (Settings brings a Cancel / Apply dock to the sheet). Default: Indicators. */
+  section?: ToolsSection
+  onSectionChange?: (section: ToolsSection) => void
+  /** Settings: the draft being edited, its change, and the ⓘ after Breakeven line. */
+  settings?: ChartSettings
+  onSettingsChange?: (settings: ChartSettings) => void
+  onBreakevenInfo?: () => void
 }
 
 /**
@@ -4698,8 +8993,13 @@ type ChartToolsSheetProps = {
  * Your indicators ("Made with DASH AI" under the heading; or "No indicators created yet.") and Create indicator sit above
  * Lemonn indicators. An indicator made with DASH is a favourite from the start (filled star).
  */
-export function ChartToolsSheet({ yourIndicators, applied, onToggle, onClearAll, onCreateIndicator, guide = false }: ChartToolsSheetProps) {
-  const [section, setSection] = useState<Section>('indicators')
+export function ChartToolsSheet({ yourIndicators, applied, onToggle, onClearAll, onCreateIndicator, guide = false, settings, onSettingsChange, onBreakevenInfo, ...props }: ChartToolsSheetProps) {
+  const [ownSection, setOwnSection] = useState<ToolsSection>('indicators')
+  const section = props.section ?? ownSection
+  const setSection = (next: ToolsSection) => {
+    setOwnSection(next)
+    props.onSectionChange?.(next)
+  }
   const [guiding, setGuiding] = useState(() => guide && !guideSeen())
   // Shown once: as soon as it's up, it's remembered (prototype: in this browser).
   useEffect(() => { if (guiding) markGuideSeen() }, [guiding])
@@ -4775,7 +9075,7 @@ export function ChartToolsSheet({ yourIndicators, applied, onToggle, onClearAll,
   return (
     <div ref={root} className={styles.body} data-search={searching || undefined}>
       {guiding && <div className={styles.dim} aria-hidden="true" />}
-      <SideNav<Section>
+      <SideNav<ToolsSection>
         selectedTone="discover"
         aria-label={t('scalper.chartTools')}
         aria-controls="chart-tools-panel"
@@ -4823,7 +9123,9 @@ export function ChartToolsSheet({ yourIndicators, applied, onToggle, onClearAll,
         )}
         </div>
 
-        {section !== 'indicators' ? (
+        {section === 'settings' && settings && onSettingsChange ? (
+          <ChartSettingsPanel value={settings} onChange={onSettingsChange} onBreakevenInfo={() => onBreakevenInfo?.()} />
+        ) : section !== 'indicators' ? (
           <p className={styles.empty}>{t('tools.soon')}</p>
         ) : searching ? (
           results.length ? <Stack gap="12">{results.map((name) => row(name, undefined, true))}</Stack> : <p className={styles.empty}>{t('tools.noResults', { query })}</p>
@@ -5475,6 +9777,585 @@ export function useSystemKeyboard() {
 }
 ```
 
+### `src/shared/ui/Diwali.module.css`
+
+```css
+/* Diwali art (src/shared/ui/Diwali): fine gold line work, the lotus diya —
+   local tokens --app-diwali-* (L3 has no festive palette). */
+
+.diya,
+.art {
+  display: block;
+  overflow: visible;
+}
+
+/* Fine gold line work: strings and outlines, small gold caps and drops (also the archived splashes'). */
+.hairline {
+  fill: none;
+  stroke: var(--app-diwali-line);
+  stroke-width: 1;
+  stroke-linecap: round;
+}
+
+.goldFill {
+  fill: var(--app-diwali-gold);
+}
+
+/* The lotus diya: magenta-hearted orange petals, a purple bowl painted in gold, a gold rim with the oil, a layered
+   flame (orange → gold → pale → near-white heart) with a warm glow. */
+.petalEdge {
+  fill: var(--app-diwali-petal-edge);
+}
+
+.petalHeart {
+  fill: var(--app-diwali-petal-heart);
+}
+
+.petalVein {
+  fill: none;
+  stroke: var(--app-diwali-petal-vein);
+  stroke-width: 0.8;
+  stroke-linecap: round;
+  opacity: 0.7;
+}
+
+.leafGold {
+  fill: var(--app-diwali-gold);
+}
+
+.leafPink {
+  fill: var(--app-diwali-petal-vein);
+}
+
+.bowl {
+  fill: var(--app-diwali-bowl);
+}
+
+.bowlShade {
+  fill: var(--app-diwali-bowl-shade);
+}
+
+.gold {
+  fill: var(--app-diwali-gold);
+}
+
+.goldLine {
+  fill: none;
+  stroke: var(--app-diwali-gold);
+  stroke-width: 1;
+}
+
+.rim {
+  fill: var(--app-diwali-gold);
+}
+
+.oil {
+  fill: var(--app-diwali-oil);
+}
+
+.oilRipple {
+  fill: none;
+  stroke: var(--app-diwali-gold);
+  stroke-width: 0.8;
+}
+
+.flameMid {
+  fill: var(--app-diwali-flame-mid);
+}
+
+.flameHeart {
+  fill: var(--app-diwali-flame-heart);
+}
+
+.wick {
+  stroke: var(--app-diwali-wick);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+
+.glow {
+  fill: var(--app-diwali-flame-core);
+  opacity: 0.3;
+}
+
+/* The glow breathes with the flame. */
+.glowPulse {
+  transform-box: fill-box;
+  transform-origin: 50% 60%;
+  animation: flicker var(--app-diwali-flicker) ease-in-out infinite;
+}
+
+.flameOuter {
+  fill: var(--app-diwali-flame);
+}
+
+.flameInner {
+  fill: var(--app-diwali-flame-core);
+}
+
+/* The flame breathes from its base. */
+.flame {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: flicker var(--app-diwali-flicker) ease-in-out infinite;
+}
+
+@keyframes flicker {
+  0%, 100% { transform: scale(1, 1) rotate(0deg); }
+  30% { transform: scale(0.94, 1.06) rotate(-2deg); }
+  60% { transform: scale(1.04, 0.96) rotate(1.5deg); }
+}
+
+/* The search pill's change: the pill stays put; its content (icon + label) slides out and the diya and "Happy Green
+   Diwali" slide in (and back). Doubled class: beats the flow's own button styles. */
+.searchFlip.searchFlip {
+  position: relative;
+}
+
+.searchFlip.searchFlip > :not(.sparkler) {
+  transition:
+    opacity var(--app-diwali-flip-half) var(--l3-motion-easing-accelerate),
+    translate var(--app-diwali-flip-half) var(--l3-motion-easing-accelerate);
+}
+
+/* Out: the icon and label fade as they slide up. */
+.searchFlip.searchFlip[data-turning] > :not(.sparkler) {
+  opacity: 0;
+  translate: 0 calc(-1 * var(--l3-spacing-04));
+}
+
+/* In (after a change): the new icon, then the label, slide up from below as they fade in. */
+.searchSwapped.searchSwapped > :not(.sparkler) {
+  animation: searchContentIn var(--l3-motion-duration-medium) var(--l3-motion-easing-decelerate) both;
+}
+
+.searchSwapped.searchSwapped > :not(.sparkler):nth-child(2) {
+  animation-delay: var(--app-diwali-search-stagger);
+}
+
+@keyframes searchContentIn {
+  from {
+    opacity: 0;
+    translate: 0 var(--l3-spacing-04);
+  }
+}
+
+/* The sparkler round the pill's edge while it says Happy Green Diwali (laid over the pill, sparks spill outside it). */
+.sparkler {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  animation: sparklerIn var(--l3-motion-duration-medium) var(--l3-motion-easing-standard) both;
+}
+
+@keyframes sparklerIn {
+  from { opacity: 0; }
+}
+
+.sparklerEdge,
+.sparklerTrailFar,
+.sparklerTrailNear,
+.sparklerHead {
+  fill: none;
+  stroke-linecap: round;
+}
+
+.sparklerEdge {
+  stroke: var(--app-diwali-sparkler-edge);
+  stroke-width: 1;
+}
+
+.sparklerTrailFar {
+  stroke: var(--app-diwali-sparkler-trail);
+  stroke-width: 1.5;
+}
+
+.sparklerTrailNear {
+  stroke: var(--app-diwali-sparkler-near);
+  stroke-width: 1.5;
+}
+
+.sparklerHead {
+  stroke: var(--app-diwali-sparkler-head);
+  stroke-width: 2.5;
+}
+
+.sparklerGlow {
+  fill: var(--app-diwali-sparkler-glow);
+  filter: blur(var(--l3-spacing-02));
+}
+
+/* A spark: flies off the head (to --to, set inline), shrinking and fading; each on its own beat, over and over. */
+.sparklerSpark {
+  fill: var(--app-diwali-sparkler-spark);
+  animation: sparkFly var(--app-diwali-spark-fly) var(--l3-motion-easing-standard) infinite both;
+}
+
+.sparklerSpark:nth-child(odd) {
+  fill: var(--app-diwali-sparkler-spark-alt);
+}
+
+/* Out of the edge, a twinkle at the top, back into the edge. */
+@keyframes sparkFly {
+  0% { translate: 0 0; opacity: 0; scale: 0.2; }
+  30% { opacity: 1; scale: 1; }
+  50% { translate: var(--to); opacity: 0.5; }
+  60% { opacity: 1; }
+  100% { translate: 0 0; opacity: 0; scale: 0.2; }
+}
+
+/* The wish too long for its pill slides along once to show its end (SlidingLabel), then rests. */
+.wishText {
+  display: inline-block;
+}
+
+.wishSliding.wishSliding {
+  text-overflow: clip;
+}
+
+.wishSliding .wishText {
+  animation: wishSlide var(--app-diwali-wish-slide) var(--l3-motion-easing-standard) var(--l3-motion-duration-medium) both;
+}
+
+@keyframes wishSlide {
+  0%,
+  20% {
+    translate: 0 0;
+  }
+
+  80%,
+  100% {
+    translate: var(--slide) 0;
+  }
+}
+
+/* The diya in the search icon's place: a touch taller than the 20 icon (its petals spread wide). */
+.searchDiya {
+  flex: none;
+  width: auto;
+  height: var(--l3-icon-size-24);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flame,
+  .glowPulse {
+    animation: none;
+  }
+
+  .searchFlip.searchFlip > :not(.sparkler) {
+    transition-duration: 1ms;
+  }
+
+  .searchSwapped.searchSwapped > :not(.sparkler) {
+    animation: none;
+  }
+
+  .sparkler,
+  .sparklerSpark {
+    animation: none;
+  }
+}
+```
+
+### `src/shared/ui/Diwali.tsx`
+
+```tsx
+import { useEffect, useId, useLayoutEffect, useRef, useState, type CSSProperties } from 'react'
+import { makeCopy } from '../copy'
+import { useFlowOption } from '../prototype'
+import copy from './copy.json'
+import styles from './Diwali.module.css'
+
+const t = makeCopy('shared', copy)
+
+/**
+ * Diwali touch (temporary, festival only) — a switch in the prototype's App settings → Diwali, on by default (the spec
+ * for developers: docs/DIWALI.md):
+ * - `diwaliFlip`: on Stocks / F&O home, the search pill's icon and label turn into the lotus diya and "Happy Green
+ *   Diwali" (with a sparkler round the pill) twice, then go back.
+ * Archived versions (not in the app): the Garland splash (archive/DiwaliSplash.tsx), the Lanterns splash and the profile
+ * avatar flip (archive/DiwaliArchive.tsx).
+ */
+export const DIWALI_OPTIONS = {
+  search: { id: 'diwaliFlip', off: 'off', on: 'search', default: 'search' },
+} as const
+
+export const useDiwali = (which: keyof typeof DIWALI_OPTIONS) => {
+  const option = DIWALI_OPTIONS[which]
+  // The same default as App settings (src/flows/index.ts): the stored value is keyed by it.
+  return useFlowOption('app', option.id, option.default) === option.on
+}
+
+// The lotus diya (120 × 96 artwork). A petal is a teardrop from its base (0, 0) to its tip (0, -length), turned by
+// `angle` (0 = up) and set at (x, y): an orange petal with a magenta heart and a light vein.
+type Petal = { x: number; y: number; length: number; width: number; angle: number }
+const petalPath = (length: number, width: number) =>
+  `M0 0C${width} ${-length * 0.3} ${width * 0.7} ${-length * 0.78} 0 ${-length}C${-width * 0.7} ${-length * 0.78} ${-width} ${-length * 0.3} 0 0Z`
+// Behind the bowl: two upright, two leaning out, two low and wide. In front: two sweeping out from the bottom.
+const BACK_PETALS: Petal[] = [
+  { x: 44, y: 54, length: 30, width: 11, angle: -22 },
+  { x: 76, y: 54, length: 30, width: 11, angle: 22 },
+  { x: 36, y: 64, length: 33, width: 12, angle: -52 },
+  { x: 84, y: 64, length: 33, width: 12, angle: 52 },
+  { x: 40, y: 76, length: 36, width: 12, angle: -76 },
+  { x: 80, y: 76, length: 36, width: 12, angle: 76 },
+]
+const FRONT_PETALS: Petal[] = [
+  { x: 60, y: 86, length: 34, width: 10, angle: -96 },
+  { x: 60, y: 86, length: 34, width: 10, angle: 96 },
+]
+// The bowl's band of gold dots under the rim: P0 (28, 58) → P1 (60, 70) → P2 (92, 58) (a quadratic curve).
+const bandAt = (t: number) => ({ x: 28 + 64 * t, y: 58 + 24 * t * (1 - t) })
+const BAND_DOTS = Array.from({ length: 15 }, (_, i) => bandAt((i + 0.5) / 15))
+// The flame: one teardrop, drawn four times smaller and lighter towards its heart (each scaled from its base).
+const FLAME = 'M60 4C68.5 16 73 26 73 35C73 43 67.5 49 60 49C52.5 49 47 43 47 35C47 26 51.5 16 60 4Z'
+const FLAME_LAYERS = [
+  { scale: 1, className: styles.flameOuter },
+  { scale: 0.78, className: styles.flameMid },
+  { scale: 0.56, className: styles.flameInner },
+  { scale: 0.32, className: styles.flameHeart },
+]
+
+function PetalShape({ x, y, length, width, angle }: Petal) {
+  return (
+    <g transform={`translate(${x} ${y}) rotate(${angle})`}>
+      <path className={styles.petalEdge} d={petalPath(length, width)} />
+      <path className={styles.petalHeart} d={petalPath(length * 0.8, width * 0.62)} transform={`translate(${width * 0.12} ${-length * 0.08})`} />
+      <path className={styles.petalVein} d={`M${-width * 0.2} ${-length * 0.12}Q${-width * 0.45} ${-length * 0.55} 0 ${-length * 0.9}`} />
+    </g>
+  )
+}
+
+/**
+ * A lotus diya: a purple bowl painted with gold dots and a lotus bud, a gold rim holding the oil, a layered flame on its
+ * wick, sitting in magenta-and-orange lotus petals. The flame flickers. Fills its width (120 × 96 artwork).
+ */
+export function Diya({ className }: { className?: string }) {
+  const bowlClip = useId()
+  return (
+    <svg className={[styles.diya, className].filter(Boolean).join(' ')} viewBox="0 0 120 96" aria-hidden="true">
+      {BACK_PETALS.map((petal, i) => <PetalShape key={i} {...petal} />)}
+      <clipPath id={bowlClip}>
+        <path d="M24 52C26 72 42 84 60 84C78 84 94 72 96 52Z" />
+      </clipPath>
+      <path className={styles.bowl} d="M24 52C26 72 42 84 60 84C78 84 94 72 96 52Z" />
+      <g clipPath={`url(#${bowlClip})`}>
+        <path className={styles.bowlShade} d="M24 52C26 72 42 84 60 84C50 78 38 68 34 52Z" />
+        {BAND_DOTS.map((p, i) => <circle key={i} className={styles.gold} cx={p.x} cy={p.y} r="1.1" />)}
+        <path className={styles.goldLine} d="M26 63Q60 77 94 63" />
+        {/* The lotus bud painted on the front, with leaves either side. */}
+        <g transform="translate(60 84)">
+          <path className={styles.leafGold} d={petalPath(13, 4)} transform="translate(-7 -3) rotate(-48)" />
+          <path className={styles.leafGold} d={petalPath(13, 4)} transform="translate(7 -3) rotate(48)" />
+          <path className={styles.leafPink} d={petalPath(14, 4)} transform="translate(-12 -1) rotate(-70)" />
+          <path className={styles.leafPink} d={petalPath(14, 4)} transform="translate(12 -1) rotate(70)" />
+          <path className={styles.petalEdge} d={petalPath(19, 7)} transform="translate(0 -1)" />
+          <path className={styles.petalHeart} d={petalPath(14, 4.6)} transform="translate(0 -2)" />
+          <path className={styles.leafPink} d={petalPath(8, 2.4)} transform="translate(0 -3)" />
+        </g>
+        <circle className={styles.gold} cx="42" cy="71" r="1.6" />
+        <circle className={styles.gold} cx="78" cy="71" r="1.6" />
+      </g>
+      <ellipse className={styles.rim} cx="60" cy="52" rx="36" ry="7" />
+      <ellipse className={styles.oil} cx="60" cy="52.6" rx="31" ry="4.8" />
+      <ellipse className={styles.oilRipple} cx="60" cy="53" rx="17" ry="2.2" />
+      <g className={styles.glowPulse}>
+        <circle className={styles.glow} cx="60" cy="32" r="18" />
+      </g>
+      <g className={styles.flame}>
+        {FLAME_LAYERS.map(({ scale, className: layer }) => (
+          <path key={scale} className={layer} d={FLAME} transform={`translate(60 49) scale(${scale}) translate(-60 -49)`} />
+        ))}
+      </g>
+      <path className={styles.wick} d="M60 41V52" />
+      {FRONT_PETALS.map((petal, i) => <PetalShape key={i} {...petal} />)}
+      <path className={styles.petalHeart} d={petalPath(9, 4.5)} transform="translate(60 82) rotate(180)" />
+    </svg>
+  )
+}
+
+// The search pill's timeline (ms from the home showing, or from the splash starting to leave): its content goes out
+// (FLIP_HALF_MS), the Diwali face comes in and holds 3 s, the regular content comes back — twice.
+const FLIP_HALF_MS = 160
+const SEARCH_FLIPS = [
+  { at: 1000, to: 'diya' },
+  { at: 4000, to: 'regular' },
+  { at: 4800, to: 'diya' },
+  { at: 7800, to: 'regular' },
+] as const
+
+/** Whether a splash covers the home: the search pill's change waits until it starts leaving, however long it stays, so none is hidden. */
+let splashUp = false
+const splashListeners = new Set<() => void>()
+/** The splash calls this as it shows (true) and as it starts leaving (false) (src/shared/ui/Splash). */
+export function setSplashUp(up: boolean) {
+  splashUp = up
+  if (!up) splashListeners.forEach((listener) => listener())
+}
+
+/**
+ * The Diwali search pill on a home's top bar (App settings → Diwali → Diwali search bar): the pill stays put; its icon
+ * and label fade and slide up out, the diya and "Happy Green Diwali" slide up and fade in (icon first, then the label),
+ * hold 3 s and go back the same way — twice, each time the home shows, starting 1 s after the splash starts leaving.
+ * Add `className` and `turning` (as `data-turning`) to the search pill and, while `diya`, render <DiwaliSearchFace />
+ * in place of its icon and label.
+ */
+export function useDiwaliSearch() {
+  const on = useDiwali('search')
+  const [face, setFace] = useState<'regular' | 'diya'>('regular')
+  const [turning, setTurning] = useState(false)
+  // The content has changed once: from then on new content slides in (not on the home's first paint).
+  const [swapped, setSwapped] = useState(false)
+
+  useEffect(() => {
+    if (!on) return
+    const timers: number[] = []
+    const play = () => {
+      splashListeners.delete(play)
+      SEARCH_FLIPS.forEach(({ at, to }) => timers.push(
+        window.setTimeout(() => setTurning(true), at),
+        window.setTimeout(() => { setFace(to); setTurning(false); setSwapped(true) }, at + FLIP_HALF_MS),
+      ))
+    }
+    if (splashUp) splashListeners.add(play)
+    else play()
+    return () => {
+      splashListeners.delete(play)
+      timers.forEach(window.clearTimeout)
+      setFace('regular')
+      setTurning(false)
+      setSwapped(false)
+    }
+  }, [on])
+
+  return {
+    className: on ? [styles.searchFlip, swapped && styles.searchSwapped].filter(Boolean).join(' ') : '',
+    turning: (on && turning) || undefined,
+    diya: on && face === 'diya',
+  }
+}
+
+/**
+ * The search pill's Diwali face: the lotus diya in place of the search icon, "Happy Green Diwali" for the label, and a
+ * sparkler running round the pill's edge while it shows.
+ */
+export function DiwaliSearchFace({ labelClassName }: { labelClassName?: string }) {
+  return (
+    <>
+      <Diya className={styles.searchDiya} />
+      <SlidingLabel className={labelClassName} text={t('diwali.searchWish')} />
+      <Sparkler />
+    </>
+  )
+}
+
+/**
+ * The wish as the pill's label. When the pill is too narrow for it (F&O home, beside the DASH pill), the text slides
+ * along once to show its end, then rests there. Reduced motion: it stays cut off.
+ */
+function SlidingLabel({ className, text }: { className?: string; text: string }) {
+  const ref = useRef<HTMLSpanElement>(null)
+  const [overflow, setOverflow] = useState(0)
+  useLayoutEffect(() => {
+    const label = ref.current
+    if (!label || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const measure = () => setOverflow(Math.max(0, (label.firstElementChild as HTMLElement).offsetWidth - label.clientWidth))
+    measure()
+    const observer = new ResizeObserver(measure)
+    observer.observe(label)
+    return () => observer.disconnect()
+  }, [])
+  const sliding = overflow > 0
+  return (
+    <span
+      ref={ref}
+      className={[className, sliding && styles.wishSliding].filter(Boolean).join(' ')}
+      style={sliding ? ({ '--slide': `${-overflow}px` } as CSSProperties) : undefined}
+    >
+      <span className={styles.wishText}>{text}</span>
+    </span>
+  )
+}
+
+// The sparkler: one lap of the pill's edge takes SPARKLER_LAP. Its trail is three dashes ending at the same point — a
+// long faint orange one, a shorter gold one, a short white-hot head (length = share of the edge) — and sparks fly off
+// the head, outwards and back.
+const SPARKLER_LAP = '2.8s'
+const SPARKLER_TRAIL = [
+  { length: 0.22, className: styles.sparklerTrailFar },
+  { length: 0.1, className: styles.sparklerTrailNear },
+  { length: 0.025, className: styles.sparklerHead },
+]
+// Each spark rises out of the edge at the head, twinkles, and sinks back into it: how far out it drifts (in the direction
+// of travel: x along, y outwards is negative), its size and its delay within the cycle.
+const SPARKLER_SPARKS = [
+  { to: '-3px -10px', r: 1.5, delay: '0ms' },
+  { to: '-8px -6px', r: 1.2, delay: '150ms' },
+  { to: '-1px -12px', r: 1.1, delay: '300ms' },
+  { to: '-6px -9px', r: 1.4, delay: '450ms' },
+  { to: '-10px -4px', r: 1.1, delay: '600ms' },
+  { to: '-2px -7px', r: 1.6, delay: '750ms' },
+  { to: '-5px -13px', r: 1, delay: '900ms' },
+  { to: '-1px -8px', r: 1.3, delay: '1050ms' },
+]
+
+/** The pill's outline as a path (clockwise from the top left of its straight edge), on the middle of its 1px edge. */
+const pillPath = (w: number, h: number) => {
+  const r = (h - 1) / 2
+  return `M${0.5 + r} 0.5H${w - 0.5 - r}A${r} ${r} 0 0 1 ${w - 0.5 - r} ${h - 0.5}H${0.5 + r}A${r} ${r} 0 0 1 ${0.5 + r} 0.5Z`
+}
+
+/**
+ * A Diwali sparkler running round the edge of its parent pill (laid over it; it doesn't take clicks): a gold tint on the
+ * edge, a burning head with a fading trail, sparks flying off it. Reduced motion: just the gold edge.
+ */
+function Sparkler() {
+  const ref = useRef<SVGSVGElement>(null)
+  const [size, setSize] = useState<{ w: number; h: number } | null>(null)
+  useLayoutEffect(() => {
+    const pill = ref.current?.parentElement
+    if (!pill) return
+    const measure = () => setSize({ w: pill.offsetWidth, h: pill.offsetHeight })
+    measure()
+    const observer = new ResizeObserver(measure)
+    observer.observe(pill)
+    return () => observer.disconnect()
+  }, [])
+  const still = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  const path = size && pillPath(size.w, size.h)
+  return (
+    <svg ref={ref} className={styles.sparkler} aria-hidden="true">
+      {path && (
+        <>
+          <path className={styles.sparklerEdge} d={path} />
+          {!still && (
+            <>
+              {/* The dashes move with the head: the head's front is at `t` of the edge, a dash of length L starts at t − L. */}
+              {SPARKLER_TRAIL.map(({ length, className }) => (
+                <path key={length} className={className} d={path} pathLength={1} strokeDasharray={`${length} ${1 - length}`}>
+                  <animate attributeName="stroke-dashoffset" values={`${length};${length - 1}`} dur={SPARKLER_LAP} repeatCount="indefinite" />
+                </path>
+              ))}
+              {/* The head's glow and sparks ride along the edge, turned with it (x = the way it travels). */}
+              <g>
+                <animateMotion path={path} dur={SPARKLER_LAP} repeatCount="indefinite" rotate="auto" />
+                <circle className={styles.sparklerGlow} r="5" />
+                {SPARKLER_SPARKS.map(({ to, r, delay }) => (
+                  <circle key={delay} className={styles.sparklerSpark} r={r} style={{ '--to': to, animationDelay: delay } as CSSProperties} />
+                ))}
+              </g>
+            </>
+          )}
+        </>
+      )}
+    </svg>
+  )
+}
+```
+
 ### `src/shared/ui/IlliquidSheet.module.css`
 
 ```css
@@ -5870,6 +10751,172 @@ export function SheetHost({ container, children }: { container: HTMLElement | nu
 }
 ```
 
+### `src/shared/ui/Splash.module.css`
+
+```css
+/* The launch splash: covers the app (above sheets and toasts) — the Lemonn logo centred on the page surface. */
+.splash {
+  position: absolute;
+  inset: 0;
+  z-index: var(--app-layer-splash);
+  display: grid;
+  place-items: center;
+  background: var(--l3-surface-default);
+  /* A button: no button chrome. */
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  transition: opacity var(--l3-motion-duration-medium) var(--l3-motion-easing-standard);
+}
+
+/* The logo rises in and settles as the splash opens. */
+.logo {
+  animation: logoIn var(--app-splash-in) var(--app-splash-ease-settle) both;
+  animation-delay: var(--app-splash-logo-at);
+}
+
+@keyframes logoIn {
+  from { opacity: 0; scale: 0.92; translate: 0 var(--l3-spacing-08); }
+}
+
+.splash[data-state='leaving'] {
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logo {
+    animation: none;
+  }
+
+  .splash {
+    transition-duration: 1ms;
+  }
+}
+```
+
+### `src/shared/ui/Splash.tsx`
+
+```tsx
+import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { BrandLogo } from '@l3/components/BrandLogo'
+import { makeCopy } from '../copy'
+import copy from './copy.json'
+import { setSplashUp } from './Diwali'
+import styles from './Splash.module.css'
+
+const t = makeCopy('shared', copy)
+
+/**
+ * The screens a launch can land on that open with the splash. Hidden for now (2026-11-04): none, so the app opens
+ * straight on its page. To bring it back: ['stocks-01', 'fno-01'] (the two home pages).
+ */
+export const SPLASH_SCREENS: string[] = []
+/** How long the logo stays before the splash fades away. */
+export const SPLASH_MS = 1500
+
+/**
+ * Show the splash when the app launches (opens or reloads) onto a home page. A launch straight into an inner page (a
+ * shared link to an L2 / L3 screen) skips it; so does every later move to a home page inside the app.
+ */
+export function shouldShowSplash(landing: string) {
+  return SPLASH_SCREENS.includes(landing)
+}
+
+/** Longest the fade may take before the splash is removed anyway (a background tab never ends its transition). */
+const FADE_FALLBACK_MS = 600
+
+/**
+ * The splash's own timing: shown for 1.5 s ('shown'), then fading ('leaving'), then gone ('done'). While `held` (prototype
+ * only, see SplashCover) it stays shown; once let go it waits its 1.5 s again.
+ */
+function useSplashState(show: boolean, held = false) {
+  const [state, setState] = useState<'shown' | 'leaving' | 'done'>(() => {
+    if (show) setSplashUp(true) // the home's Diwali diya flip waits until the splash starts leaving
+    return show ? 'shown' : 'done'
+  })
+  useEffect(() => {
+    if (state !== 'shown') setSplashUp(false)
+  }, [state])
+  // Removed while still shown: let the flips go (after a tick, so React's dev double-mount doesn't count as removed).
+  const mounted = useRef(false)
+  useEffect(() => {
+    mounted.current = true
+    return () => {
+      mounted.current = false
+      window.setTimeout(() => { if (!mounted.current) setSplashUp(false) })
+    }
+  }, [])
+  useEffect(() => {
+    if (state === 'done' || (state === 'shown' && held)) return
+    const t = window.setTimeout(() => setState(state === 'shown' ? 'leaving' : 'done'), state === 'shown' ? SPLASH_MS : FADE_FALLBACK_MS)
+    return () => window.clearTimeout(t)
+  }, [state, held])
+  return [state, setState] as const
+}
+
+/**
+ * The white page with the Lemonn logo (lemon + name) in the middle, fading out once it's leaving. (The Diwali 2026
+ * Garland splash is archived: src/shared/ui/archive/DiwaliSplash.tsx.)
+ */
+function SplashCover({ state, onHold, onLeave, onGone }: {
+  state: 'shown' | 'leaving'
+  onHold: (held: boolean) => void
+  onLeave: () => void
+  onGone: () => void
+}) {
+  // Prototype only (not app behaviour — leave out of the build): to look at the splash, hovering (mouse) holds it, a
+  // tap / click pins it, and a second tap lets it fade.
+  const [hovered, setHovered] = useState(false)
+  const [pinned, setPinned] = useState(false)
+  useEffect(() => onHold(hovered || pinned), [hovered, pinned]) // onHold is a new function every render
+  return (
+    <button
+      type="button"
+      className={styles.splash}
+      data-state={state}
+      aria-label={t('splash.label')}
+      onClick={() => (pinned ? onLeave() : setPinned(true))}
+      onPointerEnter={(e) => { if (e.pointerType === 'mouse') setHovered(true) }}
+      onPointerLeave={(e) => { if (e.pointerType === 'mouse') setHovered(false) }}
+      onTransitionEnd={(e) => { if (e.target === e.currentTarget) onGone() }}
+    >
+      <BrandLogo brand="lemonn" variant="full" size={48} decorative className={styles.logo} />
+    </button>
+  )
+}
+
+/**
+ * The launch splash: the Lemonn logo in the middle of a plain screen for 1.5 seconds (it rises in as the splash opens),
+ * then it fades and the home page
+ * underneath shows. It covers the app (not the phone's status bar). Every launch onto a home page, reloads included.
+ */
+export function Splash({ landing }: { landing: string }) {
+  const [held, setHeld] = useState(false)
+  const [state, setState] = useSplashState(shouldShowSplash(landing), held)
+  if (state === 'done') return null
+  return <SplashCover state={state} onHold={setHeld} onLeave={() => setState('leaving')} onGone={() => setState('done')} />
+}
+
+/**
+ * The splash as a page of its own (the Stocks and F&O flows list it before their home): it plays like the launch
+ * splash — 1.5 s, then it fades over `home` (drawn underneath) and `onDone` moves to the home screen itself.
+ */
+export function SplashScreen({ home, onDone }: { home: ReactNode; onDone: () => void }) {
+  const [held, setHeld] = useState(false)
+  const [state, setState] = useSplashState(true, held)
+  useEffect(() => {
+    if (state === 'done') onDone()
+  }, [state]) // once, when the splash is gone (onDone is a new function every render)
+  return (
+    <>
+      {home}
+      {state !== 'done' && <SplashCover state={state} onHold={setHeld} onLeave={() => setState('leaving')} onGone={() => setState('done')} />}
+    </>
+  )
+}
+```
+
 ### `src/shared/ui/TopBarAction.module.css`
 
 ```css
@@ -5931,6 +10978,15 @@ export function SearchWalletActions({ searchLabel, walletLabel, onSearch, onWall
       <TopBarAction icon={msAccountBalanceWallet} label={walletLabel} onClick={onWallet} />
     </Stack>
   )
+}
+```
+
+### `src/shared/ui/copy.json`
+
+```json
+{
+  "splash.label": "Lemonn",
+  "diwali.searchWish": "Happy Green Diwali"
 }
 ```
 
@@ -6288,4 +11344,224 @@ function OrbArt({ className }: { className?: string }) {
 </filter>
 <clipPath id="paint0_angular_0_407_clip_path"><rect x="-41.3666" y="-41.3666" width="154.778" height="156.543"/></clipPath></defs>
 </svg>
+```
+
+### `src/shared/ui/useSwipeBetween.ts`
+
+```ts
+import { useCallback, useLayoutEffect, useRef } from 'react'
+
+// Ported from the US Stocks prototype (screens/home/useSwipeBetween.ts): swipe a page sideways to the next one —
+// Stocks Home (IND ↔ US), a theme page, the Market list tabs.
+// FLAG: hand-made swipe gesture (pointer events + translate) — L3 has no swipeable pages.
+
+const MIN_DISTANCE = 48
+const MIN_VELOCITY = 0.45
+const EASING = 'cubic-bezier(0.2, 0, 0, 1)'
+const SLIDE_MS = 280
+// The rest of the page: a quick dissolve, done while the card is still moving.
+const FADE_OUT_MS = 100
+const FADE_IN_MS = 200
+
+const reducedMotion = () => typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches
+
+/** The item `step` places after/before `current` in `list`, or null at the ends. */
+export const neighbour = <T,>(list: T[], current: T, step: number): T | null => {
+  const at = list.indexOf(current) + step
+  return at >= 0 && at < list.length ? list[at] : null
+}
+
+// Is there a sideways-scrolling element between the touch target and the swipe container (a card rail)? Then it scrolls, not swipes.
+const insideSideScroller = (from: HTMLElement | null, stop: HTMLElement) => {
+  for (let el = from; el && el !== stop; el = el.parentElement) {
+    const overflowX = getComputedStyle(el).overflowX
+    if ((overflowX === 'auto' || overflowX === 'scroll') && el.scrollWidth > el.clientWidth + 1) return true
+  }
+  return false
+}
+
+/** Pointer-swipe on an element: `onSwipe(±1)` when released far/fast enough, `onDrag(dx)` while dragging (null when it ends). */
+function useSwipe(onSwipe: (direction: 1 | -1) => void, onDrag: (dx: number | null) => void, area?: string) {
+  const swipeRef = useRef(onSwipe)
+  swipeRef.current = onSwipe
+  const dragRef = useRef(onDrag)
+  dragRef.current = onDrag
+  const cleanup = useRef<(() => void) | null>(null)
+
+  return useCallback((el: HTMLElement | null) => {
+    cleanup.current?.()
+    cleanup.current = null
+    if (!el) return
+    el.style.touchAction = 'pan-y'
+    let start: { x: number; y: number; t: number; id: number } | null = null
+    let swiped = false
+    let dragging = false
+
+    const down = (e: PointerEvent) => {
+      const target = e.target as HTMLElement
+      // `data-own-swipe`: a part with its own swipe (the activation card's benefits strip) keeps the gesture.
+      if (e.button !== 0 || target.closest('input, textarea, [role="dialog"], [contenteditable], [data-own-swipe]') || insideSideScroller(target, el)) return
+      // `area`: the swipe starts only there (the top card), not anywhere on the page.
+      if (area && !target.closest(area)) return
+      start = { x: e.clientX, y: e.clientY, t: e.timeStamp, id: e.pointerId }
+      swiped = false
+      dragging = false
+    }
+    const move = (e: PointerEvent) => {
+      if (!start || e.pointerId !== start.id || !dragRef.current) return
+      const dx = e.clientX - start.x
+      const dy = e.clientY - start.y
+      if (!dragging) {
+        if (Math.hypot(dx, dy) < 8) return
+        if (Math.abs(dx) < Math.abs(dy) * 1.5) {
+          start = null
+          return
+        }
+        dragging = true
+      }
+      dragRef.current(dx)
+    }
+    const up = (e: PointerEvent) => {
+      if (!start || e.pointerId !== start.id) return
+      const dx = e.clientX - start.x
+      const dy = e.clientY - start.y
+      const velocity = Math.abs(dx) / Math.max(1, e.timeStamp - start.t)
+      start = null
+      if (dragging) dragRef.current?.(null)
+      dragging = false
+      if (Math.abs(dx) < Math.abs(dy) * 1.5) return
+      if (Math.abs(dx) >= MIN_DISTANCE || (Math.abs(dx) >= 24 && velocity >= MIN_VELOCITY)) {
+        swiped = true
+        swipeRef.current(dx < 0 ? 1 : -1)
+      }
+    }
+    const cancel = () => {
+      if (dragging) dragRef.current?.(null)
+      start = null
+      dragging = false
+    }
+    // A swipe that ends on a button must not also click it.
+    const click = (e: Event) => {
+      if (swiped) {
+        swiped = false
+        e.preventDefault()
+        e.stopPropagation()
+      }
+    }
+    el.addEventListener('pointerdown', down)
+    el.addEventListener('pointermove', move)
+    el.addEventListener('pointerup', up)
+    el.addEventListener('pointercancel', cancel)
+    el.addEventListener('click', click, true)
+    cleanup.current = () => {
+      el.removeEventListener('pointerdown', down)
+      el.removeEventListener('pointermove', move)
+      el.removeEventListener('pointerup', up)
+      el.removeEventListener('pointercancel', cancel)
+      el.removeEventListener('click', click, true)
+    }
+  }, [])
+}
+
+/**
+ * Swipe between two markets' pages: only the top cards move sideways — a track with both, the other one beside it,
+ * follows the finger and slides across so the other market's card comes into view, as in a carousel — while the rest of the page (`fades()`) just dissolves
+ * into the other market's. A tap on a switcher (`go`) runs the same switch, so a swipe and a tap look alike.
+ * `bind` goes on the scroll container; `area` is where a swipe may start (the cards); `slides()` returns what moves
+ * sideways (the cards' track), `fades()` what dissolves (the feed under it).
+ */
+export function useSwipeBetween({ canGo, onSwitch, page, area, slides, fades }: { canGo: (direction: 1 | -1) => boolean; onSwitch: (direction: 1 | -1) => void; page: string; area?: string; slides: () => HTMLElement[]; fades: () => HTMLElement[] }) {
+  const entering = useRef<number>(0)
+  const settling = useRef(false)
+  const leaving = useRef(false)
+  const pageNow = useRef(page)
+  pageNow.current = page
+
+  const springBack = () => {
+    for (const el of slides()) {
+      if (!el.style.translate) continue
+      const from = { translate: el.style.translate }
+      el.style.translate = ''
+      el.animate([from, { translate: '0 0' }], { duration: 240, easing: EASING })
+    }
+  }
+
+  // The track slides to the other card (from where the finger left it) as the rest fades out; then the switch.
+  const leave = (direction: 1 | -1, commit: () => void) => {
+    if (leaving.current) return
+    entering.current = direction
+    const moving = slides()
+    const dissolving = fades()
+    if (reducedMotion() || (!moving.length && !dissolving.length)) return commit()
+    leaving.current = true
+    Promise.all([
+      ...moving.map((el) => {
+        const from = { translate: el.style.translate || '0 0' }
+        el.style.translate = ''
+        // The track moves one card's width: the other card is then where this one was.
+        return el.animate([from, { translate: `${-direction * el.offsetWidth}px 0` }], { duration: SLIDE_MS, easing: EASING, fill: 'forwards' }).finished
+      }),
+      ...dissolving.map((el) => el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: FADE_OUT_MS, easing: 'linear', fill: 'forwards' }).finished),
+    ]).then(done, done)
+    function done() {
+      leaving.current = false
+      const was = pageNow.current
+      commit()
+      // The switch didn't happen (still the same page once React has had time to render): bring the old one back
+      // rather than leave it hidden.
+      setTimeout(() => {
+        if (pageNow.current !== was || !entering.current) return
+        entering.current = 0
+        for (const el of [...slides(), ...fades()]) el.getAnimations().forEach((a) => a.cancel())
+      }, 120)
+    }
+  }
+
+  const swipeBind = useSwipe(
+    (direction) => {
+      settling.current = false
+      if (!canGo(direction)) return springBack()
+      leave(direction, () => onSwitch(direction))
+    },
+    (dx) => {
+      if (reducedMotion() || leaving.current) return
+      if (dx === null) {
+        settling.current = true
+        setTimeout(() => {
+          if (settling.current) springBack()
+          settling.current = false
+        }, 0)
+        return
+      }
+      // Swiping is off altogether (neither way goes): the card doesn't even rubber-band.
+      if (!canGo(1) && !canGo(-1)) return
+      // Towards a market: the card follows the finger. Past the last one: a short rubber band.
+      const pull = canGo(dx < 0 ? 1 : -1) ? 1 : 0.18
+      for (const el of slides()) el.style.translate = `${dx * pull}px 0`
+    },
+    area,
+  )
+
+  useLayoutEffect(() => {
+    const from = entering.current
+    if (!from) return
+    entering.current = 0
+    const motion = !reducedMotion()
+    // The track has already brought the new card into place: it just resets (now with that card in the middle).
+    for (const el of slides()) {
+      el.getAnimations().forEach((a) => a.cancel())
+      el.style.translate = ''
+    }
+    for (const el of fades()) {
+      el.getAnimations().forEach((a) => a.cancel())
+      if (motion) el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: FADE_IN_MS, easing: 'linear' })
+    }
+  }, [page])
+
+  return {
+    bind: swipeBind,
+    /** Switch by tap (tabs, market button): the same switch as a swipe, towards `direction`. */
+    go: (direction: 1 | -1, commit: () => void) => leave(direction, commit),
+  }
+}
 ```

@@ -10,16 +10,16 @@ Prototype: https://lemonnade-design.github.io/lemonn-app-prototype/#/market · m
 
 | Id | Screen | Figma | Taps go to | Note |
 |---|---|---|---|---|
-| `market-01` | Market · All | — | `search-24`, `us-stocks-13` | The filter bar shows "Apply filters" until something is applied. |
-| `market-02` | Market · Top gainers | — | `search-24`, `us-stocks-13` | Same layout — only the list changes. |
-| `market-03` | Market · Top losers | — | `search-24`, `us-stocks-13` |  |
-| `market-04` | Market · Under ₹100 | — | `search-24`, `us-stocks-13` |  |
-| `market-05` | Filters | — | `search-24`, `us-stocks-13` | Side tabs on the left (grey rail, the open one connected to the pane); only the open group on the right. Opens on Sort by. |
-| `market-06` | Filters · indices | — | `search-24`, `us-stocks-13` | Indices open — Nifty 500 picked (one choice); its side tab shows 1. Each option says how many stocks it gives. |
-| `market-07` | Filters · sectors (several) | — | `search-24`, `us-stocks-13` | Sectors open — Banking and IT picked (any number); sort and index picked too. Sectors with no stocks in Nifty 500 are off. |
-| `market-08` | Market · filters applied | — | `search-24`, `us-stocks-13` | One removable chip per pick; the filter button gets a dot. |
-| `market-09` | Market · US stocks | — | `search-24`, `us-stocks-13` | The picker left of the tabs is on US: $ prices, US logos; tapping a stock opens its US stock page (us-stocks-13, which follows the user status). |
-| `market-10` | Market · US · S&P 500 filter | — | `search-24`, `us-stocks-13` | US list with the S&P 500 index applied (the US Stocks flow\ |
+| `market-01` | Market · All | — | `search-24`, `us-stocks-13`, `stocks-32` | The filter bar shows "Apply filters" until something is applied. |
+| `market-02` | Market · Top gainers | — | `search-24`, `us-stocks-13`, `stocks-32` | Same layout — only the list changes. |
+| `market-03` | Market · Top losers | — | `search-24`, `us-stocks-13`, `stocks-32` |  |
+| `market-04` | Market · Under ₹100 | — | `search-24`, `us-stocks-13`, `stocks-32` |  |
+| `market-05` | Filters | — | `search-24`, `us-stocks-13`, `stocks-32` | Side tabs on the left (grey rail, the open one connected to the pane); only the open group on the right. Opens on Sort by. |
+| `market-06` | Filters · indices | — | `search-24`, `us-stocks-13`, `stocks-32` | Indices open — Nifty 500 picked (one choice); its side tab shows 1. Each option says how many stocks it gives. |
+| `market-07` | Filters · sectors (several) | — | `search-24`, `us-stocks-13`, `stocks-32` | Sectors open — Banking and IT picked (any number); sort and index picked too. Sectors with no stocks in Nifty 500 are off. |
+| `market-08` | Market · filters applied | — | `search-24`, `us-stocks-13`, `stocks-32` | One removable chip per pick; the filter button gets a dot. |
+| `market-09` | Market · US stocks | — | `search-24`, `us-stocks-13`, `stocks-32` | The picker left of the tabs is on US: $ prices, US logos; tapping a stock opens its US stock page (us-stocks-13, which follows the user status). |
+| `market-10` | Market · US · S&P 500 filter | — | `search-24`, `us-stocks-13`, `stocks-32` | US list with the S&P 500 index applied (the US Stocks flow\ |
 
 ## Spec (README.md)
 
@@ -149,10 +149,14 @@ card is used by every stock list in the app.
 - **Vertical side tabs** (a tab list down the side of a sheet, connected to the pane) — local `components/SideTabs`
   (L3 tokens, Badge for the count).
 - **Removable filter chip** — an L3 secondary Button with ✕ stands in.
+- **Unraised card ListCell** — a tappable `ListCell variant="card"` always has the low elevation; the stock rows drop it
+  locally (`StockRow.module.css`, border only).
 - **Split sheet body** (two columns, fixed height, the right one scrolling) — local `--app-size-filter-body`.
 - **List divider** — ListCell has no divider option; the stock rows draw their own 1px hairline (`StockListCard` `look="list"`).
 
 ### Changelog
+- 2026-11-18 — Stock list rows (shared StockListCard look="list", every list that uses it): the hairline runs from the logo's start to the price's end, 16 in from each edge (was edge to edge).
+- 2026-11-18 — Tabs V2 (pill chips): a 1px line runs under the whole picker + chips row, as in V1.
 - 2026-11-18 — Tabs and Picker default to V2 (pill chips; "IN Stocks" / "US Stocks").
 - 2026-11-18 — New setting Picker: V1 "IN" / "US" (default), V2 "IN Stocks" / "US Stocks" on the market pill.
 - 2026-11-18 — List tabs: new setting Tabs — V1 underline tabs (default; the 1px baseline now runs under the whole row, the IN / US picker too), V2 L3 pill chips at the default (big) size (secondary emphasis: the selected chip is outlined border/dark, not black; the IN / US picker is the big pill too; 16 between the divider and the first chip, as on the picker's side; 8 above and below, no baseline).
@@ -163,6 +167,8 @@ card is used by every stock list in the app.
 - 2026-11-04 — The IN / US picker shows the country's round flag (shared Flag) before the label.
 - 2026-11-04 — Stock list cards (shared `StockListCard`) all wear L3's soft shadow now (`elevation-soft`), instead of flat border-only: tappable ones are raised L3 ListCells; static ones get it locally (L3 gap: a static ListCell card has no shadow).
 - 2026-11-03 — Stock cards are the shared `StockListCard` (flat, Label 14, 12 apart, same look app-wide); `.flatCards` override and `StockRow.module.css` removed.
+- 2026-11-02 — a stock row opens the stock page (`stocks-32`, Stocks flow) for that stock.
+- 2026-11-02 — list tabs: the body slides in from the side of the tab picked (right = further along, left = before); a sideways swipe on the body (48+, mostly horizontal) moves one tab — not from the chips row.
 - 2026-11-02 — Market picker: small pill (`sm`) with a bigger tap area — the whole block around it (16 each side, the tab row's full height) switches the market.
 - 2026-11-02 — Market picker is one pill (IN / US + ↕ icon) instead of a Select; one tap switches the market.
 
@@ -671,6 +677,7 @@ export function applyFilters(list: MarketStock[], filters: Filters, market: Mark
 ### `src/flows/market/index.tsx`
 
 ```tsx
+import { openStock } from '../../shared/data/openStock'
 import { viewUsStock } from '../../shared/data/usStocks'
 import { goToTab } from '../../shared/ui/MainNav'
 import type { Flow } from '../types'
@@ -697,16 +704,16 @@ export const market: Flow = {
     { id: 'picker', label: 'Picker', values: [{ value: 'v1', label: 'V1' }, { value: 'v2', label: 'V2' }], default: 'v2' },
   ],
   screens: [
-    { id: 'market-01', section: 'lists', name: 'Market · All', figma: '', note: 'The filter bar shows "Apply filters" until something is applied.', tab: true, render: (go) => <Market onTab={(t) => goToTab(go, t)} onSearch={() => go('search-24')} onOpenUs={(sym) => { viewUsStock(sym); go('us-stocks-13') }} /> },
-    { id: 'market-02', section: 'lists', name: 'Market · Top gainers', figma: '', note: 'Same layout — only the list changes.', tab: true, render: (go) => <Market tab="gainers" onTab={(t) => goToTab(go, t)} onSearch={() => go('search-24')} onOpenUs={(sym) => { viewUsStock(sym); go('us-stocks-13') }} /> },
-    { id: 'market-03', section: 'lists', name: 'Market · Top losers', figma: '', tab: true, render: (go) => <Market tab="losers" onTab={(t) => goToTab(go, t)} onSearch={() => go('search-24')} onOpenUs={(sym) => { viewUsStock(sym); go('us-stocks-13') }} /> },
-    { id: 'market-04', section: 'lists', name: 'Market · Under ₹100', figma: '', tab: true, render: (go) => <Market tab="under-100" onTab={(t) => goToTab(go, t)} onSearch={() => go('search-24')} onOpenUs={(sym) => { viewUsStock(sym); go('us-stocks-13') }} /> },
-    { id: 'market-05', section: 'filters', name: 'Filters', figma: '', note: 'Side tabs on the left (grey rail, the open one connected to the pane); only the open group on the right. Opens on Sort by.', tab: true, render: (go) => <Market sheet onTab={(t) => goToTab(go, t)} onSearch={() => go('search-24')} onOpenUs={(sym) => { viewUsStock(sym); go('us-stocks-13') }} /> },
-    { id: 'market-06', section: 'filters', name: 'Filters · indices', figma: '', note: 'Indices open — Nifty 500 picked (one choice); its side tab shows 1. Each option says how many stocks it gives.', tab: true, render: (go) => <Market sheet sheetSection="index" filters={{ index: 'nifty-500' }} onTab={(t) => goToTab(go, t)} onSearch={() => go('search-24')} onOpenUs={(sym) => { viewUsStock(sym); go('us-stocks-13') }} /> },
-    { id: 'market-07', section: 'filters', name: 'Filters · sectors (several)', figma: '', note: 'Sectors open — Banking and IT picked (any number); sort and index picked too. Sectors with no stocks in Nifty 500 are off.', tab: true, render: (go) => <Market sheet sheetSection="sector" filters={{ sort: 'price-desc', index: 'nifty-500', sector: ['banking', 'it'] }} onTab={(t) => goToTab(go, t)} onSearch={() => go('search-24')} onOpenUs={(sym) => { viewUsStock(sym); go('us-stocks-13') }} /> },
-    { id: 'market-08', section: 'filters', name: 'Market · filters applied', figma: '', note: 'One removable chip per pick; the filter button gets a dot.', tab: true, render: (go) => <Market filters={{ sort: 'price-desc', index: 'nifty-500', sector: ['banking', 'it'] }} onTab={(t) => goToTab(go, t)} onSearch={() => go('search-24')} onOpenUs={(sym) => { viewUsStock(sym); go('us-stocks-13') }} /> },
-    { id: 'market-09', section: 'lists', name: 'Market · US stocks', figma: '', note: 'The picker left of the tabs is on US: $ prices, US logos; tapping a stock opens its US stock page (us-stocks-13, which follows the user status).', tab: true, render: (go) => <Market market="us" tab="all" onTab={(t) => goToTab(go, t)} onSearch={() => go('search-24')} onOpenUs={(sym) => { viewUsStock(sym); go('us-stocks-13') }} /> },
-    { id: 'market-10', section: 'lists', name: 'Market · US · S&P 500 filter', figma: '', note: 'US list with the S&P 500 index applied (the US Stocks flow\'s E3 entry point). Filter options are the US ones.', tab: true, render: (go) => <Market market="us" filters={{ index: 'sp-500' }} onTab={(t) => goToTab(go, t)} onSearch={() => go('search-24')} onOpenUs={(sym) => { viewUsStock(sym); go('us-stocks-13') }} /> },
+    { id: 'market-01', section: 'lists', name: 'Market · All', figma: '', note: 'The filter bar shows "Apply filters" until something is applied.', tab: true, render: (go) => <Market onTab={(t) => goToTab(go, t)} onSearch={() => go('search-24')} onOpenUs={(sym) => { viewUsStock(sym); go('us-stocks-13') }} onOpenStock={(s) => { openStock(s); go('stocks-32') }} /> },
+    { id: 'market-02', section: 'lists', name: 'Market · Top gainers', figma: '', note: 'Same layout — only the list changes.', tab: true, render: (go) => <Market tab="gainers" onTab={(t) => goToTab(go, t)} onSearch={() => go('search-24')} onOpenUs={(sym) => { viewUsStock(sym); go('us-stocks-13') }} onOpenStock={(s) => { openStock(s); go('stocks-32') }} /> },
+    { id: 'market-03', section: 'lists', name: 'Market · Top losers', figma: '', tab: true, render: (go) => <Market tab="losers" onTab={(t) => goToTab(go, t)} onSearch={() => go('search-24')} onOpenUs={(sym) => { viewUsStock(sym); go('us-stocks-13') }} onOpenStock={(s) => { openStock(s); go('stocks-32') }} /> },
+    { id: 'market-04', section: 'lists', name: 'Market · Under ₹100', figma: '', tab: true, render: (go) => <Market tab="under-100" onTab={(t) => goToTab(go, t)} onSearch={() => go('search-24')} onOpenUs={(sym) => { viewUsStock(sym); go('us-stocks-13') }} onOpenStock={(s) => { openStock(s); go('stocks-32') }} /> },
+    { id: 'market-05', section: 'filters', name: 'Filters', figma: '', note: 'Side tabs on the left (grey rail, the open one connected to the pane); only the open group on the right. Opens on Sort by.', tab: true, render: (go) => <Market sheet onTab={(t) => goToTab(go, t)} onSearch={() => go('search-24')} onOpenUs={(sym) => { viewUsStock(sym); go('us-stocks-13') }} onOpenStock={(s) => { openStock(s); go('stocks-32') }} /> },
+    { id: 'market-06', section: 'filters', name: 'Filters · indices', figma: '', note: 'Indices open — Nifty 500 picked (one choice); its side tab shows 1. Each option says how many stocks it gives.', tab: true, render: (go) => <Market sheet sheetSection="index" filters={{ index: 'nifty-500' }} onTab={(t) => goToTab(go, t)} onSearch={() => go('search-24')} onOpenUs={(sym) => { viewUsStock(sym); go('us-stocks-13') }} onOpenStock={(s) => { openStock(s); go('stocks-32') }} /> },
+    { id: 'market-07', section: 'filters', name: 'Filters · sectors (several)', figma: '', note: 'Sectors open — Banking and IT picked (any number); sort and index picked too. Sectors with no stocks in Nifty 500 are off.', tab: true, render: (go) => <Market sheet sheetSection="sector" filters={{ sort: 'price-desc', index: 'nifty-500', sector: ['banking', 'it'] }} onTab={(t) => goToTab(go, t)} onSearch={() => go('search-24')} onOpenUs={(sym) => { viewUsStock(sym); go('us-stocks-13') }} onOpenStock={(s) => { openStock(s); go('stocks-32') }} /> },
+    { id: 'market-08', section: 'filters', name: 'Market · filters applied', figma: '', note: 'One removable chip per pick; the filter button gets a dot.', tab: true, render: (go) => <Market filters={{ sort: 'price-desc', index: 'nifty-500', sector: ['banking', 'it'] }} onTab={(t) => goToTab(go, t)} onSearch={() => go('search-24')} onOpenUs={(sym) => { viewUsStock(sym); go('us-stocks-13') }} onOpenStock={(s) => { openStock(s); go('stocks-32') }} /> },
+    { id: 'market-09', section: 'lists', name: 'Market · US stocks', figma: '', note: 'The picker left of the tabs is on US: $ prices, US logos; tapping a stock opens its US stock page (us-stocks-13, which follows the user status).', tab: true, render: (go) => <Market market="us" tab="all" onTab={(t) => goToTab(go, t)} onSearch={() => go('search-24')} onOpenUs={(sym) => { viewUsStock(sym); go('us-stocks-13') }} onOpenStock={(s) => { openStock(s); go('stocks-32') }} /> },
+    { id: 'market-10', section: 'lists', name: 'Market · US · S&P 500 filter', figma: '', note: 'US list with the S&P 500 index applied (the US Stocks flow\'s E3 entry point). Filter options are the US ones.', tab: true, render: (go) => <Market market="us" filters={{ index: 'sp-500' }} onTab={(t) => goToTab(go, t)} onSearch={() => go('search-24')} onOpenUs={(sym) => { viewUsStock(sym); go('us-stocks-13') }} onOpenStock={(s) => { openStock(s); go('stocks-32') }} /> },
   ],
 }
 ```
@@ -781,9 +788,10 @@ export const market: Flow = {
   box-shadow: inset 0 -1px 0 var(--l3-border-light); /* 1px hairline */
 }
 
-/* V2: L3 pill chips at their default (big) size — 8 above and below; no baseline. */
+/* V2: L3 pill chips at their default (big) size — 8 above and below, and the same 1px line under the whole row. */
 .pillRow {
   padding-block: var(--l3-spacing-08);
+  box-shadow: inset 0 -1px 0 var(--l3-border-light); /* 1px hairline */
 }
 
 /* …and 16 from the divider to the first chip (and after the last), the same as the picker pill's 16. */
@@ -861,6 +869,9 @@ import { t } from '../copy'
 import styles from './Market.module.css'
 import { SearchWalletActions } from '../../../shared/ui/TopBarAction'
 
+/** How far (px) a sideways swipe must travel to change tab. */
+const SWIPE_MIN = 48
+
 type Props = {
   /** Which stocks the page lists: Indian (default) or US. The picker next to the tabs switches it. */
   market?: MarketId
@@ -874,6 +885,8 @@ type Props = {
   onSearch?: () => void
   /** A US stock row was tapped: open its stock page (the US Stocks flow). */
   onOpenUs?: (symbol: string) => void
+  /** An Indian stock's page (stocks-32). */
+  onOpenStock?: (symbol: string) => void
 }
 
 /**
@@ -882,7 +895,7 @@ type Props = {
  * same layout; only the stocks change. Above the list: the applied filters as removable chips (or "Apply filters")
  * and the filter button, with a dot when something is applied.
  */
-export function Market({ market: initialMarket = 'in', tab: initialTab = 'all', filters: initialFilters = {}, sheet = false, sheetSection, onTab, onSearch, onOpenUs }: Props) {
+export function Market({ market: initialMarket = 'in', tab: initialTab = 'all', filters: initialFilters = {}, sheet = false, sheetSection, onTab, onSearch, onOpenUs, onOpenStock }: Props) {
   // Opened from another screen with a market / tab / filters to start on (Home's "View all")? Read once.
   const [handoff] = useState(takeMarketHandoff)
   // List tabs: V1 underline tabs (a baseline under the whole row, the picker too), V2 pill chips (settings: Tabs).
@@ -965,7 +978,7 @@ export function Market({ market: initialMarket = 'in', tab: initialTab = 'all', 
       <div className={styles.page}>
         {stocks.length ? (
           <Section as="ul" aria-label={t(`tab.${id}`, { currency })}>
-            {stocks.map((stock) => <li key={stock.symbol}><StockRow stock={stock} onOpen={stock.market === 'us' ? onOpenUs : undefined} /></li>)}
+            {stocks.map((stock) => <li key={stock.symbol}><StockRow stock={stock} onOpen={stock.market === 'us' ? onOpenUs : onOpenStock} /></li>)}
           </Section>
         ) : (
           <EmptyState title={t('empty.title')} description={t('empty.description')} />
@@ -17253,6 +17266,35 @@ export function takeMarketHandoff(): MarketHandoff | null {
 }
 ```
 
+### `src/shared/data/openStock.ts`
+
+```ts
+// Which stock the stock page shows: the one tapped last anywhere in the app (a Market row, a Top movers card …).
+// A flow that lists stocks calls `openStock(symbol)` and then goes to the stock page (stocks-32); the stock page reads
+// it with `useOpenStock()`. Prototype state only — a real app passes the symbol in the route.
+import { useSyncExternalStore } from 'react'
+
+/** What the stock page shows before anything is tapped (and on the board): Bharat Electronics. */
+export const DEFAULT_STOCK = 'BEL'
+
+let current = DEFAULT_STOCK
+const listeners = new Set<() => void>()
+
+/** Remember the tapped stock (NSE symbol) for the stock page. */
+export function openStock(symbol: string) {
+  current = symbol
+  listeners.forEach((l) => l())
+}
+
+/** The NSE symbol of the stock to show. */
+export function useOpenStock(): string {
+  return useSyncExternalStore(
+    (l) => { listeners.add(l); return () => listeners.delete(l) },
+    () => current,
+  )
+}
+```
+
 ### `src/shared/data/us-market-snapshot.json`
 
 ```json
@@ -27090,8 +27132,8 @@ export function SheetHost({ container, children }: { container: HTMLElement | nu
   box-shadow: inset 0 0 0 1px var(--l3-border-light), var(--l3-shadow-elevation-soft); /* 1px: Figma stroke weight has no variable */
 }
 
-/* look="list": an edge-to-edge row with an edge-to-edge hairline under it (18 Nov; was inset from the symbol's start to
-   the price's end). FLAG: L3 gap — ListCell has no divider option (its USAGE.md, open question). */
+/* look="list": an edge-to-edge row; its hairline runs from the logo's start to the price's end (the row's 16 padding on
+   both sides — 18 Nov, was edge to edge). FLAG: L3 gap — ListCell has no divider option (its USAGE.md, open question). */
 .listRow {
   position: relative;
 }
@@ -27099,7 +27141,7 @@ export function SheetHost({ container, children }: { container: HTMLElement | nu
 .listRow::after {
   content: '';
   position: absolute;
-  inset: auto 0 0;
+  inset: auto var(--l3-spacing-16) 0;
   border-bottom: 1px solid var(--l3-border-light); /* 1px hairline */
   pointer-events: none;
 }

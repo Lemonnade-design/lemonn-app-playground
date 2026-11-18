@@ -67055,8 +67055,8 @@ export function SheetHost({ container, children }: { container: HTMLElement | nu
   box-shadow: inset 0 0 0 1px var(--l3-border-light), var(--l3-shadow-elevation-soft); /* 1px: Figma stroke weight has no variable */
 }
 
-/* look="list": an edge-to-edge row with an edge-to-edge hairline under it (18 Nov; was inset from the symbol's start to
-   the price's end). FLAG: L3 gap — ListCell has no divider option (its USAGE.md, open question). */
+/* look="list": an edge-to-edge row; its hairline runs from the logo's start to the price's end (the row's 16 padding on
+   both sides — 18 Nov, was edge to edge). FLAG: L3 gap — ListCell has no divider option (its USAGE.md, open question). */
 .listRow {
   position: relative;
 }
@@ -67064,7 +67064,7 @@ export function SheetHost({ container, children }: { container: HTMLElement | nu
 .listRow::after {
   content: '';
   position: absolute;
-  inset: auto 0 0;
+  inset: auto var(--l3-spacing-16) 0;
   border-bottom: 1px solid var(--l3-border-light); /* 1px hairline */
   pointer-events: none;
 }
