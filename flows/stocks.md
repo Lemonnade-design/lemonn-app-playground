@@ -363,6 +363,7 @@ lower on the page is scrolled into view first). `components/MarketSwitchGuide.ts
 
 ### Changelog
 
+- 2026-11-18 — New setting Home → Chips: V2 (default) the L3 switcher pill + outlined-selected chips; V1 brings back the earlier hand-made outlined switcher and small black-selected chips.
 - 2026-11-18 — US home chips rows (Top Movers, Heatmap, ETFs): the switcher (cap / country–sector) is an L3 primary pill (black, big md like the chips, ↕ 14 — like Market's IN / US picker), replacing the hand-made outlined chip; the filter chips are L3 pill tabs with secondary emphasis (selected = border/dark outline, not black). Local chip overrides removed. L3 gap: a Tab's icon slot is fixed at 16.
 - 2026-11-18 — US home, Brands cards: the price and its day change sit 2 apart (were 8).
 - 2026-11-18 — US home, Top analyst picks (list): “94% of analysts recommend” is back to ListCell's Description 12; the “Expected profit” caption stays 10.
@@ -24597,6 +24598,41 @@ export function UsHero({ onHoldings, onBuy, onAddUsd, empty = false, children }:
   height: var(--l3-icon-size-14);
 }
 
+/* ---- Settings → Chips V1: the earlier look — a hand-made outlined cap chip, and small (28) chip tabs with a black
+   selected chip. V2 (default) uses L3 as is: the primary pill above, secondary-emphasis chip tabs. ---- */
+.capChip {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: var(--l3-spacing-02);
+  box-sizing: border-box;
+  height: var(--l3-size-28);
+  padding: 0 calc(var(--l3-spacing-12) - 1px);
+  border: 1px solid var(--l3-content-primary);
+  border-radius: var(--l3-radius-full);
+  background: var(--l3-surface-default);
+  color: var(--l3-content-primary);
+  font: var(--l3-text-label-12);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.chips:has(.capChip) .chipTabs > [role='tab'][data-appearance] {
+  --tab-height: var(--l3-size-28);
+  --tab-padding-block: var(--l3-spacing-06);
+  --tab-padding-inline: var(--l3-spacing-10);
+  --tab-surface: var(--l3-surface-default);
+  --tab-content: var(--l3-content-primary);
+  --tab-border: var(--l3-border-intense);
+  box-shadow: inset 0 0 0 1px var(--tab-border);
+}
+
+.chips:has(.capChip) .chipTabs > [role='tab'][data-appearance][aria-selected='true'] {
+  --tab-surface: var(--l3-surface-inverted);
+  --tab-content: var(--l3-content-inverted);
+  --tab-border: transparent;
+}
+
 /* FLAG: hand-made divider between chip and tabs */
 .chipDivider {
   flex: none;
@@ -25209,6 +25245,18 @@ export function MonthLine({ closes, up, className }: { closes: number[]; up: boo
  * so the one-tab group needs no handler of its own.
  */
 function CapSwitch({ label, value, onClick, 'aria-label': ariaLabel }: { label: string; value: string; onClick: () => void; 'aria-label': string }) {
+  // Settings → Chips: V1 the earlier hand-made outlined chip (28, Label 12), V2 this L3 primary pill (default).
+  const v1 = useFlowOption('stocks', 'usChips', 'v2') === 'v1'
+  if (v1) {
+    return (
+      // FLAG (V1): hand-made cap chip — L3 Select opens a sheet instead. Its .capChip also turns on the V1 chip-tab
+      // overrides in UsHome.module.css (.chips:has(.capChip)).
+      <button type="button" className={styles.capChip} aria-label={ariaLabel} onClick={onClick}>
+        <span className={styles.capName} key={value}>{label}</span>
+        <Icon icon={lmSwitchArrowVertical} size={16} />
+      </button>
+    )
+  }
   return (
     <div className={styles.capSwitch} onClick={onClick}>
       <Tabs
@@ -27976,6 +28024,9 @@ export const stocks: Flow = {
     // Home shortcuts: V2 is the default (18 Nov, the user's call); V1 is the earlier row.
     { id: 'shortcuts', group: 'Home', label: 'Shortcuts', values: [{ value: 'v1', label: 'V1' }, { value: 'v2', label: 'V2' }], default: 'v2' },
     // US tab, Discover ETFs: the region pills with their round flags (default) or text only — testing whether the flags are too much (3 Nov).
+    // US home chips rows (Top Movers, Heatmap, ETFs): V1 the earlier hand-made outlined switcher + small black-selected
+    // chips, V2 L3's primary switcher pill + outlined-selected chips (default, 18 Nov — the user's call).
+    { id: 'usChips', group: 'Home', label: 'Chips', values: [{ value: 'v1', label: 'V1' }, { value: 'v2', label: 'V2' }], default: 'v2' },
     // V17 / V18's round US shortcuts under the hero: shown by default (8 Nov, the user's call); off to see the hero's
     // cards alone.
     { id: 'usShortcuts', group: 'Home', label: 'US shortcuts', picker: 'toggle', values: [{ value: 'off', label: 'Off' }, { value: 'on', label: 'On' }], default: 'on' },
