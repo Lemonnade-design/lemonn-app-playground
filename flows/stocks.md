@@ -434,6 +434,7 @@ lower on the page is scrolled into view first). `components/MarketSwitchGuide.ts
 
 ### Changelog
 
+- 2026-11-18 — Home scroll reveal: a part starts coming in just before it reaches the screen, 48 below its edge (was once it was 10% up from the bottom, which left the bottom of the screen empty mid-scroll).
 - 2026-11-18 — Home section headers: View all sits 4 closer to the right edge (12 in, was 16).
 - 2026-11-18 — Shortcuts (V2 card, IN and US): each shortcut is 12 taller — 18 above and below (was 12).
 - 2026-11-18 — Home scroll reveal: parts come in one by one instead of whole sections — the section header, then its chips row, then each card or row (80 apart when they arrive together; a rail’s cards follow one another).
@@ -29741,7 +29742,9 @@ export function Home({ scrollTo = 'top', market = 'in', movers, onStock, onTab, 
         const rail = horizontalRail(el, root)
         for (const piece of rail ? rails.get(rail) ?? [el] : [el]) show(piece, Math.min(step++, REVEAL_MAX_STEPS) * REVEAL_STAGGER)
       }
-    }, { root: body, rootMargin: '0px 0px -10% 0px' })
+    // Start a little before a part reaches the screen (48 below its bottom edge), so it is already fading in as it
+    // appears and the bottom of the screen is never left empty. (Was −10%: the last tenth of the screen stayed blank.)
+    }, { root: body, rootMargin: `0px 0px ${REVEAL_AHEAD}px 0px` })
     for (const el of pieces) {
       el.dataset.reveal = 'hidden'
       observer.observe(el)
@@ -30099,6 +30102,8 @@ function initials(name: string) {
 
 /** Scroll reveal: the gap between parts that come into view together (ms). */
 const REVEAL_STAGGER = 80
+/** …and how far below the screen a part starts coming in (px). */
+const REVEAL_AHEAD = 48
 /** …and the most steps a batch waits (a fast scroll never queues more than 480 of delay). */
 const REVEAL_MAX_STEPS = 6
 
