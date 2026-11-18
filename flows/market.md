@@ -109,7 +109,7 @@ card is used by every stock list in the app.
 | List tabs | Tabs | `underline` — hug + scroll (5 tabs); sit right of the picker in the same `bottom` row |
 | "Apply filters" | text, Heading/16 | replaced by the applied filters' chips |
 | Applied filter chip | Button | `secondary`, icon right ✕ — one per pick, removes just that pick (L3 has no removable chip: see gaps) |
-| Filter button | Button + Badge | `tertiary` `sm` icon-only (`filter_alt`, 32 × 32), Badge `dot` when filters are applied |
+| Filter button | Button + Badge | `tertiary` `sm` icon-only (`filter_alt`, 32 × 32), **round** (radius full — L3 gap: Button has no round shape, set via `--btn-radius` in Market.module.css), Badge `dot` when filters are applied |
 | Stock card | ListCell | `variant="card"`, `as="button"`; Avatar 40 left; symbol, company; price + PriceChange right |
 | No results | EmptyState | "No stocks match" |
 | Filters sheet | BottomSheet + BottomSheetHeader | heading "Filters" (no trailing action) |
@@ -157,7 +157,9 @@ card is used by every stock list in the app.
 ### Changelog
 - 2026-11-18 — Filter bar: “Apply filters” is Heading 14 (was 16).
 - 2026-11-18 — Stock list rows (shared StockListCard look="list", every list that uses it): the hairline runs from the logo's start to the price's end, 16 in from each edge (was edge to edge).
-- 2026-11-18 — Tabs V2 (pill chips): a 1px line runs under the whole picker + chips row, as in V1.
+- 2026-11-18 — Filter bar (Apply filters): hangs under the top bar, over the list, on a fade — page colour 100% at the top, 80% in the middle, clear at the bottom — so the list scrolls up under it; the list starts 56 lower to make room. The top bar no longer draws its bottom line or scroll shadow (the fade replaces them).
+- 2026-11-18 — Filter button (filter bar) is round (radius full, was the Small button's 8), like the top bar's round buttons. L3 gap: Button has no round / circle shape.
+- 2026-11-18 — Tabs V2 (pill chips): no line under the picker + chips row (added earlier today, then removed).
 - 2026-11-18 — Tabs and Picker default to V2 (pill chips; "IN Stocks" / "US Stocks").
 - 2026-11-18 — New setting Picker: V1 "IN" / "US" (default), V2 "IN Stocks" / "US Stocks" on the market pill.
 - 2026-11-18 — List tabs: new setting Tabs — V1 underline tabs (default; the 1px baseline now runs under the whole row, the IN / US picker too), V2 L3 pill chips at the default (big) size (secondary emphasis: the selected chip is outlined border/dark, not black; the IN / US picker is the big pill too; 16 between the divider and the first chip, as on the picker's side; 8 above and below, no baseline).
@@ -731,6 +733,28 @@ export const market: Flow = {
 .page {
   display: flex;
   flex-direction: column;
+  padding-top: var(--market-filter-row); /* room for the filter bar that hangs over the list (.filterRow) */
+}
+
+/* The filter bar's height: 12 + a 32 button + 12. */
+.page,
+.filterRow {
+  --market-filter-row: calc(var(--l3-spacing-12) * 2 + var(--l3-size-32));
+}
+
+/* The filter bar hangs just under the top bar, over the list, on a fade from the page colour: 100% at the top, 80% in
+   the middle, clear at the bottom — the list scrolls up under it (18 Nov). */
+.filterRow {
+  position: absolute;
+  inset-inline: 0;
+  top: 100%;
+  min-height: var(--market-filter-row);
+  background: linear-gradient(
+    to bottom,
+    var(--l3-surface-default) 0%,
+    color-mix(in srgb, var(--l3-surface-default) 80%, transparent) 50%,
+    transparent 100%
+  );
 }
 
 .filterHint {
@@ -758,6 +782,12 @@ export const market: Flow = {
 .filterButton {
   display: inline-flex;
   flex: none;
+}
+
+/* Round filter button (user ask, 18 Nov), like the round search / wallet buttons in the top bar. FLAG: L3 Button has
+   no round / circle shape, so its own radius variable is set to full here (L3 gap). */
+.filterButton button[data-size] {
+  --btn-radius: var(--l3-radius-full);
 }
 
 /* Market picker: the tap area is the whole block around the pill, the row's full height (the pill itself stays small). */
@@ -789,10 +819,9 @@ export const market: Flow = {
   box-shadow: inset 0 -1px 0 var(--l3-border-light); /* 1px hairline */
 }
 
-/* V2: L3 pill chips at their default (big) size — 8 above and below, and the same 1px line under the whole row. */
+/* V2: L3 pill chips at their default (big) size — 8 above and below, no line under the row (18 Nov: removed again). */
 .pillRow {
   padding-block: var(--l3-spacing-08);
-  box-shadow: inset 0 -1px 0 var(--l3-border-light); /* 1px hairline */
 }
 
 /* …and 16 from the divider to the first chip (and after the last), the same as the picker pill's 16. */
@@ -833,9 +862,11 @@ export const market: Flow = {
   inset-inline-start: 100%;
 }
 
-/* At the top of the list the top bar draws no bottom line; it appears once the list scrolls under the bar.
-   L3 gap: Actionbar always draws its line (no "line on scroll" option). */
-.barAtTop {
+/* The top bar draws no bottom line or shadow, at rest or scrolled: the filter bar's fade takes their place (18 Nov).
+   It sits above the list so the hanging filter bar does too. L3 gap: Actionbar always draws its line (no option). */
+.barFade.barFade {
+  position: relative;
+  z-index: 1; /* stacking order isn't a design token */
   box-shadow: none;
 }
 ```
@@ -961,16 +992,6 @@ export function Market({ market: initialMarket = 'in', tab: initialTab = 'all', 
     el.animate([{ translate: `${from * el.offsetWidth}px 0` }, { translate: '0 0' }], { duration: 280, easing: 'cubic-bezier(0.2, 0, 0, 1)' })
   }, [tab])
 
-  // The top bar's bottom line shows only once the list has scrolled under it.
-  const [scrolled, setScrolled] = useState(false)
-  useEffect(() => {
-    const box = scroller()
-    if (!box) return
-    const update = () => setScrolled(box.scrollTop > 0)
-    update()
-    box.addEventListener('scroll', update, { passive: true })
-    return () => box.removeEventListener('scroll', update)
-  }, [])
 
   /** One tab's page: its list (the filter bar above stays put, in the top bar). */
   const page = (id: MarketTab) => {
@@ -992,7 +1013,7 @@ export function Market({ market: initialMarket = 'in', tab: initialTab = 'all', 
     <Screen
       top={
         <Actionbar
-          className={scrolled ? undefined : styles.barAtTop}
+          className={styles.barFade}
           title={t('title')}
           actions={<SearchWalletActions searchLabel={t('action.search')} walletLabel={t('action.wallet')} onSearch={() => onSearch?.()} onWallet={() => {}} />}
           bottom={
@@ -1021,6 +1042,9 @@ export function Market({ market: initialMarket = 'in', tab: initialTab = 'all', 
                   <CenteredTabs appearance={pillTabs ? 'pill' : 'underline'} emphasis={pillTabs ? 'secondary' : undefined} aria-label={t('tabs.label')} items={tabs.map((id) => ({ value: id, label: t(`tab.${id}`, { currency }) }))} value={tapped ?? tab} onChange={(v) => pick(v as MarketTab)} />
                 </div>
               </Stack>
+              {/* The filter bar hangs under the top bar, over the list, on a fade (white → 80% → clear, 18 Nov): the list
+                  scrolls up under it. The list starts its height lower (.page) so nothing is hidden at rest. */}
+              <div className={styles.filterRow}>
               <Inset paddingInline="16" paddingBlock="12">
                 <Stack direction="horizontal" align="center" gap="12">
                   {applied.length ? (
@@ -1041,6 +1065,7 @@ export function Market({ market: initialMarket = 'in', tab: initialTab = 'all', 
                   </span>
                 </Stack>
               </Inset>
+              </div>
             </Stack>
           }
         />
@@ -26442,8 +26467,7 @@ export const moneyOptions: FlowOption[] = [
     // $ only by default (3 Nov): the ₹ shows when picked here. The stock and ETF pages are the exception — their price
     // always has its ≈ ₹ under it.
     default: 'off',
-    // The Home and its US tab screens (the US tab's fixed states show $ amounts too), a US stock page, the wallet's US tab.
-    floatOn: ['stocks-01', 'stocks-09', 'stocks-10', 'stocks-13', 'stocks-14', 'stocks-15', 'stocks-16', 'stocks-17', 'stocks-19', 'stocks-20', 'stocks-21', 'us-stocks-13', 'us-stocks-54'],
+    // Not in the floating card beside the phone any more (18 Nov, the user's call): still in the settings list.
   },
 ]
 
@@ -26789,11 +26813,24 @@ const files: Record<FlagCode, string> = { us: flagUs, in: flagIndia, cn: flagChi
 export const Flag = ({ code }: { code: FlagCode }) => <img className={styles.flag} src={files[code]} alt="" aria-hidden="true" />
 ```
 
+### `src/shared/ui/MainNav.module.css`
+
+```css
+/* The navbar paints above the page it sits under, so its upward shadow shows over every screen's content — on the
+   Stocks home the feed's cards (raised, transformed by the scroll reveal) were painting over it (18 Nov).
+   L3 gap: BottomNavbar is position: static (no stacking of its own). */
+.nav {
+  position: relative;
+  z-index: 1; /* stacking order isn't a design token */
+}
+```
+
 ### `src/shared/ui/MainNav.tsx`
 
 ```tsx
 import { BottomNavbar } from '@l3/components/BottomNavbar'
 import { NavIcon } from '@l3/components/BottomNavbar/NavIcon'
+import styles from './MainNav.module.css'
 
 export type Section = 'stocks' | 'market' | 'portfolio' | 'mutualFund' | 'fno'
 
@@ -26810,6 +26847,7 @@ export function MainNav({ value, onChange }: { value: Section; onChange?: (value
   return (
     <BottomNavbar
       aria-label="Main"
+      className={styles.nav}
       value={value}
       onChange={(v) => onChange?.(v as Section)}
       items={items.map((i) => ({ ...i, icon: <NavIcon name={i.value} />, selectedIcon: <NavIcon name={i.value} selected /> }))}
@@ -27528,7 +27566,7 @@ export function useSwipeBetween({ canGo, onSwitch, page, area, slides, fades }: 
 ```ts
 // Where the user is in the app — the prototype's app-level settings ("User status" in the preview panel, the phone's
 // settings sheet and a floating card beside the phone). Every screen that depends on it reads it here, so they all stay
-// in sync: pick "US Stocks: activated · money on the way" once and the Home's US tab, a US stock page and the wallet all
+// in sync: pick "User account state: Active · money on the way" once and the Home's US tab, a US stock page and the wallet all
 // show that state. Picking never moves on by itself; taps in the prototype don't change it.
 // In a real app these come from the user's account (KYC status, US Stocks activation, wallet, holdings).
 import type { FlowOption } from '../flows/types'
@@ -27554,44 +27592,30 @@ const BANK_SCREENS = ['deposit-01', 'deposit-06', 'deposit-07', 'deposit-08', 'd
 
 const STATUS_SCREENS = ['stocks-01', 'stocks-09', 'stocks-10', 'stocks-13', 'stocks-14', 'stocks-15', 'stocks-16', 'stocks-17', 'stocks-19', 'stocks-20', 'stocks-21', 'us-stocks-13', 'us-stocks-54']
 
-/** The settings, parent first: each one below only matters (and shows) while the one above has the listed values. */
+/** The app-level user status settings. */
 export const userStatusOptions: FlowOption[] = [
   {
-    // One list for the whole way in, in order, named by where US Stocks are: not active while the Lemonn KYC is pending
-    // (US Stocks can't be activated until it's done), not active, then the activation steps.
-    id: 'us',
+    // One list for the whole way in, in order — one row of states (18 Nov, the user's call; was three settings: US
+    // Stocks activation, then USD wallet and US holdings under "Active"): not active while the Lemonn KYC is pending
+    // (US Stocks can't be activated until it's done), not active, the activation steps, then active with $0, money on
+    // the way, money in the wallet, US holdings. The values are the UsJourney steps.
+    id: 'account',
     group: 'User status',
-    label: 'US Stocks',
+    label: 'User account state',
     picker: 'dropdown',
     values: [
       { value: 'kyc', label: 'Not active · KYC pending' },
-      { value: 'off', label: 'Not active' },
+      { value: 'activate', label: 'Not active' },
       { value: 'review', label: 'Under review' },
       { value: 'support', label: 'Under review · contact support' },
       { value: 'failed', label: 'Activation failed' },
-      { value: 'active', label: 'Active' },
+      { value: 'activated', label: 'Active · $0' },
+      { value: 'onTheWay', label: 'Active · money on the way' },
+      { value: 'ready', label: 'Active · has money' },
+      { value: 'holding', label: 'Active · US holdings' },
     ],
     // The prototype opens on a user who's all set: activated, money in the wallet, holding US stocks.
-    default: 'active',
-    floatOn: STATUS_SCREENS,
-  },
-  {
-    id: 'usWallet',
-    group: 'User status',
-    label: 'USD wallet',
-    values: [{ value: 'empty', label: '$0' }, { value: 'onTheWay', label: 'Money on the way' }, { value: 'funded', label: 'Has money' }],
-    default: 'funded',
-    showIf: { us: ['active'] },
-    floatOn: STATUS_SCREENS,
-  },
-  {
-    id: 'usHoldings',
-    group: 'User status',
-    label: 'US holdings',
-    picker: 'toggle',
-    values: [{ value: 'none', label: 'None' }, { value: 'some', label: 'Holds NVDA' }],
-    default: 'some',
-    showIf: { usWallet: ['funded'] },
+    default: 'holding',
     floatOn: STATUS_SCREENS,
   },
   {
@@ -27613,13 +27637,17 @@ export type UserStatus = { kyc: KycStatus; us: UsActivation; usWallet: UsWallet;
 
 /** The user status as picked (settings under one that's off keep their last pick). KYC comes from the activation list. */
 export function useUserStatus(): UserStatus {
-  const us = useStatus('us') as UsActivation
+  return { ...statusOf(useStatus('account') as UsJourney), banks: useStatus('banks') as BankLinks }
+}
+
+/** One account state as the activation, wallet and holdings it means. */
+function statusOf(step: UsJourney): Omit<UserStatus, 'banks'> {
+  const us: UsActivation = step === 'activate' ? 'off' : ['kyc', 'review', 'support', 'failed'].includes(step) ? (step as UsActivation) : 'active'
   return {
     kyc: us === 'kyc' ? 'pending' : 'done',
     us,
-    usWallet: useStatus('usWallet') as UsWallet,
-    usHoldings: useStatus('usHoldings') as UsHoldings,
-    banks: useStatus('banks') as BankLinks,
+    usWallet: step === 'activated' ? 'empty' : step === 'onTheWay' ? 'onTheWay' : 'funded',
+    usHoldings: step === 'holding' ? 'some' : 'none',
   }
 }
 
@@ -27630,8 +27658,7 @@ export function useUserStatus(): UserStatus {
  */
 export function useLinkedBanks(): LinkedBank[] {
   const picked = useStatus('banks') as BankLinks
-  const us = useStatus('us') as UsActivation
-  const usWallet = useStatus('usWallet') as UsWallet
+  const { us, usWallet } = statusOf(useStatus('account') as UsJourney)
   const moneyMoved = us === 'active' && usWallet !== 'empty'
   const banks = picked === 'none' && moneyMoved ? 'one' : picked
   const linked = { none: [], one: linkedBanks.slice(0, 1), two: linkedBanks, three: [...linkedBanks, otherBank], sbi: [{ ...otherBank, primary: true }] }[banks]
@@ -27677,11 +27704,6 @@ export const useUsJourney = () => usJourney(useUserStatus())
 
 /** Sets the user status to one US Stocks step (a US tab screen showing its own state sets it on arrival). */
 export function setUsJourney(step: UsJourney) {
-  const us: UsActivation = step === 'activate' ? 'off' : ['kyc', 'review', 'support', 'failed'].includes(step) ? (step as UsActivation) : 'active'
-  const set = (id: string, value: string) => setFlowOption(USER_STATUS, id, option(id).default, value)
-  set('us', us)
-  if (us !== 'active') return
-  set('usWallet', step === 'activated' ? 'empty' : step === 'onTheWay' ? 'onTheWay' : 'funded')
-  if (step === 'ready' || step === 'holding') set('usHoldings', step === 'holding' ? 'some' : 'none')
+  setFlowOption(USER_STATUS, 'account', option('account').default, step)
 }
 ```

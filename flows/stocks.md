@@ -258,7 +258,7 @@ Differences from Figma (the user's calls, 8 Nov, unless said):
 - Tab label **"IND Stocks"** as in Figma, not the "IN Stocks" rule (V16 only: `labels: 'ind'`).
 - Figma's sample rows ("Category • TSLA", one price for all, $4,56,237.5 in Indian grouping) are real stocks and $ prices.
 - By Market Cap's four chips are the data's four cap buckets under Figma's names (Large = mega caps … Micro = small caps).
-- Explore by themes is the **earlier rail of theme cards** (description, 1Y return, N stocks), not Figma's 2 × 2 tiles
+- Explore by themes is the **earlier rail of theme cards** (logos, name, 1Y return, N stocks; 1.5 across), not Figma's 2 × 2 tiles
   (Trending · Leveraged ETFs · Dividend Stocks · Dollar Parking) — the user's call. The tiles are kept as `F1Themes`. Zing and "+3 more" have no screen yet, so they do nothing. Both announcement cards are Figma's ARM one.
 
 ### Sheets (over the Home, via `Screen`'s `sheet`; `components/us/sheets/`)
@@ -434,15 +434,22 @@ lower on the page is scrolled into view first). `components/MarketSwitchGuide.ts
 
 ### Changelog
 
+- 2026-11-18 — Homepage version: V8, V12, V13 and V14 archived, V18 is the only home; no floating version picker or quick-switch button beside the phone.
+- 2026-11-18 — Bottom navbar (shared MainNav, every tab): sits above the page so its shadow shows — on Home the feed's cards painted over it.
+- 2026-11-18 — Explore by themes cards: 1.5 across (was 1.9 earlier today), so half the second card shows.
+- 2026-11-18 — US home shortcuts (ETFs, Analyst picks, Watchlist, Referral): the icons are a gradient, discover blue at the top to content/primary at the bottom, on a neutral surface/tertiary fill (was flat discover blue).
 - 2026-11-18 — Home scroll reveal: a part starts coming in just before it reaches the screen, 48 below its edge (was once it was 10% up from the bottom, which left the bottom of the screen empty mid-scroll).
 - 2026-11-18 — Home section headers: View all sits 4 closer to the right edge (12 in, was 16).
 - 2026-11-18 — Shortcuts (V2 card, IN and US): each shortcut is 12 taller — 18 above and below (was 12).
 - 2026-11-18 — Home scroll reveal: parts come in one by one instead of whole sections — the section header, then its chips row, then each card or row (80 apart when they arrive together; a rail’s cards follow one another).
+- 2026-11-18 — US tab · Top analyst picks (list view): 8 below the header (was 16), then the first row's own 16 inside — the row content starts 24 under the heading (was 32). The cards view keeps its 16 gap.
 - 2026-11-18 — US home, Top analyst picks (list) and Discover ETFs: flat edge-to-edge rows split by an inset hairline (logo start to price end, 16 in), like the stock lists — were stacks of cards.
 - 2026-11-18 — Themes page “All stocks” (shared StockListCard look="list"): the hairline runs from the logo's start to the price's end, 16 in from each edge (was edge to edge).
+- 2026-11-18 — US tab · Explore by themes: 1.9 cards up front (was 2.2); no description on the card (the theme page keeps it), so the cards are shorter; the logos overlap 12 (was 8) for a tighter stack, each on a white disc (static-white, so transparent logos like Microsoft and Google read) with a 1px border/light stroke instead of the surface ring — only in overlapping stacks (L3 has no "border/primary"); the 1-year return leads (the % first, then "1Y" in content/secondary) and sits 4 under the name, so the two read as one block (card 148 → 140 tall).
 - 2026-11-18 — New setting Home → Chips: V2 (default) the L3 switcher pill + outlined-selected chips; V1 brings back the earlier hand-made outlined switcher and small black-selected chips.
 - 2026-11-18 — US home chips rows (Top Movers, Heatmap, ETFs): the switcher (cap / country–sector) is an L3 primary pill (black, big md like the chips, ↕ 14 — like Market's IN / US picker), replacing the hand-made outlined chip; the filter chips are L3 pill tabs with secondary emphasis (selected = border/dark outline, not black). Local chip overrides removed. L3 gap: a Tab's icon slot is fixed at 16.
 - 2026-11-18 — US home, Brands cards: the price and its day change sit 2 apart (were 8).
+- 2026-11-18 — US tab · Top Movers: 1.9 cards up front (was 1.8). Each card's heading is the company's real name from the US snapshot ("The Procter & Gamble Company", one line, ending in "…" when it doesn't fit), with the ticker 4 under it (label 12, content/tertiary); the chevron is 24 (was 16; L3 Icon tops out at 24, so the 28 asked for is an L3 gap). The day change sits at the card's right edge, across from the price.
 - 2026-11-18 — US home, Top analyst picks (list): “94% of analysts recommend” is back to ListCell's Description 12; the “Expected profit” caption stays 10.
 - 2026-11-18 — L3 moved to 9467515: raised only on solid black (Primary, selected black pill, sliding pill); every other button and chip is flat, with no drop shadow. No local overrides needed removing (the app had none on buttons or chips).
 - 2026-11-18 — US home, Top Movers: the cards size to show 1.8 up front at any phone width ((page − 16 − 12 gap) / 1.8, ≈ 202 on a 392 phone; were 150); the head and graph fill the card.
@@ -21144,7 +21151,7 @@ import { Icon } from '@l3/components/Icon'
 import { msCheck, msChevronLeft, msChevronRight, msDragIndicator, msKeyboardArrowDown } from '@l3/icons/material'
 import type { FlowOption } from '../../types'
 import { setFlowOption, useFlowOption, usePreview } from '../../../shared/prototype'
-import { USER_STATUS, userStatusOptions, type UsActivation, type UsHoldings, type UsWallet } from '../../../shared/userStatus'
+import { USER_STATUS, userStatusOptions, type UsJourney } from '../../../shared/userStatus'
 import { activeHomeVersions, DEFAULT_HOME_VERSION } from './homeVersions'
 import { t } from '../copy'
 import styles from './HomeSwitcher.module.css'
@@ -21182,18 +21189,16 @@ const homeVersionOption: FlowOption = {
   values: activeHomeVersions.map((v) => ({ value: v.id, label: `${v.id.toUpperCase()} · ${v.name}` })),
 }
 
-// The pills, in order. User status first (each one only while the one before has the listed values, as in the panel),
-// then the Home's own settings.
+// The pills, in order. The user account state first (one list, KYC pending → … → Active · US holdings), then the
+// Home's own settings.
 const items: Item[] = [
-  { owner: USER_STATUS, option: userStatus('us'), short: (v) => t(`switcher.us.${v as UsActivation}`) },
-  { owner: USER_STATUS, option: userStatus('usWallet'), short: (v) => t(`switcher.wallet.${v as UsWallet}`) },
-  { owner: USER_STATUS, option: userStatus('usHoldings'), short: (v) => t(`switcher.holdings.${v as UsHoldings}`) },
+  { owner: USER_STATUS, option: userStatus('account'), short: (v) => t(`switcher.account.${v as UsJourney}`) },
   { owner: 'stocks', option: homeVersionOption, short: (v) => v.toUpperCase() },
 ]
 
 /**
  * PROTOTYPE ONLY — not part of the design. On a phone (the prototype running as the app), a small floating pill over
- * the Home: US Stocks activation · USD wallet · US holdings · Homepage version · Header, each a dropdown pill (its own
+ * the Home: User account state · Homepage version, each a dropdown pill (its own
  * menu, with the full names), so states and versions can be switched without opening the settings. Drag it by the
  * grip; it remembers where it was left (this browser). Copied from the nudges flow's SheetSwitcher.
  *
@@ -21232,10 +21237,7 @@ function Pill({ host }: { host: HTMLElement }) {
   const grab = useRef<{ id: number; dx: number; dy: number; startX: number; startY: number; moved: boolean } | null>(null)
   // A drag of the tab ends with a click too; that one mustn't open the pill.
   const dragged = useRef(false)
-  const us = useFlowOption(USER_STATUS, 'us', userStatus('us').default)
-  const wallet = useFlowOption(USER_STATUS, 'usWallet', userStatus('usWallet').default)
-  const status: Record<string, string> = { us, usWallet: wallet }
-  const shown = items.filter(({ option }) => !option.showIf || Object.entries(option.showIf).every(([id, values]) => values.includes(status[id])))
+  const shown = items
   const dock = spot?.dock
   const tucked = !!dock && !out && !drag
 
@@ -24095,16 +24097,16 @@ export const homeVersions: HomeVersion[] = [
   { id: 'v5', name: 'Card-level segmented control', figma: '6128:30436', place: 'header', scope: 'feed', look: 'pill', labels: 'short', flags: false, usNew: false, tiles: 'classic', ticker: true, archived: true },
   { id: 'v6', name: 'Pill on top', figma: '6128:30747', place: 'top', scope: 'feed', look: 'pill', labels: 'stocks', flags: true, usNew: false, tiles: 'withUs', ticker: true, archived: true },
   { id: 'v7', name: 'Lit folder on top', figma: '6128:31013', place: 'top', scope: 'feed', look: 'folder', labels: 'stocks', flags: true, usNew: true, tiles: 'today', ticker: true, archived: true },
-  { id: 'v8', name: 'Lit folder · US tiles', figma: '6128:31431', place: 'top', scope: 'feed', look: 'folder', labels: 'stocks', flags: true, usNew: true, tiles: 'withInvest', ticker: true },
+  { id: 'v8', name: 'Lit folder · US tiles', figma: '6128:31431', place: 'top', scope: 'feed', look: 'folder', labels: 'stocks', flags: true, usNew: true, tiles: 'withInvest', ticker: true, archived: true },
   { id: 'v9', name: 'Graphite segmented', figma: '6128:31986', place: 'top', scope: 'feed', look: 'pill', labels: 'stocks', flags: true, usNew: true, tiles: 'today', ticker: false , archived: true },
   // Two homes (2026-11-02): top-level segregation — the market is picked first, and the whole page is that market's.
   { id: 'v10', name: 'Two homes · segmented on top', figma: '', place: 'top', scope: 'page', look: 'pill', labels: 'stocks', flags: true, usNew: true, tiles: 'today', ticker: true , archived: true },
   { id: 'v11', name: 'Two homes · tabs on top', figma: '', place: 'top', scope: 'page', look: 'underline', labels: 'stocks', flags: true, usNew: true, tiles: 'today', ticker: true , archived: true },
-  { id: 'v12', name: 'Two homes · switch in top bar', figma: '', place: 'header', scope: 'page', look: 'pill', labels: 'short', flags: true, usNew: false, tiles: 'withInvest', ticker: true },
-  { id: 'v13', name: 'Two homes · market picker', figma: '', place: 'picker', scope: 'page', look: 'pill', labels: 'stocks', flags: true, usNew: false, tiles: 'withInvest', ticker: true },
+  { id: 'v12', name: 'Two homes · switch in top bar', figma: '', place: 'header', scope: 'page', look: 'pill', labels: 'short', flags: true, usNew: false, tiles: 'withInvest', ticker: true, archived: true },
+  { id: 'v13', name: 'Two homes · market picker', figma: '', place: 'picker', scope: 'page', look: 'pill', labels: 'stocks', flags: true, usNew: false, tiles: 'withInvest', ticker: true, archived: true },
   // V14 (5 Nov): the page all white (surface/default, no grey summary or rounded sheet), flat underline IN / US tabs right
   // under the top bar (sticky), and under them that market's home.
-  { id: 'v14', name: 'Two homes · white, flat tabs', figma: '', place: 'top', scope: 'page', look: 'underline', labels: 'stocks', flags: true, usNew: true, tiles: 'withInvest', ticker: true, surface: 'white' },
+  { id: 'v14', name: 'Two homes · white, flat tabs', figma: '', place: 'top', scope: 'page', look: 'underline', labels: 'stocks', flags: true, usNew: true, tiles: 'withInvest', ticker: true, surface: 'white', archived: true },
   // V15 (5 Nov): one home — you first (across markets), then the markets. The switch scopes only the feed below it.
   { id: 'v15', name: 'One home · you, then markets', figma: '', place: 'mid', scope: 'feed', look: 'underline', labels: 'stocks', flags: true, usNew: true, tiles: 'withInvest', ticker: true, layout: 'hub', surface: 'white', archived: true },
   // V16 · F1 (2026-11-08, from the jojo branch's V14, Figma Stocks Playground 6441:3 "F1-01 · US Home · holding"): two homes with flat underline tabs on
@@ -24117,7 +24119,7 @@ export const homeVersions: HomeVersion[] = [
   { id: 'v18', name: 'F1 top · V14 body', figma: '', place: 'top', scope: 'page', look: 'underline', labels: 'stocks', flags: true, usNew: false, tiles: 'today', ticker: true, usHome: 'f1', cards: true, usBody: 'classic' },
 ]
 
-// Archived 2026-11-02 (V2, V3, V4, V5, V6, V9), back in the picker the same day. V9, V10 and V11 archived again later that day. V2–V7 archived too (playground), leaving V8, V12 and V13. V14 added 5 Nov. V15 (One home) added and archived 5 Nov. V16 and V17 archived 17 Nov (V18 keeps their F1 top).
+// Archived 2026-11-02 (V2, V3, V4, V5, V6, V9), back in the picker the same day. V9, V10 and V11 archived again later that day. V2–V7 archived too (playground), leaving V8, V12 and V13. V14 added 5 Nov. V15 (One home) added and archived 5 Nov. V16 and V17 archived 17 Nov (V18 keeps their F1 top). V8, V12, V13 and V14 archived 18 Nov: V18 is the only home.
 
 /** The version shown until one is picked (and in place of an archived pick). */
 export const DEFAULT_HOME_VERSION: HomeVersionId = 'v18'
@@ -24138,24 +24140,9 @@ export const homeVersion = (id: string) =>
   height: 100%;
 }
 
-.text {
-  display: flex;
-  flex-direction: column;
-  gap: var(--l3-spacing-04);
-}
-
 .name {
   color: var(--l3-content-primary);
   font: var(--l3-text-label-14);
-}
-
-.desc {
-  display: -webkit-box;
-  overflow: hidden;
-  color: var(--l3-content-secondary);
-  font: var(--l3-text-description-12);
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
 }
 
 .return {
@@ -24185,9 +24172,13 @@ export const homeVersion = (id: string) =>
 .stackLogo {
   display: inline-flex;
   flex: none;
-  margin-right: calc(-1 * var(--l3-spacing-08));
+  margin-right: calc(-1 * var(--l3-spacing-12)); /* 12 of a 32 logo overlaps the next: a tight stack (was 8) */
   border-radius: var(--l3-radius-full);
-  box-shadow: 0 0 0 2px var(--l3-surface-default); /* ring that separates the overlapping logos */
+  /* Overlapping logos (user ask, 18 Nov): a white disc behind each, so logos with no background of their own (Microsoft,
+     Google) don't show the card or the logo under them, and a 1px grey stroke (L3 border/light — L3 has no
+     "border/primary") that separates them. Only here, in the stack; single logos elsewhere stay as they are. */
+  background: var(--l3-static-white);
+  box-shadow: 0 0 0 1px var(--l3-border-light);
 }
 
 .stackMore {
@@ -24221,8 +24212,9 @@ export const homeVersion = (id: string) =>
 ### `src/flows/stocks/components/us/ThemeCard.tsx`
 
 ```tsx
-// A theme's card (Explore by themes on the US tab): a compact card, about 2 across —
-// overlapping logos (LogoStack), the theme's name, a two-line description, then its 1-year return and "N stocks ›".
+// A theme's card (Explore by themes on the US tab): a compact card, 1.5 across —
+// overlapping logos (LogoStack), the theme's name, then its 1-year return (the % first, "1Y" after it) and "N stocks ›".
+// No description on the card (user ask, 18 Nov); the theme page still has it.
 // FLAG: L3 has no logo stack / group: the overlap and the "+n" disc are hand-made (ThemeCard.module.css).
 import { Avatar } from '@l3/components/Avatar'
 import { Card } from '@l3/components/Card'
@@ -24244,14 +24236,14 @@ export function ThemeCard({ theme, onOpen }: { theme: Theme; onOpen: (id: ThemeI
     <Card onClick={() => onOpen(theme.id)} surface="primary" className={styles.card} aria-label={t('us.themes.cardLabel', { name, pct: theme.returns['1y'].toFixed(1), count: theme.symbols.length })}>
       <Stack gap="12">
         <LogoStack symbols={theme.symbols} max={3} />
-        <span className={styles.text}>
+        {/* Name and 1Y return read as one block: 4 apart (the card's other parts stay 12 apart). */}
+        <Stack gap="04">
           <span className={styles.name}>{name}</span>
-          <span className={styles.desc}>{t(`us.theme.${theme.id}.desc`)}</span>
-        </span>
-        <span className={styles.return}>
-          <span className={styles.returnLabel}>{t('us.themes.return1y')}</span>
-          <PriceChange value={theme.returns['1y']} size="md" />
-        </span>
+          <span className={styles.return}>
+            <PriceChange value={theme.returns['1y']} size="md" />
+            <span className={styles.returnLabel}>{t('us.themes.return1y')}</span>
+          </span>
+        </Stack>
         <span className={styles.foot}>
           <span>{t('us.themes.stocks', { count: theme.symbols.length })}</span>
           <Icon icon={msChevronRight} size={16} />
@@ -24261,10 +24253,10 @@ export function ThemeCard({ theme, onOpen }: { theme: Theme; onOpen: (id: ThemeI
   )
 }
 
-/** The rail of theme cards (about 2.2 across so the third one peeks in). */
+/** The rail of theme cards: 1.5 across, so the second one shows half (18 Nov; was 2.2). */
 export function ThemeRail({ onOpen }: { onOpen: (id: ThemeId) => void }) {
   return (
-    <Rail label={t('us.themes.railLabel')} visible={2.2}>
+    <Rail label={t('us.themes.railLabel')} visible={1.5}>
       {themes.map((theme) => <ThemeCard key={theme.id} theme={theme} onOpen={onOpen} />)}
     </Rail>
   )
@@ -25058,19 +25050,40 @@ export function UsHero({ onHoldings, onBuy, onAddUsd, empty = false, children }:
   padding: var(--l3-spacing-12);
 }
 
-/* Top Movers: 1.8 cards up front at any phone width (user ask, 18 Nov). The scroller's content box is the page minus
-   2 × 16, so a card is (that + 16 − the 12 gap) / 1.8; the head and graph fill it. */
+/* Top Movers: 1.9 cards up front at any phone width (user ask, 18 Nov; was 1.8, then 1.5, 2, 2.1). The scroller's
+   content box is the page minus 2 × 16, so a card is (that + 16 − the 12 gap) / 1.9; the head, graph and foot fill it, so the day change
+   sits at the card's right edge. */
 .scroller[data-peek] {
   container-type: inline-size;
 }
 
 .scroller[data-peek] .titan[data-interactive] {
-  width: calc((100cqw + var(--l3-spacing-16) - var(--l3-spacing-12)) / 1.8);
+  width: calc((100cqw + var(--l3-spacing-16) - var(--l3-spacing-12)) / 1.9);
 }
 
 .scroller[data-peek] .titanHead,
-.scroller[data-peek] .spark {
+.scroller[data-peek] .spark,
+.scroller[data-peek] .titanFoot {
   width: 100%;
+}
+
+/* Top Movers card head: the company's real name, its ticker 4 under it (label 12, content/tertiary). */
+.titanNames {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--l3-spacing-04);
+  min-width: 0;
+}
+
+/* One line: a long legal name ("UnitedHealth Group Incorporated") ends in "…" (titanName's ellipsis). */
+.titanNames .titanName {
+  flex: none;
+}
+
+.titanSym {
+  color: var(--l3-content-tertiary);
+  font: var(--l3-text-label-12);
 }
 
 .titanHead {
@@ -25518,7 +25531,9 @@ export function UsHome({ usState = 'activate', onActivate, onStock, onMarket, on
         </Stack>
       </div>
 
-      <Stack as="section" gap="16" aria-label={t('us.picks.title')}>
+      {/* List view: 8 below the header (user ask, 18 Nov); the first row's own 16 inside on top follows. The cards view
+          keeps the 16 gap. */}
+      <Stack as="section" gap={picksView === 'list' ? '08' : '16'} aria-label={t('us.picks.title')}>
         <Inset paddingInline="16" paddingBlock="00"><SectionHeader title={t('us.picks.title')} action={{ type: 'view-all', onClick: () => onPicks?.() }} /></Inset>
         {picksView === 'list' ? (
           // Flat (18 Nov): edge-to-edge rows split by an inset hairline, like the stock lists (was a stack of cards).
@@ -25681,12 +25696,17 @@ function MoverCard({ mover, onOpen }: { mover: MoverToday; onOpen: (sym: string)
   const up = mover.up
   const pct = Math.max(0.01, up ? live.changePct : -live.changePct)
   const usd = useUsd()
+  // The company's real (legal) name from the US snapshot, e.g. "The Procter & Gamble Company"; the ticker sits under it.
+  const fullName = usQuote(mover.sym)?.name ?? stock.name
   return (
-    <Card onClick={() => onOpen(mover.sym)} surface="primary" className={styles.titan} aria-label={`${mover.name}, ${usd(live.price)}, ${sign(up)}${pct.toFixed(2)}%`}>
+    <Card onClick={() => onOpen(mover.sym)} surface="primary" className={styles.titan} aria-label={`${fullName} (${mover.sym}), ${usd(live.price)}, ${sign(up)}${pct.toFixed(2)}%`}>
       <span className={styles.titanHead}>
         <Avatar src={usLogo(mover.sym)} initials={mover.sym} size={24} />
-        <span className={styles.titanName}>{mover.name}</span>
-        <span className={styles.titanArrow}><Icon icon={msChevronRight} size={16} /></span>
+        <span className={styles.titanNames}>
+          <span className={styles.titanName}>{fullName}</span>
+          <span className={styles.titanSym}>{mover.sym}</span>
+        </span>
+        <span className={styles.titanArrow}><Icon icon={msChevronRight} size={24} /></span>
       </span>
       <MonthLine closes={[...(usQuote(mover.sym)?.closes ?? []), live.price]} up={up} />
       <span className={styles.titanFoot}>
@@ -26174,13 +26194,23 @@ function PickCard({ pick, onOpen }: { pick: AnalystPick; onOpen: (sym: string) =
 }
 
 /* V17 / V18's US shortcuts (the home's Shortcuts, V1 or V2): V14's two-tone shortcut art (green + its light surface)
-   in the US Stocks colour — L3's discover blue, the US accent elsewhere on the US tab (8 Nov). Its fills read these
-   tokens; the wrapper adds no box. */
+   as a gradient — discover blue at the top to content/primary at the bottom (18 Nov; was flat discover blue) — on a
+   neutral surface/tertiary fill. Its fills read these tokens; the wrapper adds no box.
+   L3 gap: no gradient icon colour in L3 — the gradient is drawn here from two L3 tokens. */
 .usArt {
   display: contents;
-  --l3-content-accent-success-default: var(--l3-content-accent-discover-default);
-  --l3-surface-accent-success-light: var(--l3-surface-accent-discover-light);
+  --l3-content-accent-success-default: url(#us-shortcut-art);
+  --l3-surface-accent-success-light: var(--l3-surface-tertiary);
 }
+/* The gradient's holder: takes no room. */
+.usArtDefs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+.usArtTop { stop-color: var(--l3-content-accent-discover-default); }
+.usArtBottom { stop-color: var(--l3-content-primary); }
 ```
 
 ### `src/flows/stocks/components/us/UsHomeF1.tsx`
@@ -26309,10 +26339,20 @@ function Shortcuts({ onEtfs, onPicks, round = false }: { onEtfs?: () => void; on
   if (!roundOn) return null
   // V17 / V18 (8 Nov, the user's call): ETFs · Analyst picks · Watchlist · Referral — Watchlist and Referral in place of
   // Zing and +3 more — as the home's own shortcuts (Discover Shortcuts), so the Shortcuts option (V1 circles · V2 one
-  // card) switches them as on the IND tab. The icons are V14's two-tone set in the US Stocks colour (.usArt).
+  // card) switches them as on the IND tab. The icons are V14’s two-tone set with a blue-to-black gradient (.usArt, 18 Nov).
   // Watchlist and Referral do nothing yet.
   return (
     <div className={styles.usArt}>
+      {/* The icons' gradient (18 Nov): discover blue at the top to content/primary at the bottom. The art's fills read
+          --l3-content-accent-success-default, which .usArt points at this gradient. Units are the art's own (≈ 20 tall). */}
+      <svg className={styles.usArtDefs} aria-hidden="true" focusable="false">
+        <defs>
+          <linearGradient id="us-shortcut-art" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="19">
+            <stop offset="0" className={styles.usArtTop} />
+            <stop offset="1" className={styles.usArtBottom} />
+          </linearGradient>
+        </defs>
+      </svg>
       <HomeShortcuts
         items={[
           { id: 'etfs', label: t('f1.shortcuts.etfs'), art: 'etf' },
@@ -28191,17 +28231,15 @@ export function useLiveHeatmap(symbols: string[] = heatSymbols): HeatValue[] {
   "switcher.label": "Home prototype settings",
   "switcher.drag": "Drag to move, or into an edge to tuck it away",
   "switcher.open": "Open Home prototype settings",
-  "switcher.us.kyc": "US · KYC pending",
-  "switcher.us.off": "US · Not activated",
-  "switcher.us.review": "US · Under review",
-  "switcher.us.support": "US · Contact support",
-  "switcher.us.failed": "US · Failed",
-  "switcher.us.active": "US · Activated",
-  "switcher.wallet.empty": "Wallet · $0",
-  "switcher.wallet.onTheWay": "Wallet · On the way",
-  "switcher.wallet.funded": "Wallet · Funded",
-  "switcher.holdings.none": "No holdings",
-  "switcher.holdings.some": "Holds NVDA",
+  "switcher.account.kyc": "US · KYC pending",
+  "switcher.account.activate": "US · Not activated",
+  "switcher.account.review": "US · Under review",
+  "switcher.account.support": "US · Contact support",
+  "switcher.account.failed": "US · Failed",
+  "switcher.account.activated": "US · Active · $0",
+  "switcher.account.onTheWay": "US · Money on the way",
+  "switcher.account.ready": "US · Has money",
+  "switcher.account.holding": "US · Holds NVDA",
   "us.heatmap.title": "Heatmap",
   "us.heatmap.index": "Index",
   "us.heatmap.indexLabel": "Index, tap to switch",
@@ -28689,9 +28727,7 @@ export const stocks: Flow = {
       picker: 'dropdown',
       values: activeHomeVersions.map((v) => ({ value: v.id, label: `${v.id.toUpperCase()} · ${v.name}` })),
       default: DEFAULT_HOME_VERSION,
-      // One tap on the floating "V8" button (phone) moves to the next version, on any screen (user, 5 Nov).
-      quickSwitch: true,
-      floatOn: ['stocks-01', 'stocks-02', 'stocks-03', 'stocks-04', 'stocks-05', 'stocks-06', 'stocks-07', 'stocks-09', 'stocks-10', 'stocks-11', 'stocks-13', 'stocks-14', 'stocks-15', 'stocks-16', 'stocks-17', 'stocks-18', 'stocks-21', 'stocks-22'],
+      // V18 is the only version left (18 Nov), so no floating picker or quick-switch button beside the phone.
     },
     // FTUX guide for the IND / US switch: dims the screen, lights the switch with a tooltip. Shown every time a Home
     // opens (and again after a version change) while on; tap anywhere or ✕ to end it.
@@ -56124,8 +56160,7 @@ export const moneyOptions: FlowOption[] = [
     // $ only by default (3 Nov): the ₹ shows when picked here. The stock and ETF pages are the exception — their price
     // always has its ≈ ₹ under it.
     default: 'off',
-    // The Home and its US tab screens (the US tab's fixed states show $ amounts too), a US stock page, the wallet's US tab.
-    floatOn: ['stocks-01', 'stocks-09', 'stocks-10', 'stocks-13', 'stocks-14', 'stocks-15', 'stocks-16', 'stocks-17', 'stocks-19', 'stocks-20', 'stocks-21', 'us-stocks-13', 'us-stocks-54'],
+    // Not in the floating card beside the phone any more (18 Nov, the user's call): still in the settings list.
   },
 ]
 
@@ -57167,11 +57202,24 @@ const files: Record<FlagCode, string> = { us: flagUs, in: flagIndia, cn: flagChi
 export const Flag = ({ code }: { code: FlagCode }) => <img className={styles.flag} src={files[code]} alt="" aria-hidden="true" />
 ```
 
+### `src/shared/ui/MainNav.module.css`
+
+```css
+/* The navbar paints above the page it sits under, so its upward shadow shows over every screen's content — on the
+   Stocks home the feed's cards (raised, transformed by the scroll reveal) were painting over it (18 Nov).
+   L3 gap: BottomNavbar is position: static (no stacking of its own). */
+.nav {
+  position: relative;
+  z-index: 1; /* stacking order isn't a design token */
+}
+```
+
 ### `src/shared/ui/MainNav.tsx`
 
 ```tsx
 import { BottomNavbar } from '@l3/components/BottomNavbar'
 import { NavIcon } from '@l3/components/BottomNavbar/NavIcon'
+import styles from './MainNav.module.css'
 
 export type Section = 'stocks' | 'market' | 'portfolio' | 'mutualFund' | 'fno'
 
@@ -57188,6 +57236,7 @@ export function MainNav({ value, onChange }: { value: Section; onChange?: (value
   return (
     <BottomNavbar
       aria-label="Main"
+      className={styles.nav}
       value={value}
       onChange={(v) => onChange?.(v as Section)}
       items={items.map((i) => ({ ...i, icon: <NavIcon name={i.value} />, selectedIcon: <NavIcon name={i.value} selected /> }))}
@@ -58239,7 +58288,7 @@ export function useSwipeBetween({ canGo, onSwitch, page, area, slides, fades }: 
 ```ts
 // Where the user is in the app — the prototype's app-level settings ("User status" in the preview panel, the phone's
 // settings sheet and a floating card beside the phone). Every screen that depends on it reads it here, so they all stay
-// in sync: pick "US Stocks: activated · money on the way" once and the Home's US tab, a US stock page and the wallet all
+// in sync: pick "User account state: Active · money on the way" once and the Home's US tab, a US stock page and the wallet all
 // show that state. Picking never moves on by itself; taps in the prototype don't change it.
 // In a real app these come from the user's account (KYC status, US Stocks activation, wallet, holdings).
 import type { FlowOption } from '../flows/types'
@@ -58265,44 +58314,30 @@ const BANK_SCREENS = ['deposit-01', 'deposit-06', 'deposit-07', 'deposit-08', 'd
 
 const STATUS_SCREENS = ['stocks-01', 'stocks-09', 'stocks-10', 'stocks-13', 'stocks-14', 'stocks-15', 'stocks-16', 'stocks-17', 'stocks-19', 'stocks-20', 'stocks-21', 'us-stocks-13', 'us-stocks-54']
 
-/** The settings, parent first: each one below only matters (and shows) while the one above has the listed values. */
+/** The app-level user status settings. */
 export const userStatusOptions: FlowOption[] = [
   {
-    // One list for the whole way in, in order, named by where US Stocks are: not active while the Lemonn KYC is pending
-    // (US Stocks can't be activated until it's done), not active, then the activation steps.
-    id: 'us',
+    // One list for the whole way in, in order — one row of states (18 Nov, the user's call; was three settings: US
+    // Stocks activation, then USD wallet and US holdings under "Active"): not active while the Lemonn KYC is pending
+    // (US Stocks can't be activated until it's done), not active, the activation steps, then active with $0, money on
+    // the way, money in the wallet, US holdings. The values are the UsJourney steps.
+    id: 'account',
     group: 'User status',
-    label: 'US Stocks',
+    label: 'User account state',
     picker: 'dropdown',
     values: [
       { value: 'kyc', label: 'Not active · KYC pending' },
-      { value: 'off', label: 'Not active' },
+      { value: 'activate', label: 'Not active' },
       { value: 'review', label: 'Under review' },
       { value: 'support', label: 'Under review · contact support' },
       { value: 'failed', label: 'Activation failed' },
-      { value: 'active', label: 'Active' },
+      { value: 'activated', label: 'Active · $0' },
+      { value: 'onTheWay', label: 'Active · money on the way' },
+      { value: 'ready', label: 'Active · has money' },
+      { value: 'holding', label: 'Active · US holdings' },
     ],
     // The prototype opens on a user who's all set: activated, money in the wallet, holding US stocks.
-    default: 'active',
-    floatOn: STATUS_SCREENS,
-  },
-  {
-    id: 'usWallet',
-    group: 'User status',
-    label: 'USD wallet',
-    values: [{ value: 'empty', label: '$0' }, { value: 'onTheWay', label: 'Money on the way' }, { value: 'funded', label: 'Has money' }],
-    default: 'funded',
-    showIf: { us: ['active'] },
-    floatOn: STATUS_SCREENS,
-  },
-  {
-    id: 'usHoldings',
-    group: 'User status',
-    label: 'US holdings',
-    picker: 'toggle',
-    values: [{ value: 'none', label: 'None' }, { value: 'some', label: 'Holds NVDA' }],
-    default: 'some',
-    showIf: { usWallet: ['funded'] },
+    default: 'holding',
     floatOn: STATUS_SCREENS,
   },
   {
@@ -58324,13 +58359,17 @@ export type UserStatus = { kyc: KycStatus; us: UsActivation; usWallet: UsWallet;
 
 /** The user status as picked (settings under one that's off keep their last pick). KYC comes from the activation list. */
 export function useUserStatus(): UserStatus {
-  const us = useStatus('us') as UsActivation
+  return { ...statusOf(useStatus('account') as UsJourney), banks: useStatus('banks') as BankLinks }
+}
+
+/** One account state as the activation, wallet and holdings it means. */
+function statusOf(step: UsJourney): Omit<UserStatus, 'banks'> {
+  const us: UsActivation = step === 'activate' ? 'off' : ['kyc', 'review', 'support', 'failed'].includes(step) ? (step as UsActivation) : 'active'
   return {
     kyc: us === 'kyc' ? 'pending' : 'done',
     us,
-    usWallet: useStatus('usWallet') as UsWallet,
-    usHoldings: useStatus('usHoldings') as UsHoldings,
-    banks: useStatus('banks') as BankLinks,
+    usWallet: step === 'activated' ? 'empty' : step === 'onTheWay' ? 'onTheWay' : 'funded',
+    usHoldings: step === 'holding' ? 'some' : 'none',
   }
 }
 
@@ -58341,8 +58380,7 @@ export function useUserStatus(): UserStatus {
  */
 export function useLinkedBanks(): LinkedBank[] {
   const picked = useStatus('banks') as BankLinks
-  const us = useStatus('us') as UsActivation
-  const usWallet = useStatus('usWallet') as UsWallet
+  const { us, usWallet } = statusOf(useStatus('account') as UsJourney)
   const moneyMoved = us === 'active' && usWallet !== 'empty'
   const banks = picked === 'none' && moneyMoved ? 'one' : picked
   const linked = { none: [], one: linkedBanks.slice(0, 1), two: linkedBanks, three: [...linkedBanks, otherBank], sbi: [{ ...otherBank, primary: true }] }[banks]
@@ -58388,11 +58426,6 @@ export const useUsJourney = () => usJourney(useUserStatus())
 
 /** Sets the user status to one US Stocks step (a US tab screen showing its own state sets it on arrival). */
 export function setUsJourney(step: UsJourney) {
-  const us: UsActivation = step === 'activate' ? 'off' : ['kyc', 'review', 'support', 'failed'].includes(step) ? (step as UsActivation) : 'active'
-  const set = (id: string, value: string) => setFlowOption(USER_STATUS, id, option(id).default, value)
-  set('us', us)
-  if (us !== 'active') return
-  set('usWallet', step === 'activated' ? 'empty' : step === 'onTheWay' ? 'onTheWay' : 'funded')
-  if (step === 'ready' || step === 'holding') set('usHoldings', step === 'holding' ? 'some' : 'none')
+  setFlowOption(USER_STATUS, 'account', option('account').default, step)
 }
 ```

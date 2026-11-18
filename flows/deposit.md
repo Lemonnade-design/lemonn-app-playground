@@ -17588,7 +17588,7 @@ export const typeText = (value: string, key: string) => {
 ```ts
 // Where the user is in the app — the prototype's app-level settings ("User status" in the preview panel, the phone's
 // settings sheet and a floating card beside the phone). Every screen that depends on it reads it here, so they all stay
-// in sync: pick "US Stocks: activated · money on the way" once and the Home's US tab, a US stock page and the wallet all
+// in sync: pick "User account state: Active · money on the way" once and the Home's US tab, a US stock page and the wallet all
 // show that state. Picking never moves on by itself; taps in the prototype don't change it.
 // In a real app these come from the user's account (KYC status, US Stocks activation, wallet, holdings).
 import type { FlowOption } from '../flows/types'
@@ -17614,44 +17614,30 @@ const BANK_SCREENS = ['deposit-01', 'deposit-06', 'deposit-07', 'deposit-08', 'd
 
 const STATUS_SCREENS = ['stocks-01', 'stocks-09', 'stocks-10', 'stocks-13', 'stocks-14', 'stocks-15', 'stocks-16', 'stocks-17', 'stocks-19', 'stocks-20', 'stocks-21', 'us-stocks-13', 'us-stocks-54']
 
-/** The settings, parent first: each one below only matters (and shows) while the one above has the listed values. */
+/** The app-level user status settings. */
 export const userStatusOptions: FlowOption[] = [
   {
-    // One list for the whole way in, in order, named by where US Stocks are: not active while the Lemonn KYC is pending
-    // (US Stocks can't be activated until it's done), not active, then the activation steps.
-    id: 'us',
+    // One list for the whole way in, in order — one row of states (18 Nov, the user's call; was three settings: US
+    // Stocks activation, then USD wallet and US holdings under "Active"): not active while the Lemonn KYC is pending
+    // (US Stocks can't be activated until it's done), not active, the activation steps, then active with $0, money on
+    // the way, money in the wallet, US holdings. The values are the UsJourney steps.
+    id: 'account',
     group: 'User status',
-    label: 'US Stocks',
+    label: 'User account state',
     picker: 'dropdown',
     values: [
       { value: 'kyc', label: 'Not active · KYC pending' },
-      { value: 'off', label: 'Not active' },
+      { value: 'activate', label: 'Not active' },
       { value: 'review', label: 'Under review' },
       { value: 'support', label: 'Under review · contact support' },
       { value: 'failed', label: 'Activation failed' },
-      { value: 'active', label: 'Active' },
+      { value: 'activated', label: 'Active · $0' },
+      { value: 'onTheWay', label: 'Active · money on the way' },
+      { value: 'ready', label: 'Active · has money' },
+      { value: 'holding', label: 'Active · US holdings' },
     ],
     // The prototype opens on a user who's all set: activated, money in the wallet, holding US stocks.
-    default: 'active',
-    floatOn: STATUS_SCREENS,
-  },
-  {
-    id: 'usWallet',
-    group: 'User status',
-    label: 'USD wallet',
-    values: [{ value: 'empty', label: '$0' }, { value: 'onTheWay', label: 'Money on the way' }, { value: 'funded', label: 'Has money' }],
-    default: 'funded',
-    showIf: { us: ['active'] },
-    floatOn: STATUS_SCREENS,
-  },
-  {
-    id: 'usHoldings',
-    group: 'User status',
-    label: 'US holdings',
-    picker: 'toggle',
-    values: [{ value: 'none', label: 'None' }, { value: 'some', label: 'Holds NVDA' }],
-    default: 'some',
-    showIf: { usWallet: ['funded'] },
+    default: 'holding',
     floatOn: STATUS_SCREENS,
   },
   {
@@ -17673,13 +17659,17 @@ export type UserStatus = { kyc: KycStatus; us: UsActivation; usWallet: UsWallet;
 
 /** The user status as picked (settings under one that's off keep their last pick). KYC comes from the activation list. */
 export function useUserStatus(): UserStatus {
-  const us = useStatus('us') as UsActivation
+  return { ...statusOf(useStatus('account') as UsJourney), banks: useStatus('banks') as BankLinks }
+}
+
+/** One account state as the activation, wallet and holdings it means. */
+function statusOf(step: UsJourney): Omit<UserStatus, 'banks'> {
+  const us: UsActivation = step === 'activate' ? 'off' : ['kyc', 'review', 'support', 'failed'].includes(step) ? (step as UsActivation) : 'active'
   return {
     kyc: us === 'kyc' ? 'pending' : 'done',
     us,
-    usWallet: useStatus('usWallet') as UsWallet,
-    usHoldings: useStatus('usHoldings') as UsHoldings,
-    banks: useStatus('banks') as BankLinks,
+    usWallet: step === 'activated' ? 'empty' : step === 'onTheWay' ? 'onTheWay' : 'funded',
+    usHoldings: step === 'holding' ? 'some' : 'none',
   }
 }
 
@@ -17690,8 +17680,7 @@ export function useUserStatus(): UserStatus {
  */
 export function useLinkedBanks(): LinkedBank[] {
   const picked = useStatus('banks') as BankLinks
-  const us = useStatus('us') as UsActivation
-  const usWallet = useStatus('usWallet') as UsWallet
+  const { us, usWallet } = statusOf(useStatus('account') as UsJourney)
   const moneyMoved = us === 'active' && usWallet !== 'empty'
   const banks = picked === 'none' && moneyMoved ? 'one' : picked
   const linked = { none: [], one: linkedBanks.slice(0, 1), two: linkedBanks, three: [...linkedBanks, otherBank], sbi: [{ ...otherBank, primary: true }] }[banks]
@@ -17737,11 +17726,6 @@ export const useUsJourney = () => usJourney(useUserStatus())
 
 /** Sets the user status to one US Stocks step (a US tab screen showing its own state sets it on arrival). */
 export function setUsJourney(step: UsJourney) {
-  const us: UsActivation = step === 'activate' ? 'off' : ['kyc', 'review', 'support', 'failed'].includes(step) ? (step as UsActivation) : 'active'
-  const set = (id: string, value: string) => setFlowOption(USER_STATUS, id, option(id).default, value)
-  set('us', us)
-  if (us !== 'active') return
-  set('usWallet', step === 'activated' ? 'empty' : step === 'onTheWay' ? 'onTheWay' : 'funded')
-  if (step === 'ready' || step === 'holding') set('usHoldings', step === 'holding' ? 'some' : 'none')
+  setFlowOption(USER_STATUS, 'account', option('account').default, step)
 }
 ```

@@ -472,6 +472,7 @@
     "src/shared/ui/Diwali.tsx",
     "src/shared/ui/Flag.module.css",
     "src/shared/ui/Flag.tsx",
+    "src/shared/ui/MainNav.module.css",
     "src/shared/ui/MainNav.tsx",
     "src/shared/ui/Rail.module.css",
     "src/shared/ui/Rail.tsx",

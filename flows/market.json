@@ -181,6 +181,7 @@
     "src/shared/ui/CenteredTabs.tsx",
     "src/shared/ui/Flag.module.css",
     "src/shared/ui/Flag.tsx",
+    "src/shared/ui/MainNav.module.css",
     "src/shared/ui/MainNav.tsx",
     "src/shared/ui/Screen.module.css",
     "src/shared/ui/Screen.tsx",
