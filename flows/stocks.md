@@ -363,8 +363,11 @@ lower on the page is scrolled into view first). `components/MarketSwitchGuide.ts
 
 ### Changelog
 
+- 2026-11-18 — Logos: no border on any stock / ETF logo or avatar (global override of L3 Avatar's 1px edge in local-tokens.css; also the FTUX sheet's brand plates).
+
 - 2026-11-18 — Home: section headings have no one-line description under them (Top analyst picks, Discover ETFs, baskets) and are 16 instead of L3 SectionHeader's 14 (local override in Home.module.css; L3 gap: no size option).
 - 2026-11-18 — Home: Shortcuts V2 is the default (V1 stays as an option).
+- 2026-11-18 — Top bar: the profile initials disc has no 1px indigo ring (also in F&O's header).
 
 - 2026-11-17 — Hero product row: in the HeroShell states (US tab before activation, under review, failed, activated) the row now sits in the same 16 side inset as the status card above it (it ran edge to edge, its last card cut off). `ProductRowF1` still assumes its holder gives the 16 (HoldingsHero's padding, or Home's `inCard`), with or without `fill`.
 - 2026-11-17 — Themes page: tapping (or swiping to) a theme glides its tab to the middle of the rail, so the themes
@@ -22888,13 +22891,12 @@ export function ShortcutArt({ art }: { art: Art }) {
   outline-offset: 2px;
 }
 
-/* Initials on an indigo disc with a 1px indigo ring. */
+/* Initials on an indigo disc, no ring (18 Nov). */
 .bar .profile {
   width: var(--app-stocks-topbar-avatar);
   height: var(--app-stocks-topbar-avatar);
   border-radius: var(--l3-radius-full);
   background: var(--l3-surface-accent-indigo-light);
-  box-shadow: inset 0 0 0 1px var(--l3-border-accent-indigo-default); /* 1px ring */
   font: var(--l3-text-label-14);
 }
 
@@ -27009,7 +27011,6 @@ export function ActivationSubmittedSheet({ onOkay }: { onOkay?: () => void }) {
    black on it instead of a black plate. */
 .logo[data-one-plate] {
   background: var(--l3-static-white);
-  box-shadow: inset 0 0 0 1px var(--l3-border-light); /* 1px hairline: the plates keep an edge on the white sheet */
 }
 
 .logoMark[data-invert] {

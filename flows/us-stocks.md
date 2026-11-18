@@ -199,6 +199,8 @@ Every tap he wired is kept. The main path: FTUX sheet → Activate → Declarati
 
 ### Changelog
 
+- 2026-11-18 — Logos: no border on any stock / ETF logo or avatar (global override of L3 Avatar's 1px edge in local-tokens.css; Peers table plates too).
+
 - 2026-11-17 — ETF list filled with real US-listed funds in every category: Regular 25 → 54 (Country chips: US 10 → 21, new India chip 4, China 5, Japan 5, Europe 6, Korea 2; Sector chips: Financials, Healthcare, Energy 1 → 4 each, Industrials 2 → 4), Boosted 8 → 19 (UPRO / SPXU, TECL / TECS, FAS / FAZ, YINN / YANG, KORU, TSLL, TSLQ added; groups list the long first). Issuer logos mapped in `src/shared/data/etfIssuers.ts`; prices and day change from `npm run us:snapshot`. L3 gaps / data gaps: no Global X wordmark (the file is the BOTZ robot-arm icon), no Franklin (FLKR) or Tradr (TSLQ) logo yet; Korea has only two US-listed regular funds.
 - 2026-11-17 — Allocation V2 (prototype option "Allocation", ETFs): the split as Top holdings' panel — "N sectors · Weight", then rows of name, short bar and share, no icon (`ShareBars`); V1 donut stays the default. About Company / About Fund: the title moves inside the card. ETFs list: the Regular tab gets a chart icon, like Boosted's bolt.  "How Boosted ETFs work" sheet: no extra side padding (content 16 from the edges, like other sheets). Peers / ETF tables: column names line up with the numbers under them (same 4 inset as the highlight box; wide figures spill left). "Holding weight" versions archived: Top holdings keeps V3 (small bar before the %), the setting is gone. "Stock / ETF page" setting is a dropdown.
 - 2026-11-17 — Similar ETFs on the F1 ETF page too (before News). Stock pages (both layouts) get "ETFs with {stock}" after Peers: every catalogue ETF that holds the stock, biggest weight first (Weight · Today · Expense, or Returns), tap opens the ETF; hidden when none holds it (`etfsHolding` in etf/data.ts, `EtfsHolding` in EtfPeers.tsx).
@@ -24948,10 +24950,6 @@ export function ImgIcon({ src, w, h = w, className }: { src: string; w: number; 
   width: 100%;
   height: 100%;
   padding: 14%;
-}
-
-.logo[data-plate] {
-  border: 1px solid var(--l3-border-light);
 }
 
 .logo[data-fill] img {
