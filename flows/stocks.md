@@ -363,6 +363,7 @@ lower on the page is scrolled into view first). `components/MarketSwitchGuide.ts
 
 ### Changelog
 
+- 2026-11-18 — US home, Top analyst picks (list): “94% of analysts recommend” is back to ListCell's Description 12; the “Expected profit” caption stays 10.
 - 2026-11-18 — L3 moved to 9467515: raised only on solid black (Primary, selected black pill, sliding pill); every other button and chip is flat, with no drop shadow. No local overrides needed removing (the app had none on buttons or chips).
 - 2026-11-18 — US home, Top Movers: the cards size to show 1.8 up front at any phone width ((page − 16 − 12 gap) / 1.8, ≈ 202 on a 392 phone; were 150); the head and graph fill the card.
 - 2026-11-18 — Themes page: “All stocks” are edge-to-edge list rows (StockListCard look="list", as Market) instead of cards. The shared list row's hairline now runs edge to edge (was inset from the symbol to the price), in every list.
@@ -25386,7 +25387,7 @@ function PickRow({ pick, onOpen }: { pick: AnalystPick; onOpen: (sym: string) =>
       iconLeft={<Avatar src={usLogo(pick.sym)} initials={pick.sym.slice(0, 2)} size={40} label={pick.name} />}
       labelSize="14"
       label={pick.name}
-      description={<span className={styles.pickCaption}>{t('us.picks.analysts', { pct: pick.analystsPct })}</span>}
+      description={t('us.picks.analysts', { pct: pick.analystsPct })}
       trailing={<span className={styles.pickMove}>{formatPct(pick.expectedProfit)}</span>}
       caption={<span className={styles.pickCaption}>{t('us.picks.expectedProfit')}</span>}
       aria-label={t('us.picks.rowLabel', { name: pick.name, sym: pick.sym, analysts: pick.analystsPct, pct: pick.expectedProfit.toFixed(1) })}

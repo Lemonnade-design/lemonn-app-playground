@@ -153,6 +153,10 @@ card is used by every stock list in the app.
 - **List divider** — ListCell has no divider option; the stock rows draw their own 1px hairline (`StockListCard` `look="list"`).
 
 ### Changelog
+- 2026-11-18 — New setting Picker: V1 "IN" / "US" (default), V2 "IN Stocks" / "US Stocks" on the market pill.
+- 2026-11-18 — List tabs: new setting Tabs — V1 underline tabs (default; the 1px baseline now runs under the whole row, the IN / US picker too), V2 L3 pill chips at the default (big) size (secondary emphasis: the selected chip is outlined border/dark, not black; the IN / US picker is the big pill too; 16 between the divider and the first chip, as on the picker's side; 8 above and below, no baseline).
+- 2026-11-18 — IN / US picker: the ↕ switch arrow is 14 (was 16). L3 gap: a Tab's icon slot is fixed at 16 (local override).
+- 2026-11-18 — Filter bar (Apply filters + filter button): 12 above and below (was 16).
 
 - 2026-11-04 — Market · US stocks (market-09) opens on the All list.
 - 2026-11-04 — The IN / US picker shows the country's round flag (shared Flag) before the label.
@@ -344,6 +348,8 @@ export function StockRow({ stock, onOpen }: { stock: MarketStock; onOpen?: (symb
   "tabs.label": "Market lists",
   "picker.in": "IN",
   "picker.us": "US",
+  "pickerLong.in": "IN Stocks",
+  "pickerLong.us": "US Stocks",
   "picker.label": "Market: {market}. Switch to {other}",
   "tab.all": "All",
   "tab.gainers": "Top gainers",
@@ -683,6 +689,12 @@ export const market: Flow = {
     { id: 'lists', title: 'Lists' },
     { id: 'filters', title: 'Filters' },
   ],
+  options: [
+    // The list tabs beside the IN / US picker: V1 underline tabs (default), V2 pill chips (18 Nov, the user's ask).
+    { id: 'tabs', label: 'Tabs', values: [{ value: 'v1', label: 'V1' }, { value: 'v2', label: 'V2' }], default: 'v1' },
+    // The IN / US picker's label: V1 "IN" / "US" (default), V2 "IN Stocks" / "US Stocks" (18 Nov, the user's ask).
+    { id: 'picker', label: 'Picker', values: [{ value: 'v1', label: 'V1' }, { value: 'v2', label: 'V2' }], default: 'v1' },
+  ],
   screens: [
     { id: 'market-01', section: 'lists', name: 'Market · All', figma: '', note: 'The filter bar shows "Apply filters" until something is applied.', tab: true, render: (go) => <Market onTab={(t) => goToTab(go, t)} onSearch={() => go('search-24')} onOpenUs={(sym) => { viewUsStock(sym); go('us-stocks-13') }} /> },
     { id: 'market-02', section: 'lists', name: 'Market · Top gainers', figma: '', note: 'Same layout — only the list changes.', tab: true, render: (go) => <Market tab="gainers" onTab={(t) => goToTab(go, t)} onSearch={() => go('search-24')} onOpenUs={(sym) => { viewUsStock(sym); go('us-stocks-13') }} /> },
@@ -757,6 +769,27 @@ export const market: Flow = {
   background: var(--l3-border-light);
 }
 
+/* The picker's ↕ switch arrow is 14 (user ask, 18 Nov). L3 gap: a Tab's icon slot is fixed at 16, whatever the Icon's size. */
+.picker [role='tab'] > span:last-child {
+  width: var(--l3-icon-size-14);
+  height: var(--l3-icon-size-14);
+}
+
+/* V1: the underline tabs' 1px baseline runs under the whole row, the IN / US picker too (L3 draws it under the tabs only). */
+.underlineRow {
+  box-shadow: inset 0 -1px 0 var(--l3-border-light); /* 1px hairline */
+}
+
+/* V2: L3 pill chips at their default (big) size — 8 above and below; no baseline. */
+.pillRow {
+  padding-block: var(--l3-spacing-08);
+}
+
+/* …and 16 from the divider to the first chip (and after the last), the same as the picker pill's 16. */
+.pillRow .tabs [role='tablist'] {
+  padding-inline: var(--l3-spacing-16);
+}
+
 .tabs {
   flex: 1;
   min-width: 0; /* lets the tab row scroll sideways instead of widening the page */
@@ -817,6 +850,7 @@ import { Screen } from '../../../shared/ui/Screen'
 import { CenteredTabs } from '../../../shared/ui/CenteredTabs'
 import { neighbour, useSwipeBetween } from '../../../shared/ui/useSwipeBetween'
 import { useMarketSnapshot } from '../../../shared/data/companies'
+import { useFlowOption } from '../../../shared/prototype'
 import { takeMarketHandoff } from '../../../shared/data/marketHandoff'
 import { StockRow } from '../components/StockRow'
 import { applyFilters, currencyOf, listFor, pickedIn, picks, tabs, withPicks, type FilterGroupId, type Filters, type Market as MarketId, type MarketTab } from '../data'
@@ -850,6 +884,10 @@ type Props = {
 export function Market({ market: initialMarket = 'in', tab: initialTab = 'all', filters: initialFilters = {}, sheet = false, sheetSection, onTab, onSearch, onOpenUs }: Props) {
   // Opened from another screen with a market / tab / filters to start on (Home's "View all")? Read once.
   const [handoff] = useState(takeMarketHandoff)
+  // List tabs: V1 underline tabs (a baseline under the whole row, the picker too), V2 pill chips (settings: Tabs).
+  const pillTabs = useFlowOption('market', 'tabs', 'v1') === 'v2'
+  // The IN / US picker's label: V1 "IN" / "US", V2 "IN Stocks" / "US Stocks" (settings: Picker).
+  const longPicker = useFlowOption('market', 'picker', 'v1') === 'v2'
   const [market, setMarket] = useState<MarketId>(handoff?.market ?? initialMarket)
   const [tab, setTab] = useState<MarketTab>(handoff?.tab && (tabs as string[]).includes(handoff.tab) ? (handoff.tab as MarketTab) : initialTab)
   const [filters, setFilters] = useState<Filters>(handoff ? (handoff.filters ?? {}) : initialFilters)
@@ -945,7 +983,7 @@ export function Market({ market: initialMarket = 'in', tab: initialTab = 'all', 
           bottom={
             <Stack>
               {/* Sticky: the tabs, then the filter bar — it stays put while the list scrolls or slides to another tab. */}
-              <Stack direction="horizontal" align="center">
+              <Stack direction="horizontal" align="center" className={pillTabs ? styles.pillRow : styles.underlineRow}>
                 {/*
                   * One pill, one tap: shows the market on screen with the ↕ switch icon and flips IN ⇄ US. The whole
                   * block around it (16 each side, the row's full height) takes the tap, so the small pill is easy to hit;
@@ -955,9 +993,9 @@ export function Market({ market: initialMarket = 'in', tab: initialTab = 'all', 
                   <Inset paddingInline="16" paddingBlock="00">
                     <Tabs
                       appearance="pill"
-                      size="sm"
+                      size={pillTabs ? 'md' : 'sm'}
                       aria-label={t('picker.label', { market: t(`picker.${market}`), other: t(`picker.${other}`) })}
-                      items={[{ value: market, label: t(`picker.${market}`), iconLeft: <Flag code={market === 'in' ? 'in' : 'us'} />, iconRight: <Icon icon={lmSwitchArrowVertical} size={16} /> }]}
+                      items={[{ value: market, label: t(`${longPicker ? 'pickerLong' : 'picker'}.${market}`), iconLeft: <Flag code={market === 'in' ? 'in' : 'us'} />, iconRight: <Icon icon={lmSwitchArrowVertical} size={14} /> }]}
                       value={market}
                       onChange={() => {}}
                     />
@@ -965,10 +1003,10 @@ export function Market({ market: initialMarket = 'in', tab: initialTab = 'all', 
                 </div>
                 <span className={styles.divider} aria-hidden="true" />
                 <div className={styles.tabs}>
-                  <CenteredTabs aria-label={t('tabs.label')} items={tabs.map((id) => ({ value: id, label: t(`tab.${id}`, { currency }) }))} value={tapped ?? tab} onChange={(v) => pick(v as MarketTab)} />
+                  <CenteredTabs appearance={pillTabs ? 'pill' : 'underline'} emphasis={pillTabs ? 'secondary' : undefined} aria-label={t('tabs.label')} items={tabs.map((id) => ({ value: id, label: t(`tab.${id}`, { currency }) }))} value={tapped ?? tab} onChange={(v) => pick(v as MarketTab)} />
                 </div>
               </Stack>
-              <Inset paddingInline="16" paddingBlock="16">
+              <Inset paddingInline="16" paddingBlock="12">
                 <Stack direction="horizontal" align="center" gap="12">
                   {applied.length ? (
                     <Stack direction="horizontal" gap="08" className={styles.applied} role="group" aria-label={t('filterBar.appliedLabel')}>
