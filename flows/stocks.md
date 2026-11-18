@@ -363,6 +363,14 @@ lower on the page is scrolled into view first). `components/MarketSwitchGuide.ts
 
 ### Changelog
 
+- 2026-11-18 — Themes page: “All stocks” are edge-to-edge list rows (StockListCard look="list", as Market) instead of cards. The shared list row's hairline now runs edge to edge (was inset from the symbol to the price), in every list.
+
+- 2026-11-18 — US home, Top analyst picks (list): “94% of analysts recommend” and the “Expected profit” caption are Description 10 (were ListCell's 12).
+
+- 2026-11-18 — Themes page (stocks-23…28): the overview card's one-line description is Description 12 (was 14).
+
+- 2026-11-18 — US home, Brands You Know: the logo is 40 (was 48), the same Avatar size as the list cards.
+
 - 2026-11-18 — Home: scroll reveal — each feed section below the fold fades in and rises 16 as it scrolls into view (once; 700 · L3 decelerate, slowed from 400 the same day; off with reduced motion). What's on screen at open shows at once.
 
 - 2026-11-18 — Logos: no border on any stock / ETF logo or avatar (L3 Avatar 1.2.0 dropped its 1px edge — design system moved to 4a58bf1; also the FTUX sheet's brand plates).
@@ -24906,6 +24914,12 @@ export function UsHero({ onHoldings, onBuy, onAddUsd, empty = false, children }:
 .heatmap[data-f1] .heatCell {
   color: var(--l3-static-white);
 }
+
+/* Top analyst picks: "94% of analysts recommend" and "Expected profit" are Description 10 (18 Nov, the user's call;
+   L3 ListCell's md description and caption are 12). */
+.pickCaption {
+  font: var(--l3-text-description-10);
+}
 ```
 
 ### `src/flows/stocks/components/us/UsHome.tsx`
@@ -25315,7 +25329,7 @@ function BrandCard({ brand, onOpen }: { brand: Brand; onOpen: (sym: string) => v
   return (
     <Card onClick={() => onOpen(brand.sym)} surface="primary" className={styles.brand}>
       <span className={styles.brandStack}>
-        <Avatar src={usLogo(brand.sym)} initials={brand.sym.slice(0, 2)} size={48} label={brand.name} />
+        <Avatar src={usLogo(brand.sym)} initials={brand.sym.slice(0, 2)} size={40} label={brand.name} />
         <span className={styles.brandName}>{brand.name}</span>
         <span className={styles.brandPrice}><Usd value={live.price} layout="inline" /></span>
         <PriceChange value={live.changePct} size="sm" />
@@ -25350,9 +25364,9 @@ function PickRow({ pick, onOpen }: { pick: AnalystPick; onOpen: (sym: string) =>
       iconLeft={<Avatar src={usLogo(pick.sym)} initials={pick.sym.slice(0, 2)} size={40} label={pick.name} />}
       labelSize="14"
       label={pick.name}
-      description={t('us.picks.analysts', { pct: pick.analystsPct })}
+      description={<span className={styles.pickCaption}>{t('us.picks.analysts', { pct: pick.analystsPct })}</span>}
       trailing={<span className={styles.pickMove}>{formatPct(pick.expectedProfit)}</span>}
-      caption={t('us.picks.expectedProfit')}
+      caption={<span className={styles.pickCaption}>{t('us.picks.expectedProfit')}</span>}
       aria-label={t('us.picks.rowLabel', { name: pick.name, sym: pick.sym, analysts: pick.analystsPct, pct: pick.expectedProfit.toFixed(1) })}
     />
   )
@@ -29270,7 +29284,7 @@ function initials(name: string) {
 
 .desc {
   margin: 0;
-  font: var(--l3-text-description-14);
+  font: var(--l3-text-description-12);
   color: var(--l3-content-secondary);
 }
 
@@ -29390,7 +29404,7 @@ const THEME_ICONS: Record<ThemeId, string> = {
 function ThemeStock({ sym, onOpen }: { sym: string; onOpen: (sym: string) => void }) {
   const stock = usStock(sym)
   const live = useLiveQuote(sym, stock.price, stock.change)
-  return <StockListCard symbol={sym} name={stock.name} logoUrl={usLogo(sym)} price={<Usd value={live.price} layout="inline" />} changePct={live.changePct} onOpen={() => onOpen(sym)} />
+  return <StockListCard symbol={sym} name={stock.name} logoUrl={usLogo(sym)} price={<Usd value={live.price} layout="inline" />} changePct={live.changePct} look="list" onOpen={() => onOpen(sym)} />
 }
 
 /** The return periods the switcher steps through, starting on 1Y. */
@@ -29429,16 +29443,19 @@ function ThemeOverview({ id }: { id: ThemeId }) {
 function ThemeBody({ id, onOpen }: { id: ThemeId; onOpen: (sym: string) => void }) {
   const theme = themeById(id)
   return (
-    <Inset paddingInline="16" paddingBlock="24" data-page-end>
+    <Inset paddingInline="00" paddingBlock="24" data-page-end>
       <Stack gap="32">
-        <ThemeOverview id={id} />
-        <Section gap="16">
-          <SectionHeader title={t('us.themes.allStocks')} description={t('us.themes.stocks', { count: theme.symbols.length })} headingLevel={3} />
-          <Stack gap="12">
+        <Inset paddingInline="16" paddingBlock="00"><ThemeOverview id={id} /></Inset>
+        {/* All stocks: edge-to-edge list rows (StockListCard look="list", as Market's lists), a hairline between them. */}
+        <Section gap="08">
+          <Inset paddingInline="16" paddingBlock="00">
+            <SectionHeader title={t('us.themes.allStocks')} description={t('us.themes.stocks', { count: theme.symbols.length })} headingLevel={3} />
+          </Inset>
+          <Stack gap="00">
             {theme.symbols.map((sym) => <ThemeStock key={sym} sym={sym} onOpen={onOpen} />)}
           </Stack>
         </Section>
-        <p className={styles.footnote}>{t('us.themes.footnote')}</p>
+        <Inset paddingInline="16" paddingBlock="00"><p className={styles.footnote}>{t('us.themes.footnote')}</p></Inset>
       </Stack>
     </Inset>
   )
@@ -55853,8 +55870,8 @@ export function Spot({ icon, tone = 'brand', size = 'lg' }: { icon: string; tone
   box-shadow: inset 0 0 0 1px var(--l3-border-light), var(--l3-shadow-elevation-soft); /* 1px: Figma stroke weight has no variable */
 }
 
-/* look="list": an edge-to-edge row with a hairline under it, from the symbol's start (16 + the 40 logo + 16) to the
-   price's end (16 in). FLAG: L3 gap — ListCell has no divider option (its USAGE.md, open question). */
+/* look="list": an edge-to-edge row with an edge-to-edge hairline under it (18 Nov; was inset from the symbol's start to
+   the price's end). FLAG: L3 gap — ListCell has no divider option (its USAGE.md, open question). */
 .listRow {
   position: relative;
 }
@@ -55862,7 +55879,7 @@ export function Spot({ icon, tone = 'brand', size = 'lg' }: { icon: string; tone
 .listRow::after {
   content: '';
   position: absolute;
-  inset: auto var(--l3-spacing-16) 0 calc(var(--l3-spacing-16) * 2 + var(--l3-size-40));
+  inset: auto 0 0;
   border-bottom: 1px solid var(--l3-border-light); /* 1px hairline */
   pointer-events: none;
 }
