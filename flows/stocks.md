@@ -363,6 +363,9 @@ lower on the page is scrolled into view first). `components/MarketSwitchGuide.ts
 
 ### Changelog
 
+- 2026-11-18 — Home: section headings have no one-line description under them (Top analyst picks, Discover ETFs, baskets) and are 16 instead of L3 SectionHeader's 14 (local override in Home.module.css; L3 gap: no size option).
+- 2026-11-18 — Home: Shortcuts V2 is the default (V1 stays as an option).
+
 - 2026-11-17 — Hero product row: in the HeroShell states (US tab before activation, under review, failed, activated) the row now sits in the same 16 side inset as the status card above it (it ran edge to edge, its last card cut off). `ProductRowF1` still assumes its holder gives the 16 (HoldingsHero's padding, or Home's `inCard`), with or without `fill`.
 - 2026-11-17 — Themes page: tapping (or swiping to) a theme glides its tab to the middle of the rail, so the themes
   after it come into view (`CenteredTabs`). The tab and its underline move on the tap (a neighbour's body still
@@ -20002,7 +20005,7 @@ import styles from './Home.module.css'
 
 /** Which shortcuts design the Home shows (prototype option "Shortcuts", flow options in index.tsx): V1 is the default. */
 export type ShortcutsVersion = 'v1' | 'v2'
-export const DEFAULT_SHORTCUTS: ShortcutsVersion = 'v1'
+export const DEFAULT_SHORTCUTS: ShortcutsVersion = 'v2'
 
 /**
  * "Do more with Lemonn": four feature shortcuts, with a count or "New" where there's something to see.
@@ -21476,7 +21479,7 @@ import styles from './Home.module.css'
 export function IdeaBaskets({ onOpen }: { onOpen?: (id: string) => void }) {
   return (
     <Stack as="section" gap="16" aria-label={t('baskets.title')}>
-      <Inset paddingInline="16" paddingBlock="00"><SectionHeader title={t('baskets.title')} description={t('baskets.description')} /></Inset>
+      <Inset paddingInline="16" paddingBlock="00"><SectionHeader title={t('baskets.title')} /></Inset>
       <Rail label={t('baskets.railLabel')} visible={1.19}>
         {ideaBaskets.map((b) => (
           <Card key={b.id} onClick={() => onOpen?.(b.id)}>
@@ -25054,7 +25057,7 @@ export function UsHome({ usState = 'activate', onActivate, onStock, onMarket, on
       </div>
 
       <Stack as="section" gap="16" aria-label={t('us.picks.title')}>
-        <Inset paddingInline="16" paddingBlock="00"><SectionHeader title={t('us.picks.title')} description={t('us.picks.description')} action={{ type: 'view-all', onClick: () => onPicks?.() }} /></Inset>
+        <Inset paddingInline="16" paddingBlock="00"><SectionHeader title={t('us.picks.title')} action={{ type: 'view-all', onClick: () => onPicks?.() }} /></Inset>
         {picksView === 'list' ? (
           <Inset paddingInline="16" paddingBlock="00">
             <Stack gap="12">
@@ -25232,7 +25235,7 @@ export function DiscoverEtfs({ onOpen, onViewAll, f1 = false }: { onOpen: (sym: 
   return (
     <Stack as="section" gap="16" aria-label={t('us.etfs.title')}>
       <Inset paddingInline="16" paddingBlock="00">
-        <SectionHeader title={t('us.etfs.title')} description={t(f1 ? 'f1.etfs.description' : 'us.etfs.description')} action={f1 ? undefined : { type: 'view-all', onClick: onViewAll }} />
+        <SectionHeader title={t('us.etfs.title')} action={f1 ? undefined : { type: 'view-all', onClick: onViewAll }} />
       </Inset>
       {/* The small chips of Top movers: switcher chip, divider, chips (Home always uses the small ones). */}
       <Stack direction="horizontal" align="center" gap="12" className={styles.chips}>
@@ -27931,7 +27934,8 @@ export const stocks: Flow = {
     // the card variant stays in Home.tsx (HEADER_CARD) but is no longer offered.
     // US tab, Top analyst picks: a list of four rows (default, 3 Nov) or the swipeable cards with the 7-day line.
     { id: 'picksView', group: 'Home', label: 'Analyst picks', values: [{ value: 'list', label: 'List' }, { value: 'cards', label: 'Cards' }], default: 'list' },
-    { id: 'shortcuts', group: 'Home', label: 'Shortcuts', values: [{ value: 'v1', label: 'V1' }, { value: 'v2', label: 'V2' }], default: 'v1' },
+    // Home shortcuts: V2 is the default (18 Nov, the user's call); V1 is the earlier row.
+    { id: 'shortcuts', group: 'Home', label: 'Shortcuts', values: [{ value: 'v1', label: 'V1' }, { value: 'v2', label: 'V2' }], default: 'v2' },
     // US tab, Discover ETFs: the region pills with their round flags (default) or text only — testing whether the flags are too much (3 Nov).
     // V17 / V18's round US shortcuts under the hero: shown by default (8 Nov, the user's call); off to see the hero's
     // cards alone.
@@ -28598,6 +28602,12 @@ export function BrandsPage({ onStock }: BrandsPageProps) {
 }
 .marquee[data-hero-top][data-state='top'] .band {
   background: var(--l3-surface-primary);
+}
+
+/* Home's section headings (L3 SectionHeader titles) are 16, not L3's 14 (L3 gap: SectionHeader has no size option).
+   :not([id]) leaves headings that name a card or sheet (UsActivationCard, FTUX) alone. */
+.flatCards.flatCards h2:not([id]) {
+  font: var(--l3-text-heading-16);
 }
 ```
 
