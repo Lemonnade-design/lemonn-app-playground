@@ -1,6 +1,6 @@
 # Flow: US Stocks (`us-stocks`)
 
-> One self-contained file for converting this flow to another platform. Read https://lemonnade-design.github.io/lemonn-app-prototype/CONVERT.md first. Design system: Lemonnade V3 @ `6de43c8` (components, tokens and rules: https://lemonnade-design.github.io/lemonnade-v3-docs/llms.txt).
+> One self-contained file for converting this flow to another platform. Read https://lemonnade-design.github.io/lemonn-app-prototype/CONVERT.md first. Design system: Lemonnade V3 @ `4a58bf1` (components, tokens and rules: https://lemonnade-design.github.io/lemonnade-v3-docs/llms.txt).
 
 Activate US Stocks, add money to the USD wallet, buy and sell, withdraw (teammate import, under review).
 
@@ -199,7 +199,7 @@ Every tap he wired is kept. The main path: FTUX sheet → Activate → Declarati
 
 ### Changelog
 
-- 2026-11-18 — Logos: no border on any stock / ETF logo or avatar (global override of L3 Avatar's 1px edge in local-tokens.css; Peers table plates too).
+- 2026-11-18 — Logos: no border on any stock / ETF logo or avatar (L3 Avatar 1.2.0 dropped its 1px edge — design system moved to 4a58bf1; Peers table plates too).
 
 - 2026-11-17 — ETF list filled with real US-listed funds in every category: Regular 25 → 54 (Country chips: US 10 → 21, new India chip 4, China 5, Japan 5, Europe 6, Korea 2; Sector chips: Financials, Healthcare, Energy 1 → 4 each, Industrials 2 → 4), Boosted 8 → 19 (UPRO / SPXU, TECL / TECS, FAS / FAZ, YINN / YANG, KORU, TSLL, TSLQ added; groups list the long first). Issuer logos mapped in `src/shared/data/etfIssuers.ts`; prices and day change from `npm run us:snapshot`. L3 gaps / data gaps: no Global X wordmark (the file is the BOTZ robot-arm icon), no Franklin (FLKR) or Tradr (TSLQ) logo yet; Korea has only two US-listed regular funds.
 - 2026-11-17 — Allocation V2 (prototype option "Allocation", ETFs): the split as Top holdings' panel — "N sectors · Weight", then rows of name, short bar and share, no icon (`ShareBars`); V1 donut stays the default. About Company / About Fund: the title moves inside the card. ETFs list: the Regular tab gets a chart icon, like Boosted's bolt.  "How Boosted ETFs work" sheet: no extra side padding (content 16 from the edges, like other sheets). Peers / ETF tables: column names line up with the numbers under them (same 4 inset as the highlight box; wide figures spill left). "Holding weight" versions archived: Top holdings keeps V3 (small bar before the %), the setting is gone. "Stock / ETF page" setting is a dropdown.

@@ -1,6 +1,6 @@
 # Flow: Stocks (`stocks`)
 
-> One self-contained file for converting this flow to another platform. Read https://lemonnade-design.github.io/lemonn-app-prototype/CONVERT.md first. Design system: Lemonnade V3 @ `6de43c8` (components, tokens and rules: https://lemonnade-design.github.io/lemonnade-v3-docs/llms.txt).
+> One self-contained file for converting this flow to another platform. Read https://lemonnade-design.github.io/lemonn-app-prototype/CONVERT.md first. Design system: Lemonnade V3 @ `4a58bf1` (components, tokens and rules: https://lemonnade-design.github.io/lemonnade-v3-docs/llms.txt).
 
 The Stocks tab — the home after login: indices, holdings, products, movers, watchlists, ideas.
 
@@ -363,7 +363,9 @@ lower on the page is scrolled into view first). `components/MarketSwitchGuide.ts
 
 ### Changelog
 
-- 2026-11-18 — Logos: no border on any stock / ETF logo or avatar (global override of L3 Avatar's 1px edge in local-tokens.css; also the FTUX sheet's brand plates).
+- 2026-11-18 — Home: scroll reveal — each feed section below the fold fades in and rises 16 as it scrolls into view (once; L3 motion long · decelerate; off with reduced motion). What's on screen at open shows at once.
+
+- 2026-11-18 — Logos: no border on any stock / ETF logo or avatar (L3 Avatar 1.2.0 dropped its 1px edge — design system moved to 4a58bf1; also the FTUX sheet's brand plates).
 
 - 2026-11-18 — Home: section headings have no one-line description under them (Top analyst picks, Discover ETFs, baskets) and are 16 instead of L3 SectionHeader's 14 (local override in Home.module.css; L3 gap: no size option).
 - 2026-11-18 — Home: Shortcuts V2 is the default (V1 stays as an option).
@@ -28610,6 +28612,18 @@ export function BrandsPage({ onStock }: BrandsPageProps) {
 .flatCards.flatCards h2:not([id]) {
   font: var(--l3-text-heading-16);
 }
+
+/* Scroll reveal (Home.tsx): a feed section below the fold waits hidden 16 lower, then fades and rises in. */
+.flatCards [data-reveal] {
+  transition:
+    opacity var(--l3-motion-duration-long) var(--l3-motion-easing-decelerate),
+    transform var(--l3-motion-duration-long) var(--l3-motion-easing-decelerate);
+}
+
+.flatCards [data-reveal='hidden'] {
+  opacity: 0;
+  transform: translateY(var(--l3-spacing-16));
+}
 ```
 
 ### `src/flows/stocks/screens/Home.tsx`
@@ -28752,7 +28766,8 @@ export function Home({ scrollTo = 'top', market = 'in', movers, onTab, onSearch,
   }
   const page = useRef<HTMLDivElement>(null)
   // The design version (the prototype's "Homepage version" option): where the IND / US switch sits and how it looks.
-  const version = homeVersion(useFlowOption('stocks', 'homeVersion', DEFAULT_HOME_VERSION))
+  const versionId = useFlowOption('stocks', 'homeVersion', DEFAULT_HOME_VERSION)
+  const version = homeVersion(versionId)
   // The market switch guide (prototype setting, on by default) shows every time this Home opens, and again for each
   // homepage version picked; ending it hides it for this version until the Home opens again.
   const guideOn = useFlowOption('stocks', 'switchGuide', 'off') === 'on'
@@ -28865,6 +28880,32 @@ export function Home({ scrollTo = 'top', market = 'in', movers, onTab, onSearch,
     body.addEventListener('scroll', sync, { passive: true })
     return () => body.removeEventListener('scroll', sync)
   }, [])
+
+  // Scroll reveal: each feed section below the fold fades in (and rises 16) as it scrolls into view, once. What's
+  // on screen when the Home opens shows at once. Off with reduced motion. Runs again when the market or version changes.
+  useEffect(() => {
+    const root = page.current
+    const body = root?.parentElement
+    if (!root || !body || matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const fold = body.getBoundingClientRect().bottom
+    const sections = [...root.querySelectorAll<HTMLElement>('[data-feed] [data-market-part] > *')]
+      .filter((el) => el.getBoundingClientRect().top > fold)
+    const observer = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue
+        ;(entry.target as HTMLElement).dataset.reveal = 'shown'
+        observer.unobserve(entry.target)
+      }
+    }, { root: body, rootMargin: '0px 0px -10% 0px' })
+    for (const el of sections) {
+      el.dataset.reveal = 'hidden'
+      observer.observe(el)
+    }
+    return () => {
+      observer.disconnect()
+      for (const el of sections) delete el.dataset.reveal
+    }
+  }, [tab, versionId])
 
   // Board frames: open the page scrolled to a part (the screen's body is this page's scroll container), the target
   // right under the header (top bar + marquee + pinned tabs, as after scrolling down and back up a little). Keep
@@ -29148,7 +29189,7 @@ export function Home({ scrollTo = 'top', market = 'in', movers, onTab, onSearch,
         )}
         {version.place === 'mid' && !hub && <MarketSwitchFor version={version} value={tab} onChange={(next) => switchTo(next)} />}
         {/* The white sheet stays; only what's on it changes (with the tiles above, in one movement). */}
-        <div className={hub ? `${styles.feed} ${styles.hubFeed}` : feedClass} data-hero={heroTop || undefined}>
+        <div className={hub ? `${styles.feed} ${styles.hubFeed}` : feedClass} data-hero={heroTop || undefined} data-feed>
           {/* V15: the markets start here — flat IN / US tabs and that market's ticker, one sticky block under the top bar. */}
           {hub && (
             <div ref={hubHead} className={styles.hubHead} data-stuck={headStuck || undefined}>
