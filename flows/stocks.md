@@ -363,7 +363,7 @@ lower on the page is scrolled into view first). `components/MarketSwitchGuide.ts
 
 ### Changelog
 
-- 2026-11-18 — Home: scroll reveal — each feed section below the fold fades in and rises 16 as it scrolls into view (once; L3 motion long · decelerate; off with reduced motion). What's on screen at open shows at once.
+- 2026-11-18 — Home: scroll reveal — each feed section below the fold fades in and rises 16 as it scrolls into view (once; 700 · L3 decelerate, slowed from 400 the same day; off with reduced motion). What's on screen at open shows at once.
 
 - 2026-11-18 — Logos: no border on any stock / ETF logo or avatar (L3 Avatar 1.2.0 dropped its 1px edge — design system moved to 4a58bf1; also the FTUX sheet's brand plates).
 
@@ -28616,8 +28616,8 @@ export function BrandsPage({ onStock }: BrandsPageProps) {
 /* Scroll reveal (Home.tsx): a feed section below the fold waits hidden 16 lower, then fades and rises in. */
 .flatCards [data-reveal] {
   transition:
-    opacity var(--l3-motion-duration-long) var(--l3-motion-easing-decelerate),
-    transform var(--l3-motion-duration-long) var(--l3-motion-easing-decelerate);
+    opacity var(--app-home-reveal) var(--l3-motion-easing-decelerate),
+    transform var(--app-home-reveal) var(--l3-motion-easing-decelerate);
 }
 
 .flatCards [data-reveal='hidden'] {
