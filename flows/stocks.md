@@ -434,6 +434,7 @@ lower on the page is scrolled into view first). `components/MarketSwitchGuide.ts
 
 ### Changelog
 - 19 Nov: A stock, ETF or bank with no logo shows one letter (its first), not two or three — app-wide (companies, market list, US banks, every Avatar / disc fallback).
+- 2026-11-19 — Flags are the system flag emoji (🇮🇳 🇺🇸 🇨🇳 🇯🇵 🇪🇺 🇰🇷, shared `Flag`) everywhere — IN / US tabs, hub, US home, global markets — instead of round SVGs. L3 gap: no flag icons, and Tabs' icon slot is square only, so the flag widens it locally. Sticky ticker tray: its foot keeps its 20 corners until the last 16 px before the tabs, then squares off as it meets them (was over the whole approach).
 - 2026-11-19 — Brands You Know · View all: edge-to-edge rows split by a hairline (were cards 12 apart). Themes: 24 between the theme's overview card and its stock list (was 32).
 - 2026-11-19 — V19 index strip: once it docks under the sticky tabs it is white (was the strip's blue), turning from blue to white with its hairline over 400 ms (motion long, standard easing; none with reduced motion) instead of swapping in one frame. IN shortcuts card: 12 either side of the row line (the tiles keep 18 at the card's top and bottom); the line is a 1px border-light border, like the column lines.
 - 2026-11-19 — Stock page (Overview): the pill tabs of Shareholding Pattern (quarters) and Financials (Revenue · Profit · Networth) moved out of their grey cards to sit with the section header, between the title and the card.
@@ -441,6 +442,18 @@ lower on the page is scrolled into view first). `components/MarketSwitchGuide.ts
 - 2026-11-19 — Product row (V19 only, every state; V17 and V18 keep it in the hero): out of the hero. IN tab: the products (Equity F&O, Commodity, Mutual Funds, Smart Invest) joined the shortcuts in one card (`components/InAllShortcuts.tsx`), two rows of four: products with icons (navbar F&O and Mutual Fund glyphs, the commodities glyph, Material autorenew for Smart Invest) over Trade Ideas · IPO · Watchlist · Referral, a hairline between the rows inset 12 from the card's sides. US tab: the row (Boosted ETFs, Themes, Fractional) is hidden, so the hero is just the holdings (money on the way: the transfer card only).
 - 2026-11-18 — The floating Homepage version switch (V19 / V18 …, phone app mode) shows only on the Home screens (IND and US tab, every state), not on other pages.
 
+- 2026-11-19 — **One-row card sized as Figma 6660:10742.** 360 × 68: 12 above the 24 icon, 4 to the label, 12 under it, column lines 44 (it was 74 with 18 / 12). 24 from the tray to the card and 24 from the card to Top Movers (the circles keep 32 to Top Movers).
+- 2026-11-19 — **IND icons in the US style.** Mutual funds (a donut with one solid slice — a pooled fund split into holdings; it was a sprout in a pot), Equity F&O (two candles), Commodities (three stacked bars with a glint; it was a barrel with a drop) and IPO (a rocket) are two-tone art like the US set — a white → light green fill, light green → green lines, one solid part — in `assets/in/instruments/*.svg`, on both the circles and the card. Drawn here: the Figma frame (6662:8516) has no IND art. FLAG: their greens are fixed values, as the US exports' blues are.
+- 2026-11-19 — **Card version, circles and the tray's scroll.** Card on the IND tab shows the instruments (Mutual funds · Equity F&O · Commodities · IPO, the same four as the circles; `InAllShortcuts items`), not Trade Ideas · IPO · Watchlist · Referral. Card on the US tab uses the frame's own icons (`assets/us/card/*.svg`: a white → light blue fill, light blue → blue lines), not the blue → black gradient. Circles: the 24 icon is centred in the 40 disc (L3 gap: Avatar's icon slot is 20 at size 40); IND's Mutual funds is a pie chart and Commodities an oil barrel. Tray on scroll: over its last 56px before the tabs the tray's own row turns into the bar under them — the strip stays as it is (no swap or fade), the grey eases to white, the rounded foot squares off and the hairline lightens, all tied to the scroll.
+- 2026-11-19 — **Only the two versions are offered; icons and strip from Figma 6662:8516.** Home settings now has one switch, **Version: Circles · Card** (the `shortcuts` option, values `v6` / `v2`). The "Ticker" setting is archived — the tray under the hero is the only one (`TICKER_LOOK` in Home.tsx keeps the others) — and Shortcuts V1, V3–V5 are no longer offered (code kept). Circles, US tab: the frame's own two-tone icons (`assets/us/instruments/*.svg`: ETFs, Boosted ETFs, Themes, Fractional) in a 40 disc drawn as the frame — surface/primary with a 20% white → border/light wash, a 1px outside edge (the market's colour at 30% fading to white), a very soft shadow. The IND tab has no art in the frame, so its circles keep system icons in the market's green. Strip in the tray (`IndexStrip tray`): name, level and change 4 apart, a secondary chevron 8 after them, 8 each side of the hairlines.
+- 2026-11-19 — **The two versions to show** (Figma 6662:8516). **Ticker V4 · Tray under hero** (default): the hero box is a grey tray (surface/secondary, bottom corners 20, a hairline under it); the holdings sit on a white panel over its top (bottom corners 24, a hairline and wash in the market's colour, 16 above the overline and 24 under the P&L tag) and the index strip rides in the 40 under the panel (12 above and below). On scroll it still becomes the bar under the tabs. Under it, 24 down, one of two shortcuts: **Shortcuts V6 · Small circles** (default) — the instruments as 40 discs, white easing to light grey, a hairline edge in the market's colour, secondary labels, no "New" tag — or **Shortcuts V2**, the card; on the US tab V2 is now one row (ETFs · Analyst picks · Watchlist · Referral, `InAllShortcuts rows="shortcuts"`; it was the round shortcuts). 32 from either to Top Movers. Differences from Figma: the frame has 33 / 36 around the circles and 24 / 24 around the card — both are 24 / 32 here; the circles keep the prototype's filled icons; the card keeps its current height (80, the frame's is 68).
+- 2026-11-19 — **Shortcuts V5 · soft circles** (Figma 6635:19626, the user's frame; "Shortcuts" setting, now the default — V3 and V4 stay). The same four instruments per market, each a white disc (L3 Avatar 48, surface/primary) with a faint wash of the market's colour towards its foot, a 1px edge and a very soft shadow of that colour, the filled icon in the market's colour (US Stocks blue, Indian green) and the name under it (Label/12, primary); Boosted ETFs' NEW tag is L3 Tag `loss` (red). The frame pairs it with the hero's index capsule, so the **Ticker** setting's default is now V3 · Hero pill (V1 and V2 stay). Spacing unchanged: 24 from the hero to the circles, 8 circle to name, 32 to Top Movers. L3 gap: a tinted Avatar.
+- 2026-11-19 — **Feature chips parked.** The chip row under the instruments (Analyst picks · Watchlist · Referral …) is off the Home for now — the user will say where it goes. The component and its data stay (`FEATURE_CHIPS_ON_HOME` in screens/Home.tsx); the instruments row is followed directly by Top Movers, 32 below.
+- 2026-11-19 — **Shortcuts V4 · ringed circles + icon chips** (the user's reference; "Shortcuts" setting, now the default — V3 · Solid circles stays). Instruments: the same four per market, each a neutral disc (L3 Avatar 48, surface/secondary, drawn as a shallow dish: slightly darker at the top, a faint inner shadow) inside a thin raised white ring — 6 of surface/primary around it, a hairline edge and a two-layer float shadow, 60 across — with the filled icon in the market's colour (US Stocks blue, Indian green) and the name under it (Label/12, primary). Feature chips: the same chips, each with a small (16) filled icon in the market's colour before its label and L3's soft raised edge. Spacing: 24 from the hero to the rings, 8 ring to name, 16 to the chips, 32 to Top Movers. L3 gaps: a ringed Avatar; an accent-filled Avatar (V3).
+- 2026-11-19 — **Shortcuts V3 · instruments + feature chips** (Figma 6631:16280, the user's construct; "Shortcuts" setting, now the default). Under the hero, in place of the shortcuts card: (1) **Instruments** — what can be traded in the market on show, four across: a solid circle in the market's colour (L3 Avatar, Icon type, 48, its surface overridden — US Stocks blue, Indian green) with a white filled icon and its name under it (Label/12, primary); Boosted ETFs carries a small NEW tag (L3 Tag, zing) on the circle's top-right edge. "Solid circles", picked 19 Nov from five directions mocked in Figma (6634:8424). IN: Mutual funds · Equity F&O · Commodities · IPO. US: ETFs · Boosted ETFs · Themes · Fractional. They open what the hero's product cards did (IPO has no screen yet). (2) **Feature chips** — the extended features as L3 action pills in a row that scrolls sideways, 16 under the instruments. IN: Trade Ideas · Watchlist · Referral · Smart Invest · Sectors · Idea baskets. US: Analyst picks · Watchlist · Referral · Market hours · Heatmap · Brands. Analyst picks opens its page and Smart Invest scrolls to its section; the others have no screen yet. Spacing: 24 from the hero to the circles, 8 circle to name, 16 to the chips, 32 to Top Movers. `components/Instruments.tsx`.
+- 2026-11-19 — **Hero ticker grows into the top bar, led by the scroll.** Over its last 56px before the sticky IN / US tabs, the hero's ticker turns into the bar under them with every px scrolled — nothing is timed: the capsule (V3) widens from 20 in to the screen edges, 32 → 40 high, its round ends squaring off and its outline becoming the bar's bottom hairline, while its labels fade out (20–70%) and the normal strip fades in (40–90%), overlapping so the bar is never blank. When it touches the tabs it already is the pinned bar and simply stays; scrolling back plays the same in reverse. V2: the band fades in around the strip. The bar hangs under the sticky block, so it never moves the page, and follows the hero's ticker while the top bar slides away or back.
+- 2026-11-18 — **Index ticker in the hero** (Figma 6616:14729; "Ticker" setting). V2 · Hero line (default): the index strip is the hero's last row and scrolls sideways (no chevrons, 12 each side of the hairlines, so the first two indices fit between the 16 margins and the third scrolls in), 24 under the P&L tag and 20 above the hero's foot. The hero's tint is an even vertical wash (clear behind the holdings, the market's light tint at the foot) and the overline sits 32 under the tabs' line. V3 · Hero pill: one outlined capsule there instead, with the first three indices' names and today's change only (DOW JONES → DOW, NIFTY BANK → BANK), no index level. Both replace the hero's product cards (Boosted ETFs · Themes · Fractional; Equity F&O · Commodity · Mutual Funds) on the IN and US tabs, and the sticky block under the top bar then holds only the IN / US tabs. V1 · Above tabs keeps the ticker in the sticky block with the product cards in the hero. **Sticky:** in V2 / V3, once the hero's ticker scrolls up to the sticky IN / US tabs the normal ticker (the strip with index levels, also for the capsule) pins under them, a hairline under it, and stays while the page scrolls; scrolling back, it lets go when the hero's own ticker is back in that spot.
+- 2026-11-18 — **Index ticker above the IN / US tabs** (the user's call): on the versions whose tabs ride in the sticky block under the top bar, the ticker is that block's first row, right under the top bar, with 12 down to the tabs; the tabs' line is the block's end. It still follows the tab (IN or US indices) and stays sticky with the tabs.
 - 2026-11-18 — V19 scroll: the IN / US tabs sit flush on the sticky block (the 12 under them showed as a white strip). The index marquee now docks under the tabs once it scrolls up to them — it stops right where it is, so it reads as the same strip coming up out of the middle — rides with the header as the top bar hides and returns, and lets go on the way back down. The hairline moves under the strip.
 - 2026-11-18 — Home **V19** (`homeVersions.ts`, the user's ask from a reference): V18 with the index marquee moved from under the top bar to between the hero (the header) and the feed (the body), scrolling with the page, 16 above and below the strip. That whole stretch is surface/accent-discover-light — from behind the hero's rounded foot down under the feed, which is a rounded sheet again (radius 32, 24 over the band) — and the hero has no glow (plain, like the header card). Only the IN / US tabs stay sticky (their band keeps its background, no 12 around it). V18 stays the default; the floating one-tap version switch is back (V18 ⇄ V19).
 - 2026-11-18 — US tab product row: **Fractional** opens its own page, Fractional shares (`us-stocks-99`), through a new `onUsFractional` prop (was NVDA's stock page).
@@ -1178,6 +1191,90 @@ D�W�k��&�� �?��DQ�y�� !i� ���n]�G��FS�
 </svg>
 ```
 
+### `src/flows/stocks/assets/in/instruments/commodities.svg`
+
+```tsx
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M2.9 19.9L4.7 14.6H10.2L12 19.9H2.9Z" fill="url(#fill_commodities)" stroke="url(#line_commodities)" stroke-width="1.4" stroke-linejoin="round"/>
+<path d="M12 19.9L13.8 14.6H19.3L21.1 19.9H12Z" fill="url(#fill_commodities)" stroke="url(#line_commodities)" stroke-width="1.4" stroke-linejoin="round"/>
+<path d="M7.45 12.6L9.25 7.3H14.75L16.55 12.6H7.45Z" fill="url(#line_commodities)" stroke="url(#line_commodities)" stroke-width="1.4" stroke-linejoin="round"/>
+<path d="M18.6 2.6L19.25 4.35L21 5L19.25 5.65L18.6 7.4L17.95 5.65L16.2 5L17.95 4.35L18.6 2.6Z" fill="url(#line_commodities)"/>
+<defs>
+<linearGradient id="fill_commodities" x1="6" y1="6" x2="18" y2="20" gradientUnits="userSpaceOnUse">
+<stop stop-color="white"/>
+<stop offset="1" stop-color="#CDEEDD"/>
+</linearGradient>
+<linearGradient id="line_commodities" x1="5" y1="5" x2="19" y2="19" gradientUnits="userSpaceOnUse">
+<stop stop-color="#6FCB9F"/>
+<stop offset="1" stop-color="#0C8A4F"/>
+</linearGradient>
+</defs>
+</svg>
+```
+
+### `src/flows/stocks/assets/in/instruments/fno.svg`
+
+```tsx
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M7.5 3.5V7.5M7.5 17.5V20.5" stroke="url(#line_fno)" stroke-width="1.4" stroke-linecap="round"/>
+<rect x="5" y="7.5" width="5" height="10" rx="1.4" fill="url(#fill_fno)" stroke="url(#line_fno)" stroke-width="1.4" stroke-linejoin="round"/>
+<path d="M16.5 2.8V6M16.5 14V18.5" stroke="url(#line_fno)" stroke-width="1.4" stroke-linecap="round"/>
+<rect x="13.3" y="5.3" width="6.4" height="9.4" rx="1.6" fill="url(#line_fno)"/>
+<defs>
+<linearGradient id="fill_fno" x1="6" y1="6" x2="18" y2="20" gradientUnits="userSpaceOnUse">
+<stop stop-color="white"/>
+<stop offset="1" stop-color="#CDEEDD"/>
+</linearGradient>
+<linearGradient id="line_fno" x1="5" y1="5" x2="19" y2="19" gradientUnits="userSpaceOnUse">
+<stop stop-color="#6FCB9F"/>
+<stop offset="1" stop-color="#0C8A4F"/>
+</linearGradient>
+</defs>
+</svg>
+```
+
+### `src/flows/stocks/assets/in/instruments/ipo.svg`
+
+```tsx
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M12 2.6C14.9 4.7 16.4 7.9 16.4 11.2V15.8H7.6V11.2C7.6 7.9 9.1 4.7 12 2.6Z" fill="url(#fill_ipo)" stroke="url(#line_ipo)" stroke-width="1.4" stroke-linejoin="round"/>
+<circle cx="12" cy="9.8" r="1.7" fill="url(#line_ipo)"/>
+<path d="M7.6 12.2L4.9 15V18L7.6 16.6V12.2Z" fill="url(#line_ipo)" stroke="url(#line_ipo)" stroke-width="1.2" stroke-linejoin="round"/>
+<path d="M16.4 12.2L19.1 15V18L16.4 16.6V12.2Z" fill="url(#line_ipo)" stroke="url(#line_ipo)" stroke-width="1.2" stroke-linejoin="round"/>
+<path d="M10.2 17.8H13.8L12 21.6L10.2 17.8Z" fill="url(#line_ipo)" stroke="url(#line_ipo)" stroke-width="1.2" stroke-linejoin="round"/>
+<defs>
+<linearGradient id="fill_ipo" x1="6" y1="6" x2="18" y2="20" gradientUnits="userSpaceOnUse">
+<stop stop-color="white"/>
+<stop offset="1" stop-color="#CDEEDD"/>
+</linearGradient>
+<linearGradient id="line_ipo" x1="5" y1="5" x2="19" y2="19" gradientUnits="userSpaceOnUse">
+<stop stop-color="#6FCB9F"/>
+<stop offset="1" stop-color="#0C8A4F"/>
+</linearGradient>
+</defs>
+</svg>
+```
+
+### `src/flows/stocks/assets/in/instruments/mutual-funds.svg`
+
+```tsx
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M12 12.4V3.2A9.2 9.2 0 1 0 21.2 12.4H12Z" transform="translate(-1.2 1.2) scale(0.94)" fill="url(#fill_mutual-funds)" stroke="url(#line_mutual-funds)" stroke-width="1.5" stroke-linejoin="round"/>
+<circle cx="10.1" cy="12.9" r="3.1" fill="white" stroke="url(#line_mutual-funds)" stroke-width="1.4"/>
+<path d="M13.6 10.2V2.8A7.4 7.4 0 0 1 21 10.2H13.6Z" fill="url(#line_mutual-funds)"/>
+<defs>
+<linearGradient id="fill_mutual-funds" x1="6" y1="6" x2="18" y2="20" gradientUnits="userSpaceOnUse">
+<stop stop-color="white"/>
+<stop offset="1" stop-color="#CDEEDD"/>
+</linearGradient>
+<linearGradient id="line_mutual-funds" x1="5" y1="5" x2="19" y2="19" gradientUnits="userSpaceOnUse">
+<stop stop-color="#6FCB9F"/>
+<stop offset="1" stop-color="#0C8A4F"/>
+</linearGradient>
+</defs>
+</svg>
+```
+
 ### `src/flows/stocks/assets/shortcuts/analysis.svg`
 
 ```tsx
@@ -1325,6 +1422,121 @@ D�W�k��&�� �?��DQ�y�� !i� ���n]�G��FS�
 <stop stop-color="#D4FC79"/>
 <stop offset="1" stop-color="#96E6A1"/>
 </linearGradient>
+</defs>
+</svg>
+```
+
+### `src/flows/stocks/assets/us/card/etfs.svg`
+
+```tsx
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M11 13V5.5C9.51664 5.5 8.0666 5.93987 6.83323 6.76398C5.59986 7.58809 4.63856 8.75943 4.07091 10.1299C3.50325 11.5003 3.35472 13.0083 3.64411 14.4632C3.9335 15.918 4.64781 17.2544 5.6967 18.3033C6.7456 19.3522 8.08197 20.0665 9.53683 20.3559C10.9917 20.6453 12.4997 20.4968 13.8701 19.9291C15.2406 19.3614 16.4119 18.4001 17.236 17.1668C18.0601 15.9334 18.5 14.4834 18.5 13H11Z" fill="url(#paint0_linear_etfs)" stroke="url(#paint1_linear_etfs)" stroke-width="1.4" stroke-linejoin="round"/>
+<path d="M10.9992 13L5.69922 18.3" stroke="url(#paint2_linear_etfs)" stroke-width="1.4" stroke-linecap="round"/>
+<path d="M13 11V3.5C13.9849 3.5 14.9602 3.69399 15.8701 4.0709C16.7801 4.44781 17.6069 5.00026 18.3033 5.6967C18.9997 6.39314 19.5522 7.21993 19.9291 8.12987C20.306 9.03982 20.5 10.0151 20.5 11H13Z" fill="url(#paint3_linear_etfs)"/>
+<defs>
+<linearGradient id="paint0_linear_etfs" x1="5.69665" y1="7.69665" x2="16.3034" y2="18.3034" gradientUnits="userSpaceOnUse">
+<stop stop-color="white"/>
+<stop offset="1" stop-color="#CCDEFF"/>
+</linearGradient>
+<linearGradient id="paint1_linear_etfs" x1="5.69665" y1="7.69665" x2="16.3034" y2="18.3034" gradientUnits="userSpaceOnUse">
+<stop stop-color="#81ABF6"/>
+<stop offset="1" stop-color="#2360D9"/>
+</linearGradient>
+<linearGradient id="paint2_linear_etfs" x1="6.47537" y1="13.7761" x2="10.2231" y2="17.5239" gradientUnits="userSpaceOnUse">
+<stop stop-color="#81ABF6"/>
+<stop offset="1" stop-color="#2360D9"/>
+</linearGradient>
+<linearGradient id="paint3_linear_etfs" x1="14.0983" y1="4.59832" x2="19.4017" y2="9.90168" gradientUnits="userSpaceOnUse">
+<stop stop-color="#81ABF6"/>
+<stop offset="1" stop-color="#2360D9"/>
+</linearGradient>
+</defs>
+</svg>
+```
+
+### `src/flows/stocks/assets/us/card/picks.svg`
+
+```tsx
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_picks)">
+<path d="M11.1962 5.51451C10.8658 5.97794 10.6782 6.54183 10.6782 7.13598C10.6782 8.19657 11.2782 9.15923 12.2152 9.63013L12.4067 9.7174L14.1928 10.4521C14.2594 10.4796 14.3153 10.5268 14.3547 10.5858L14.3884 10.6478L15.1232 12.4339C15.5538 13.4799 16.5075 13.6819 17.6386 13.6819C18.233 13.6819 18.269 13.6819 18.4853 13.6819V19.9277C18.4853 20.7237 17.84 21.3689 17.044 21.3689H4.07217C3.27615 21.3689 2.63086 20.7237 2.63086 19.9277V6.95582C2.63086 6.15981 3.27615 5.51451 4.07217 5.51451H11.1962Z" fill="url(#paint0_linear_picks)"/>
+<path d="M15.8814 4.58372L16.6166 2.79816C16.6582 2.69736 16.7565 2.63157 16.8654 2.63157C16.9744 2.63157 17.0727 2.69736 17.1142 2.79816L17.8494 4.58372C18.1421 5.29453 18.7066 5.85898 19.4174 6.15167L21.203 6.88691C21.3039 6.92841 21.3696 7.02665 21.3696 7.13567C21.3696 7.24469 21.3039 7.34293 21.203 7.38443L19.4174 8.11967C18.7066 8.41236 18.1421 8.97681 17.8494 9.68762L17.1142 11.4732C17.0727 11.574 16.9744 11.6398 16.8654 11.6398C16.7565 11.6398 16.6582 11.574 16.6166 11.4732L15.8814 9.68762C15.5888 8.97681 15.0244 8.41236 14.3135 8.11967L12.5279 7.38443C12.4271 7.34293 12.3613 7.24469 12.3613 7.13567C12.3613 7.02665 12.4271 6.92841 12.5279 6.88691L14.3135 6.15167C15.0244 5.85898 15.5888 5.29453 15.8814 4.58372Z" fill="url(#paint1_linear_picks)"/>
+<path d="M10.7384 4.88386C11.0864 4.88409 11.369 5.16632 11.369 5.51444C11.369 5.86255 11.0864 6.14479 10.7384 6.14501H4.07203C3.62427 6.14501 3.26115 6.50813 3.26115 6.95589V15.9623L5.41988 13.7739L5.42086 13.773C5.66872 13.5251 5.97837 13.4016 6.33815 13.4015C6.6981 13.4015 7.00849 13.525 7.25643 13.773L8.58162 15.1109L11.0872 12.6301H10.5985C10.3974 12.63 10.2207 12.5607 10.0802 12.4202C9.93973 12.2797 9.8694 12.1031 9.86937 11.902C9.86937 11.7008 9.93973 11.5242 10.0802 11.3837C10.2207 11.2432 10.3973 11.1729 10.5985 11.1729H12.8409C13.0419 11.173 13.2188 11.2433 13.3592 11.3837C13.4996 11.5242 13.5691 11.701 13.5691 11.902V14.1435C13.5691 14.3444 13.4995 14.5212 13.3592 14.6617C13.2188 14.8021 13.0419 14.8724 12.8409 14.8725C12.6399 14.8725 12.4622 14.8022 12.3217 14.6617C12.1815 14.5212 12.1119 14.3444 12.1119 14.1435V13.6528L9.49792 16.2667C9.25002 16.5146 8.94046 16.6382 8.58063 16.6382C8.2208 16.6382 7.91125 16.5145 7.66334 16.2667L6.33815 14.9416L3.48677 17.7939C3.42004 17.8607 3.34409 17.9099 3.26115 17.9437V19.928C3.26138 20.3756 3.6244 20.7379 4.07203 20.7379H17.0441C17.4915 20.7377 17.8537 20.3754 17.854 19.928V14.102C17.854 13.7541 18.1365 13.4718 18.4846 13.4715C18.8328 13.4715 19.1151 13.7539 19.1152 14.102V19.928C19.1149 21.0719 18.1881 21.9988 17.0441 21.999H4.07203C2.9279 21.999 2.00023 21.072 2 19.928V6.95589C2 5.81161 2.92776 4.88386 4.07203 4.88386H10.7384ZM7.85351 16.2145C7.85564 16.2163 7.85825 16.2176 7.8604 16.2194C7.83352 16.197 7.80701 16.1729 7.78158 16.1475L7.85351 16.2145ZM16.8648 2.00096C17.1836 2.00096 17.4754 2.16945 17.6362 2.43743L17.6974 2.55764L18.4324 4.34394C18.6611 4.89908 19.1019 5.33999 19.6571 5.56863L21.4424 6.30364C21.7799 6.44242 21.9999 6.77104 22 7.13521C22 7.49956 21.78 7.82893 21.4424 7.96776L19.6571 8.70278C19.1019 8.93143 18.6611 9.37229 18.4324 9.92748L17.6974 11.7128C17.5585 12.0499 17.2292 12.2704 16.8648 12.2704C16.5006 12.2702 16.172 12.0498 16.0333 11.7128L15.2983 9.92748C15.0695 9.37232 14.6286 8.93146 14.0735 8.70278L12.2872 7.96776C11.9503 7.82892 11.7305 7.49965 11.7305 7.13521C11.7307 6.77096 11.9504 6.44245 12.2872 6.30364L14.0735 5.56863C14.6286 5.33997 15.0695 4.89905 15.2983 4.34394L16.0333 2.55764L16.0943 2.43743C16.2551 2.16961 16.5461 2.00111 16.8648 2.00096ZM10.0684 12.0961C10.0704 12.1017 10.0731 12.1072 10.0753 12.1128C10.0634 12.0819 10.0539 12.0498 10.0477 12.0163L10.0684 12.0961ZM13.4006 11.902L13.3946 11.8153C13.394 11.8106 13.3924 11.8061 13.3917 11.8015C13.3968 11.8338 13.4006 11.8672 13.4006 11.902ZM10.0891 11.6576C10.0865 11.6631 10.0845 11.6688 10.0822 11.6744C10.095 11.6442 10.1101 11.6151 10.1285 11.5877L10.0891 11.6576ZM13.24 11.5029L13.1769 11.4477C13.172 11.444 13.1662 11.4414 13.1612 11.4379C13.1885 11.4569 13.2153 11.4783 13.24 11.5029ZM12.8399 11.3413C12.9157 11.3413 12.9858 11.3544 13.0498 11.3788C13.0195 11.3671 12.9881 11.3573 12.9552 11.3512C12.9188 11.3445 12.8806 11.3414 12.8409 11.3413H12.8399ZM16.4648 4.82376C16.1081 5.69006 15.4196 6.37847 14.5534 6.73519L13.5799 7.13521L14.5534 7.53622C15.4196 7.89293 16.1081 8.58135 16.4648 9.44765L16.8648 10.4201L17.2659 9.44765C17.6226 8.58138 18.3109 7.89293 19.1772 7.53622L20.1497 7.13521L19.1772 6.73519C18.3109 6.37847 17.6226 5.69003 17.2659 4.82376L16.8648 3.85032L16.4648 4.82376Z" fill="url(#paint2_linear_picks)"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear_picks" x1="4.95264" y1="7.83628" x2="16.1635" y2="19.0472" gradientUnits="userSpaceOnUse">
+<stop stop-color="white"/>
+<stop offset="1" stop-color="#CCDEFF"/>
+</linearGradient>
+<linearGradient id="paint1_linear_picks" x1="13.6805" y1="3.95076" x2="20.0503" y2="10.3206" gradientUnits="userSpaceOnUse">
+<stop stop-color="#81ABF6"/>
+<stop offset="1" stop-color="#2360D9"/>
+</linearGradient>
+<linearGradient id="paint2_linear_picks" x1="4.92886" y1="4.92954" x2="19.0698" y2="19.0718" gradientUnits="userSpaceOnUse">
+<stop stop-color="#81ABF6"/>
+<stop offset="1" stop-color="#2360D9"/>
+</linearGradient>
+<clipPath id="clip0_picks">
+<rect width="20" height="20" fill="white" transform="translate(2 2)"/>
+</clipPath>
+</defs>
+</svg>
+```
+
+### `src/flows/stocks/assets/us/card/referral.svg`
+
+```tsx
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_referral)">
+<path d="M20.1956 19.7675V11.8333H3.80469V19.7675C3.80469 20.6254 4.50018 21.3208 5.35811 21.3208H18.6421C19.5001 21.3208 20.1956 20.6254 20.1956 19.7675Z" fill="url(#paint0_linear_referral)"/>
+<path d="M21.3207 8.56965V10.2797C21.3207 11.1376 20.6252 11.8331 19.7673 11.8331H4.2331C3.37518 11.8331 2.67969 11.1376 2.67969 10.2797V8.56965C2.67969 7.71171 3.37518 7.01624 4.2331 7.01624H19.7673C20.6252 7.01624 21.3207 7.71171 21.3207 8.56965Z" fill="url(#paint1_linear_referral)"/>
+<path d="M15.7932 2C16.8505 2 17.6692 2.31286 18.2004 2.90156C18.7257 3.48397 18.875 4.23121 18.8153 4.90751C18.771 5.40825 18.611 5.90534 18.3682 6.33683H19.7668C21 6.33683 22 7.33674 22 8.57002V10.2797C21.9999 11.1089 21.5466 11.8304 20.8754 12.2156V19.7678C20.8752 21.0009 19.8753 22 18.6422 22H5.35882C4.1257 22 3.12585 21.001 3.12563 19.7678V12.2166C2.45384 11.8316 2.00008 11.1094 2 10.2797V8.57002C2 7.33675 2.99996 6.33686 4.23319 6.33683H5.63279C5.38999 5.90536 5.23004 5.40831 5.18573 4.90751C5.12595 4.2312 5.27424 3.48398 5.79951 2.90156C6.3307 2.31269 7.14942 2.00007 8.20686 2C9.66306 2 10.7898 2.96387 11.5094 3.96241C11.6908 4.21412 11.8552 4.4805 12 4.7514C12.1447 4.48048 12.3092 4.21414 12.4906 3.96241C13.2102 2.96384 14.3369 2.00016 15.7932 2ZM4.48487 19.7678C4.4851 20.2503 4.87637 20.6408 5.35882 20.6408H11.3193V12.5129H4.48487V19.7678ZM12.6785 20.6408H18.6422C19.1247 20.6408 19.516 20.2503 19.5162 19.7678V12.5129H12.6785V20.6408ZM4.23319 7.69607C3.75064 7.69611 3.35924 8.08746 3.35924 8.57002V10.2797C3.35936 10.7622 3.75072 11.1536 4.23319 11.1536H19.7668C20.2493 11.1536 20.6406 10.7622 20.6408 10.2797V8.57002C20.6408 8.08743 20.2494 7.69607 19.7668 7.69607H4.23319ZM15.7932 3.35924C14.9729 3.35941 14.2023 3.91349 13.5939 4.75777C13.2078 5.29369 12.9445 5.86907 12.8028 6.33683H16.375C16.5326 6.33683 16.7725 6.23289 17.0175 5.9195C17.2549 5.61581 17.425 5.19809 17.4614 4.78751C17.4973 4.38008 17.3995 4.04318 17.1917 3.81267C16.9896 3.5886 16.5874 3.35924 15.7932 3.35924ZM8.20686 3.35924C7.41283 3.35931 7.01145 3.58863 6.80938 3.81267C6.60139 4.04329 6.50358 4.38079 6.53965 4.78857C6.57607 5.19882 6.7453 5.61598 6.98247 5.9195C7.22732 6.23263 7.46736 6.33666 7.62493 6.33683H11.1982C11.0565 5.86906 10.7932 5.29367 10.4071 4.75777C9.79865 3.91336 9.02722 3.35924 8.20686 3.35924Z" fill="url(#paint2_linear_referral)"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear_referral" x1="6.20502" y1="13.2226" x2="12.0224" y2="23.2729" gradientUnits="userSpaceOnUse">
+<stop stop-color="white"/>
+<stop offset="1" stop-color="#CCDEFF"/>
+</linearGradient>
+<linearGradient id="paint1_linear_referral" x1="5.40954" y1="7.72163" x2="7.05961" y2="14.1074" gradientUnits="userSpaceOnUse">
+<stop stop-color="#81ABF6"/>
+<stop offset="1" stop-color="#2360D9"/>
+</linearGradient>
+<linearGradient id="paint2_linear_referral" x1="4.92886" y1="4.92886" x2="19.0711" y2="19.0711" gradientUnits="userSpaceOnUse">
+<stop stop-color="#81ABF6"/>
+<stop offset="1" stop-color="#2360D9"/>
+</linearGradient>
+<clipPath id="clip0_referral">
+<rect width="20" height="20" fill="white" transform="translate(2 2)"/>
+</clipPath>
+</defs>
+</svg>
+```
+
+### `src/flows/stocks/assets/us/card/watchlist.svg`
+
+```tsx
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_watchlist)">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M18.486 8.99769C17.9007 9.05139 17.3497 9.30835 16.9311 9.72784L10.1566 16.5167C9.77048 16.9036 9.52054 17.4054 9.4443 17.9467L9.01189 21.0168C8.99535 21.1342 8.98723 21.2516 8.98721 21.3685H4.07224C3.68996 21.3685 3.32334 21.2166 3.05303 20.9464C2.78272 20.6761 2.63086 20.3094 2.63086 19.9271V4.07199C2.63086 3.68972 2.78272 3.3231 3.05303 3.05279C3.32334 2.78247 3.68996 2.63062 4.07224 2.63062H13.4411L18.486 7.67544V8.99769Z" fill="url(#paint0_linear_watchlist)"/>
+<path d="M21.3707 14.1626L14.5818 20.9514L11.5117 21.3694L11.9441 18.2992L18.7186 11.5104L21.3707 14.1626Z" fill="url(#paint1_linear_watchlist)"/>
+<path d="M18.7169 10.8797C18.8841 10.8796 19.0449 10.9457 19.1632 11.0639L21.8148 13.7164C21.933 13.8347 22 13.9955 22 14.1628C21.9999 14.3299 21.9329 14.49 21.8148 14.6081L15.0259 21.3969C14.9284 21.4944 14.8018 21.5577 14.6652 21.5762L11.595 21.994C11.3994 22.0206 11.2022 21.9537 11.0629 21.8137C10.924 21.6738 10.8582 21.477 10.8856 21.2817L11.3181 18.2114L11.3408 18.112C11.371 18.015 11.4241 17.9263 11.4965 17.8538L18.2706 11.0649C18.3887 10.9464 18.5495 10.8798 18.7169 10.8797ZM13.4405 2C13.6076 2.00001 13.7687 2.06614 13.8868 2.18425L18.9316 7.22908C19.0499 7.34733 19.116 7.5082 19.116 7.67543V8.3957C19.1159 8.74393 18.8336 9.02628 18.4854 9.0263C18.1373 9.02607 17.8548 8.74381 17.8548 8.3957V7.93654L13.1794 3.26121H4.07212C3.85709 3.26121 3.65072 3.34661 3.49867 3.49867C3.34661 3.65072 3.26121 3.85709 3.26121 4.07212V19.9269C3.26122 20.1419 3.34671 20.3483 3.49867 20.5003C3.65078 20.6523 3.85717 20.7378 4.07212 20.7378H8.3957C8.7439 20.7378 9.02622 21.0202 9.0263 21.3684C9.02628 21.7166 8.74393 21.999 8.3957 21.999H4.07212C3.52255 21.999 2.99546 21.7804 2.60695 21.392C2.2184 21.0034 2.00001 20.4763 2 19.9269V4.07212C2 3.52259 2.21839 2.99553 2.60695 2.60695C2.99553 2.21839 3.52259 2 4.07212 2H13.4405ZM12.5379 18.5947L12.2503 20.6313L14.2829 20.3555L20.4767 14.1618L18.7169 12.402L12.5379 18.5947ZM8.96422 11.4748C9.16661 11.1915 9.56073 11.1257 9.8441 11.328C10.1275 11.5304 10.1933 11.9245 9.99092 12.2079L7.63995 15.4988C7.53221 15.6496 7.36351 15.7456 7.17882 15.761C6.9943 15.7761 6.81224 15.7095 6.68124 15.5786L5.27027 14.1677C5.02435 13.9214 5.0243 13.5222 5.27027 13.276C5.51653 13.0297 5.9167 13.0297 6.16297 13.276L7.04679 14.1598L8.96422 11.4748ZM8.96422 5.61809C9.16661 5.33475 9.56073 5.26901 9.8441 5.47127C10.1275 5.6737 10.1933 6.06776 9.99092 6.35116L7.63995 9.64212C7.53221 9.79289 7.36351 9.88892 7.17882 9.90421C6.9943 9.91941 6.81224 9.85276 6.68124 9.72193L5.27027 8.31095C5.02435 8.06473 5.0243 7.66543 5.27027 7.41924C5.51653 7.17297 5.9167 7.17298 6.16297 7.41924L7.04679 8.30307L8.96422 5.61809Z" fill="url(#paint2_linear_watchlist)"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear_watchlist" x1="4.95273" y1="5.37466" x2="18.0198" y2="16.4314" gradientUnits="userSpaceOnUse">
+<stop stop-color="white"/>
+<stop offset="1" stop-color="#CCDEFF"/>
+</linearGradient>
+<linearGradient id="paint1_linear_watchlist" x1="12.9555" y1="12.9542" x2="19.927" y2="19.9256" gradientUnits="userSpaceOnUse">
+<stop stop-color="#81ABF6"/>
+<stop offset="1" stop-color="#2360D9"/>
+</linearGradient>
+<linearGradient id="paint2_linear_watchlist" x1="4.92886" y1="4.92883" x2="19.071" y2="19.0711" gradientUnits="userSpaceOnUse">
+<stop stop-color="#81ABF6"/>
+<stop offset="1" stop-color="#2360D9"/>
+</linearGradient>
+<clipPath id="clip0_watchlist">
+<rect width="20" height="20" fill="white" transform="translate(2 2)"/>
+</clipPath>
 </defs>
 </svg>
 ```
@@ -20051,6 +20263,121 @@ h��ha�E�  @����=O������S��m���㡦8�
 </svg>
 ```
 
+### `src/flows/stocks/assets/us/instruments/boosted-etfs.svg`
+
+```tsx
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_boosted)">
+<path d="M10.886 5.36133C10.5648 5.8119 10.3824 6.36012 10.3824 6.93777C10.3824 7.96889 10.9657 8.90481 11.8767 9.36263L12.0629 9.44748L13.7993 10.1618C13.8641 10.1885 13.9184 10.2344 13.9568 10.2918L13.9895 10.352L14.7039 12.0885C15.1226 13.1054 16.0498 13.3019 17.1495 13.3019C17.7273 13.3019 17.7623 13.3019 17.9726 13.3019V19.3741C17.9726 20.148 17.3453 20.7753 16.5713 20.7753H3.95987C3.18596 20.7753 2.55859 20.148 2.55859 19.3741V6.76261C2.55859 5.98871 3.18596 5.36133 3.95987 5.36133H10.886Z" fill="url(#paint0_linear_boosted)"/>
+<path d="M15.4419 4.45641L16.1566 2.72045C16.1971 2.62245 16.2926 2.55849 16.3985 2.55849C16.5045 2.55849 16.6 2.62245 16.6404 2.72045L17.3552 4.45641C17.6398 5.14748 18.1886 5.69625 18.8796 5.98081L20.6156 6.69563C20.7137 6.73597 20.7775 6.83148 20.7775 6.93747C20.7775 7.04347 20.7137 7.13898 20.6156 7.17932L18.8796 7.89414C18.1886 8.1787 17.6398 8.72747 17.3552 9.41854L16.6404 11.1545C16.6 11.2525 16.5045 11.3165 16.3985 11.3165C16.2926 11.3165 16.1971 11.2525 16.1566 11.1545L15.4419 9.41854C15.1573 8.72747 14.6086 8.1787 13.9175 7.89414L12.1815 7.17932C12.0835 7.13898 12.0195 7.04347 12.0195 6.93747C12.0195 6.83148 12.0835 6.73597 12.1815 6.69563L13.9175 5.98081C14.6086 5.69625 15.1573 5.14748 15.4419 4.45641Z" fill="url(#paint1_linear_boosted)"/>
+<path d="M10.441 4.74837C10.7794 4.74859 11.054 5.02298 11.054 5.36142C11.054 5.69987 10.7794 5.97427 10.441 5.97448H3.95978C3.52446 5.97448 3.17143 6.32752 3.17143 6.76284V15.519L5.2702 13.3915L5.27115 13.3906C5.51213 13.1496 5.81317 13.0295 6.16296 13.0294C6.51291 13.0294 6.81467 13.1495 7.05573 13.3906L8.34411 14.6914L10.7801 12.2794H10.3049C10.1094 12.2794 9.93768 12.212 9.80108 12.0753C9.66449 11.9388 9.59611 11.767 9.59609 11.5715C9.59609 11.376 9.66449 11.2043 9.80108 11.0677C9.93769 10.9311 10.1094 10.8627 10.3049 10.8627H12.4851C12.6805 10.8628 12.8525 10.9312 12.989 11.0677C13.1254 11.2042 13.193 11.3761 13.193 11.5715V13.7508C13.193 13.9461 13.1253 14.118 12.989 14.2546C12.8525 14.3911 12.6805 14.4595 12.4851 14.4596C12.2896 14.4596 12.1169 14.3912 11.9803 14.2546C11.844 14.118 11.7763 13.9461 11.7763 13.7508V13.2737L9.23496 15.815C8.99394 16.056 8.69299 16.1761 8.34315 16.1761C7.99332 16.1761 7.69236 16.0559 7.45134 15.815L6.16296 14.5267L3.39079 17.2998C3.32591 17.3647 3.25207 17.4126 3.17143 17.4454V19.3746C3.17165 19.8098 3.52459 20.162 3.95978 20.162H16.5715C17.0065 20.1618 17.3587 19.8096 17.359 19.3746V13.7105C17.359 13.3722 17.6336 13.0977 17.972 13.0974C18.3105 13.0974 18.585 13.372 18.5851 13.7105V19.3746C18.5848 20.4868 17.6837 21.3879 16.5715 21.3881H3.95978C2.84744 21.3881 1.94553 20.4869 1.94531 19.3746V6.76284C1.94531 5.65035 2.8473 4.74837 3.95978 4.74837H10.441ZM7.63622 15.7643C7.6383 15.766 7.64083 15.7673 7.64292 15.7691C7.61679 15.7472 7.59102 15.7239 7.56629 15.6991L7.63622 15.7643ZM16.3972 1.94554C16.7072 1.94554 16.9908 2.10935 17.1472 2.36989L17.2066 2.48676L17.9212 4.22344C18.1436 4.76316 18.5721 5.19183 19.1119 5.41411L20.8476 6.12871C21.1757 6.26363 21.3897 6.58312 21.3898 6.93718C21.3898 7.2914 21.1758 7.61162 20.8476 7.7466L19.1119 8.4612C18.5721 8.6835 18.1436 9.11211 17.9212 9.65188L17.2066 11.3876C17.0717 11.7153 16.7515 11.9298 16.3972 11.9298C16.0431 11.9296 15.7236 11.7152 15.5888 11.3876L14.8742 9.65188C14.6518 9.11214 14.2232 8.68353 13.6835 8.4612L11.9468 7.7466C11.6192 7.61161 11.4056 7.29149 11.4056 6.93718C11.4057 6.58305 11.6193 6.26366 11.9468 6.12871L13.6835 5.41411C14.2232 5.19181 14.6518 4.76313 14.8742 4.22344L15.5888 2.48676L15.6481 2.36989C15.8045 2.1095 16.0873 1.94569 16.3972 1.94554ZM9.78959 11.7603C9.79152 11.7658 9.79418 11.7711 9.7963 11.7765C9.78475 11.7465 9.77548 11.7153 9.76947 11.6826L9.78959 11.7603ZM13.0292 11.5715L13.0234 11.4872C13.0228 11.4827 13.0213 11.4783 13.0206 11.4738C13.0256 11.5052 13.0292 11.5377 13.0292 11.5715ZM9.8097 11.334C9.80722 11.3393 9.80529 11.3448 9.803 11.3502C9.81545 11.3209 9.83012 11.2927 9.84802 11.2659L9.8097 11.334ZM12.8731 11.1836L12.8117 11.1299C12.8069 11.1263 12.8014 11.1238 12.7964 11.1203C12.823 11.1388 12.8491 11.1596 12.8731 11.1836ZM12.4841 11.0265C12.5578 11.0265 12.626 11.0391 12.6882 11.0629C12.6587 11.0515 12.6282 11.042 12.5962 11.036C12.5608 11.0295 12.5237 11.0265 12.4851 11.0265H12.4841ZM16.0083 4.68993C15.6615 5.53217 14.9922 6.20146 14.15 6.54827L13.2035 6.93718L14.15 7.32705C14.9922 7.67385 15.6615 8.34314 16.0083 9.18538L16.3972 10.1308L16.7871 9.18538C17.134 8.34317 17.8031 7.67385 18.6454 7.32705L19.5909 6.93718L18.6454 6.54827C17.8031 6.20146 17.134 5.53214 16.7871 4.68993L16.3972 3.74353L16.0083 4.68993Z" fill="url(#paint2_linear_boosted)"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear_boosted" x1="4.81588" y1="7.61861" x2="15.7153" y2="18.5181" gradientUnits="userSpaceOnUse">
+<stop stop-color="white"/>
+<stop offset="1" stop-color="#CCDEFF"/>
+</linearGradient>
+<linearGradient id="paint1_linear_boosted" x1="13.3021" y1="3.84103" x2="19.495" y2="10.0339" gradientUnits="userSpaceOnUse">
+<stop stop-color="#81ABF6"/>
+<stop offset="1" stop-color="#2360D9"/>
+</linearGradient>
+<linearGradient id="paint2_linear_boosted" x1="4.79282" y1="4.79278" x2="18.5409" y2="18.5422" gradientUnits="userSpaceOnUse">
+<stop stop-color="#81ABF6"/>
+<stop offset="1" stop-color="#2360D9"/>
+</linearGradient>
+<clipPath id="clip0_boosted">
+<rect width="19.4444" height="19.4444" fill="white" transform="translate(1.94531 1.94444)"/>
+</clipPath>
+</defs>
+</svg>
+```
+
+### `src/flows/stocks/assets/us/instruments/etfs.svg`
+
+```tsx
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M10.696 12.6389V5.34719C9.25381 5.34719 7.84404 5.77484 6.64493 6.57606C5.44583 7.37728 4.51123 8.51608 3.95935 9.84846C3.40746 11.1808 3.26306 12.647 3.54441 14.0614C3.82576 15.4758 4.52022 16.7751 5.53998 17.7948C6.55974 18.8146 7.85899 19.5091 9.27343 19.7904C10.6879 20.0718 12.154 19.9274 13.4864 19.3755C14.8187 18.8236 15.9575 17.889 16.7588 16.6899C17.56 15.4908 17.9876 14.081 17.9876 12.6389H10.696Z" fill="url(#paint0_linear_etfs)" stroke="url(#paint1_linear_etfs)" stroke-width="1.36111" stroke-linejoin="round"/>
+<path d="M10.6957 12.6389L5.54297 17.7916" stroke="url(#paint2_linear_etfs)" stroke-width="1.36111" stroke-linecap="round"/>
+<path d="M12.6406 10.6944V3.40277C13.5982 3.40277 14.5464 3.59137 15.431 3.95781C16.3157 4.32425 17.1195 4.86135 17.7966 5.53845C18.4737 6.21554 19.0108 7.01937 19.3772 7.90403C19.7437 8.7887 19.9323 9.73688 19.9323 10.6944H12.6406Z" fill="url(#paint3_linear_etfs)"/>
+<defs>
+<linearGradient id="paint0_linear_etfs" x1="5.53993" y1="7.48283" x2="15.852" y2="17.7949" gradientUnits="userSpaceOnUse">
+<stop stop-color="white"/>
+<stop offset="1" stop-color="#CCDEFF"/>
+</linearGradient>
+<linearGradient id="paint1_linear_etfs" x1="5.53993" y1="7.48283" x2="15.852" y2="17.7949" gradientUnits="userSpaceOnUse">
+<stop stop-color="#81ABF6"/>
+<stop offset="1" stop-color="#2360D9"/>
+</linearGradient>
+<linearGradient id="paint2_linear_etfs" x1="6.29756" y1="13.3934" x2="9.94116" y2="17.037" gradientUnits="userSpaceOnUse">
+<stop stop-color="#81ABF6"/>
+<stop offset="1" stop-color="#2360D9"/>
+</linearGradient>
+<linearGradient id="paint3_linear_etfs" x1="13.7084" y1="4.47058" x2="18.8645" y2="9.62662" gradientUnits="userSpaceOnUse">
+<stop stop-color="#81ABF6"/>
+<stop offset="1" stop-color="#2360D9"/>
+</linearGradient>
+</defs>
+</svg>
+```
+
+### `src/flows/stocks/assets/us/instruments/fractional.svg`
+
+```tsx
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_fractional)">
+<path d="M19.6367 19.2183V11.5045H3.70117V19.2183C3.70117 20.0524 4.37735 20.7285 5.21144 20.7285H18.1264C18.9606 20.7285 19.6367 20.0524 19.6367 19.2183Z" fill="url(#paint0_linear_fractional)"/>
+<path d="M20.7287 8.33155V9.99405C20.7287 10.8282 20.0525 11.5043 19.2184 11.5043H4.11574C3.28165 11.5043 2.60547 10.8282 2.60547 9.99405V8.33155C2.60547 7.49744 3.28165 6.82128 4.11574 6.82128H19.2184C20.0525 6.82128 20.7287 7.49744 20.7287 8.33155Z" fill="url(#paint1_linear_fractional)"/>
+<path d="M15.3553 1.94436C16.3833 1.94436 17.1793 2.24853 17.6957 2.82088C18.2065 3.3871 18.3516 4.11359 18.2936 4.7711C18.2504 5.25794 18.0949 5.74122 17.8589 6.16072H19.2186C20.4176 6.16072 21.3898 7.13286 21.3898 8.33188V9.99407C21.3897 10.8003 20.9489 11.5017 20.2964 11.8761V19.2186C20.2962 20.4175 19.3241 21.3888 18.1253 21.3888H5.21083C4.01197 21.3888 3.03989 20.4176 3.03967 19.2186V11.8772C2.38654 11.5029 1.94539 10.8007 1.94531 9.99407V8.33188C1.94531 7.13287 2.9175 6.16075 4.11647 6.16072H5.47719C5.24114 5.74124 5.08563 5.25799 5.04255 4.7711C4.98443 4.11358 5.1286 3.38711 5.63928 2.82088C6.15571 2.24837 6.95169 1.94442 7.97976 1.94436C9.39551 1.94436 10.4909 2.88145 11.1906 3.85226C11.3669 4.09697 11.5267 4.35595 11.6675 4.61933C11.8082 4.35593 11.9681 4.097 12.1445 3.85226C12.8441 2.88142 13.9395 1.94451 15.3553 1.94436ZM4.36116 19.2186C4.36138 19.6877 4.74179 20.0673 5.21083 20.0673H11.0057V12.1652H4.36116V19.2186ZM12.3272 20.0673H18.1253C18.5943 20.0673 18.9747 19.6877 18.9749 19.2186V12.1652H12.3272V20.0673ZM4.11647 7.48221C3.64732 7.48224 3.2668 7.86272 3.2668 8.33188V9.99407C3.26691 10.4631 3.6474 10.8437 4.11647 10.8437H19.2186C19.6877 10.8437 20.0682 10.4632 20.0683 9.99407V8.33188C20.0683 7.86269 19.6878 7.48221 19.2186 7.48221H4.11647ZM15.3553 3.26584C14.5579 3.266 13.8087 3.80469 13.2172 4.62553C12.8418 5.14656 12.5858 5.70595 12.448 6.16072H15.921C16.0742 6.16072 16.3074 6.05967 16.5456 5.75498C16.7765 5.45973 16.9418 5.05361 16.9773 4.65444C17.0122 4.25832 16.917 3.93078 16.715 3.70668C16.5186 3.48883 16.1275 3.26584 15.3553 3.26584ZM7.97976 3.26584C7.20779 3.26591 6.81756 3.48886 6.6211 3.70668C6.41889 3.93089 6.3238 4.25902 6.35886 4.65547C6.39427 5.05432 6.5588 5.45989 6.78938 5.75498C7.02743 6.05941 7.2608 6.16055 7.41399 6.16072H10.888C10.7502 5.70594 10.4943 5.14654 10.1189 4.62553C9.52733 3.80457 8.77733 3.26584 7.97976 3.26584Z" fill="url(#paint2_linear_fractional)"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear_fractional" x1="6.03483" y1="12.8553" x2="11.6906" y2="22.6264" gradientUnits="userSpaceOnUse">
+<stop stop-color="white"/>
+<stop offset="1" stop-color="#CCDEFF"/>
+</linearGradient>
+<linearGradient id="paint1_linear_fractional" x1="5.25949" y1="7.50708" x2="6.86373" y2="13.7154" gradientUnits="userSpaceOnUse">
+<stop stop-color="#81ABF6"/>
+<stop offset="1" stop-color="#2360D9"/>
+</linearGradient>
+<linearGradient id="paint2_linear_fractional" x1="4.79282" y1="4.79187" x2="18.5423" y2="18.5413" gradientUnits="userSpaceOnUse">
+<stop stop-color="#81ABF6"/>
+<stop offset="1" stop-color="#2360D9"/>
+</linearGradient>
+<clipPath id="clip0_fractional">
+<rect width="19.4444" height="19.4444" fill="white" transform="translate(1.94531 1.94444)"/>
+</clipPath>
+</defs>
+</svg>
+```
+
+### `src/flows/stocks/assets/us/instruments/themes.svg`
+
+```tsx
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_themes)">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M17.9713 8.7477C17.4023 8.79992 16.8666 9.04974 16.4596 9.45757L9.87329 16.0579C9.49793 16.434 9.25494 16.9219 9.18082 17.4482L8.76042 20.433C8.74434 20.5471 8.73644 20.6612 8.73642 20.7749H3.95798C3.58632 20.7749 3.22989 20.6272 2.96709 20.3645C2.70428 20.1017 2.55664 19.7452 2.55664 19.3736V3.95883C2.55664 3.58718 2.70428 3.23074 2.96709 2.96794C3.22989 2.70514 3.58632 2.5575 3.95798 2.5575H13.0666L17.9713 7.46219V8.7477Z" fill="url(#paint0_linear_themes)"/>
+<path d="M20.7766 13.7691L14.1762 20.3693L11.1914 20.7757L11.6118 17.7909L18.1981 11.1906L20.7766 13.7691Z" fill="url(#paint1_linear_themes)"/>
+<path d="M18.1959 10.5774C18.3585 10.5773 18.5148 10.6416 18.6298 10.7566L21.2077 13.3353C21.3227 13.4503 21.3878 13.6067 21.3878 13.7693C21.3877 13.9318 21.3226 14.0874 21.2077 14.2023L14.6075 20.8025C14.5126 20.8973 14.3896 20.9588 14.2568 20.9768L11.2719 21.3831C11.0817 21.4089 10.89 21.3438 10.7546 21.2078C10.6194 21.0717 10.5555 20.8803 10.5821 20.6905L11.0027 17.7055L11.0247 17.6088C11.054 17.5145 11.1057 17.4283 11.1761 17.3578L17.762 10.7575C17.8768 10.6423 18.0332 10.5775 18.1959 10.5774ZM13.0661 1.9444C13.2286 1.94441 13.3851 2.00869 13.5 2.12353L18.4047 7.02823C18.5196 7.14319 18.5839 7.29959 18.5839 7.46217V8.16244C18.5838 8.501 18.3093 8.7755 17.9708 8.77552C17.6324 8.7753 17.3577 8.50088 17.3577 8.16244V7.71603L12.8122 3.17057H3.95792C3.74886 3.17057 3.54822 3.25361 3.4004 3.40143C3.25257 3.54926 3.16953 3.7499 3.16953 3.95896V19.3733C3.16954 19.5823 3.25266 19.783 3.4004 19.9308C3.54828 20.0786 3.74894 20.1617 3.95792 20.1617H8.1614C8.49993 20.1617 8.7744 20.4363 8.77448 20.7748C8.77446 21.1133 8.49996 21.3879 8.1614 21.3879H3.95792C3.42361 21.3879 2.91117 21.1754 2.53345 20.7977C2.15569 20.42 1.94337 19.9074 1.94336 19.3733V3.95896C1.94336 3.42469 2.15568 2.91227 2.53345 2.53449C2.91123 2.15672 3.42365 1.9444 3.95792 1.9444H13.0661ZM12.1886 18.0782L11.9089 20.0582L13.8851 19.79L19.9068 13.7683L18.1959 12.0575L12.1886 18.0782ZM8.71413 11.156C8.91089 10.8806 9.29407 10.8166 9.56957 11.0133C9.8451 11.2101 9.90909 11.5932 9.71231 11.8687L7.42664 15.0683C7.3219 15.2148 7.15789 15.3082 6.97833 15.3231C6.79893 15.3378 6.62192 15.2731 6.49457 15.1459L5.12278 13.7741C4.8837 13.5347 4.88365 13.1465 5.12278 12.9072C5.36221 12.6677 5.75126 12.6677 5.99069 12.9072L6.84996 13.7665L8.71413 11.156ZM8.71413 5.46198C8.91089 5.18651 9.29407 5.1226 9.56957 5.31925C9.8451 5.51605 9.90909 5.89917 9.71231 6.17469L7.42664 9.37424C7.3219 9.52082 7.15789 9.61418 6.97833 9.62905C6.79893 9.64383 6.62192 9.57903 6.49457 9.45183L5.12278 8.08005C4.8837 7.84067 4.88365 7.45245 5.12278 7.2131C5.36221 6.97368 5.75126 6.97369 5.99069 7.2131L6.84996 8.07238L8.71413 5.46198Z" fill="url(#paint2_linear_themes)"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear_themes" x1="4.81402" y1="5.22531" x2="17.5181" y2="15.9749" gradientUnits="userSpaceOnUse">
+<stop stop-color="white"/>
+<stop offset="1" stop-color="#CCDEFF"/>
+</linearGradient>
+<linearGradient id="paint1_linear_themes" x1="12.5951" y1="12.5943" x2="19.3729" y2="19.3721" gradientUnits="userSpaceOnUse">
+<stop stop-color="#81ABF6"/>
+<stop offset="1" stop-color="#2360D9"/>
+</linearGradient>
+<linearGradient id="paint2_linear_themes" x1="4.79087" y1="4.79187" x2="18.5401" y2="18.5413" gradientUnits="userSpaceOnUse">
+<stop stop-color="#81ABF6"/>
+<stop offset="1" stop-color="#2360D9"/>
+</linearGradient>
+<clipPath id="clip0_themes">
+<rect width="19.4444" height="19.4444" fill="white" transform="translate(1.94336 1.94445)"/>
+</clipPath>
+</defs>
+</svg>
+```
+
 ### `src/flows/stocks/assets/us/movers/gainers.svg`
 
 ```tsx
@@ -20137,8 +20464,9 @@ import { ShortcutArt } from './ShortcutArt'
 import styles from './Home.module.css'
 
 /** Which shortcuts design the Home shows (prototype option "Shortcuts", flow options in index.tsx): V1 is the default. */
-export type ShortcutsVersion = 'v1' | 'v2'
-export const DEFAULT_SHORTCUTS: ShortcutsVersion = 'v2'
+/** v3 / v4 — instruments + feature chips — are drawn by screens/Home (components/Instruments); here they fall back to the card. */
+export type ShortcutsVersion = 'v1' | 'v2' | 'v3' | 'v4' | 'v5' | 'v6'
+export const DEFAULT_SHORTCUTS: ShortcutsVersion = 'v6'
 const SHORTCUTS_VERSION = DEFAULT_SHORTCUTS as ShortcutsVersion
 
 /**
@@ -20424,6 +20752,59 @@ export function Watchlists({ lists = watchlists, onOpen, onViewAll }: { lists?: 
 .hero[data-tone='green'] {
   --glow: var(--l3-surface-accent-success-light);
 }
+
+/* ---- The hero with the index ticker as its last row (Home "Ticker" V2 / V3, 18 Nov) ---- */
+
+/* An even wash instead of the blurred ellipse: clear behind the holdings, the market's tint rising toward the foot, the
+   same from edge to edge (the ellipse left the corners paler and sat unevenly behind a shorter hero). */
+.hero:has([data-hero-ticker]) .glow {
+  inset: 0;
+  height: auto;
+  border-radius: 0;
+  filter: none;
+  background: linear-gradient(to bottom, transparent 40%, var(--glow));
+}
+
+/* 24 from the P&L tag to the ticker (the hero's own gap), 20 from the strip to the rounded foot. */
+.hero:has([data-hero-ticker='line'] [role='region']:only-child) {
+  padding-bottom: var(--l3-spacing-20);
+}
+
+/* ---- The ticker in a tray under the hero (Home "Ticker" V4, 19 Nov — Figma 6662:8516) ----
+   The hero box becomes the tray: surface/secondary, a hairline under it, bottom corners 20. The holdings sit on a
+   white panel over its top (bottom corners 24, a hairline in the market's colour, the market's wash rising to its
+   foot), and the index strip rides in the 40 left under the panel: 12 above and below its 16. */
+.hero.hero:has([data-hero-ticker='tray']) {
+  gap: 0;
+  padding: 0;
+  border-bottom: 1px solid var(--l3-border-default); /* 1px hairline */
+  border-radius: 0 0 var(--l3-radius-20) var(--l3-radius-20);
+  margin-bottom: var(--l3-spacing-04); /* with the feed's 20: 24 from the tray to the shortcuts */
+  background: var(--l3-surface-secondary);
+  --edge: var(--l3-content-accent-us-stock-default);
+}
+
+.hero.hero[data-market='in']:has([data-hero-ticker='tray']) {
+  --edge: var(--l3-content-accent-success-default);
+}
+
+.hero:has([data-hero-ticker='tray']) .glow {
+  display: none;
+}
+
+/* 16 above the overline (32 from the tabs with the summary's 16), 24 under the P&L tag. */
+.hero:has([data-hero-ticker='tray']) .value {
+  padding: var(--l3-spacing-16) var(--l3-spacing-16) var(--l3-spacing-24);
+  border-bottom: 1px solid color-mix(in srgb, var(--edge) 20%, var(--l3-surface-primary)); /* 1px hairline */
+  border-radius: 0 0 var(--l3-radius-24) var(--l3-radius-24);
+  background:
+    linear-gradient(to bottom, transparent 40%, var(--glow)),
+    var(--l3-surface-primary);
+}
+
+.hero:has([data-hero-ticker='tray']) .actions {
+  padding-block: var(--l3-spacing-12);
+}
 ```
 
 ### `src/flows/stocks/components/HoldingsHero.tsx`
@@ -20579,6 +20960,16 @@ export function HeroButtons({ buy, add }: HeroButtonsProps) {
   flex: none;
   align-self: stretch;
   border-left: 1px solid var(--l3-border-light);
+}
+
+/* In the tray under the hero (Figma 6662:8516): name, level and change 4 apart, the chevron 8 after them. */
+.indexStripTray .index {
+  gap: var(--l3-spacing-04);
+}
+
+.indexStripTray .index > :last-child {
+  margin-inline-start: var(--l3-spacing-04);
+  color: var(--l3-content-secondary);
 }
 
 /* ---- Holdings: the biggest number on the page ---- */
@@ -21038,10 +21429,229 @@ export function HeroButtons({ buy, add }: HeroButtonsProps) {
 .shortcutsRowDivider + * .shortcutPlain {
   padding-top: var(--l3-spacing-12);
 }
+/* One row only (Home Version · Card, Figma 6660:10742): 12 above and below, so the card is 68 high (12 + 24 icon + 4 +
+   16 label + 12) and its column lines 44 — the two-row card's 18 / 12 left this one lopsided at 74. */
+.shortcutsPanel.shortcutsPanelOneRow .shortcutPlain.shortcutPlain {
+  padding-block: var(--l3-spacing-12);
+}
+
+/* …and 24 from it to Top Movers, as the frame (the feed's gap is 32; the circles keep 32). */
+.shortcutsPanel.shortcutsPanelOneRow {
+  margin-bottom: calc(-1 * var(--l3-spacing-08));
+}
+
 /* US card: the product icons (masks) take the US shortcuts' gradient, discover blue at the top to content/primary at
    the bottom (L3 gap: no gradient icon colour — drawn from two L3 tokens, as .usArt). */
 .usProducts .productGlyph > * {
   background: linear-gradient(var(--l3-content-accent-discover-default), var(--l3-content-primary));
+}
+
+/* ---- Index ticker inside the hero (Home "Ticker" V2 / V3, Figma 6616:14729) ---- */
+
+/* V3: one outlined capsule, centred in the hero — surface/primary on the hero's glow, 12 between an index and the
+   hairline beside it. FLAG: hand-made capsule (L3 has no chip row that isn't a tab or a filter). */
+.indexPill {
+  display: flex;
+  align-items: center;
+  gap: var(--l3-spacing-12);
+  align-self: center;
+  width: fit-content;
+  max-width: 100%;
+  margin-inline: auto;
+  padding: var(--l3-spacing-08) var(--l3-spacing-12);
+  border-radius: var(--l3-radius-full);
+  background: var(--l3-surface-primary);
+  box-shadow: inset 0 0 0 1px var(--l3-border-light); /* 1px outline */
+  overflow-x: auto; /* three indices fit at 392; on a narrower phone the capsule scrolls sideways */
+  scrollbar-width: none;
+}
+
+/* ---- Shortcuts V3: instruments (icon circles) + feature chips (Figma 6631:16280, components/Instruments.tsx) ---- */
+
+/* One instrument: the whole cell is the tap target; rounded so its press layer isn't a hard box. */
+.instrument[data-variant='flat'][data-padding='none'] {
+  border-radius: var(--l3-radius-12);
+}
+
+.instrumentBody {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--l3-spacing-08);
+  padding-block: var(--l3-spacing-04);
+  text-align: center;
+}
+
+/* Solid circles (19 Nov): the disc is the market's colour — US Stocks blue, Indian green — with a white filled icon.
+   FLAG: L3 Avatar's surface and icon colour overridden (it has no accent fill); sizes and shape are the Avatar's own. */
+.instrumentCircle {
+  position: relative;
+  display: inline-flex;
+}
+
+.instrument .instrumentDisc {
+  --disc: var(--l3-surface-accent-us-stock-default);
+
+  /* Depth (19 Nov): lit from above — a lighter top easing into the colour, a hairline highlight inside the top edge, and
+     a soft shadow of the disc's own colour under it. FLAG: raw shadow / mix values, L3 has no coloured elevation. */
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--disc) 82%, white), var(--disc) 70%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.35),
+    inset 0 -1px 0 rgb(0 0 0 / 0.08),
+    0 6px 12px -4px color-mix(in srgb, var(--disc) 55%, transparent);
+}
+
+/* The icon's colour is set on its own wrapper: L3 Avatar colours its icon slot itself, so a colour on the disc never
+   reaches the glyph. */
+.instrumentIcon {
+  display: inline-flex;
+  color: var(--l3-content-inverted);
+}
+
+[data-tone='in'] > .instrument .instrumentDisc {
+  --disc: var(--l3-surface-accent-success-default);
+}
+
+/* Ringed circles (V4, 19 Nov — the user's reference: a soft dish set in a raised white ring). Sleek, with depth:
+   - the ring is thin (6 of surface/primary around the 48 disc → 60 across), with a hairline edge and a shadow that is
+     tight right under it and wide and faint further out, so it floats off the page;
+   - the disc is a shallow dish: a touch darker at the top than the bottom with a faint inner shadow along its top edge.
+   The icon takes the market's colour. FLAG: hand-made ring and raw shadow values — L3 Avatar has no ringed variant and
+   L3's elevation tokens have no two-layer float. */
+[data-look='ring'] > .instrument .instrumentCircle {
+  padding: var(--l3-spacing-06);
+  border-radius: var(--l3-radius-full);
+  background: linear-gradient(to bottom, var(--l3-surface-primary), color-mix(in srgb, var(--l3-surface-primary) 94%, var(--l3-surface-inverted)));
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--l3-border-light) 70%, transparent),
+    inset 0 1px 0 rgb(255 255 255 / 0.9),
+    0 1px 2px rgb(0 0 0 / 0.06),
+    0 8px 18px -6px rgb(0 0 0 / 0.14);
+}
+
+[data-look='ring'] > .instrument .instrumentDisc {
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--l3-surface-secondary) 92%, var(--l3-surface-inverted)), var(--l3-surface-secondary) 60%);
+  box-shadow: inset 0 1px 2px rgb(0 0 0 / 0.07), inset 0 -1px 0 rgb(255 255 255 / 0.7);
+}
+
+[data-look='ring'] .instrumentIcon {
+  color: var(--l3-content-accent-us-stock-default);
+}
+
+[data-look='ring'][data-tone='in'] .instrumentIcon {
+  color: var(--l3-content-accent-success-default);
+}
+
+/* Soft circles (V5, 19 Nov — Figma 6635:19626, the user's own frame): the 48 disc is surface/primary with a faint wash
+   of the market's colour towards its foot (the frame's white → blue gradient at 20%), a 1px edge outside it that is
+   the market's colour at the top fading to white, and a very soft shadow of that colour under it. The icon takes the
+   market's colour. FLAG: raw mix / shadow values — L3 Avatar has no tinted variant and no coloured elevation. */
+[data-look='soft'] > .instrument .instrumentDisc {
+  background:
+    linear-gradient(to bottom, transparent, color-mix(in srgb, var(--disc) 13%, transparent)),
+    var(--l3-surface-primary);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--disc) 12%, var(--l3-surface-primary)), /* 1px edge, outside */
+    0 4px 4px color-mix(in srgb, var(--disc) 4%, transparent);
+}
+
+[data-look='soft'] .instrumentIcon {
+  color: var(--l3-content-accent-us-stock-default);
+}
+
+[data-look='soft'][data-tone='in'] .instrumentIcon {
+  color: var(--l3-content-accent-success-default);
+}
+
+/* Small circles (V6, 19 Nov — Figma 6662:8516): a 40 disc as the frame draws it — surface/primary with a
+   20% white → border/light wash, a 1px edge outside it (the market's colour at 30%, fading to white) and V5's very soft
+   shadow. US icons are the frame's own two-tone art (assets/us/instruments); IND's take the market's colour. FLAG: raw mix / shadow values, as V5. */
+[data-look='mini'] {
+  --ring: var(--l3-content-accent-us-stock-default);
+}
+
+[data-look='mini'][data-tone='in'] {
+  --ring: var(--l3-content-accent-success-default);
+}
+
+[data-look='mini'] > .instrument .instrumentCircle {
+  isolation: isolate;
+}
+
+/* The 1px edge outside the disc: the market's colour at 30% at the top, fading to the surface at the foot. */
+[data-look='mini'] > .instrument .instrumentCircle::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: -1px; /* 1px edge */
+  border-radius: var(--l3-radius-full);
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--ring) 30%, var(--l3-surface-primary)), var(--l3-surface-primary));
+}
+
+[data-look='mini'] > .instrument .instrumentDisc {
+  background:
+    linear-gradient(to bottom, transparent, color-mix(in srgb, var(--l3-border-light) 20%, transparent)),
+    var(--l3-surface-primary);
+  box-shadow: 0 4px 4px color-mix(in srgb, var(--ring) 4%, transparent);
+}
+
+/* The 24 icon centred in the 40 disc (8 all round). L3 gap: Avatar's icon slot is fixed at 20 for a 40 avatar, so a
+   24 icon hung out of it down and right (10 / 6 instead of 8 / 8). */
+[data-look='mini'] > .instrument .instrumentDisc > * {
+  width: var(--l3-icon-size-24);
+  height: var(--l3-icon-size-24);
+}
+
+[data-look='mini'] .instrumentIcon {
+  color: var(--l3-content-accent-us-stock-default);
+}
+
+[data-look='mini'][data-tone='in'] .instrumentIcon {
+  color: var(--l3-content-accent-success-default);
+}
+
+[data-look='mini'] .instrumentLabel {
+  color: var(--l3-content-secondary);
+}
+
+/* A chip's small icon, in the market's colour. */
+.chipIcon {
+  display: inline-flex;
+  color: var(--l3-content-accent-us-stock-default);
+}
+
+.chipIcon[data-tone='in'] {
+  color: var(--l3-content-accent-success-default);
+}
+
+/* "New" sits on the circle's top-right edge, overlapping it. */
+.instrumentNew {
+  position: absolute;
+  top: calc(-1 * var(--l3-spacing-06));
+  right: calc(-1 * var(--l3-spacing-12));
+  display: inline-flex;
+}
+
+.instrumentLabel {
+  font: var(--l3-text-label-12);
+  color: var(--l3-content-primary);
+}
+
+/* The chips scroll sideways, edge to edge, with the page's 16 before the first and after the last. */
+.featureChips {
+  display: flex;
+  gap: var(--l3-spacing-08);
+  overflow-x: auto;
+  padding-inline: var(--l3-spacing-16);
+  scrollbar-width: none;
+}
+
+.featureChips::-webkit-scrollbar {
+  display: none;
+}
+
+.featureChips > * {
+  flex: none;
 }
 ```
 
@@ -21702,6 +22312,10 @@ import { msAutorenew, msBoltFill, msCategoryFill, msPieChartFill } from '@l3/ico
 import { productsF1, productsF1Us, shortcuts, type Product, type ShortcutArt as Art } from '../data'
 import { t } from '../copy'
 import commoditiesGlyph from '../assets/in/commodities.svg'
+import usEtfsArt from '../assets/us/card/etfs.svg'
+import usPicksArt from '../assets/us/card/picks.svg'
+import usWatchlistArt from '../assets/us/card/watchlist.svg'
+import usReferralArt from '../assets/us/card/referral.svg'
 import { ShortcutArt } from './ShortcutArt'
 import { UsArtGradient } from './us/UsHomeF1'
 import styles from './Home.module.css'
@@ -21727,6 +22341,10 @@ const usShortcuts: { id: string; label: string; art: Art }[] = [
   { id: 'referral', label: t('f1.shortcuts.referral'), art: 'referral' },
 ]
 
+/** The one-row US card's icons as Figma 6662:8516 draws them: the same art in the frame's own gradient (a white → light
+ *  blue fill, light blue → blue lines) — not UsArtGradient's blue → black. */
+const usCardArt: Record<string, string> = { etfs: usEtfsArt, picks: usPicksArt, watchlist: usWatchlistArt, referral: usReferralArt }
+
 type Tile = { id: string; label: string; icon: ReactNode }
 
 function Row({ tiles, onOpen }: { tiles: Tile[]; onOpen?: (id: string) => void }) {
@@ -21744,7 +22362,7 @@ function Row({ tiles, onOpen }: { tiles: Tile[]; onOpen?: (id: string) => void }
   )
 }
 
-export function InAllShortcuts({ market = 'in', onProduct, onShortcut }: { market?: 'in' | 'us'; onProduct?: (id: string) => void; onShortcut?: (id: string) => void }) {
+export function InAllShortcuts({ market = 'in', rows = 'both', items, onProduct, onShortcut }: { market?: 'in' | 'us'; /** One row of these instead (Home Version · Card on the IND tab, 19 Nov: the instruments — Mutual funds · Equity F&O · Commodities · IPO — the same four the circles show). Taps go to `onProduct`. */ items?: { id: string; label: string; icon: ReactNode }[]; /** 'shortcuts': the second row alone, one row of four (Home Shortcuts V2 on the US tab, Figma 6662:8516). */ rows?: 'both' | 'shortcuts'; onProduct?: (id: string) => void; onShortcut?: (id: string) => void }) {
   const us = market === 'us'
   const productList: Product[] = us ? productsF1Us : productsF1
   const products: Tile[] = productList.map((p) => ({
@@ -21753,16 +22371,22 @@ export function InAllShortcuts({ market = 'in', onProduct, onShortcut }: { marke
     icon: <span className={styles.shortcutGlyph} aria-hidden="true"><span className={styles.productGlyph}>{productIcons[p.id]}</span></span>,
   }))
   const more: Tile[] = (us ? usShortcuts.map((s) => ({ ...s, badge: undefined as { count: number } | undefined })) : shortcuts).map((s) => {
-    const art = <span className={styles.shortcutGlyph} aria-hidden="true"><ShortcutArt art={s.art} /></span>
+    const art = us && rows === 'shortcuts'
+      ? <span className={styles.shortcutGlyph} aria-hidden="true"><img src={usCardArt[s.id]} alt="" width={24} height={24} /></span>
+      : <span className={styles.shortcutGlyph} aria-hidden="true"><ShortcutArt art={s.art} /></span>
     return { id: s.id, label: s.label, icon: s.badge ? <Badge count={s.badge.count} color="error" label={t('shortcuts.newBadge')}>{art}</Badge> : art }
   })
   const card = (
     <Stack as="section" gap="16" aria-label={t('shortcuts.title')} className={us ? styles.usProducts : undefined}>
       <Inset paddingInline="16" paddingBlock="00">
-        <Card padding="none" className={styles.shortcutsPanel}>
-          <Row tiles={products} onOpen={onProduct} />
-          <hr className={styles.shortcutsRowDivider} />
-          <Row tiles={more} onOpen={onShortcut} />
+        <Card padding="none" className={items || rows === 'shortcuts' ? `${styles.shortcutsPanel} ${styles.shortcutsPanelOneRow}` : styles.shortcutsPanel}>
+          {items ? <Row tiles={items.map((item) => ({ id: item.id, label: item.label, icon: <span className={styles.shortcutGlyph} aria-hidden="true"><span className={styles.productGlyph}>{item.icon}</span></span> }))} onOpen={onProduct} /> : (
+            <>
+              {rows === 'both' && <Row tiles={products} onOpen={onProduct} />}
+              {rows === 'both' && <hr className={styles.shortcutsRowDivider} />}
+              <Row tiles={more} onOpen={onShortcut} />
+            </>
+          )}
         </Card>
       </Inset>
     </Stack>
@@ -21855,6 +22479,69 @@ export function InShortcutsF1({ onMutualFunds, onFno, onCommodities }: InShortcu
       }))}
       lessIcon={<span className={styles.tint}><Icon icon={msKeyboardArrowUp} size={24} /></span>}
     />
+  )
+}
+```
+
+### `src/flows/stocks/components/Instruments.tsx`
+
+```tsx
+// Home shortcuts V3 (Figma 6631:16280, 19 Nov — the user's construct): under the hero, two rows.
+//   1. Instruments — what can be traded in the market on show (IN: Mutual funds · Equity F&O · Commodities · IPO; US: ETFs ·
+//      Boosted ETFs · Themes · Fractional): a solid circle in the market's colour with a white filled icon, its name under
+//      it, four across ("Solid circles", 19 Nov — picked from five directions mocked in Figma 6634:8424).
+//   2. Feature chips — the extended features (Analyst picks · Watchlist · Referral · Smart Invest …) as a row of chips
+//      that scrolls sideways. Each opens its feature; none is "selected".
+// Built from L3: the circle is an L3 Avatar (Type Icon, 48), the tap target a flat L3 Card, the chips L3 action pills
+// (Tab `action` — a pill that is a plain button, not part of a selection).
+import type { ReactNode } from 'react'
+import { Avatar } from '@l3/components/Avatar'
+import { Card } from '@l3/components/Card'
+import { Grid } from '@l3/components/Grid'
+import { Inset } from '@l3/components/Inset'
+import { Tab } from '@l3/components/Tabs'
+import { Tag } from '@l3/components/Tag'
+import { t } from '../copy'
+import styles from './Home.module.css'
+
+export type Instrument = { id: string; label: string; icon: ReactNode; /** A small "New" tag on the circle's top-right edge. */ isNew?: boolean }
+export type FeatureChip = { id: string; label: string; /** A small (16) icon before the label — the "Ringed" look. */ icon?: ReactNode }
+/** `solid` (V3): a disc in the market's colour, white icon. `ring` (V4): a neutral disc in a raised white ring, the icon in the market's colour.
+ * `soft` (V5, Figma 6635:19626): a white disc with a faint wash of the market's colour, a hairline edge and a soft shadow; the icon in the market's colour, "New" in red.
+ * `mini` (V6, Figma 6662:8516): a smaller (40) disc, white easing to a light grey, a hairline edge in the market's colour; no "New" tag. */
+export type InstrumentLook = 'solid' | 'ring' | 'soft' | 'mini'
+
+/** Four instruments across the page's width: icon in a circle, name under it. `tone` tints the icons with the market's colour. */
+export function InstrumentRow({ items, tone, label, onOpen, look = 'solid' }: { items: Instrument[]; tone: 'in' | 'us'; label: string; onOpen?: (id: string) => void; look?: InstrumentLook }) {
+  return (
+    <Inset paddingInline="16" paddingBlock="00">
+      <Grid columns={4} gap="08" role="list" aria-label={label}>
+        {items.map((item) => (
+          <div key={item.id} role="listitem" data-tone={tone} data-look={look}>
+            <Card variant="flat" padding="none" className={styles.instrument} onClick={() => onOpen?.(item.id)}>
+              <span className={styles.instrumentBody}>
+                <span className={styles.instrumentCircle}>
+                  <Avatar size={look === 'mini' ? 40 : 48} className={styles.instrumentDisc} icon={<span className={styles.instrumentIcon}>{item.icon}</span>} />
+                  {item.isNew && look !== 'mini' && <span className={styles.instrumentNew}><Tag color={look === 'soft' ? 'loss' : 'zing'} variant="primary" size="sm">{t('products.new')}</Tag></span>}
+                </span>
+                <span className={styles.instrumentLabel}>{item.label}</span>
+              </span>
+            </Card>
+          </div>
+        ))}
+      </Grid>
+    </Inset>
+  )
+}
+
+/** The extended features as chips, in a row that scrolls sideways (16 before the first and after the last). */
+export function FeatureChips({ items, label, onOpen, tone, raised = false }: { items: FeatureChip[]; label: string; onOpen?: (id: string) => void; /** Tints the chips' icons with the market's colour. */ tone?: 'in' | 'us'; /** A soft raised edge under each chip (the "Ringed" look). */ raised?: boolean }) {
+  return (
+    <div className={styles.featureChips} role="group" aria-label={label}>
+      {items.map((item) => (
+        <Tab key={item.id} action appearance="pill" raised={raised ? 'soft' : undefined} iconLeft={item.icon ? <span className={styles.chipIcon} data-tone={tone}>{item.icon}</span> : undefined} onClick={() => onOpen?.(item.id)}>{item.label}</Tab>
+      ))}
+    </div>
   )
 }
 ```
@@ -22587,7 +23274,8 @@ const labelKeys = {
   ind: { in: 'us.tabs.inInd', us: 'us.tabs.us' },
 } as const
 
-// Round flags come from the shared Flag (shared/ui/Flag.tsx, shared/assets/flags).
+// The flags are the shared Flag's emoji-style ones (🇮🇳 / 🇺🇸 as drawn on a phone; shared/ui/Flag.tsx,
+// shared/assets/flags) — not the round ones (the user's call, 19 Nov).
 export const Flag = ({ market }: { market: Market }) => <CountryFlag code={market === 'in' ? 'in' : 'us'} />
 const NewTag = () => <Tag color="success" size="sm">{t('us.tabs.new')}</Tag>
 
@@ -22800,29 +23488,58 @@ import { t } from '../copy'
 import styles from './Home.module.css'
 
 /** NIFTY 50 · SENSEX · … — today's index moves; each opens its chart. Scrolls sideways. */
-export function IndexStrip({ onIndex, items = indices, label = t('indices.label'), slideIn = false, className }: { onIndex?: (id: string) => void; /** The US tab shows S&P 500 · NASDAQ · DOW JONES (components/us/data.ts). */ items?: MarketIndex[]; label?: string; /** The strip slides in (after the market tab changed). */ slideIn?: boolean; /** Extra class on the strip (the sticky white variant on Home). */ className?: string }) {
+export function IndexStrip({ onIndex, items = indices, label = t('indices.label'), slideIn = false, className, compact = false, tray = false }: { onIndex?: (id: string) => void; /** The US tab shows S&P 500 · NASDAQ · DOW JONES (components/us/data.ts). */ items?: MarketIndex[]; label?: string; /** The strip slides in (after the market tab changed). */ slideIn?: boolean; /** Extra class on the strip (the sticky white variant on Home). */ className?: string; /** In the hero: no chevrons and an even 12 each side of the hairlines, so the first two indices fit between the 16 margins; the rest scroll in sideways. */ compact?: boolean; /** In the tray under the hero (Figma 6662:8516): name, level and change 4 apart, 8 to the chevron, 8 each side of the hairlines. */ tray?: boolean }) {
   const at = useLiveTick()
   return (
-    <Stack direction="horizontal" align="center" gap="16" className={[styles.indexStrip, slideIn && styles.indexStripIn, className].filter(Boolean).join(' ')} role="region" aria-label={label}>
+    <Stack direction="horizontal" align="center" gap={tray ? '08' : compact ? '12' : '16'} className={[styles.indexStrip, tray && styles.indexStripTray, slideIn && styles.indexStripIn, className].filter(Boolean).join(' ')} role="region" aria-label={label}>
       {items.map((item, i) => {
         // Every index ticks around its real level (live.ts).
         const live = liveQuote(item.id, item.value, item.changePct, at)
         const index = { ...item, value: live.price, changePct: live.changePct }
         return (
-        <Stack key={index.id} direction="horizontal" align="center" gap="08" className={styles.indexItem}>
+        <Stack key={index.id} direction="horizontal" align="center" gap={tray ? '08' : compact ? '12' : '08'} className={styles.indexItem}>
           {i > 0 && <span className={styles.divider} aria-hidden="true" />}
           <Card variant="flat" padding="none" onClick={() => onIndex?.(index.id)}>
             <span className={styles.index}>
               <span className={styles.indexName}>{index.name}</span>
               <span className={styles.indexValue}>{index.value.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
               <PriceChange value={index.changePct} size="sm" />
-              <span className={styles.chevron}><Icon icon={msChevronRight} size={16} /></span>
+              {!compact && <span className={styles.chevron}><Icon icon={msChevronRight} size={16} /></span>}
             </span>
           </Card>
         </Stack>
         )
       })}
     </Stack>
+  )
+}
+
+/** Short names for the index pill, where three indices share one line. */
+const SHORT_INDEX: Record<string, string> = { 'DOW JONES': 'DOW', 'NIFTY BANK': 'BANK' }
+
+/**
+ * The indices as one outlined capsule (Home "Ticker" V3, Figma 6616:13661): name + today's change for the first three,
+ * a hairline between them — no index level, so the holdings stay the only big number in the hero. Each opens its chart.
+ */
+export function IndexPill({ onIndex, items = indices, label = t('indices.label') }: { onIndex?: (id: string) => void; items?: MarketIndex[]; label?: string }) {
+  const at = useLiveTick()
+  return (
+    <div className={styles.indexPill} role="region" aria-label={label}>
+      {items.slice(0, 3).map((item, i) => {
+        const live = liveQuote(item.id, item.value, item.changePct, at)
+        return (
+          <Stack key={item.id} direction="horizontal" align="center" gap="12" className={styles.indexItem}>
+            {i > 0 && <span className={styles.divider} aria-hidden="true" />}
+            <Card variant="flat" padding="none" onClick={() => onIndex?.(item.id)}>
+              <span className={styles.index}>
+                <span className={styles.indexName}>{SHORT_INDEX[item.name] ?? item.name}</span>
+                <PriceChange value={live.changePct} size="sm" />
+              </span>
+            </Card>
+          </Stack>
+        )
+      })}
+    </div>
   )
 }
 
@@ -28555,7 +29272,7 @@ export function useLiveHeatmap(symbols: string[] = heatSymbols): HeatValue[] {
   "hub.usState.addMoney": "Add money to start",
   "hub.usState.onTheWay": "Money on the way",
   "hub.usState.ready": "Money ready to invest",
-"us.risk.title": "Risk disclosure",
+  "us.risk.title": "Risk disclosure",
   "us.risk.description": "For US Stocks",
   "us.risk.1": "US stocks carry price, currency and liquidity risk, and prices can move without a daily cap.",
   "us.risk.2": "Your account is with ViewTrade IFSC through India INX Global Access, in GIFT City, regulated by IFSCA.",
@@ -28564,7 +29281,20 @@ export function useLiveHeatmap(symbols: string[] = heatSymbols): HeatValue[] {
   "us.risk.full": "Read the full disclosure",
   "us.risk.here": "here",
   "us.risk.agree": "Agree and Continue",
-  "us.risk.actions": "Risk disclosure"
+  "us.risk.actions": "Risk disclosure",
+  "f3.instruments.label": "Instruments",
+  "f3.features.label": "More features",
+  "f3.in.ipo": "IPO",
+  "f3.us.boosted": "Boosted ETFs",
+  "f3.us.themes": "Themes",
+  "f3.us.fractional": "Fractional",
+  "f3.chips.tradeIdeas": "Trade Ideas",
+  "f3.chips.smartInvest": "Smart Invest",
+  "f3.chips.marketHours": "Market hours",
+  "f3.chips.sectors": "Sectors",
+  "f3.chips.ideaBaskets": "Idea baskets",
+  "f3.chips.heatmap": "Heatmap",
+  "f3.chips.brands": "Brands"
 }
 ```
 
@@ -29013,8 +29743,19 @@ export const stocks: Flow = {
     // "Do more with Lemonn" shortcuts: V1 circles, V2 one outlined card with dividers (default).
     // Archived 3 Nov: the "Header" setting (Holdings on page · Holdings in card). Holdings on page is the only header;
     // the card variant stays in Home.tsx (HEADER_CARD) but is no longer offered.
-    // Archived 18 Nov (the user's call): "Analyst picks" (List kept; the swipeable Cards stay in UsHome.tsx behind
-    // PICKS_VIEW) and "Shortcuts" (V2 card kept; the V1 circles stay in Discover.tsx behind SHORTCUTS_VERSION).
+    // Archived 18 Nov (the user's call, playground): "Analyst picks" (List kept; the swipeable Cards stay in UsHome.tsx behind
+    // PICKS_VIEW). "Shortcuts" stays offered on jojo (V1–V5).
+    // Index ticker (18 Nov, Figma 6616:14729): V1 above the IN / US tabs; V2 the strip as the hero's last row (default);
+    // V3 one outlined capsule in the hero with the changes only. V2 / V3 take the place of the hero's product cards.
+    // 19 Nov (Figma 6662:8516, the two versions to show): Ticker V4 — the strip in a grey tray tucked under the hero — with
+    // Shortcuts V6 (small circles) or V2 (the card). Both are the defaults; flip Shortcuts V6 ⇄ V2 to compare.
+    // Archived 19 Nov (the user's call: only the two versions below are shown): the "Ticker" setting. The tray under the hero is
+    // the only one; above tabs / hero line / hero pill stay in Home.tsx behind TICKER_LOOK.
+    // V3 (19 Nov, Figma 6631:16280, default): a row of instruments in icon circles, then the features as chips.
+    // Home shortcuts: V2 was the default (18 Nov, the user's call); V1 is the earlier row.
+    // The two versions to show (Figma 6662:8516): the instruments as circles, or the shortcuts card. Shortcuts V1 and V3–V5
+    // are archived (19 Nov): still in the code (Discover.tsx, Instruments.tsx), no longer offered.
+    { id: 'shortcuts', group: 'Home', label: 'Version', values: [{ value: 'v6', label: 'Circles' }, { value: 'v2', label: 'Card' }], default: 'v6' },
     // US tab, Discover ETFs: the region pills with their round flags (default) or text only — testing whether the flags are too much (3 Nov).
     // Archived 18 Nov (the user's call): "Chips" on the US home rows (Top Movers, Heatmap, ETFs). V2 kept (L3's primary
     // switcher pill + outlined-selected chips); the V1 hand-made switcher stays in UsHome.tsx behind US_CHIPS_V1.
@@ -29597,6 +30338,145 @@ export function Glossary({ kind, onBack }: { kind: keyof typeof TERMS; onBack: (
   margin-bottom: var(--l3-spacing-12);
 }
 
+/* Ticker above the tabs (18 Nov): 12 between the strip and the tabs. The 12 under the tabs stays as plain space down to
+   the summary, so the band ends at the tabs' line instead of 12 below it. White versions (V14) have no band padding. */
+.marquee[data-ticker-first]:not([data-white]) .stickySwitch {
+  margin-top: var(--l3-spacing-12);
+}
+
+.marquee[data-ticker-first]:not([data-white]) .band {
+  bottom: var(--l3-spacing-12);
+}
+
+/* Ticker in the hero ("Ticker" V2 / V3): the sticky block keeps its band — the background of the tabs riding in it —
+   but with no strip the band is just the block (no 12 around it, no 12 under the tabs for a ticker). */
+.marquee[data-ticker='hero'] {
+  --band-pad: 0px;
+}
+
+.marquee[data-ticker='hero'] .stickySwitch {
+  margin-bottom: 0;
+}
+
+/*
+ * The hero's ticker growing into the bar under the sticky tabs, led by the scroll (Home.tsx placeTicker sets --p, 0 → 1
+ * over the ticker's last 56px before the tabs, and --y, how many px it still is below its slot). Nothing is timed: every
+ * value below is a straight blend on --p, so the bar is wherever the finger has taken it, forwards or back.
+ *   surface  the capsule (20 in from each edge, 32 high, round ends, outlined) → the bar (edge to edge, 40 high,
+ *            square, a hairline under it)
+ *   labels   the hero's own fade out between 20% and 70%; the normal strip fades in between 40% and 90%
+ * It hangs under the sticky block (absolute), so it never shifts the page.
+ * FLAG: hand-made scroll-linked motion — L3 has no "pin into the top bar" pattern.
+ */
+.stuckTicker {
+  --p: 0;
+  --y: 0;
+
+  position: absolute;
+  top: 100%;
+  right: 0;
+  left: 0;
+  height: var(--l3-size-40);
+  translate: 0 calc(var(--y) * 1px);
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.stuckTicker[data-on] {
+  visibility: visible;
+}
+
+.stuckTicker[data-stuck] {
+  pointer-events: auto;
+}
+
+.stuckShape {
+  position: absolute;
+  inset: 0 calc(var(--l3-spacing-20) * (1 - var(--p))) calc(var(--l3-spacing-08) * (1 - var(--p)));
+  border-radius: calc(var(--l3-spacing-16) * (1 - var(--p)));
+  background: var(--l3-surface-default);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--l3-border-light) calc((1 - var(--p)) * 100%), transparent),
+    inset 0 -1px 0 color-mix(in srgb, var(--l3-border-light) calc(var(--p) * 100%), transparent); /* 1px outline → 1px hairline */
+}
+
+/* V2: the hero's strip has no surface of its own — the bar's band fades in around it, already edge to edge. */
+.stuckTicker[data-look='line'] .stuckShape {
+  inset: 0;
+  border-radius: 0;
+  opacity: var(--p);
+  box-shadow: inset 0 -1px 0 var(--l3-border-light); /* 1px hairline */
+}
+
+/* V4 (the tray under the hero, 19 Nov): the bar lies exactly over the tray's row, with the tray's own strip in it — so
+   the labels never move, swap or fade. Only the surface changes with the scroll: the tray's grey eases to the bar's
+   white, its rounded foot (20) squares off against the tabs, and its hairline lightens to the bar's. --e is --p
+   smoothed (slow away from the tabs, settling as it meets them). */
+.stuckTicker[data-look='tray'] {
+  --e: calc(var(--p) * var(--p) * (3 - 2 * var(--p)));
+  /* The foot's corners keep their full 20 until the last 16 px before the tabs (--y is the px still to go), then square
+     off — smoothed — exactly as the tray meets the tabs, not over the whole approach (the user's call, 19 Nov). */
+  --c: clamp(0, var(--y) / 16, 1);
+  --ce: calc(var(--c) * var(--c) * (3 - 2 * var(--c)));
+}
+
+.stuckTicker[data-look='tray'] .stuckShape {
+  inset: 0;
+  border-radius: 0 0 calc(var(--l3-radius-20) * var(--ce)) calc(var(--l3-radius-20) * var(--ce));
+  background: color-mix(in srgb, var(--l3-surface-default) calc(var(--e) * 100%), var(--l3-surface-secondary));
+  box-shadow: inset 0 -1px 0 color-mix(in srgb, var(--l3-border-light) calc(var(--e) * 100%), var(--l3-border-default)); /* 1px hairline */
+}
+
+.stuckTicker[data-look='tray'] .stuckStrip {
+  opacity: 1;
+}
+
+/* The hero's own labels, exactly over the hero's ticker (which is hidden meanwhile). */
+.stuckGhost {
+  position: absolute;
+  top: 0;
+  right: var(--l3-spacing-16);
+  left: var(--l3-spacing-16);
+  opacity: calc(1.4 - var(--p) * 2); /* full until 20%, gone by 70% */
+}
+
+.stuckTicker[data-look='line'] .stuckGhost {
+  right: 0;
+  left: 0;
+}
+
+/* Its capsule's surface and outline are the growing shape's. */
+.stuckGhost > * {
+  background: none;
+  box-shadow: none;
+}
+
+/* The normal strip, centred in the bar's 40 (12 above and below its 16). */
+.stuckStrip {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  opacity: calc(var(--p) * 2 - 0.8); /* from 40%, full by 90% — the two overlap, so the bar is never blank */
+}
+
+.stuckStrip > * {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Ticker in the hero: no band hangs over the hero's top any more, so the summary brings 16 (+ the hero's 16 = 32 from
+   the tabs' line to the overline, as Figma). */
+.summary[data-hero]:has([data-hero-ticker]) {
+  padding-top: var(--l3-spacing-16);
+}
+
+/* V2: the strip runs edge to edge inside the hero (the hero pads 16; the strip brings its own 16 and scrolls sideways). */
+.heroStrip {
+  position: relative;
+  margin-inline: calc(-1 * var(--l3-spacing-16));
+}
+
 /*
  * V10: the pill group's track gets the page's white so it stands out on the grey summary (L3's track is
  * surface/secondary, the same grey — invisible here). Once scrolled the band turns white, so the track goes back to
@@ -29862,7 +30742,7 @@ import { Icon } from '@l3/components/Icon'
 import { Inset } from '@l3/components/Inset'
 import { Section } from '@l3/components/Section'
 import { Stack } from '@l3/components/Stack'
-import { msCheckCircle, msCurrencyRupee } from '@l3/icons/material'
+import { msAnalyticsFill, msOilBarrelFill, msBoltFill, msBookmarkFill, msCandlestickChartFill, msCategoryFill, msCheckCircle, msCurrencyRupee, msDonutSmallFill, msGridViewFill, msInterestsFill, msLightbulbFill, msPieChartFill, msRedeem, msRocketLaunchFill, msScheduleFill, msShoppingBasketFill, msSmartToyFill, msStorefrontFill } from '@l3/icons/material'
 import { useAutoAdvance, useFlowOption, usePreview } from '../../../shared/prototype'
 import { user } from '../../../shared/data/user'
 import { viewUsStock } from '../../../shared/data/usStocks'
@@ -29870,7 +30750,7 @@ import { MainNav, rememberStocksHome, takeStocksTab, type Section as NavSection 
 import { Screen } from '../../../shared/ui/Screen'
 import { Disclosure, IdeaBaskets } from '../components/Ideas'
 import { Announcement, Highlights, Sectors, SmartInvest } from '../components/Invest'
-import { HoldingsSummary, HoldingsSwitcher, IndexStrip, ProductCards, type HoldingsView } from '../components/Overview'
+import { HoldingsSummary, HoldingsSwitcher, IndexPill, IndexStrip, ProductCards, type HoldingsView } from '../components/Overview'
 import { ProductRowF1 } from '../components/ProductRowF1'
 import { MarketSwitch, MarketTabs, PinnedMarketTabs, type Market } from '../components/MarketTabs'
 import { DEFAULT_HOME_VERSION, homeVersion, type HomeVersion } from '../components/homeVersions'
@@ -29885,6 +30765,14 @@ import { activatedStates, inKycCard, usIndices, type ThemeId, type UsState } fro
 import { UsActivationCard } from '../components/us/UsActivationCard'
 import { UsHome } from '../components/us/UsHome'
 import { UsHero } from '../components/us/UsHero'
+import inMutualFundsArt from '../assets/in/instruments/mutual-funds.svg'
+import inFnoArt from '../assets/in/instruments/fno.svg'
+import inCommoditiesArt from '../assets/in/instruments/commodities.svg'
+import inIpoArt from '../assets/in/instruments/ipo.svg'
+import etfsArt from '../assets/us/instruments/etfs.svg'
+import boostedEtfsArt from '../assets/us/instruments/boosted-etfs.svg'
+import themesArt from '../assets/us/instruments/themes.svg'
+import fractionalArt from '../assets/us/instruments/fractional.svg'
 import { UsFtuxSheet } from '../components/us/sheets/UsFtuxSheet'
 import { RiskDisclosureSheet } from '../components/us/sheets/RiskDisclosureSheet'
 import { HeroButtons, HeroShell, HoldingsHero } from '../components/HoldingsHero'
@@ -29895,7 +30783,8 @@ import { holdings } from '../../../shared/data/portfolio'
 import { inr } from '../../../shared/data/format'
 import { UsHomeF1, UsRoundShortcuts } from '../components/us/UsHomeF1'
 import { neighbour, useSwipeBetween } from '../../../shared/ui/useSwipeBetween'
-import { Shortcuts, TopMovers, Watchlists } from '../components/Discover'
+import { DEFAULT_SHORTCUTS, Shortcuts, TopMovers, Watchlists } from '../components/Discover'
+import { FeatureChips, InstrumentRow, type FeatureChip, type Instrument } from '../components/Instruments'
 import { productsClassic, products, productsF1, productsF1Us, productsWithInvest, productsWithUs, type MoverList } from '../data'
 import { t } from '../copy'
 import styles from './Home.module.css'
@@ -29985,6 +30874,19 @@ export const markUsIntroSeen = () => {
 /** Archived "Header" variant: true puts the holdings inside the top card (the card the US tab uses for activation). */
 const HEADER_CARD = false as boolean
 
+/** The scroll distance (px) over which the hero's ticker grows into the bar under the tabs. */
+const TICKER_RUN = 56
+
+/** The tray's padding above its strip (HoldingsHero.module.css: 12 above and below the 16 strip). */
+const TRAY_PAD = 12
+
+/** The feature chips under the instruments: built (components/Instruments FeatureChips) but off the Home until their place is decided. */
+const FEATURE_CHIPS_ON_HOME = false
+
+/** Where the index ticker sits. The "Ticker" setting is archived (19 Nov): the tray under the hero is the only one shown;
+ *  set 'top' (above the tabs), 'line' (the hero's last row) or 'pill' (a capsule in the hero) here to see the others. */
+const TICKER_LOOK = 'tray' as 'top' | 'line' | 'pill' | 'tray'
+
 /** The US risk disclosure is agreed to once per session (sessionStorage: a new session shows it again). */
 const RISK_AGREED_KEY = 'us-risk-agreed'
 const riskAgreedThisSession = () => {
@@ -30010,6 +30912,7 @@ export function Home({ scrollTo = 'top', market = 'in', movers, onStock, onTab, 
   // The market switch guide (prototype setting, on by default) shows every time this Home opens, and again for each
   // homepage version picked; ending it hides it for this version until the Home opens again.
   const guideOn = useFlowOption('stocks', 'switchGuide', 'off') === 'on'
+  const tickerLook = TICKER_LOOK
   // Archived 3 Nov: the "Header" setting. The holdings are always on the page; flip this to see them inside the top card.
   const headerCard = HEADER_CARD
   const [guideDoneFor, setGuideDoneFor] = useState<string | null>(null)
@@ -30041,6 +30944,11 @@ export function Home({ scrollTo = 'top', market = 'in', movers, onStock, onTab, 
   // ones have gone beneath it. Any upward scroll: the top bar slides back in and the marquee glides down under it.
   const [scrollState, setScrollState] = useState<ScrollState>(scrollTo === 'top' ? 'top' : 'up')
   const [pinned, setPinned] = useState(scrollTo !== 'top')
+  // "Ticker" V2 / V3: the hero's ticker has scrolled up under the sticky tabs, so its twin shows pinned under them.
+  const [tickerStuck, setTickerStuck] = useState(false)
+  const stuckBar = useRef<HTMLDivElement>(null)
+  const stuckNow = useRef(false)
+  const lastTickerState = useRef<ScrollState>('top')
   // Not animated until the page has settled on arrival (a board frame opens already scrolled, with the header in place).
   const [animate, setAnimate] = useState(false)
   const pinnedNow = useRef(scrollTo !== 'top')
@@ -30090,6 +30998,33 @@ export function Home({ scrollTo = 'top', market = 'in', movers, onStock, onTab, 
    * changes). 'top': the page is at its top. Scrolled: 'down' hides the top bar, 'up' shows it again (always 'up' when the switch is in the bar). The compact tabs
    * pin once the notched tabs have gone under the marquee's band.
    */
+  /**
+   * "Ticker" V2 / V3 — the hero's ticker becomes the bar under the sticky tabs, led by the scroll itself (19 Nov, the
+   * user's call: fluid, no timed swap). Over its last TICKER_RUN px before the tabs, a bar drawn over the hero's ticker
+   * (which hides) follows it up and grows with every px scrolled — out to the screen edges, round ends squaring off,
+   * the capsule's labels giving way to the normal strip — so that when it touches the tabs it already is the pinned
+   * bar, and simply stays. Scrolling back plays the same thing in reverse. Positions are read as they are on screen
+   * (the sticky block may be mid-slide); the bar is styled from two CSS variables, --p (0 → 1) and --y (px below its slot).
+   */
+  const placeTicker = () => {
+    const bar = stuckBar.current
+    const body = page.current?.parentElement
+    const tabs = marquee.current?.querySelector<HTMLElement>('[data-sticky-switch]')
+    const tickers = [...(page.current?.querySelectorAll<HTMLElement>('[data-hero-ticker]') ?? [])]
+    const own = tickers.find((el) => !el.closest('[inert]'))
+    if (!bar || !body || !tabs || !own) return
+    const scale = body.getBoundingClientRect().width / body.offsetWidth || 1 // the preview draws the phone scaled
+    // The tray: the bar lies exactly over the tray's own row (12 above the strip), so the strip never moves or swaps.
+    const lead = tickerLook === 'tray' ? TRAY_PAD : 0
+    const gap = (own.getBoundingClientRect().top - tabs.getBoundingClientRect().bottom) / scale - lead
+    const progress = Math.max(0, Math.min(1, 1 - gap / TICKER_RUN))
+    bar.style.setProperty('--p', progress.toFixed(4))
+    bar.style.setProperty('--y', Math.max(0, gap).toFixed(2))
+    bar.toggleAttribute('data-on', progress > 0)
+    for (const el of tickers) el.style.visibility = el === own && progress > 0 ? 'hidden' : ''
+    const stuck = progress >= 1
+    if (stuck !== stuckNow.current) { stuckNow.current = stuck; setTickerStuck(stuck) }
+  }
   const sync = () => {
     const body = page.current?.parentElement
     if (!body) return
@@ -30109,6 +31044,17 @@ export function Home({ scrollTo = 'top', market = 'in', movers, onStock, onTab, 
     const strip = betweenStrip.current?.querySelector('[role="region"]')
     setTickerDocked(!!strip && top > 0 && strip.getBoundingClientRect().top - body.getBoundingClientRect().top <= headerBottom(state, false))
     setScrolled(top > 0)
+    // The hero's ticker (the market on show) against the bottom of the sticky tabs: once it reaches them it pins there;
+    // scrolling back, the pinned twin goes the moment the hero's own ticker is back in the same spot.
+    placeTicker()
+    // The sticky block slides for 400ms when the top bar hides or returns, with no scroll events: keep the ticker's
+    // bar on the hero's ticker for that long.
+    if (state !== lastTickerState.current) {
+      lastTickerState.current = state
+      const until = performance.now() + 450
+      const follow = () => { placeTicker(); if (performance.now() < until) requestAnimationFrame(follow) }
+      requestAnimationFrame(follow)
+    }
     const head = hubHead.current
     setHeadStuck(!!head && head.getBoundingClientRect().top - body.getBoundingClientRect().top <= (spacer.current?.offsetHeight ?? 0))
   }
@@ -30327,6 +31273,8 @@ export function Home({ scrollTo = 'top', market = 'in', movers, onStock, onTab, 
   // V19 (19 Nov): the products leave the hero for one shortcuts card per tab (InAllShortcuts: IND, and US with Boosted ETFs · Themes · Fractional).
   const oneCard = heroCards && !!version.oneCard
   // V19's US card: Boosted ETFs · Themes · Fractional over ETFs · Analyst picks · Watchlist · Referral.
+  // Shortcuts V2 on the US tab (Figma 6662:8516, 19 Nov): the card's shortcuts row alone — ETFs · Analyst picks · Watchlist · Referral.
+  const usShortcutsRow = <InAllShortcuts market="us" rows="shortcuts" onShortcut={(id) => { if (id === 'etfs') onUsEtfs?.(); else if (id === 'picks') onUsPicks?.() }} />
   const usShortcutsCard = <InAllShortcuts market="us" onProduct={(id) => onRowProduct(id)} onShortcut={(id) => { if (id === 'etfs') onUsEtfs?.(); else if (id === 'picks') onUsPicks?.() }} />
   const onRowProduct = (id: string) => {
     if (id === 'mutual-funds') onTab?.('mutualFund')
@@ -30342,8 +31290,74 @@ export function Home({ scrollTo = 'top', market = 'in', movers, onStock, onTab, 
       onUsEtfs?.()
     }
   }
-  // The product row in the hero (V17, V18). V19: none (oneCard).
-  const cardsRail = (m: Market) => <ProductRowF1 items={m === 'us' ? productsF1Us : productsF1} fill={m === 'us'} onProduct={onRowProduct} />
+  // The US tab's row: Boosted ETFs, Themes, Fractional.
+  // Shortcuts V3 (Figma 6631:16280, 19 Nov): what can be traded in the market on show as icon circles, then the features
+  // as chips. Instruments open what the product cards did; of the chips, Analyst picks and Smart Invest lead somewhere
+  // (the others have no screen in the prototype yet).
+  const shortcutsLook = useFlowOption('stocks', 'shortcuts', DEFAULT_SHORTCUTS)
+  const shortcutsV3 = shortcutsLook === 'v3' || shortcutsLook === 'v4' || shortcutsLook === 'v5' || shortcutsLook === 'v6' // instruments + chips; V4 is the ringed look with icons in the chips, V5 the soft circles (Figma 6635:19626)
+  const instrumentLook = shortcutsLook === 'v6' ? 'mini' : shortcutsLook === 'v5' ? 'soft' : shortcutsLook === 'v4' ? 'ring' : 'solid'
+  const ringed = shortcutsLook === 'v4'
+  const small = (icon: string) => <Icon icon={icon} size={16} />
+  const glyph = (icon: string) => <Icon icon={icon} size={24} />
+  // The two versions' icons are two-tone art, not system icons: US the Figma frame's own (6662:8516); IND drawn here in the
+  // same style in the market's green (assets/in/instruments — the frame has no IND art).
+  const art = (src: string, fallback: string) => (instrumentLook === 'mini' || shortcutsLook === 'v2' ? <img src={src} alt="" width={24} height={24} /> : glyph(fallback))
+  const instruments: Record<Market, Instrument[]> = {
+    in: [
+      { id: 'mutual-funds', label: t('f1.in.mutualFunds'), icon: art(inMutualFundsArt, msPieChartFill) },
+      { id: 'fno', label: t('f1.in.fno'), icon: art(inFnoArt, msCandlestickChartFill) },
+      { id: 'commodities', label: t('f1.in.commodities'), icon: art(inCommoditiesArt, msOilBarrelFill) },
+      { id: 'ipo', label: t('f3.in.ipo'), icon: art(inIpoArt, msRocketLaunchFill) },
+    ],
+    us: [
+      { id: 'etfs', label: t('f1.shortcuts.etfs'), icon: art(etfsArt, msPieChartFill) },
+      { id: 'boosted-etfs', label: t('f3.us.boosted'), icon: art(boostedEtfsArt, msBoltFill), isNew: true },
+      { id: 'themes', label: t('f3.us.themes'), icon: art(themesArt, msInterestsFill) },
+      { id: 'fractional', label: t('f3.us.fractional'), icon: art(fractionalArt, msDonutSmallFill) },
+    ],
+  }
+  const featureChips: Record<Market, FeatureChip[]> = {
+    in: [
+      { id: 'trade-ideas', label: t('f3.chips.tradeIdeas'), icon: small(msLightbulbFill) },
+      { id: 'watchlist', label: t('f1.shortcuts.watchlist'), icon: small(msBookmarkFill) },
+      { id: 'referral', label: t('f1.shortcuts.referral'), icon: small(msRedeem) },
+      { id: 'smart-invest', label: t('f3.chips.smartInvest'), icon: small(msSmartToyFill) },
+      { id: 'sectors', label: t('f3.chips.sectors'), icon: small(msCategoryFill) },
+      { id: 'idea-baskets', label: t('f3.chips.ideaBaskets'), icon: small(msShoppingBasketFill) },
+    ],
+    us: [
+      { id: 'picks', label: t('f1.shortcuts.picks'), icon: small(msAnalyticsFill) },
+      { id: 'watchlist', label: t('f1.shortcuts.watchlist'), icon: small(msBookmarkFill) },
+      { id: 'referral', label: t('f1.shortcuts.referral'), icon: small(msRedeem) },
+      { id: 'market-hours', label: t('f3.chips.marketHours'), icon: small(msScheduleFill) },
+      { id: 'heatmap', label: t('f3.chips.heatmap'), icon: small(msGridViewFill) },
+      { id: 'brands', label: t('f3.chips.brands'), icon: small(msStorefrontFill) },
+    ],
+  }
+  const onFeature = (id: string) => {
+    if (id === 'picks') onUsPicks?.()
+    else if (id === 'smart-invest') onProduct(id)
+  }
+  const shortcutsBlock = (m: Market) => (
+    <Stack gap="16">
+      <InstrumentRow look={instrumentLook} items={instruments[m]} tone={m} label={t('f3.instruments.label')} onOpen={onRowProduct} />
+      {/* The feature chips (Analyst picks · Watchlist · Referral …) are parked: the user will say where they go (19 Nov). */}
+      {FEATURE_CHIPS_ON_HOME && <FeatureChips items={ringed ? featureChips[m] : featureChips[m].map(({ icon: _icon, ...chip }) => chip)} tone={m} raised={ringed} label={t('f3.features.label')} onOpen={onFeature} />}
+    </Stack>
+  )
+  const productRow = (m: Market) => <ProductRowF1 items={m === 'us' ? productsF1Us : productsF1} fill={m === 'us'} onProduct={onRowProduct} />
+  // "Ticker" V2 / V3 (Figma 6616:14729, 18 Nov): the index ticker is the hero's last row, in place of the product
+  // cards — V2 the strip itself, edge to edge; V3 one outlined capsule with the changes only. The sticky block under
+  // the top bar then holds just the IN / US tabs.
+  const tickerInHero = heroCards && version.ticker && !hub && tickerLook !== 'top' && version.tickerPlace !== 'between'
+  const tickerOf = (m: Market) => tickerLook === 'pill'
+    ? (m === 'us' ? <IndexPill items={usIndices} label={t('us.indices.label')} /> : <IndexPill />)
+    : tickerLook === 'tray'
+      ? (m === 'us' ? <IndexStrip tray items={usIndices} label={t('us.indices.label')} /> : <IndexStrip tray />)
+      : (m === 'us' ? <IndexStrip compact items={usIndices} label={t('us.indices.label')} /> : <IndexStrip compact />)
+  const heroTicker = (m: Market) => <div data-hero-ticker={tickerLook} className={tickerLook === 'line' ? styles.heroStrip : undefined}>{tickerOf(m)}</div>
+  const cardsRail = (m: Market) => (tickerInHero ? heroTicker(m) : productRow(m))
   const topCards = (
     <div className={styles.cardTrack} data-market-card>
       {markets.map((m) => (
@@ -30376,6 +31390,8 @@ export function Home({ scrollTo = 'top', market = 'in', movers, onStock, onTab, 
   // V19: the ticker leaves the sticky block for the gap between the hero and the feed.
   const tickerBetween = !!version.ticker && version.tickerPlace === 'between' && !hub
   const indexStrip = tab === 'us' ? <IndexStrip key="us" items={usIndices} label={t('us.indices.label')} slideIn={stripSlides} /> : <IndexStrip key="in" slideIn={stripSlides} />
+  const ticker = !version.ticker || tickerInHero || tickerBetween ? null : white ? <div className={styles.tickerBox}>{indexStrip}</div> : indexStrip
+  const tickerFirst = version.place === 'top' && twoHomes
   const feedClass = version.place !== 'mid' ? styles.feed : version.look === 'folder' ? `${styles.feed} ${styles.feedTabbed}` : `${styles.feed} ${styles.feedTabbed} ${styles.feedUnderHead}`
 
   // The intro's button: activate (not activated yet: KYC or the risk disclosure, as the Home's own card) or, once US
@@ -30417,19 +31433,34 @@ export function Home({ scrollTo = 'top', market = 'in', movers, onStock, onTab, 
         {version.place === 'top' && !twoHomes && <MarketSwitchFor version={version} value={tab} onChange={(next) => switchTo(next)} />}
         {/* The page's one index marquee: sticky under the top bar, and up to the very top while the top bar is away. */}
         {/* V14: this block is the one container for the tabs and the ticker, each in its own container inside it. */}
-        {!hub && <div ref={marquee} className={styles.marquee} data-white={white} data-home="top" data-state={scrollState} data-tabs={pinned || undefined} data-animate={animate || undefined} data-ticker={!version.ticker ? 'off' : tickerBetween ? 'between' : undefined} data-hero-top={heroTop || undefined} data-docked={(tickerBetween && tickerDocked) || undefined}>
+        {!hub && <div ref={marquee} className={styles.marquee} data-white={white} data-home="top" data-state={scrollState} data-tabs={pinned || undefined} data-animate={animate || undefined} data-ticker={tickerInHero ? 'hero' : !version.ticker ? 'off' : tickerBetween ? 'between' : undefined} data-ticker-first={(tickerFirst && version.ticker && !tickerInHero && !tickerBetween) || undefined} data-hero-top={heroTop || undefined} data-docked={(tickerBetween && tickerDocked) || undefined}>
           <div ref={band} className={styles.band} aria-hidden="true" />
-          {/* Two homes: the switch rides in the sticky block, above the ticker, so it never scrolls away. */}
+          {/* The ticker sits above the IN / US tabs, right under the top bar, when the tabs ride in this block (18 Nov, the
+              user's call); otherwise it is the block's last row. White versions give it a container of its own: 12 above
+              and below inside it, each index's tap area that full height (Home.module.css, .tickerBox). */}
+          {tickerFirst && ticker}
+          {/* Two homes: the switch rides in the sticky block, with the ticker, so it never scrolls away. */}
           {version.place === 'top' && twoHomes && (
-            <div className={styles.stickySwitch} data-look={version.look}>
+            <div className={styles.stickySwitch} data-look={version.look} data-sticky-switch>
               {version.look === 'underline'
                 ? <MarketSwitch bare appearance="underline" look={version} value={tab} onChange={switchInPage} />
                 : <Inset paddingInline="16" paddingBlock="00"><MarketSwitch bare appearance="pill-group" look={version} value={tab} onChange={switchInPage} /></Inset>}
             </div>
           )}
-          {/* V14: the ticker has a container of its own (the tabs' is the one above), 12 above and below inside it, and each
-              index's tap area runs that full height (Home.module.css, .tickerBox). */}
-          {!version.ticker || tickerBetween ? null : white ? <div className={styles.tickerBox}>{indexStrip}</div> : indexStrip}
+          {!tickerFirst && ticker}
+          {/* The hero's ticker has scrolled up to the tabs: the normal ticker (the strip with the index levels, as the
+              sticky one always was) pins under them — for the capsule too (the user's call, 18 Nov). */}
+          {/* The hero's ticker on its way to becoming the bar under the tabs (placeTicker above): the growing surface,
+              the hero's own labels (fading out) and the normal strip (fading in). Hangs under the block, so it never
+              moves the page; it takes taps only once it is the pinned bar. */}
+          {tickerInHero && (
+            <div ref={stuckBar} className={styles.stuckTicker} data-stuck={tickerStuck || undefined} data-look={tickerLook} inert={!tickerStuck || undefined} aria-hidden={!tickerStuck || undefined}>
+              <span className={styles.stuckShape} aria-hidden="true" />
+              {tickerLook !== 'tray' && <div className={styles.stuckGhost} aria-hidden="true">{tickerOf(tab)}</div>}
+              {/* The tray keeps its own strip all the way (same spacing, same place): only the surface changes. */}
+              <div className={styles.stuckStrip}>{tickerLook === 'tray' ? tickerOf(tab) : indexStrip}</div>
+            </div>
+          )}
           {/* V19: the docked copy of the strip, hanging under the tabs (Home.module.css, .dockedTicker). */}
           {tickerBetween && (
             <div className={styles.dockedTicker} data-open={tickerDocked || undefined} inert={!tickerDocked || undefined}>
@@ -30488,7 +31519,7 @@ export function Home({ scrollTo = 'top', market = 'in', movers, onStock, onTab, 
                 ? <InAllShortcuts onProduct={onRowProduct} />
                 : f1 && !version.cards
                   ? <InShortcutsF1 onMutualFunds={() => onTab?.('mutualFund')} onFno={() => onTab?.('fno')} onCommodities={onCommodities} />
-                  : <Shortcuts />}
+                  : shortcutsV3 ? shortcutsBlock('in') : shortcutsLook === 'v2' ? <InAllShortcuts items={instruments.in} onProduct={onRowProduct} /> : <Shortcuts />}
               <div data-home="movers"><TopMovers initial={movers} onStock={onStock} /></div>
               <Watchlists />
               <Section paddingBlock="24" className={styles.tinted} data-tint="brand" data-home="invest"><SmartInvest /></Section>
@@ -30501,7 +31532,7 @@ export function Home({ scrollTo = 'top', market = 'in', movers, onStock, onTab, 
           ) : f1 && version.usBody === 'classic' ? (
             // V18: V17's top over V14's US feed, with V17's round shortcuts in place of its strip (the hero has the card).
             <Stack key="us" gap="32" data-market-part>
-              <UsHome card={false} shortcuts={oneCard ? usShortcutsCard : <UsRoundShortcuts onEtfs={onUsEtfs} onPicks={onUsPicks} />} usState={usState} onActivate={onActivateUs} onStock={onUsStock} onMarket={onUsMarket} onTheme={onUsTheme} onEtfs={onUsEtfs} onEtf={onUsEtf} onPicks={onUsPicks} onBrands={onUsBrands} />
+              <UsHome card={false} shortcuts={oneCard ? usShortcutsCard : shortcutsV3 ? shortcutsBlock('us') : shortcutsLook === 'v2' ? usShortcutsRow : <UsRoundShortcuts onEtfs={onUsEtfs} onPicks={onUsPicks} />} usState={usState} onActivate={onActivateUs} onStock={onUsStock} onMarket={onUsMarket} onTheme={onUsTheme} onEtfs={onUsEtfs} onEtf={onUsEtf} onPicks={onUsPicks} onBrands={onUsBrands} />
             </Stack>
           ) : f1 ? (
             <Stack key="us-f1" gap="32" data-market-part>
@@ -31166,134 +32197,6 @@ export function EventFilterSheet({ initial, onApply, onClose }: { initial: Event
 ```
 
 ## Source — shared app parts it uses
-
-### `src/shared/assets/flags/china.svg`
-
-```tsx
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-  <!-- China, round. Flag artwork keeps its own colours. -->
-  <defs><clipPath id="c"><circle cx="12" cy="12" r="12"/></clipPath></defs>
-  <g clip-path="url(#c)">
-    <rect width="24" height="24" fill="#DE2910"/>
-    <g fill="#FFDE00">
-      <polygon points="7.00,3.90 7.81,6.39 10.42,6.39 8.31,7.92 9.12,10.41 7.00,8.88 4.88,10.41 5.69,7.92 3.58,6.39 6.19,6.39"/>
-      <polygon points="12.88,2.17 12.85,2.97 13.60,3.24 12.83,3.46 12.80,4.26 12.36,3.59 11.59,3.82 12.08,3.19 11.63,2.52 12.38,2.80"/>
-      <polygon points="15.51,4.76 15.21,5.50 15.82,6.01 15.02,5.96 14.72,6.70 14.53,5.92 13.73,5.87 14.41,5.44 14.22,4.67 14.83,5.18"/>
-      <polygon points="14.99,7.72 15.10,8.51 15.89,8.65 15.17,9.00 15.28,9.79 14.73,9.21 14.01,9.56 14.38,8.86 13.83,8.28 14.62,8.42"/>
-      <polygon points="13.05,10.25 12.88,11.03 13.58,11.43 12.78,11.51 12.61,12.29 12.29,11.56 11.50,11.65 12.09,11.11 11.76,10.38 12.46,10.78"/>
-    </g>
-  </g>
-  <circle cx="12" cy="12" r="11.75" fill="none" stroke="#000000" stroke-opacity="0.12" stroke-width="0.5"/>
-</svg>
-```
-
-### `src/shared/assets/flags/europe.svg`
-
-```tsx
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-  <!-- European Union, round. Flag artwork keeps its own colours. -->
-  <defs><clipPath id="c"><circle cx="12" cy="12" r="12"/></clipPath></defs>
-  <g clip-path="url(#c)">
-    <rect width="24" height="24" fill="#003399"/>
-    <g fill="#FFCC00">
-      <polygon points="12.00,3.80 12.27,4.63 13.14,4.63 12.44,5.14 12.71,5.97 12.00,5.46 11.29,5.97 11.56,5.14 10.86,4.63 11.73,4.63"/>
-      <polygon points="15.50,4.74 15.77,5.57 16.64,5.57 15.94,6.08 16.21,6.91 15.50,6.40 14.79,6.91 15.06,6.08 14.36,5.57 15.23,5.57"/>
-      <polygon points="18.06,7.30 18.33,8.13 19.20,8.13 18.50,8.64 18.77,9.47 18.06,8.96 17.36,9.47 17.63,8.64 16.92,8.13 17.79,8.13"/>
-      <polygon points="19.00,10.80 19.27,11.63 20.14,11.63 19.44,12.14 19.71,12.97 19.00,12.46 18.29,12.97 18.56,12.14 17.86,11.63 18.73,11.63"/>
-      <polygon points="18.06,14.30 18.33,15.13 19.20,15.13 18.50,15.64 18.77,16.47 18.06,15.96 17.36,16.47 17.63,15.64 16.92,15.13 17.79,15.13"/>
-      <polygon points="15.50,16.86 15.77,17.69 16.64,17.69 15.94,18.20 16.21,19.03 15.50,18.52 14.79,19.03 15.06,18.20 14.36,17.69 15.23,17.69"/>
-      <polygon points="12.00,17.80 12.27,18.63 13.14,18.63 12.44,19.14 12.71,19.97 12.00,19.46 11.29,19.97 11.56,19.14 10.86,18.63 11.73,18.63"/>
-      <polygon points="8.50,16.86 8.77,17.69 9.64,17.69 8.94,18.20 9.21,19.03 8.50,18.52 7.79,19.03 8.06,18.20 7.36,17.69 8.23,17.69"/>
-      <polygon points="5.94,14.30 6.21,15.13 7.08,15.13 6.37,15.64 6.64,16.47 5.94,15.96 5.23,16.47 5.50,15.64 4.80,15.13 5.67,15.13"/>
-      <polygon points="5.00,10.80 5.27,11.63 6.14,11.63 5.44,12.14 5.71,12.97 5.00,12.46 4.29,12.97 4.56,12.14 3.86,11.63 4.73,11.63"/>
-      <polygon points="5.94,7.30 6.21,8.13 7.08,8.13 6.37,8.64 6.64,9.47 5.94,8.96 5.23,9.47 5.50,8.64 4.80,8.13 5.67,8.13"/>
-      <polygon points="8.50,4.74 8.77,5.57 9.64,5.57 8.94,6.08 9.21,6.91 8.50,6.40 7.79,6.91 8.06,6.08 7.36,5.57 8.23,5.57"/>
-    </g>
-  </g>
-  <circle cx="12" cy="12" r="11.75" fill="none" stroke="#000000" stroke-opacity="0.12" stroke-width="0.5"/>
-</svg>
-```
-
-### `src/shared/assets/flags/india.svg`
-
-```tsx
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-  <!-- India, round: saffron / white / green with the navy Ashoka Chakra. Flag artwork keeps its own colours. -->
-  <defs><clipPath id="c"><circle cx="12" cy="12" r="12"/></clipPath></defs>
-  <g clip-path="url(#c)">
-    <rect width="24" height="8" fill="#FF9933"/>
-    <rect y="8" width="24" height="8" fill="#FFFFFF"/>
-    <rect y="16" width="24" height="8" fill="#138808"/>
-    <circle cx="12" cy="12" r="3" fill="none" stroke="#000080" stroke-width="0.8"/>
-    <circle cx="12" cy="12" r="0.8" fill="#000080"/>
-    <g stroke="#000080" stroke-width="0.4">
-      <path d="M12 9v6M9 12h6M9.88 9.88l4.24 4.24M14.12 9.88l-4.24 4.24"/>
-    </g>
-  </g>
-  <circle cx="12" cy="12" r="11.75" fill="none" stroke="#000000" stroke-opacity="0.12" stroke-width="0.5"/>
-</svg>
-```
-
-### `src/shared/assets/flags/japan.svg`
-
-```tsx
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-  <!-- Japan, round. Flag artwork keeps its own colours. -->
-  <defs><clipPath id="c"><circle cx="12" cy="12" r="12"/></clipPath></defs>
-  <g clip-path="url(#c)">
-    <rect width="24" height="24" fill="#FFFFFF"/>
-    <circle cx="12" cy="12" r="5.6" fill="#BC002D"/>
-  </g>
-  <circle cx="12" cy="12" r="11.75" fill="none" stroke="#000000" stroke-opacity="0.12" stroke-width="0.5"/>
-</svg>
-```
-
-### `src/shared/assets/flags/korea.svg`
-
-```tsx
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-  <!-- South Korea, round. Flag artwork keeps its own colours. -->
-  <defs><clipPath id="c"><circle cx="12" cy="12" r="12"/></clipPath></defs>
-  <g clip-path="url(#c)">
-    <rect width="24" height="24" fill="#FFFFFF"/>
-    <circle cx="12" cy="12" r="5" fill="#0047A0"/>
-    <path d="M7 12a5 5 0 0 1 10 0a2.5 2.5 0 0 1-5 0a2.5 2.5 0 0 0-5 0z" fill="#CD2E3A"/>
-    <g stroke="#000000" stroke-width="0.9" stroke-linecap="butt">
-      <path d="M3.6 6.2l2.4-1.4M4.3 7.6l2.4-1.4M5 9l2.4-1.4" transform="translate(-0.4 0.2)"/>
-      <path d="M20.4 6.2l-2.4-1.4M19.7 7.6l-2.4-1.4M19 9l-2.4-1.4" transform="translate(0.4 0.2)"/>
-      <path d="M3.6 17.8l2.4 1.4M4.3 16.4l2.4 1.4M5 15l2.4 1.4" transform="translate(-0.4 -0.2)"/>
-      <path d="M20.4 17.8l-2.4 1.4M19.7 16.4l-2.4 1.4M19 15l-2.4 1.4" transform="translate(0.4 -0.2)"/>
-    </g>
-  </g>
-  <circle cx="12" cy="12" r="11.75" fill="none" stroke="#000000" stroke-opacity="0.12" stroke-width="0.5"/>
-</svg>
-```
-
-### `src/shared/assets/flags/us.svg`
-
-```tsx
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-  <!-- United States, round: red and white stripes with the blue canton. Flag artwork keeps its own colours. -->
-  <defs><clipPath id="c"><circle cx="12" cy="12" r="12"/></clipPath></defs>
-  <g clip-path="url(#c)">
-    <rect width="24" height="24" fill="#FFFFFF"/>
-    <g fill="#B22234">
-      <rect y="0" width="24" height="2.4"/>
-      <rect y="4.8" width="24" height="2.4"/>
-      <rect y="9.6" width="24" height="2.4"/>
-      <rect y="14.4" width="24" height="2.4"/>
-      <rect y="19.2" width="24" height="2.4"/>
-    </g>
-    <rect width="12" height="12" fill="#3C3B6E"/>
-    <g fill="#FFFFFF">
-      <circle cx="3.5" cy="3" r="0.8"/><circle cx="7" cy="3" r="0.8"/><circle cx="10.5" cy="3" r="0.8"/>
-      <circle cx="5.25" cy="6" r="0.8"/><circle cx="8.75" cy="6" r="0.8"/>
-      <circle cx="3.5" cy="9" r="0.8"/><circle cx="7" cy="9" r="0.8"/><circle cx="10.5" cy="9" r="0.8"/>
-    </g>
-  </g>
-  <circle cx="12" cy="12" r="11.75" fill="none" stroke="#000000" stroke-opacity="0.12" stroke-width="0.5"/>
-</svg>
-```
 
 ### `src/shared/assets/logos/asahiindia.png`
 
@@ -57581,35 +58484,44 @@ function Sparkler() {
 ### `src/shared/ui/Flag.module.css`
 
 ```css
-.flag {
-  display: block;
+/* A flag emoji at icon size: 16 tall, as wide as the glyph. Doubled so it beats an icon slot's square (L3 Tabs /
+   Button: `.icon > span` is 16 × 16), and that slot widens to it. L3 gap: icon slots are square only. */
+.flag.flag {
+  display: inline-flex;
   flex: none;
-  width: var(--l3-icon-size-16);
+  align-items: center;
+  justify-content: center;
+  width: auto;
   height: var(--l3-icon-size-16);
+  font-size: var(--l3-icon-size-16);
+  line-height: 1;
+  /* Full strength in an inactive tab too (the user's call): an emoji takes its text colour's alpha, and L3's inactive
+     tab text is 60%. */
+  color: var(--l3-content-primary);
+}
+
+[class]:has(> .flag.flag) {
+  width: auto;
 }
 ```
 
 ### `src/shared/ui/Flag.tsx`
 
 ```tsx
-import flagChina from '../assets/flags/china.svg'
-import flagEurope from '../assets/flags/europe.svg'
-import flagIndia from '../assets/flags/india.svg'
-import flagJapan from '../assets/flags/japan.svg'
-import flagKorea from '../assets/flags/korea.svg'
-import flagUs from '../assets/flags/us.svg'
 import styles from './Flag.module.css'
 
 export type FlagCode = 'us' | 'in' | 'cn' | 'jp' | 'eu' | 'kr'
 
-const files: Record<FlagCode, string> = { us: flagUs, in: flagIndia, cn: flagChina, jp: flagJapan, eu: flagEurope, kr: flagKorea }
+/** The flag emoji themselves (the user's call, 19 Nov): the device's own 🇮🇳 / 🇺🇸, as in text. */
+const emoji: Record<FlagCode, string> = { us: '🇺🇸', in: '🇮🇳', cn: '🇨🇳', jp: '🇯🇵', eu: '🇪🇺', kr: '🇰🇷' }
 
 /**
- * A round flag, 16 like the icons in small buttons and tabs (use as an `iconLeft`).
- * L3 gap: no flag icons in L3 — round flag SVGs of our own (shared/assets/flags), not emoji, so they look the same and
- * sit centred on every device.
+ * A country's flag emoji, 16 like the icons in small buttons and tabs (use as an `iconLeft`).
+ * L3 gap: no flag icons in L3, so the system emoji is used.
  */
-export const Flag = ({ code }: { code: FlagCode }) => <img className={styles.flag} src={files[code]} alt="" aria-hidden="true" />
+export const Flag = ({ code }: { code: FlagCode }) => (
+  <span className={styles.flag} aria-hidden="true">{emoji[code]}</span>
+)
 ```
 
 ### `src/shared/ui/MainNav.module.css`

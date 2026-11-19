@@ -199,6 +199,12 @@ Every tap he wired is kept. The main path: FTUX sheet → Activate → Declarati
 → Pay on bank → Money ready → Stock → Buy → Executed → Wallet → Withdraw.
 
 ### Changelog
+- 19 Nov 2026 — Asset pages' floating dock: the strip under Buy / Sell (its 8 bottom padding) is solid page colour, so page content no longer shows through below the buttons while scrolling; the fade above and behind the buttons is unchanged.
+- 19 Nov 2026 — Order result V2: the summary takes the top half of the page and the details sheet the bottom half; the status glow is bigger and breathes in and out (3.2 s, slow). Back on a result now leaves the whole order, to the page it was started from (the stock or ETF page; the stock page when opened from the list), via nav.leave. The processing screen (T12) has no top bar and no back.
+- 19 Nov 2026 — Order result V2: the line under the heading is now a subtle solid hairline in L3's light border (--l3-border-light, as on cards), not Minted's dark fading gradient.
+- 19 Nov 2026 — Order result V2: the status glow now rises from behind the details sheet's top edge; the sheet is plain white (surface default), no drag handle; the result badge uses Lemonnade L3 success / error colours (solid disc, white mark, light plate) instead of Minted's gradient.
+- 19 Nov · Order processing + result screens (V2) are edge to edge: the status glow runs up under the top bar and the OS status bar (no fill on either). FLAG (L3 gap): Actionbar has no transparent option, cleared locally. Phone gets an edgeToEdge prop.
+- 19 Nov · Buy processing (T12) + order result screens (V2) rebuilt from Minted's: the processing screen shows Minted's loader over Buy NVDA, Order in progress, a thin bar and It will take less than a minute. New flow option Processing animation (Trade): Glass ring (default; it turns into the tick badge and the result lines, then T14 takes over on the same page, no slide, and its summary rises to the top while the details sheet comes up), Radar pulse, Stocks orbit, Candles rise, Ticker tape + order card (these show Processing your order with rotating steps, then T14 plays its own entrance: badge pops, lines fade in, summary rises). Result screens: status glow from the top, tick or alert badge, side line, heading, a fading hairline, one line, then a rounded sheet with a handle holding the order rows; actions in the dock. Minted's brand-mark loaders (P1, P6) skipped. FLAG (L3 gap): loader art, status glow, badge and Minted's motion timings are local (OrderLoader.tsx, OrderResultV2.module.css).
 - 19 Nov: Order pad V2: the amount's "$" is 34 (2 under the amount's 36), local token --app-orderpad-currency-size. L3 gap: no 34 size.
 - 19 Nov: Order pad V2: the amount's "$" is the amount's size (Heading/36, was 24), still secondary grey.
 - 19 Nov: PriceField (screens/trade/PriceField.tsx): one component for every price card — the pad's Limit / SL prices (one box or merged with a hairline), the TP/SL trigger / limit rows (unit switch, empty state, red with an error) and the trailing sheet's box (hint over the unit, Stepper only). Every row is 12 padded all round (the trailing box was 16, the pad's merged card spaced rows by 12 + a line). L3 gaps: no inline price field, no Card error state, no on-grey Stepper.
@@ -216,6 +222,7 @@ Every tap he wired is kept. The main path: FTUX sheet → Activate → Declarati
 - 19 Nov: A stock, ETF or bank with no logo shows one letter (its first), not two or three — app-wide (companies, market list, US banks, every Avatar / disc fallback).
 - 19 Nov: ETF tables (ETFs with the stock, fund peers): logo 24 → 32, so rows are 48 like Peers.
 - 19 Nov: Share bars (Key Holders, ETF allocation) end on the panel's 12 (last row's bottom 8 dropped). Peers: logo 24 → 32, name Label 14. Analyst Ratings card rows and footer follow the page (Description 12 names, Heading 12 figures) instead of Figma's 10. View Order History Label 14.
+- 2026-11-19 — Order pad: the Actionbar keeps its 1px border-light line from the start (`Phone topLine`), not only once the page scrolls, with 6 below the two-line title so it does not sit on the line.
 - 2026-11-19 — L3 moved to BottomSheet 2.4.0: the sheet's 16 top / 24 bottom spaces are the content's own padding and scroll with it, so the TP/SL sheet's local workaround is gone.
 - 2026-11-19 — TP/SL sheet: take profit and stop loss both start on Market (MKT); the LMT ⇄ MKT switch at the top of each card is discover blue; Points ⇄ Percentage and the trail unit stay primary. L3 gap: Select has no discover tone. The "Trigger at" / "Limit at" labels are Description 12. The sheet's 24 above the dock is the end of its scroll, not a fixed gap, so scrolled content runs up to the dock (L3 BottomSheet 2.4.0 does this for every sheet). Trailing sheet: the box is outlined like the leg cards, not grey, with the same Stepper. In the sheet, as on the order pad, a tap outside a price (label + price) and the keypad closes the keypad; tapping a price opens it again; it slides in and out (shared `KeypadSlide`). The sheet's heading is "TP SL & More" (was "Set TP/SL"). The order moved into the TP/SL sheet header: "Qty 0.6405" is the description (was "Applies to this order only."), the stock with its last price and change sits at the right (differs from L3: the header's right slot is meant for one icon button or a Tag).
 - 2026-11-19 — Order pad V2: a tap anywhere outside the typable areas (the amount row, a price card's label + price, the keypad) closes the keypad and the field loses its caret; tapping a field opens it again on that field. The keypad slides up from the bottom when it opens (260 ms, ease-out) and down to the bottom when it closes (200 ms, ease-in), the dock moving with it; reduced motion skips the slide. TP/SL summary card: the head row has 12 on all four sides.
@@ -22169,6 +22176,11 @@ export function InlineSvg({ src, w, h = w, className }: { src: string; w?: numbe
 
 .art { position: absolute; inset: 0 0 auto; z-index: 0; pointer-events: none; }
 
+/* Edge to edge (edgeToEdge): the screen runs under both OS bars (the preview gives their heights); the art starts at
+   the very top, the top bar clears the status bar, the page ends above the navigation bar. */
+.phone[data-edge-to-edge] { padding-bottom: var(--os-inset-bottom, 0); box-sizing: border-box; }
+.phone[data-edge-to-edge] .top { padding-top: var(--os-inset-top, 0); }
+
 .top { position: relative; z-index: 2; flex: none; }
 /* FLAG (L3 gap): L3 Actionbar always draws its 1px line below; here it shows only once the page has scrolled under it. */
 .top:not([data-scrolled]) > header { box-shadow: none; }
@@ -22237,6 +22249,7 @@ export function Phone({
   label,
   bodyRef,
   topLine,
+  edgeToEdge,
   className,
   style,
 }: {
@@ -22254,6 +22267,9 @@ export function Phone({
   bodyRef?: Ref<HTMLDivElement>
   /** The top bar's line from the start (L3's own default), not only once the page has scrolled under it. */
   topLine?: boolean
+  /** Draw under the OS status and navigation bars (the preview's data-edge-to-edge): the backdrop art shows through
+   *  both, the top bar clears the status bar and the page ends above the navigation bar. */
+  edgeToEdge?: boolean
   className?: string
   style?: CSSProperties
 }) {
@@ -22262,7 +22278,7 @@ export function Phone({
   const [scrolled, setScrolled] = useState(false)
   return (
     <SheetLayer.Provider value={layer}>
-      <section className={[styles.phone, className].filter(Boolean).join(' ')} data-surface={surface} aria-label={label} style={style}>
+      <section className={[styles.phone, className].filter(Boolean).join(' ')} data-surface={surface} data-edge-to-edge={edgeToEdge ? '' : undefined} aria-label={label} style={style}>
         {/* data-part="page" + the footer last: on a tab switch the preview slides the page and holds the navbar still. */}
         <div className={styles.page} data-part="page">
           {layer && (
@@ -22563,6 +22579,22 @@ export const usStocks: Flow = {
       default: 'merged',
       floatOn: ['us-stocks-41'],
     },
+    // The processing screen's loader (19 Nov, from Minted): glass ring (default) or Minted's other processing animations.
+    {
+      id: 'procAnim',
+      group: 'Trade',
+      label: 'Processing animation',
+      picker: 'dropdown',
+      values: [
+        { value: 'glass', label: 'Glass ring · turns into the tick' },
+        { value: 'radar', label: 'Radar pulse' },
+        { value: 'orbit', label: 'Stocks orbit' },
+        { value: 'candles', label: 'Candles rise' },
+        { value: 'ticker', label: 'Ticker tape + order card' },
+      ],
+      default: 'glass',
+      floatOn: ['us-stocks-43'],
+    },
     // The Boosted tab's note (3 Nov): one line on a strip, a small card, or a chip.
     {
       id: 'boostNote',
@@ -22698,6 +22730,9 @@ export type UsNav = {
   open: (figma: string) => void
   /** Back to the screen shown before this one (or `fallback`). */
   back: (fallback?: string) => void
+  /** Leave a run of screens (e.g. order pad → processing → result): back to the last screen before them that `skip`
+   *  doesn't match — the page the user started from — or `fallback`. Slides back like `back`. */
+  leave: (skip: (figma: string) => boolean, fallback?: string) => void
   /** Figma node id of the screen being shown. */
   current: string
   /** Figma node id of the screen shown before. */
@@ -22706,7 +22741,7 @@ export type UsNav = {
   via: 'jump' | 'tap'
 }
 
-const UsNavContext = createContext<UsNav>({ go: () => {}, open: () => {}, back: () => {}, current: '', via: 'jump' })
+const UsNavContext = createContext<UsNav>({ go: () => {}, open: () => {}, back: () => {}, leave: () => {}, current: '', via: 'jump' })
 export const useUsNav = () => useContext(UsNavContext)
 
 // Screens shown in this flow, oldest first (Figma ids) — what `back` walks.
@@ -22731,6 +22766,11 @@ export function UsNavProvider({ figma, go, children }: { figma: string; go: Go; 
       if (preview.back?.()) return
       // Nothing to go back to: the fallback replaces this page, sliding in from the left (so its own back doesn't return here).
       const target = fallback ?? prev
+      if (target) { markMove(screenOf(target), 'back'); to(target) }
+    },
+    leave: (skip, fallback) => {
+      const from = [...history].reverse().find((f) => f !== figma && !skip(f))
+      const target = from ?? fallback
       if (target) { markMove(screenOf(target), 'back'); to(target) }
     },
     current: figma,
@@ -22797,9 +22837,9 @@ export const registry: UsScreenEntry[] = [
   { figma: '5837:95972', id: 'us-stocks-40', section: 'activated', name: "T07 · Buy · Limit", note: "Limit order: buys only at the limit price or lower today." },
   { figma: '5837:95888', id: 'us-stocks-41', section: 'activated', name: "T08 · Buy · SL", note: "Stop-loss order: a trigger price places a limit order." },
   { figma: '5852:98171', id: 'us-stocks-42', over: 'us-stocks-41', section: 'activated', name: "T11 · Buy · Fee breakdown", note: "Fee breakdown for the required amount." },
-  { figma: '5837:95677', id: 'us-stocks-43', section: 'activated', name: "T12 · Order result · Processing", note: "Order processing loader." },
+  { figma: '5837:95677', id: 'us-stocks-43', group: 'order-status', section: 'activated', name: "T12 · Order result · Processing", note: "Minted's processing screen (19 Nov): its loader (flow option Processing animation; glass ring by default) over Buy NVDA, Order in progress, a bar. The glass ring turns into the tick and the result lines, then T14 takes over on the same page (no slide) and rises into place." },
   { figma: '5837:95657', id: 'us-stocks-44', section: 'activated', name: "T13 · Order result · Created (US market closed)", note: "Order created while the US market is closed. Sent when it opens." },
-  { figma: '5837:95638', id: 'us-stocks-45', section: 'activated', name: "T14 · Order result · Executed", note: "Buy order executed." },
+  { figma: '5837:95638', id: 'us-stocks-45', group: 'order-status', section: 'activated', name: "T14 · Order result · Executed", note: "Buy order executed." },
   { figma: '5837:95619', id: 'us-stocks-46', section: 'activated', name: "T15 · Order result · Rejected", note: "Buy order rejected." },
   { figma: '5837:95560', id: 'us-stocks-47', section: 'activated', name: "H03 · Sell · Holding", note: "Sell sheet for a user who holds the stock." },
   { figma: '5837:95507', id: 'us-stocks-48', section: 'activated', name: "H04 · Sell · no shares", note: "Account has no shares of this stock to sell." },
@@ -25846,9 +25886,12 @@ footer > .dock {
   padding-top: calc(var(--l3-spacing-24) + var(--l3-spacing-08));
   /* Three stops (19 Nov, the user's call): the page's colour at 100% at the bottom, 80% halfway, 0% at the top, so the
      fade runs on behind the buttons too. */
+  /* The strip under the buttons (the dock's 8 bottom padding) is solid, so nothing scrolls through below them (19 Nov,
+     the user's call: content showed under Buy / Sell). */
   background: linear-gradient(
     to top,
-    var(--page-surface, var(--l3-surface-default)) 0%,
+    var(--page-surface, var(--l3-surface-default)) 0,
+    var(--page-surface, var(--l3-surface-default)) var(--l3-spacing-08),
     color-mix(in srgb, var(--page-surface, var(--l3-surface-default)) 80%, transparent) 50%,
     transparent 100%
   );
@@ -38433,6 +38476,441 @@ export function LeverageSheet({ open, onClose, onConfirm, mode = 'activate' }: {
 }
 ```
 
+### `src/flows/us-stocks/screens/trade/OrderLoader.module.css`
+
+```css
+/* Order processing art (OrderLoader.tsx), from Minted's prototype styles (#groW glass ring, .proc P2–P5).
+   Minted's greys → L3 content / surface tokens, its mint → success; so the art reads in light and dark.
+   FLAG (L3 gap): the motion timings below are Minted's, not L3 motion tokens (L3 has no loader choreography). */
+
+.loader {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: var(--l3-size-80);
+  height: var(--l3-size-80);
+}
+.loader:not([data-variant='glass']) { width: var(--l3-size-128); height: var(--l3-size-128); }
+.loader[data-variant='ticker'] { width: 100%; }
+
+/* ---------- G · glass ring ---------- */
+.glass {
+  position: absolute;
+  inset: 0;
+  transition: opacity var(--l3-motion-duration-short) ease, transform var(--l3-motion-duration-medium) var(--l3-motion-easing-standard);
+}
+.glass svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.wellIn { stop-color: var(--l3-surface-default); }
+.wellMid { stop-color: var(--l3-surface-primary); }
+.wellRim { stop-color: var(--l3-surface-tertiary); }
+.wellEdge { fill: none; stroke: var(--l3-border-light); }
+.shine0 { stop-color: var(--l3-content-primary); stop-opacity: .16; }
+.shine1 { stop-color: var(--l3-content-primary); stop-opacity: 0; }
+.ring0 { stop-color: var(--l3-content-secondary); }
+.ring1 { stop-color: color-mix(in srgb, var(--l3-content-primary) 70%, var(--l3-content-secondary)); }
+.ring2 { stop-color: var(--l3-content-primary); }
+.ringSvg { filter: drop-shadow(0 0 3px color-mix(in srgb, var(--l3-content-primary) 35%, transparent)) drop-shadow(0 0 9px color-mix(in srgb, var(--l3-content-primary) 25%, transparent)); }
+.dropSvg { filter: drop-shadow(0 0 3px color-mix(in srgb, var(--l3-content-primary) 35%, transparent)); }
+.ripple { fill: none; stroke: color-mix(in srgb, var(--l3-content-primary) 60%, transparent); stroke-width: 1; }
+.goo { fill: var(--l3-content-primary); }
+
+/* The glass ring's end (phase done): the ring shrinks away, the badge pops in with a burst ring going out. */
+.loader[data-phase='done'] .glass { opacity: 0; transform: scale(.82); }
+.result { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transform: scale(.6); }
+.loader[data-phase='done'] .result { animation: badgePop .5s cubic-bezier(.2, .9, .25, 1.35) forwards; }
+.burst { position: absolute; width: 76%; height: 76%; border-radius: var(--l3-radius-full); opacity: 0; }
+.loader[data-phase='done'] .burst { border: 2px solid var(--l3-content-accent-success-default); animation: burst .7s ease-out forwards; }
+.loader[data-phase='done'][data-outcome='error'] .burst { border-color: var(--l3-content-accent-error-default); animation-duration: .6s; }
+@keyframes badgePop { 0% { opacity: 0; transform: scale(.6); } 60% { opacity: 1; } 100% { opacity: 1; transform: scale(1); } }
+@keyframes burst { 0% { opacity: .9; transform: scale(1); } 100% { opacity: 0; transform: scale(1.9); } }
+
+/* ---------- Result badge: Lemonnade colours — the L3 success (or error) disc with a white mark, on its light plate ---------- */
+.badge { display: block; overflow: visible; }
+.badgePlate { fill: var(--l3-surface-accent-success-light); }
+.badgeDisc { fill: var(--l3-content-accent-success-default); }
+.badgeMark { fill: var(--l3-static-white); }
+.badge[data-outcome='error'] .badgePlate { fill: var(--l3-surface-accent-error-light); }
+.badge[data-outcome='error'] .badgeDisc { fill: var(--l3-content-accent-error-default); }
+
+/* ---------- P5 · radar: an arc spins round the logo, pulses go out; done → a full ring and a tick ---------- */
+.radar { position: relative; display: grid; place-items: center; width: 100%; height: 100%; }
+.wave {
+  position: absolute;
+  width: 60%;
+  height: 60%;
+  border-radius: var(--l3-radius-full);
+  border: 2px solid color-mix(in srgb, var(--l3-content-accent-success-default) 55%, transparent);
+  opacity: 0;
+  animation: wave 2.1s cubic-bezier(.2, .6, .4, 1) infinite;
+}
+.wave:nth-child(2) { animation-delay: .7s; }
+.wave:nth-child(3) { animation-delay: 1.4s; }
+@keyframes wave { 0% { transform: scale(1); opacity: .8; } 100% { transform: scale(2.4); opacity: 0; } }
+.radarRing { position: absolute; width: 60%; height: 60%; overflow: visible; }
+.radarTrack, .radarArc { fill: none; stroke-width: 4; }
+.radarTrack { stroke: var(--l3-border-light); }
+.radarArc {
+  stroke: var(--l3-content-accent-success-default);
+  stroke-linecap: round;
+  stroke-dasharray: 46 189;
+  transform-origin: 36px 36px;
+  animation: spin .9s linear infinite;
+  transition: stroke-dasharray .45s cubic-bezier(.4, 0, .2, 1);
+}
+.radarTick { fill: none; stroke: var(--l3-content-accent-success-default); stroke-width: 4.5; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 40; stroke-dashoffset: 40; transition: stroke-dashoffset .4s .35s cubic-bezier(.3, .6, .2, 1); }
+.radarCore { position: relative; display: grid; place-items: center; transition: opacity var(--l3-motion-duration-short); }
+.loader[data-phase='done'] .radarArc { animation: none; stroke-dasharray: 189 0; }
+.loader[data-phase='done'] .radarTick { stroke-dashoffset: 0; }
+.loader[data-phase='done'] .radarCore { opacity: 0; }
+.loader[data-phase='done'] .wave { animation-play-state: paused; opacity: 0; transition: opacity .3s; }
+
+/* ---------- P2 · orbit: other US stocks circle the one being bought ---------- */
+.orbit { position: relative; display: grid; place-items: center; width: 100%; height: 100%; }
+.orbitRing { position: absolute; inset: var(--l3-spacing-14); border-radius: var(--l3-radius-full); border: 1px dashed color-mix(in srgb, var(--l3-content-accent-success-default) 45%, transparent); animation: spin 6s linear infinite; }
+.orbiter { position: absolute; inset: 0; animation: spin 3.2s linear infinite; }
+.orbiterLogo { position: absolute; left: calc(50% - var(--l3-size-12)); top: 0; display: block; animation: spin 3.2s linear infinite reverse; }
+.orbitCore { position: relative; border-radius: var(--l3-radius-full); box-shadow: 0 0 0 8px color-mix(in srgb, var(--l3-content-accent-success-default) 14%, transparent), 0 0 40px color-mix(in srgb, var(--l3-content-accent-success-default) 35%, transparent); }
+
+/* ---------- P3 · candles rise and settle ---------- */
+.candles { display: flex; align-items: flex-end; justify-content: center; gap: var(--l3-spacing-12); height: 100%; padding-block: var(--l3-spacing-16); box-sizing: border-box; }
+.candle { position: relative; width: var(--l3-size-20); border-radius: var(--l3-radius-04); background: var(--l3-content-accent-indicator-up-default); transform-origin: bottom; animation: candle 1.4s ease-in-out infinite; }
+.candle::before { content: ''; position: absolute; left: 50%; top: calc(-1 * var(--l3-spacing-12)); bottom: calc(-1 * var(--l3-spacing-08)); width: 3px; margin-left: -1.5px; border-radius: var(--l3-radius-02); background: inherit; z-index: -1; }
+.candle:nth-child(1) { height: 36%; }
+.candle:nth-child(2) { height: 55%; animation-delay: .15s; }
+.candle:nth-child(3) { height: 45%; animation-delay: .3s; }
+.candle:nth-child(4) { height: 75%; animation-delay: .45s; }
+.candle:nth-child(5) { height: 90%; animation-delay: .6s; }
+.candle[data-down] { background: var(--l3-content-accent-indicator-down-default); }
+@keyframes candle { 0%, 100% { transform: scaleY(.55); opacity: .55; } 50% { transform: scaleY(1); opacity: 1; } }
+
+/* ---------- P4 · ticker tapes behind a card of the order ---------- */
+.ticker { position: relative; display: grid; place-items: center; width: 100%; height: 100%; overflow: hidden; }
+.tape { position: absolute; left: 0; right: 0; top: var(--l3-spacing-08); height: var(--l3-size-32); overflow: hidden; opacity: .7; }
+.tape[data-reverse] { top: auto; bottom: var(--l3-spacing-08); }
+.tapeRow { display: flex; gap: var(--l3-spacing-16); width: max-content; animation: tape 7s linear infinite; }
+.tape[data-reverse] .tapeRow { animation-direction: reverse; }
+.tapeItem { display: flex; align-items: center; gap: var(--l3-spacing-08); font: var(--l3-text-label-12); color: var(--l3-content-secondary); white-space: nowrap; }
+@keyframes tape { to { transform: translateX(-50%); } }
+.tickerCard {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--l3-spacing-12);
+  padding: var(--l3-spacing-12) var(--l3-spacing-16);
+  border-radius: var(--l3-radius-16);
+  background: var(--l3-surface-primary);
+  border: 1px solid var(--l3-border-light);
+  box-shadow: var(--l3-shadow-elevation-medium);
+}
+.tickerText { display: flex; flex-direction: column; }
+.tickerText b { font: var(--l3-text-heading-16); color: var(--l3-content-primary); }
+.tickerText small { font: var(--l3-text-label-12); color: var(--l3-content-accent-success-default); }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .loader *, .loader *::before { animation-duration: 0s !important; animation-iteration-count: 1 !important; }
+}
+```
+
+### `src/flows/us-stocks/screens/trade/OrderLoader.tsx`
+
+```tsx
+// Order processing art, imported from Minted's prototype (~/minted public/prototype/app.js, "Order processing", 19 Nov,
+// the user's call: "import the Minted app layout & design … it has some loader also, import those also").
+// Five of Minted's seven processing animations; the flow option "Processing animation" picks one:
+//  · glass   · G · the glass ring (Minted's default): a ring spins round a glass well and dips into it, a drop rises
+//              back out; at the end the art turns into the result badge (tick or alert) with a burst.
+//  · radar   · P5 · an arc spins round the stock's logo with pulses going out; closes into a full ring + tick.
+//  · orbit   · P2 · other US stocks' logos orbit the stock being bought.
+//  · candles · P3 · five candles rise and settle.
+//  · ticker  · P4 · two ticker tapes of US stocks run behind a card of the order.
+// Minted's P1 (its logo drawing itself) and P6 (coin flip to its logo) are its brand mark, so they're not imported.
+// Colours are L3 tokens (Minted's greys → content / surface, its mint → success), so it works light and dark.
+// FLAG: hand-drawn SVG animation art — L3 has only the Loader ring; this is the motion Minted designed.
+import { useEffect, useId, useRef, type CSSProperties } from 'react'
+import { Avatar } from '@l3/components/Avatar'
+import { logoFor } from '../../data'
+import styles from './OrderLoader.module.css'
+
+export type LoaderStyle = 'glass' | 'radar' | 'orbit' | 'candles' | 'ticker'
+/** run · working; settle · the art stops (bar full); done · the result badge has taken the art's place. */
+export type LoaderPhase = 'run' | 'settle' | 'done'
+export type LoaderOutcome = 'success' | 'error'
+
+/** US stocks shown orbiting / on the tapes (logos from the app's US catalogue). */
+const TAPE = ['AAPL', 'TSLA', 'NVDA', 'MSFT', 'GOOGL', 'AMZN', 'META', 'AMD']
+
+/** The result badge Minted's loader turns into: a round tinted plate with a tick (or an alert) cut out of a disc.
+ *  Lemonnade colours (19 Nov, the user's call): an L3 success / error disc with a white mark on its light plate — not
+ *  Minted's mint gradient. */
+export function ResultBadge({ outcome, className, style }: { outcome: LoaderOutcome; className?: string; style?: CSSProperties }) {
+  return (
+    <svg className={[styles.badge, className].filter(Boolean).join(' ')} data-outcome={outcome} viewBox="0 0 84 84" aria-hidden="true" style={style}>
+      <rect className={styles.badgePlate} x="9.6" y="9.6" width="64" height="64" rx="32" />
+      {/* White under the disc: the mark is cut out of it, so it shows white. */}
+      <circle className={styles.badgeMark} cx="41.6" cy="41.6" r="18" />
+      {outcome === 'success' ? (
+        <path className={styles.badgeDisc} d="M41.6 22.4a19.2 19.2 0 1 0 0 38.4 19.2 19.2 0 0 0 0-38.4Zm11.09 13.12L41.73 50.38a1.6 1.6 0 0 1-2.29.3l-7.82-6.25a1.6 1.6 0 0 1 1.98-2.5l6.53 5.22 9.98-13.55a1.6 1.6 0 0 1 2.58 1.92Z" />
+      ) : (
+        <path className={styles.badgeDisc} fillRule="evenodd" d="M41.6 60.8a19.2 19.2 0 1 1 0-38.4 19.2 19.2 0 0 1 0 38.4Zm-1.68-12.7a1.69 1.69 0 1 0 3.37-.17 1.69 1.69 0 0 0-3.37.17Zm.41-5.65v-7.6a1.27 1.27 0 0 1 2.54 0v7.6a1.27 1.27 0 0 1-2.54 0Z" />
+      )}
+    </svg>
+  )
+}
+
+export function OrderLoader({ variant, phase, outcome, symbol, side, amount }: {
+  variant: LoaderStyle
+  phase: LoaderPhase
+  outcome: LoaderOutcome
+  /** The stock being traded (logo in radar / orbit / ticker). */
+  symbol: string
+  /** "Buy" / "Sell" (ticker's order card). */
+  side: string
+  /** The order value line on the ticker's card ("$376.84"). */
+  amount: string
+}) {
+  const logo = logoFor(symbol)
+  const stockLogo = (size: 24 | 40 | 48, className?: string) => <Avatar src={logo} initials={symbol.slice(0, 1)} size={size} className={className} />
+  return (
+    <div className={styles.loader} data-variant={variant} data-phase={phase} data-outcome={outcome} aria-hidden="true">
+      {variant === 'glass' && <GlassRing frozen={phase !== 'run'} />}
+      {variant === 'radar' && (
+        <div className={styles.radar}>
+          <span className={styles.wave} /><span className={styles.wave} /><span className={styles.wave} />
+          <svg className={styles.radarRing} viewBox="0 0 72 72">
+            <circle className={styles.radarTrack} cx="36" cy="36" r="30" />
+            <circle className={styles.radarArc} cx="36" cy="36" r="30" />
+            <path className={styles.radarTick} d="M25 37l7.5 7.5L48 29" />
+          </svg>
+          <span className={styles.radarCore}>{stockLogo(40)}</span>
+        </div>
+      )}
+      {variant === 'orbit' && (
+        <div className={styles.orbit}>
+          <span className={styles.orbitRing} />
+          {TAPE.filter((s) => s !== symbol).slice(0, 6).map((s, i, all) => (
+            <span key={s} className={styles.orbiter} style={{ animationDelay: `-${((3.2 / all.length) * i).toFixed(2)}s` } as CSSProperties}>
+              <span className={styles.orbiterLogo} style={{ animationDelay: `-${((3.2 / all.length) * i).toFixed(2)}s` } as CSSProperties}>
+                <Avatar src={logoFor(s)} initials={s.slice(0, 1)} size={24} />
+              </span>
+            </span>
+          ))}
+          <span className={styles.orbitCore}>{stockLogo(48)}</span>
+        </div>
+      )}
+      {variant === 'candles' && (
+        <div className={styles.candles}>
+          {[0, 1, 2, 3, 4].map((i) => <span key={i} className={styles.candle} data-down={i === 2 || undefined} />)}
+        </div>
+      )}
+      {variant === 'ticker' && (
+        <div className={styles.ticker}>
+          {[0, 3].map((shift) => (
+            <div key={shift} className={styles.tape} data-reverse={shift > 0 || undefined}>
+              <div className={styles.tapeRow}>
+                {[...TAPE, ...TAPE].map((s, i) => (
+                  <span key={i} className={styles.tapeItem}>
+                    <Avatar src={logoFor(TAPE[(i + shift) % 8])} initials={TAPE[(i + shift) % 8].slice(0, 1)} size={24} />
+                    {TAPE[(i + shift) % 8]} ▲{(0.4 + ((i * 37 + shift) % 23) / 10).toFixed(1)}%
+                  </span>
+                ))}
+              </div>
+            </div>
+          ))}
+          <div className={styles.tickerCard}>
+            {stockLogo(40)}
+            <span className={styles.tickerText}>
+              <b>{side} {symbol}</b>
+              <small>{amount}</small>
+            </span>
+          </div>
+        </div>
+      )}
+      {/* The glass ring's end: the result badge pops in where the ring was, with a burst ring going out. */}
+      {variant === 'glass' && (
+        <>
+          <span className={styles.burst} />
+          <ResultBadge outcome={outcome} className={styles.result} />
+        </>
+      )}
+    </div>
+  )
+}
+
+// ---------- Minted's glass-ring engine (same maths as its prototype: a ring in 3D that sinks into the well, a drop that
+// rises back out through a goo filter). Drawn on a 200 × 200 grid; one loop of 4.4 s. ----------
+const LOOP = 4400
+const R = 92
+const CORE = 82
+const PERSPECTIVE = 700
+const AXIS: [number, number, number] = [Math.SQRT1_2, -Math.SQRT1_2, 0]
+const CIRC = 2 * Math.PI * R
+const CX = 100
+const CY = 100
+const FLOOR = 182
+const DROP = 11
+const clamp = (x: number, a = 0, b = 1) => Math.min(b, Math.max(a, x))
+const seg = (t: number, a: number, b: number) => clamp((t - a) / (b - a))
+const inOutCubic = (x: number) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2)
+const outCubic = (x: number) => 1 - Math.pow(1 - x, 3)
+const inOutSine = (x: number) => -(Math.cos(Math.PI * x) - 1) / 2
+
+/** The ring's path: `length` of the circle, turned `deg` round the tilted axis, hidden where it passes behind the well. */
+function ringPath(length: number, deg: number) {
+  const L = clamp(length, 0, CIRC)
+  const span = L / R
+  const th = (deg * Math.PI) / 180
+  const c = Math.cos(th)
+  const s = Math.sin(th)
+  const [ux, uy, uz] = AXIS
+  const n = Math.max(2, Math.ceil((span / (Math.PI * 2)) * 160))
+  let d = ''
+  let pen = false
+  for (let i = 0; i <= n; i++) {
+    const f = Math.PI / 2 - span / 2 + (span * i) / n
+    const px = R * Math.cos(f)
+    const py = R * Math.sin(f)
+    const dot = ux * px + uy * py
+    const x = px * c + -uz * py * s + ux * dot * (1 - c)
+    const y = py * c + uz * px * s + uy * dot * (1 - c)
+    const z = (ux * py - uy * px) * s + uz * dot * (1 - c)
+    const k = PERSPECTIVE / (PERSPECTIVE - z)
+    const X = x * k
+    const Y = y * k
+    if (z < -0.5 && Math.hypot(X, Y) < CORE + 2) { pen = false; continue }
+    d += (pen ? 'L' : 'M') + (CX + X).toFixed(1) + ',' + (CY + Y).toFixed(1)
+    pen = true
+  }
+  return d
+}
+
+type GlassEls = { ring: SVGPathElement; ringSvg: SVGSVGElement; ripple: SVGCircleElement; drop: SVGEllipseElement; neck: SVGPathElement }
+
+function drawGlass(E: GlassEls, t: number) {
+  let rot = 0
+  let L = CIRC
+  let op = 1
+  if (t < 0.4) { /* still */ } else if (t < 2.25) { rot = 360 * inOutSine(seg(t, 0.4, 2.1)); op = 1 - inOutSine(seg(t, 1.25, 2.1)) } else if (t < 2.45) { L = 0; op = 0 } else { L = CIRC * inOutCubic(seg(t, 2.45, 3.05)) }
+  E.ring.setAttribute('d', ringPath(L, rot % 360))
+  E.ringSvg.style.opacity = String(op)
+  let hy = CY
+  let rx = DROP
+  let ry = DROP
+  let neck = ''
+  let tail = ''
+  const rp = seg(t, 0.75, 1.35)
+  E.ripple.setAttribute('r', String(rp > 0 && rp < 1 ? 8 + 30 * outCubic(rp) : 0))
+  E.ripple.setAttribute('opacity', String((1 - rp) * 0.9))
+  if (t < 1.4) { /* drop sits in the well */ } else if (t < 2.3) {
+    const k = seg(t, 1.35, 2.2)
+    hy = CY + (FLOOR + DROP + 2 - CY) * k * k * k
+    ry = DROP * (1 + 0.18 * Math.sin(Math.PI * k))
+    rx = DROP * (1 - 0.1 * Math.sin(Math.PI * k))
+  } else if (t < 3.05) { rx = ry = 0 } else if (t < 4.25) {
+    const u = seg(t, 3.05, 4.25)
+    hy = FLOOR + DROP - (FLOOR + DROP - CY) * inOutSine(seg(u, 0, 0.82))
+    if (u < 0.56) {
+      const k = seg(u, 0.08, 0.56)
+      const bw = 30 - 12 * k
+      const ww = DROP * 0.78 * (1 - Math.pow(inOutSine(seg(k, 0.35, 1)), 1.2))
+      const wy = FLOOR - 6 - (FLOOR - 6 - hy) * 0.42
+      const lift = Math.min(16, (FLOOR - hy) * 0.45)
+      neck = `M${CX - bw},${FLOOR + 8} C${CX - bw * 0.45},${FLOOR + 6} ${CX - ww - 2},${FLOOR - lift} ${CX - ww},${wy} C${CX - ww},${wy - 8} ${CX - DROP * 0.85},${hy + DROP * 0.9} ${CX - DROP * 0.6},${hy} L${CX + DROP * 0.6},${hy} C${CX + DROP * 0.85},${hy + DROP * 0.9} ${CX + ww},${wy - 8} ${CX + ww},${wy} C${CX + ww + 2},${FLOOR - lift} ${CX + bw * 0.45},${FLOOR + 6} ${CX + bw},${FLOOR + 8} Z`
+    } else {
+      const k = seg(u, 0.56, 0.84)
+      const len = (1 - outCubic(k)) * (FLOOR - hy) * 0.38
+      if (k < 1) {
+        const wt = DROP * 0.55 * (1 - k * 0.6)
+        tail = `M${CX - wt},${hy} Q${CX - wt * 0.5},${hy + DROP + len * 0.5} ${CX},${hy + DROP + len} Q${CX + wt * 0.5},${hy + DROP + len * 0.5} ${CX + wt},${hy} Z`
+      }
+      const r = seg(u, 0.56, 1)
+      const bob = 10 * Math.exp(-6 * r) * Math.cos(14 * r)
+      if (bob > 0.5) neck = `M${CX - 14},${FLOOR + 8} Q${CX},${FLOOR + 8 - bob * 2} ${CX + 14},${FLOOR + 8} Z`
+      const sq = Math.exp(-5 * r) * Math.sin(16 * r)
+      ry = DROP * (1 + 0.22 * sq)
+      rx = DROP * (1 - 0.16 * sq)
+    }
+    if (u > 0.82) { const k = seg(u, 0.82, 1); hy = CY - 2 * Math.sin(Math.PI * k) * (1 - k) }
+  }
+  E.drop.setAttribute('cy', String(hy))
+  E.drop.setAttribute('rx', String(Math.max(0, rx)))
+  E.drop.setAttribute('ry', String(Math.max(0, ry)))
+  E.neck.setAttribute('d', neck + tail)
+}
+
+function GlassRing({ frozen }: { frozen: boolean }) {
+  const id = useId().replace(/:/g, '')
+  const ring = useRef<SVGPathElement>(null)
+  const ringSvg = useRef<SVGSVGElement>(null)
+  const ripple = useRef<SVGCircleElement>(null)
+  const drop = useRef<SVGEllipseElement>(null)
+  const neck = useRef<SVGPathElement>(null)
+  const frozenRef = useRef(frozen)
+  frozenRef.current = frozen
+  useEffect(() => {
+    const E = { ring: ring.current!, ringSvg: ringSvg.current!, ripple: ripple.current!, drop: drop.current!, neck: neck.current! }
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (reduce) { drawGlass(E, 0); return }
+    const t0 = performance.now()
+    let raf = 0
+    const loop = (now: number) => {
+      if (!frozenRef.current) drawGlass(E, ((now - t0) % LOOP) / 1000)
+      raf = requestAnimationFrame(loop)
+    }
+    raf = requestAnimationFrame(loop)
+    return () => cancelAnimationFrame(raf)
+  }, [])
+  return (
+    <div className={styles.glass}>
+      <svg viewBox="0 0 200 200">
+        <defs>
+          <radialGradient id={`well${id}`} cx="50%" cy="50%" r="50%">
+            <stop offset="0" className={styles.wellIn} />
+            <stop offset=".6" className={styles.wellIn} />
+            <stop offset=".82" className={styles.wellMid} />
+            <stop offset=".96" className={styles.wellRim} />
+            <stop offset="1" className={styles.wellIn} />
+          </radialGradient>
+          <linearGradient id={`shine${id}`} x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" className={styles.shine0} />
+            <stop offset=".45" className={styles.shine1} />
+          </linearGradient>
+        </defs>
+        <circle cx="100" cy="100" r="82" fill={`url(#well${id})`} />
+        <circle className={styles.wellEdge} cx="100" cy="100" r="81.5" />
+        <path d="M38 70 A68 68 0 0 1 92 30" fill="none" stroke={`url(#shine${id})`} strokeWidth="6" strokeLinecap="round" opacity=".7" />
+      </svg>
+      <svg viewBox="0 0 200 200" ref={ringSvg} className={styles.ringSvg}>
+        <defs>
+          <linearGradient id={`ring${id}`} gradientUnits="userSpaceOnUse" x1="0" y1="6" x2="0" y2="194">
+            <stop offset="0" className={styles.ring0} />
+            <stop offset=".5" className={styles.ring1} />
+            <stop offset="1" className={styles.ring2} />
+          </linearGradient>
+        </defs>
+        <path ref={ring} fill="none" stroke={`url(#ring${id})`} strokeWidth="8" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+      <svg viewBox="0 0 200 200" className={styles.dropSvg}>
+        <defs>
+          <filter id={`goo${id}`} x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="3.2" />
+            <feColorMatrix values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -9" />
+          </filter>
+          <clipPath id={`pool${id}`}><circle cx="100" cy="100" r="82" /></clipPath>
+        </defs>
+        <circle ref={ripple} className={styles.ripple} cx="100" cy="100" r="0" />
+        <g className={styles.goo} filter={`url(#goo${id})`} clipPath={`url(#pool${id})`}>
+          <path ref={neck} />
+          <ellipse ref={drop} cx="100" cy="100" rx="11" ry="11" />
+        </g>
+      </svg>
+    </div>
+  )
+}
+```
+
 ### `src/flows/us-stocks/screens/trade/OrderPad.module.css`
 
 ```css
@@ -38774,6 +39252,10 @@ function OrderPadV1({ config, backdrop, sheet }: OrderPadProps) {
 
 /* "Req." opens the fee sheet: secondary text, underlined like a link (L3 gap: no link-style Button). */
 .reqLink.reqLink { color: var(--l3-content-secondary); text-decoration: underline; text-underline-offset: var(--l3-spacing-02); }
+
+
+/* 6 under the two-line title, so it doesn't sit on the bar's line (the user's call). */
+.bar.bar { padding-bottom: var(--l3-spacing-06); }
 ```
 
 ### `src/flows/us-stocks/screens/trade/OrderPadV2.tsx`
@@ -38951,6 +39433,7 @@ export function OrderPadV2({ config, backdrop, sheet }: { config: OrderPadConfig
   const header = (
     <Actionbar
       headingLevel={1}
+      className={styles.bar}
       onBack={() => back(config.back)}
       title={
         // Spans, not Stack: the title sits inside the Actionbar's <h1>, where L3's block-level Stack isn't valid.
@@ -39090,7 +39573,7 @@ export function OrderPadV2({ config, backdrop, sheet }: { config: OrderPadConfig
   const switchLabel = `${unitLabel}. Switch to ${mode === 'amount' ? 'shares' : 'amount'}`
 
   return (
-    <Phone label={forCurrentStock(config.label)} header={header} footer={footer} gesture="none">
+    <Phone label={forCurrentStock(config.label)} header={header} footer={footer} gesture="none" topLine>
       <Stack
         gap="16"
         align="center"
@@ -39180,12 +39663,20 @@ export function OrderPadV2({ config, backdrop, sheet }: { config: OrderPadConfig
 ### `src/flows/us-stocks/screens/trade/OrderProcessing.tsx`
 
 ```tsx
-// T12 · Order processing: the spinner screen (V1 look, or the V2 look through OrderResult), which moves on to "Buy order executed" (T14) by itself after 2 s.
+// T12 · Order processing. V2 (the default): Minted's processing screen with its loader (OrderResultV2.tsx), which times
+// itself and turns into "Buy order executed" (T14). V1: the spinner screen that moves on to T14 after 2 s.
 import { OrderResult, useAutoAdvance } from './OrderResult'
+import { OrderProcessingV2 } from './OrderResultV2'
 import { tradeIds } from './ids'
 import { orderResults } from './orderResults'
+import { useOrderPadVersion } from './version'
 
 export function OrderProcessing({ backdrop }: { backdrop?: boolean }) {
+  const config = orderResults[tradeIds.T12]
+  return useOrderPadVersion() === 'v2' ? <OrderProcessingV2 config={config} backdrop={backdrop} /> : <OrderProcessingV1 backdrop={backdrop} />
+}
+
+function OrderProcessingV1({ backdrop }: { backdrop?: boolean }) {
   useAutoAdvance(tradeIds.T14, backdrop)
   return <OrderResult config={orderResults[tradeIds.T12]} />
 }
@@ -39326,93 +39817,158 @@ function OrderResultV1({ config }: { config: OrderResultConfig }) {
 ### `src/flows/us-stocks/screens/trade/OrderResultV2.module.css`
 
 ```css
-/* V2 order result: laid out like Minted's order result screens (s06 in progress / placed, s16 failed).
-   Layout is L3 Stack / Section / Inset; this file only holds what they have no prop for (the wash, text styles, sheet corners). */
+/* V2 order processing + result: Minted's processing → "Order Placed" screens (OrderResultV2.tsx).
+   Layout is L3 Stack / Section; this file holds what they have no prop for: the status glow, text styles, the sheet's
+   corners, and Minted's entrance motion.
+   FLAG (L3 gap): the glow and every timing below are Minted's (no L3 tokens for them). */
 
-/* Whole body: the status wash on top, the details sheet filling the rest down to the dock. */
 .page {
+  position: relative;
+  display: flex;
+  flex-direction: column;
   min-height: 100%;
   box-sizing: border-box;
 }
 
-/* Soft colour wash: the status tint fades into the page surface. */
-.wash {
-  background: linear-gradient(to bottom, var(--wash-tint), var(--l3-surface-default));
+/* Soft status glow (Minted's green / red halo) at the foot of the summary: it rises from behind the sheet's top edge.
+   The anchor is a zero-height point in the flow right above the sheet; the sheet paints over the glow's lower half. */
+.glowAnchor { position: relative; height: 0; }
+/* Bigger (19 Nov) and breathing: it swells and fades in and out, slowly, for as long as the screen is open. */
+.glow {
+  position: absolute;
+  left: calc(-1 * var(--l3-spacing-16));
+  right: calc(-1 * var(--l3-spacing-16));
+  bottom: calc(-1 * var(--l3-size-48));
+  height: calc(var(--l3-size-128) * 2.25);
+  pointer-events: none;
+  transform-origin: 50% 100%;
+  background: radial-gradient(ellipse 75% 80% at 50% 100%, color-mix(in srgb, var(--glow) 34%, transparent), transparent 72%);
+  animation: glowPulse 3.2s ease-in-out infinite;
 }
-.wash[data-status='success'] { --wash-tint: var(--l3-surface-accent-success-light); }
-.wash[data-status='error'] { --wash-tint: var(--l3-surface-accent-error-light); }
+.glow[data-status='success'] { --glow: var(--l3-content-accent-success-default); }
+.glow[data-status='error'] { --glow: var(--l3-content-accent-error-default); }
 
-.side {
-  font: var(--l3-text-label-14);
-  color: var(--l3-content-secondary);
-  margin: 0;
+/* The top bar has no fill (the screen is edge to edge, the OS status bar is see-through too).
+   L3 gap: Actionbar has no transparent option. */
+.clearBar.clearBar { background: transparent; }
+
+/* ---------- text ---------- */
+.lines { position: relative; text-align: center; }
+.side { margin: 0; font: var(--l3-text-label-14); color: var(--l3-content-secondary); }
+.heading { margin: 0; font: var(--l3-text-heading-24); color: var(--l3-content-primary); }
+.line { margin: 0; font: var(--l3-text-description-12); color: var(--l3-content-secondary); }
+.step { margin: 0; font: var(--l3-text-label-14); color: var(--l3-content-accent-success-default); }
+.note { margin: 0; font: var(--l3-text-description-12); color: var(--l3-content-secondary); text-align: center; }
+
+/* The divider under the heading: a subtle hairline in L3's light border (as on cards), 19 Nov. */
+.rule {
+  display: block;
+  width: 60%;
+  height: 1px;
+  background: var(--l3-border-light);
 }
 
-.heading {
-  font: var(--l3-text-heading-24);
-  color: var(--l3-content-primary);
-  text-align: center;
-  margin: 0;
-}
+/* ---------- processing ---------- */
+.centre { flex: 1; padding-inline: var(--l3-spacing-16); }
+.progress { width: var(--l3-size-128); }
+/* The glass ring's bar creeps to 86% over 4.3 s, then fills (Minted's). */
+.progressGlass [style*='width'], .progressGlass * { transition-duration: 4.2s !important; transition-timing-function: cubic-bezier(.3, .6, .3, 1) !important; }
+.progressSteps * { transition-duration: 3.4s !important; transition-timing-function: linear !important; }
+/* A line swapping in (step text, or the processing lines turning into the result's). */
+.swap { animation: fadeUp .35s cubic-bezier(.2, .8, .2, 1) both; }
 
-.line {
-  font: var(--l3-text-description-14);
-  color: var(--l3-content-secondary);
-  text-align: center;
-  margin: 0;
-}
+/* ---------- result ---------- */
+.summary { position: relative; padding: var(--l3-spacing-24) var(--l3-spacing-16); }
+/* Half and half (19 Nov): the summary takes the top half of the page under the top bar, centred in it; the sheet the
+   bottom half (both grow from 0, so they split the space evenly; content taller than its half still pushes). */
+.summary { flex: 1 1 0; display: flex; flex-direction: column; justify-content: center; }
+.sheet { flex: 1 1 0; }
+.badge { width: var(--l3-size-80); height: var(--l3-size-80); }
 
-.small {
-  font: var(--l3-text-description-12);
-  color: var(--l3-content-secondary);
-  text-align: center;
-  margin: 0;
-}
-
-/* The details sheet: rounded top corners only, grows to fill the space above the dock. */
+/* The details sheet: white (surface default), rounded top corners, filling the rest down to the dock; over the glow. */
 .sheet {
-  flex: 1;
+  position: relative;
+  z-index: 1;
+  background: var(--l3-surface-default); /* L3 gap: Section has no surface-default fill */
   border-radius: var(--l3-radius-24) var(--l3-radius-24) 0 0;
 }
 
-/* Processing: centred on an empty page; the bar is as wide as Minted's (a fixed share of the width). */
-.progress {
-  width: 50%;
+/* ---------- entrance (Minted's playOrderPlaced) ----------
+   The summary starts at the middle of the screen (--rise) and rises to its place; the sheet and the dock come up.
+   fresh: the badge pops (60 ms), the lines fade in one by one (420 ms + 120 ms each), the rise at 1.45 s.
+   loader: handed over from the glass ring with everything showing, so the rise starts at once. */
+.page[data-enter] .summary { animation: rise .65s cubic-bezier(.6, 0, .2, 1) both; }
+.page[data-enter] .sheet { animation: sheetUp .6s cubic-bezier(.2, .8, .2, 1) .15s both; }
+.page[data-enter='fresh'] .summary { animation-delay: 1.45s; }
+.page[data-enter='fresh'] .sheet { animation-delay: 1.6s; }
+.page[data-enter='fresh'] .badge { animation: badgePop .5s cubic-bezier(.2, .9, .25, 1.35) 60ms both; }
+.page[data-enter='fresh'] .in { animation: fadeUp .45s ease calc(420ms + var(--i, 0) * 120ms) both; }
+.page[data-enter='loader'] .sheet { animation-name: sheetIn; animation-delay: .1s; }
+/* The glow fades in as the sheet arrives. */
+.page[data-enter] .glowAnchor { animation: fadeIn .6s ease .4s both; }
+.page[data-enter='fresh'] .glowAnchor { animation-delay: 1.8s; }
+
+/* The dock comes up with the sheet (it sits in the phone's footer, outside .page). */
+.dock { animation: sheetUp .6s cubic-bezier(.2, .8, .2, 1) 1.7s both; }
+:global(section):has(.page[data-enter='loader']) .dock { animation-delay: .25s; }
+:global(section):has(.page:not([data-enter])) .dock { animation: none; }
+
+@keyframes rise { from { transform: translateY(var(--rise)); } to { transform: none; } }
+@keyframes sheetUp { from { opacity: 0; transform: translateY(var(--l3-spacing-64)); } to { opacity: 1; transform: none; } }
+@keyframes sheetIn { from { transform: translateY(100%); } to { transform: none; } }
+@keyframes badgePop { 0% { opacity: 0; transform: scale(.6); } 60% { opacity: 1; } 100% { opacity: 1; transform: scale(1); } }
+@keyframes glowPulse { 0%, 100% { opacity: .55; transform: scale(.92); } 50% { opacity: 1; transform: scale(1.06); } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .page *, .dock, .swap { animation: none !important; }
 }
 ```
 
 ### `src/flows/us-stocks/screens/trade/OrderResultV2.tsx`
 
 ```tsx
-// Order result screen, V2: the layout of Minted's order result screens (~/minted, s06 in progress / placed, s16 failed).
-//  · processing (art 'loading'): empty page, Loader, "Buy NVDA" is not known there so the title leads, a thin ProgressBar,
-//    then the description line.
-//  · success / error: back arrow, round status art, "Buy NVDA" line, big heading ("Order Executed"), one description
-//    line, all on a soft success / error wash; under it a rounded sheet with Lemonn's order rows + note; actions in a dock.
-// Content stays Lemonn's (config from orderResults.ts). Minted's "sell automatically" chips and "Similar Assets" are not
-// built: Lemonn has neither.
-// FLAG (L3 gap): the status wash is a local gradient of L3 accent-light surfaces; the preview's status bar only follows
-// data-status-surface='brand', so the bar over the wash keeps the top bar's colour.
-// FLAG: result art (success / error SVGs) is the teammate's, not an L3 pattern.
+// Order processing + result, V2: Minted's design (~/minted prototype: the processing screen whose loader turns into
+// "Order Placed" / "Order Failed", s06 / s16), imported 19 Nov — the user's call: "import the Minted app layout &
+// design, only the content will change as per our requirements" + "it has some loader also, import those also".
+// Content stays Lemonn's (orderResults.ts).
+//
+//  · Processing (T12, OrderProcessingV2): no top bar, no back (19 Nov: the order can't be left half-placed); centred, Minted's loader (flow option "Processing animation",
+//    OrderLoader.tsx) over "Buy NVDA", "Order in progress", a thin progress bar and "It will take less than a minute".
+//    With the glass ring (the default) the screen turns into the result in place: the bar fills, the ring gives way to the
+//    tick badge with a burst, the lines become the result's, then the result screen (T14) takes over — same page, no
+//    slide — its summary rises to the top and the details sheet comes up. The other loaders show "Processing your
+//    order" with rotating steps, then hand over like Minted's: the result screen plays its own entrance.
+//  · Result (T13–T15, H06, H07, OrderResultV2): back arrow — to the page the order started from, skipping the pad and
+//    processing; the badge (tick or alert), the side line, the heading
+//    ("Order Executed"), a fading hairline and one line under it; then a rounded white sheet (no handle, 19 Nov) holding
+//    Lemonn's order rows + note, with a soft status glow rising from behind its top edge; actions in the dock.
+//    Minted's "sell automatically" chips and "Similar Assets" aren't built: Lemonn has neither.
+// FLAG (L3 gap): the status glow, the badge and the entrance choreography are local (Minted's timings); L3 has none.
+// Edge to edge (19 Nov, the user's call): no fill on the top bar or the OS status bar. FLAG (L3 gap): Actionbar has no
+// transparent option — its fill is cleared locally (.clearBar).
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react'
 import { Button } from '@l3/components/Button'
 import { ButtonGroup } from '@l3/components/ButtonGroup'
 import { Actionbar } from '@l3/components/Actionbar'
 import { KeyValueList, KeyValueRow } from '@l3/components/KeyValueList'
-import { Loader } from '@l3/components/Loader'
 import { ProgressBar } from '@l3/components/ProgressBar'
 import { Section } from '@l3/components/Section'
 import { Stack } from '@l3/components/Stack'
-import { Inset } from '@l3/components/Inset'
 import { Phone } from '../../components/Phone'
-import { InlineSvg } from '../../components/InlineSvg'
 import { useUsNav } from '../../nav'
 import { Usd } from '../../../../shared/money'
 import { currentStock } from '../../data'
 import { forCurrentStock } from './format'
+import { tradeIds } from './ids'
+import { OrderLoader, ResultBadge, type LoaderPhase } from './OrderLoader'
+import { orderResults } from './orderResults'
+import { useProcessingAnimation } from './version'
 import type { OrderResultConfig } from './types'
 import styles from './OrderResultV2.module.css'
 
-/** "Buy NVDA" / "Sell NVDA", read from the config's label or title; undefined when the screen has no side (processing). */
+/** "Buy NVDA" / "Sell NVDA", read from the config's label or title; undefined when the screen has no side. */
 function sideLine(config: OrderResultConfig): string | undefined {
   const side = /\b(buy|sell)\b/i.exec(`${config.label} ${config.title}`)?.[1]
   if (!side) return undefined
@@ -39422,59 +39978,188 @@ function sideLine(config: OrderResultConfig): string | undefined {
 /** "Yay! Buy Order Executed" → "Order Executed"; "Oops! Sell Order not Placed" → "Order not Placed" (the side is in the line above). */
 const headingOf = (title: string) => forCurrentStock(title).replace(/^(Yay!|Oops!)\s*/, '').replace(/^(Buy|Sell)\s+/i, '')
 
-export function OrderResultV2({ config }: { config: OrderResultConfig }) {
-  const { back, go } = useUsNav()
-  const exit = () => back(config.back)
-  const side = sideLine(config)
+/** The order's own screens (pads, processing, results) — what Back on a result skips over. */
+const orderScreens = new Set<string>(Object.entries(tradeIds).filter(([k]) => !k.startsWith('stock')).map(([, f]) => f))
+const isOrderScreen = (figma: string) => orderScreens.has(figma)
 
-  if (config.art === 'loading') {
-    return (
-      <Phone label={forCurrentStock(config.label)} gesture="none">
-        <Stack className={styles.page} align="center" justify="center" gap="24" role="status">
-          <Loader size="lg" label={null} />
-          <Stack align="center" gap="12">
-            {side && <p className={styles.side}>{side}</p>}
-            <h1 className={styles.heading}>{forCurrentStock(config.title)}</h1>
-            <ProgressBar className={styles.progress} value={40} size="sm" label={forCurrentStock(config.title)} />
-            <p className={styles.small}>{forCurrentStock(config.description)}</p>
+/** Where processing goes: the buy order executed (T14). */
+const NEXT = tradeIds.T14
+/** The non-glass loaders' rotating step lines (Minted's). */
+const STEPS = ['Placing your order', 'Confirming with the exchange', 'Almost done']
+
+// Glass ring timeline (Minted's, ms from the start): the bar fills, the ring settles, the badge takes its place and the
+// lines turn into the result's, then the result screen takes over.
+const GLASS = { fill: 4300, settle: 4850, done: 5100, hand: 5900 }
+// The other loaders: steps every 0.9 s, the radar closes into a tick at 3.05 s, the result screen at 3.6 s.
+const OTHER = { step: 900, done: 3050, hand: 3600 }
+
+/** Set when the glass ring hands over: the result screen starts with its summary where the loader's was. */
+let fromLoader = false
+
+/** Prototype timers, cleared on unmount; nothing runs when the screen is only drawn behind another one. */
+function useTimeline(steps: [number, () => void][], active: boolean) {
+  const ref = useRef(steps)
+  ref.current = steps
+  useEffect(() => {
+    if (!active) return
+    const timers = ref.current.map(([ms], i) => setTimeout(() => ref.current[i][1](), ms))
+    return () => timers.forEach(clearTimeout)
+  }, [active])
+}
+
+export function OrderProcessingV2({ config, backdrop }: { config: OrderResultConfig; backdrop?: boolean }) {
+  const { go } = useUsNav()
+  const variant = useProcessingAnimation()
+  const glass = variant === 'glass'
+  const stock = currentStock()
+  const result = orderResults[NEXT]
+  const [phase, setPhase] = useState<LoaderPhase>('run')
+  const [bar, setBar] = useState(0)
+  const [step, setStep] = useState(0)
+  const side = `Buy ${stock.sym}`
+  const amount = result.rows.find(([k]) => k === 'Order Value')?.[1] ?? ''
+
+  useTimeline(glass ? [
+    [60, () => setBar(86)],
+    [GLASS.fill, () => setBar(100)],
+    [GLASS.settle, () => setPhase('settle')],
+    [GLASS.done, () => setPhase('done')],
+    [GLASS.hand, () => { fromLoader = true; go(NEXT) }],
+  ] : [
+    [60, () => setBar(100)],
+    [OTHER.step, () => setStep(1)],
+    [OTHER.step * 2, () => setStep(2)],
+    [OTHER.done, () => { if (variant === 'radar') setPhase('done') }],
+    [OTHER.hand, () => go(NEXT)],
+  ], !backdrop)
+
+  const done = phase === 'done'
+  return (
+    <Phone
+      label={forCurrentStock(config.label)}
+      edgeToEdge
+      gesture="none"
+    >
+      <div className={styles.page}>
+        <Stack className={styles.centre} align="center" justify="center" role="status">
+          <Stack align="center" gap="16">
+            <OrderLoader variant={variant} phase={phase} outcome="success" symbol={stock.sym} side="Buy" amount={amount} />
+            {glass ? (
+              <Stack align="center" gap="08" className={styles.lines}>
+                <p className={styles.side}>{side}</p>
+                <h1 className={[styles.heading, done && styles.swap].filter(Boolean).join(' ')} key={done ? 'r' : 'p'}>
+                  {done ? headingOf(result.title) : forCurrentStock(config.title)}
+                </h1>
+                {done ? (
+                  <span className={[styles.rule, styles.swap].join(' ')} aria-hidden="true" />
+                ) : (
+                  <ProgressBar
+                    className={[styles.progress, styles.progressGlass].join(' ')}
+                    value={bar}
+                    size="sm"
+                    status={phase === 'run' ? 'default' : 'success'}
+                    label={forCurrentStock(config.title)}
+                  />
+                )}
+                <p className={[styles.line, done && styles.swap].filter(Boolean).join(' ')} key={done ? 'rl' : 'pl'}>
+                  {done ? forCurrentStock(result.description) : forCurrentStock(config.description)}
+                </p>
+              </Stack>
+            ) : (
+              <Stack align="center" gap="08" className={styles.lines}>
+                <h1 className={styles.heading}>Processing your order</h1>
+                <p className={styles.side}>{side}{amount && ` · ${amount}`}</p>
+                <p className={[styles.step, styles.swap].join(' ')} key={step}>{STEPS[step]}</p>
+                <ProgressBar className={[styles.progress, styles.progressSteps].join(' ')} value={bar} size="sm" label="Processing your order" />
+              </Stack>
+            )}
           </Stack>
         </Stack>
-      </Phone>
-    )
-  }
+      </div>
+    </Phone>
+  )
+}
+
+export function OrderResultV2({ config }: { config: OrderResultConfig }) {
+  const { leave, go } = useUsNav()
+  // Back leaves the whole order (pad, processing, result): to the page the order was started from (the stock or ETF
+  // page), or the stock page when the result was opened straight from the list (19 Nov, the user's call).
+  const exit = () => leave(isOrderScreen, config.back)
+  const side = sideLine(config)
+  const outcome = config.art === 'error' ? 'error' : 'success'
+
+  // Entrance (Minted's "Order Placed"): the summary starts at the middle of the screen and rises to its place while the
+  // sheet and the dock come up. From the glass ring it's already showing; otherwise the badge pops in and the lines fade
+  // in first.
+  const [enter] = useState<'loader' | 'fresh'>(() => (fromLoader ? 'loader' : 'fresh'))
+  useEffect(() => { fromLoader = false }, [])
+  const [entering, setEntering] = useState(true)
+  const [rise, setRise] = useState<number | null>(null)
+  // Measured when the summary is attached (the Phone mounts its body after the screen's first commit).
+  const measure = useCallback((summary: HTMLDivElement | null) => {
+    const page = summary?.parentElement
+    const screen = page?.closest('[data-part="page"]')
+    if (!summary || !page || !screen) return
+    // The middle of the area under the top bar, where the processing screen centres its summary.
+    const target = (page.getBoundingClientRect().top + screen.getBoundingClientRect().bottom) / 2
+    const box = summary.getBoundingClientRect()
+    setRise(Math.max(0, Math.round(target - (box.top + box.height / 2))))
+  }, [])
+  useEffect(() => {
+    const timer = setTimeout(() => setEntering(false), enter === 'loader' ? 1400 : 2900)
+    return () => clearTimeout(timer)
+  }, [enter])
 
   const footer = config.actions?.length ? (
-    <ButtonGroup direction="horizontal" aria-label="Order result">
-      {config.actions.map((action) => (
-        <Button key={action.label} variant={action.variant} size="lg" onClick={action.to ? () => go(action.to!) : action.exit ? exit : undefined}>
-          {action.label}
-        </Button>
-      ))}
-    </ButtonGroup>
+    <div className={styles.dock}>
+      <ButtonGroup direction="horizontal" aria-label="Order result">
+        {config.actions.map((action) => (
+          <Button key={action.label} variant={action.variant} size="lg" onClick={action.to ? () => go(action.to!) : action.exit ? exit : undefined}>
+            {action.label}
+          </Button>
+        ))}
+      </ButtonGroup>
+    </div>
   ) : undefined
 
   return (
-    <Phone label={forCurrentStock(config.label)} header={<Actionbar onBack={exit} />} footer={footer} gesture="none">
-      <Stack className={styles.page} gap="00">
-        <Inset paddingBlock="24" paddingInline="16" className={styles.wash} data-status={config.art}>
-          <Stack align="center" gap="12">
-            <InlineSvg src={`assets/trade/${config.art}.svg`} w={72} />
-            <Stack align="center" gap="08">
-              {side && <p className={styles.side}>{side}</p>}
-              <h1 className={styles.heading}>{headingOf(config.title)}</h1>
-              <p className={styles.line}>{forCurrentStock(config.description)}</p>
+    <Phone
+      label={forCurrentStock(config.label)}
+      header={<Actionbar className={styles.clearBar} onBack={exit} />}
+      edgeToEdge
+      footer={footer}
+      gesture="none"
+    >
+      <div
+        className={styles.page}
+        data-status={outcome}
+        data-enter={entering && rise !== null ? enter : undefined}
+        style={{ '--rise': `${rise ?? 0}px` } as CSSProperties}
+      >
+        <div ref={measure} className={styles.summary}>
+          <Stack align="center" gap="16">
+            <ResultBadge outcome={outcome} className={styles.badge} />
+            <Stack align="center" gap="08" className={styles.lines}>
+              {side && <p className={[styles.side, styles.in].join(' ')} style={{ '--i': 0 } as CSSProperties}>{side}</p>}
+              <h1 className={[styles.heading, styles.in].join(' ')} style={{ '--i': 1 } as CSSProperties}>{headingOf(config.title)}</h1>
+              <span className={[styles.rule, styles.in].join(' ')} style={{ '--i': 2 } as CSSProperties} aria-hidden="true" />
+              <p className={[styles.line, styles.in].join(' ')} style={{ '--i': 3 } as CSSProperties}>{forCurrentStock(config.description)}</p>
             </Stack>
           </Stack>
-        </Inset>
-        <Section className={styles.sheet} surface="secondary" padding="16" gap="16">
+        </div>
+        {/* The status glow sits at the foot of the summary, half behind the sheet's top edge. */}
+        <span className={styles.glowAnchor} aria-hidden="true">
+          <span className={styles.glow} data-status={outcome} />
+        </span>
+        <Section className={styles.sheet} padding="16" gap="16">
           <KeyValueList variant="card" size="md" aria-label="Order details">
             {config.rows.map(([label, value]) => (
               <KeyValueRow key={label} label={label} value={<Usd text={value} align="end" />} />
             ))}
           </KeyValueList>
-          {config.note && <p className={styles.small}>{forCurrentStock(config.note)}</p>}
+          {config.note && <p className={styles.note}>{forCurrentStock(config.note)}</p>}
         </Section>
-      </Stack>
+      </div>
     </Phone>
   )
 }
@@ -40627,7 +41312,7 @@ const BUY_DETAILS = '9001:46'
 const SELL_DETAILS = '9001:44'
 
 export const orderResults: Record<string, OrderResultConfig> = {
-  [ids.T12]: { label: 'Order processing', art: 'loading', title: 'We are working on it', description: 'This may take a few seconds', rows: orderRows, back: ids.T01 },
+  [ids.T12]: { label: 'Order processing', art: 'loading', title: 'Order in progress', description: 'It will take less than a minute', rows: orderRows, back: ids.T01 },
   [ids.T13]: {
     label: 'Buy order created',
     art: 'success',
@@ -40772,6 +41457,16 @@ export const useOrderPadVersion = (): OrderPadVersion => DEFAULT_ORDER_PAD_VERSI
 export type PriceCards = 'merged' | 'separate'
 export const usePriceCards = (): PriceCards =>
   useFlowOption('us-stocks', 'priceCards', 'merged') === 'separate' ? 'separate' : 'merged'
+
+// The V2 processing screen's loader (flow option "Processing animation", group Trade), imported from Minted 19 Nov
+// (OrderLoader.tsx): glass · the glass ring that turns into the tick (the default); radar · pulses round the logo that
+// close into a tick; orbit · US stocks circling the one bought; candles · candles rising; ticker · tapes behind an order card.
+export type ProcessingAnimation = 'glass' | 'radar' | 'orbit' | 'candles' | 'ticker'
+const PROCESSING_ANIMATIONS: ProcessingAnimation[] = ['glass', 'radar', 'orbit', 'candles', 'ticker']
+export const useProcessingAnimation = (): ProcessingAnimation => {
+  const value = useFlowOption('us-stocks', 'procAnim', 'glass') as ProcessingAnimation
+  return PROCESSING_ANIMATIONS.includes(value) ? value : 'glass'
+}
 ```
 
 ### `src/flows/us-stocks/screens/types.ts`
@@ -43297,134 +43992,6 @@ export function WithdrawalRequestsSheet() {
 ```
 
 ## Source — shared app parts it uses
-
-### `src/shared/assets/flags/china.svg`
-
-```tsx
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-  <!-- China, round. Flag artwork keeps its own colours. -->
-  <defs><clipPath id="c"><circle cx="12" cy="12" r="12"/></clipPath></defs>
-  <g clip-path="url(#c)">
-    <rect width="24" height="24" fill="#DE2910"/>
-    <g fill="#FFDE00">
-      <polygon points="7.00,3.90 7.81,6.39 10.42,6.39 8.31,7.92 9.12,10.41 7.00,8.88 4.88,10.41 5.69,7.92 3.58,6.39 6.19,6.39"/>
-      <polygon points="12.88,2.17 12.85,2.97 13.60,3.24 12.83,3.46 12.80,4.26 12.36,3.59 11.59,3.82 12.08,3.19 11.63,2.52 12.38,2.80"/>
-      <polygon points="15.51,4.76 15.21,5.50 15.82,6.01 15.02,5.96 14.72,6.70 14.53,5.92 13.73,5.87 14.41,5.44 14.22,4.67 14.83,5.18"/>
-      <polygon points="14.99,7.72 15.10,8.51 15.89,8.65 15.17,9.00 15.28,9.79 14.73,9.21 14.01,9.56 14.38,8.86 13.83,8.28 14.62,8.42"/>
-      <polygon points="13.05,10.25 12.88,11.03 13.58,11.43 12.78,11.51 12.61,12.29 12.29,11.56 11.50,11.65 12.09,11.11 11.76,10.38 12.46,10.78"/>
-    </g>
-  </g>
-  <circle cx="12" cy="12" r="11.75" fill="none" stroke="#000000" stroke-opacity="0.12" stroke-width="0.5"/>
-</svg>
-```
-
-### `src/shared/assets/flags/europe.svg`
-
-```tsx
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-  <!-- European Union, round. Flag artwork keeps its own colours. -->
-  <defs><clipPath id="c"><circle cx="12" cy="12" r="12"/></clipPath></defs>
-  <g clip-path="url(#c)">
-    <rect width="24" height="24" fill="#003399"/>
-    <g fill="#FFCC00">
-      <polygon points="12.00,3.80 12.27,4.63 13.14,4.63 12.44,5.14 12.71,5.97 12.00,5.46 11.29,5.97 11.56,5.14 10.86,4.63 11.73,4.63"/>
-      <polygon points="15.50,4.74 15.77,5.57 16.64,5.57 15.94,6.08 16.21,6.91 15.50,6.40 14.79,6.91 15.06,6.08 14.36,5.57 15.23,5.57"/>
-      <polygon points="18.06,7.30 18.33,8.13 19.20,8.13 18.50,8.64 18.77,9.47 18.06,8.96 17.36,9.47 17.63,8.64 16.92,8.13 17.79,8.13"/>
-      <polygon points="19.00,10.80 19.27,11.63 20.14,11.63 19.44,12.14 19.71,12.97 19.00,12.46 18.29,12.97 18.56,12.14 17.86,11.63 18.73,11.63"/>
-      <polygon points="18.06,14.30 18.33,15.13 19.20,15.13 18.50,15.64 18.77,16.47 18.06,15.96 17.36,16.47 17.63,15.64 16.92,15.13 17.79,15.13"/>
-      <polygon points="15.50,16.86 15.77,17.69 16.64,17.69 15.94,18.20 16.21,19.03 15.50,18.52 14.79,19.03 15.06,18.20 14.36,17.69 15.23,17.69"/>
-      <polygon points="12.00,17.80 12.27,18.63 13.14,18.63 12.44,19.14 12.71,19.97 12.00,19.46 11.29,19.97 11.56,19.14 10.86,18.63 11.73,18.63"/>
-      <polygon points="8.50,16.86 8.77,17.69 9.64,17.69 8.94,18.20 9.21,19.03 8.50,18.52 7.79,19.03 8.06,18.20 7.36,17.69 8.23,17.69"/>
-      <polygon points="5.94,14.30 6.21,15.13 7.08,15.13 6.37,15.64 6.64,16.47 5.94,15.96 5.23,16.47 5.50,15.64 4.80,15.13 5.67,15.13"/>
-      <polygon points="5.00,10.80 5.27,11.63 6.14,11.63 5.44,12.14 5.71,12.97 5.00,12.46 4.29,12.97 4.56,12.14 3.86,11.63 4.73,11.63"/>
-      <polygon points="5.94,7.30 6.21,8.13 7.08,8.13 6.37,8.64 6.64,9.47 5.94,8.96 5.23,9.47 5.50,8.64 4.80,8.13 5.67,8.13"/>
-      <polygon points="8.50,4.74 8.77,5.57 9.64,5.57 8.94,6.08 9.21,6.91 8.50,6.40 7.79,6.91 8.06,6.08 7.36,5.57 8.23,5.57"/>
-    </g>
-  </g>
-  <circle cx="12" cy="12" r="11.75" fill="none" stroke="#000000" stroke-opacity="0.12" stroke-width="0.5"/>
-</svg>
-```
-
-### `src/shared/assets/flags/india.svg`
-
-```tsx
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-  <!-- India, round: saffron / white / green with the navy Ashoka Chakra. Flag artwork keeps its own colours. -->
-  <defs><clipPath id="c"><circle cx="12" cy="12" r="12"/></clipPath></defs>
-  <g clip-path="url(#c)">
-    <rect width="24" height="8" fill="#FF9933"/>
-    <rect y="8" width="24" height="8" fill="#FFFFFF"/>
-    <rect y="16" width="24" height="8" fill="#138808"/>
-    <circle cx="12" cy="12" r="3" fill="none" stroke="#000080" stroke-width="0.8"/>
-    <circle cx="12" cy="12" r="0.8" fill="#000080"/>
-    <g stroke="#000080" stroke-width="0.4">
-      <path d="M12 9v6M9 12h6M9.88 9.88l4.24 4.24M14.12 9.88l-4.24 4.24"/>
-    </g>
-  </g>
-  <circle cx="12" cy="12" r="11.75" fill="none" stroke="#000000" stroke-opacity="0.12" stroke-width="0.5"/>
-</svg>
-```
-
-### `src/shared/assets/flags/japan.svg`
-
-```tsx
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-  <!-- Japan, round. Flag artwork keeps its own colours. -->
-  <defs><clipPath id="c"><circle cx="12" cy="12" r="12"/></clipPath></defs>
-  <g clip-path="url(#c)">
-    <rect width="24" height="24" fill="#FFFFFF"/>
-    <circle cx="12" cy="12" r="5.6" fill="#BC002D"/>
-  </g>
-  <circle cx="12" cy="12" r="11.75" fill="none" stroke="#000000" stroke-opacity="0.12" stroke-width="0.5"/>
-</svg>
-```
-
-### `src/shared/assets/flags/korea.svg`
-
-```tsx
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-  <!-- South Korea, round. Flag artwork keeps its own colours. -->
-  <defs><clipPath id="c"><circle cx="12" cy="12" r="12"/></clipPath></defs>
-  <g clip-path="url(#c)">
-    <rect width="24" height="24" fill="#FFFFFF"/>
-    <circle cx="12" cy="12" r="5" fill="#0047A0"/>
-    <path d="M7 12a5 5 0 0 1 10 0a2.5 2.5 0 0 1-5 0a2.5 2.5 0 0 0-5 0z" fill="#CD2E3A"/>
-    <g stroke="#000000" stroke-width="0.9" stroke-linecap="butt">
-      <path d="M3.6 6.2l2.4-1.4M4.3 7.6l2.4-1.4M5 9l2.4-1.4" transform="translate(-0.4 0.2)"/>
-      <path d="M20.4 6.2l-2.4-1.4M19.7 7.6l-2.4-1.4M19 9l-2.4-1.4" transform="translate(0.4 0.2)"/>
-      <path d="M3.6 17.8l2.4 1.4M4.3 16.4l2.4 1.4M5 15l2.4 1.4" transform="translate(-0.4 -0.2)"/>
-      <path d="M20.4 17.8l-2.4 1.4M19.7 16.4l-2.4 1.4M19 15l-2.4 1.4" transform="translate(0.4 -0.2)"/>
-    </g>
-  </g>
-  <circle cx="12" cy="12" r="11.75" fill="none" stroke="#000000" stroke-opacity="0.12" stroke-width="0.5"/>
-</svg>
-```
-
-### `src/shared/assets/flags/us.svg`
-
-```tsx
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-  <!-- United States, round: red and white stripes with the blue canton. Flag artwork keeps its own colours. -->
-  <defs><clipPath id="c"><circle cx="12" cy="12" r="12"/></clipPath></defs>
-  <g clip-path="url(#c)">
-    <rect width="24" height="24" fill="#FFFFFF"/>
-    <g fill="#B22234">
-      <rect y="0" width="24" height="2.4"/>
-      <rect y="4.8" width="24" height="2.4"/>
-      <rect y="9.6" width="24" height="2.4"/>
-      <rect y="14.4" width="24" height="2.4"/>
-      <rect y="19.2" width="24" height="2.4"/>
-    </g>
-    <rect width="12" height="12" fill="#3C3B6E"/>
-    <g fill="#FFFFFF">
-      <circle cx="3.5" cy="3" r="0.8"/><circle cx="7" cy="3" r="0.8"/><circle cx="10.5" cy="3" r="0.8"/>
-      <circle cx="5.25" cy="6" r="0.8"/><circle cx="8.75" cy="6" r="0.8"/>
-      <circle cx="3.5" cy="9" r="0.8"/><circle cx="7" cy="9" r="0.8"/><circle cx="10.5" cy="9" r="0.8"/>
-    </g>
-  </g>
-  <circle cx="12" cy="12" r="11.75" fill="none" stroke="#000000" stroke-opacity="0.12" stroke-width="0.5"/>
-</svg>
-```
 
 ### `src/shared/copy.ts`
 
@@ -68905,35 +69472,44 @@ export function DepositProgressSheet({ deposit, eta, onClose, container }: Depos
 ### `src/shared/ui/Flag.module.css`
 
 ```css
-.flag {
-  display: block;
+/* A flag emoji at icon size: 16 tall, as wide as the glyph. Doubled so it beats an icon slot's square (L3 Tabs /
+   Button: `.icon > span` is 16 × 16), and that slot widens to it. L3 gap: icon slots are square only. */
+.flag.flag {
+  display: inline-flex;
   flex: none;
-  width: var(--l3-icon-size-16);
+  align-items: center;
+  justify-content: center;
+  width: auto;
   height: var(--l3-icon-size-16);
+  font-size: var(--l3-icon-size-16);
+  line-height: 1;
+  /* Full strength in an inactive tab too (the user's call): an emoji takes its text colour's alpha, and L3's inactive
+     tab text is 60%. */
+  color: var(--l3-content-primary);
+}
+
+[class]:has(> .flag.flag) {
+  width: auto;
 }
 ```
 
 ### `src/shared/ui/Flag.tsx`
 
 ```tsx
-import flagChina from '../assets/flags/china.svg'
-import flagEurope from '../assets/flags/europe.svg'
-import flagIndia from '../assets/flags/india.svg'
-import flagJapan from '../assets/flags/japan.svg'
-import flagKorea from '../assets/flags/korea.svg'
-import flagUs from '../assets/flags/us.svg'
 import styles from './Flag.module.css'
 
 export type FlagCode = 'us' | 'in' | 'cn' | 'jp' | 'eu' | 'kr'
 
-const files: Record<FlagCode, string> = { us: flagUs, in: flagIndia, cn: flagChina, jp: flagJapan, eu: flagEurope, kr: flagKorea }
+/** The flag emoji themselves (the user's call, 19 Nov): the device's own 🇮🇳 / 🇺🇸, as in text. */
+const emoji: Record<FlagCode, string> = { us: '🇺🇸', in: '🇮🇳', cn: '🇨🇳', jp: '🇯🇵', eu: '🇪🇺', kr: '🇰🇷' }
 
 /**
- * A round flag, 16 like the icons in small buttons and tabs (use as an `iconLeft`).
- * L3 gap: no flag icons in L3 — round flag SVGs of our own (shared/assets/flags), not emoji, so they look the same and
- * sit centred on every device.
+ * A country's flag emoji, 16 like the icons in small buttons and tabs (use as an `iconLeft`).
+ * L3 gap: no flag icons in L3, so the system emoji is used.
  */
-export const Flag = ({ code }: { code: FlagCode }) => <img className={styles.flag} src={files[code]} alt="" aria-hidden="true" />
+export const Flag = ({ code }: { code: FlagCode }) => (
+  <span className={styles.flag} aria-hidden="true">{emoji[code]}</span>
+)
 ```
 
 ### `src/shared/ui/Keyboard.module.css`

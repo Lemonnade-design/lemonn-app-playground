@@ -259,6 +259,8 @@
     "src/flows/us-stocks/screens/trade/LeverageCard.tsx",
     "src/flows/us-stocks/screens/trade/LeverageSheet.module.css",
     "src/flows/us-stocks/screens/trade/LeverageSheet.tsx",
+    "src/flows/us-stocks/screens/trade/OrderLoader.module.css",
+    "src/flows/us-stocks/screens/trade/OrderLoader.tsx",
     "src/flows/us-stocks/screens/trade/OrderPad.module.css",
     "src/flows/us-stocks/screens/trade/OrderPad.tsx",
     "src/flows/us-stocks/screens/trade/OrderPadV2.module.css",
@@ -304,12 +306,6 @@
     "src/flows/us-stocks/screens/wallet/sheets/WithdrawalRequestsSheet.tsx"
   ],
   "shared": [
-    "src/shared/assets/flags/china.svg",
-    "src/shared/assets/flags/europe.svg",
-    "src/shared/assets/flags/india.svg",
-    "src/shared/assets/flags/japan.svg",
-    "src/shared/assets/flags/korea.svg",
-    "src/shared/assets/flags/us.svg",
     "src/shared/copy.ts",
     "src/shared/data/assets/idfcfirstb.png",
     "src/shared/data/companies.ts",

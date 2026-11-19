@@ -148,12 +148,6 @@
     "src/flows/market/sheets/FilterSheet.tsx"
   ],
   "shared": [
-    "src/shared/assets/flags/china.svg",
-    "src/shared/assets/flags/europe.svg",
-    "src/shared/assets/flags/india.svg",
-    "src/shared/assets/flags/japan.svg",
-    "src/shared/assets/flags/korea.svg",
-    "src/shared/assets/flags/us.svg",
     "src/shared/assets/logos/asahiindia.png",
     "src/shared/assets/logos/crisil.png",
     "src/shared/assets/logos/hoec.png",
