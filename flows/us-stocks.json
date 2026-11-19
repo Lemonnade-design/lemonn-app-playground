@@ -268,6 +268,8 @@
     "src/flows/us-stocks/screens/trade/OrderResult.tsx",
     "src/flows/us-stocks/screens/trade/OrderResultV2.module.css",
     "src/flows/us-stocks/screens/trade/OrderResultV2.tsx",
+    "src/flows/us-stocks/screens/trade/Tpsl.module.css",
+    "src/flows/us-stocks/screens/trade/Tpsl.tsx",
     "src/flows/us-stocks/screens/trade/format.ts",
     "src/flows/us-stocks/screens/trade/ids.ts",
     "src/flows/us-stocks/screens/trade/index.tsx",

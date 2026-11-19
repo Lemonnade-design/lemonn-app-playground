@@ -16927,12 +16927,16 @@ export function Intro({ title, description, art, align = 'start', children }: {
 .key:active {
   transform: scale(var(--l3-motion-scale-press-default));
 }
+
+
+/* KeypadSlide: the wrapper's height is animated; the keypad stays pinned to its top and is clipped. */
+.slide { overflow: hidden; flex: none; }
 ```
 
 ### `src/shared/ui/Keyboard.tsx`
 
 ```tsx
-import { useEffect, useRef, type PointerEvent } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState, type PointerEvent, type ReactNode } from 'react'
 import { Icon } from '@l3/components/Icon'
 import { msBackspace } from '@l3/icons/material'
 import styles from './Keyboard.module.css'
@@ -16991,6 +16995,50 @@ export function useKeypadFocus(value: string, length: number, enabled: boolean) 
     boxes?.[Math.min(value.length, length - 1)]?.focus({ preventScroll: true })
   }, [value, length, enabled])
   return ref
+}
+
+/**
+ * The keypad sliding in and out, like the phone's own keyboard: up from the bottom when `open` turns on (260 ms,
+ * ease-out), down to the bottom when it turns off (200 ms, ease-in), then gone. The wrapper's height runs between 0 and
+ * the keypad's with the keypad pinned to its top, so what sits above it (a dock, a sheet) moves with it. A reopen
+ * mid-close turns around from where it is; reduced motion skips the slide.
+ */
+export function KeypadSlide({ open, children }: { open: boolean; children: ReactNode }) {
+  const [mounted, setMounted] = useState(open)
+  const openRef = useRef(open)
+  openRef.current = open
+  const wrap = useRef<HTMLDivElement>(null)
+  const anim = useRef<Animation | null>(null)
+  const first = useRef(true)
+  if (open && !mounted) setMounted(true)
+  useLayoutEffect(() => {
+    if (first.current) { first.current = false; return }
+    const el = wrap.current
+    const midway = anim.current
+    if (!el || matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      midway?.cancel()
+      anim.current = null
+      if (!open) setMounted(false)
+      return
+    }
+    const from = open && !midway ? 0 : el.getBoundingClientRect().height
+    midway?.cancel()
+    const full = el.getBoundingClientRect().height
+    const run = el.animate(
+      [{ height: `${from}px` }, { height: `${open ? full : 0}px` }],
+      open
+        ? { duration: 260, easing: 'cubic-bezier(0.2, 0, 0, 1)' }
+        : { duration: 200, easing: 'cubic-bezier(0.4, 0, 1, 1)', fill: 'forwards' },
+    )
+    anim.current = run
+    run.finished.then(() => {
+      if (anim.current !== run) return
+      anim.current = null
+      if (!openRef.current) setMounted(false)
+    }, () => {})
+  }, [open])
+  if (!mounted) return null
+  return <div ref={wrap} className={styles.slide} inert={!open}>{children}</div>
 }
 ```
 
