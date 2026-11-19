@@ -433,6 +433,9 @@ lower on the page is scrolled into view first). `components/MarketSwitchGuide.ts
   16 / 24 icon or an Avatar only — event rows are plain buttons laid out with Stack.
 
 ### Changelog
+- 2026-11-19 — V19 index strip: once it docks under the sticky tabs it is white (was the strip's blue), turning from blue to white with its hairline over 400 ms (motion long, standard easing; none with reduced motion) instead of swapping in one frame. IN shortcuts card: 12 either side of the row line (the tiles keep 18 at the card's top and bottom); the line is a 1px border-light border, like the column lines.
+- 2026-11-19 — Stock page (Overview): the pill tabs of Shareholding Pattern (quarters) and Financials (Revenue · Profit · Networth) moved out of their grey cards to sit with the section header, between the title and the card.
+- 2026-11-19 — Product row (V19 only, every state; V17 and V18 keep it in the hero): out of the hero. IN tab: the products (Equity F&O, Commodity, Mutual Funds, Smart Invest) joined the shortcuts in one card (`components/InAllShortcuts.tsx`), two rows of four: products with icons (navbar F&O and Mutual Fund glyphs, the commodities glyph, Material autorenew for Smart Invest) over Trade Ideas · IPO · Watchlist · Referral, a hairline between the rows inset 12 from the card's sides. US tab: the row (Boosted ETFs, Themes, Fractional) is hidden, so the hero is just the holdings (money on the way: the transfer card only).
 - 2026-11-18 — The floating Homepage version switch (V19 / V18 …, phone app mode) shows only on the Home screens (IND and US tab, every state), not on other pages.
 
 - 2026-11-18 — V19 scroll: the IN / US tabs sit flush on the sticky block (the 12 under them showed as a white strip). The index marquee now docks under the tabs once it scrolls up to them — it stops right where it is, so it reads as the same strip coming up out of the middle — rides with the header as the top bar hides and returns, and lets go on the way back down. The hairline moves under the strip.
@@ -21005,6 +21008,32 @@ export function HeroButtons({ buy, add }: HeroButtonsProps) {
     animation: none;
   }
 }
+
+/* IND's one shortcuts card (19 Nov): the products row over the shortcuts row, a hairline between them that floats
+   12 short of the card's sides, as the column lines do of its top and bottom. */
+.shortcutsRowDivider {
+  margin: 0 var(--l3-spacing-12);
+  border: 0;
+  border-top: 1px solid var(--l3-border-light); /* 1px divider: a border like the column lines, so both draw the same */
+}
+/* A product's 24 icon box: the navbar glyphs (MaskIcon) and the Material icon fill it, in the row's green. */
+.productGlyph {
+  display: grid;
+  place-items: center;
+  width: var(--l3-icon-size-24);
+  height: var(--l3-icon-size-24);
+}
+.productGlyph > * {
+  width: 100%;
+  height: 100%;
+}
+/* The two rows sit closer (the user's call, 19 Nov): 12 either side of the row line instead of the tiles' 18. */
+.shortcutsPanel > :first-child .shortcutPlain {
+  padding-bottom: var(--l3-spacing-12);
+}
+.shortcutsRowDivider + * .shortcutPlain {
+  padding-top: var(--l3-spacing-12);
+}
 ```
 
 ### `src/flows/stocks/components/HomeSwitcher.module.css`
@@ -21635,6 +21664,82 @@ export function Disclosure() {
         {t(open ? 'disclosure.readLess' : 'disclosure.readMore')}
       </button>
     </Section>
+  )
+}
+```
+
+### `src/flows/stocks/components/InAllShortcuts.tsx`
+
+```tsx
+// The IND tab's one shortcuts card (19 Nov, the user's call): the product cards that sat above it (Equity F&O ·
+// Commodity · Mutual Funds · Smart Invest) became its first row, with icons, over the old row (Trade Ideas · IPO ·
+// Watchlist · Referral). Two rows of four in the V2 shortcuts card: hairlines between the columns, and one between the rows,
+// 12 short of the card's sides like the column lines are of its top and bottom.
+// Product icons as in InShortcutsF1: the navbar's F&O and Mutual Fund glyphs and the commodities glyph, solid, in the shortcuts' green;
+// Smart Invest (auto buy / sell) is Material "autorenew". The second row keeps its own two-tone art.
+import type { ReactNode } from 'react'
+import { Badge } from '@l3/components/Badge'
+import { fno as fnoGlyph, mutualFund as mutualFundGlyph } from '@l3/components/BottomNavbar/glyphs'
+import { Card } from '@l3/components/Card'
+import { Grid } from '@l3/components/Grid'
+import { Icon } from '@l3/components/Icon'
+import { Inset } from '@l3/components/Inset'
+import { MaskIcon } from '@l3/components/MaskIcon'
+import { Stack } from '@l3/components/Stack'
+import { msAutorenew } from '@l3/icons/material'
+import { productsF1, shortcuts } from '../data'
+import { t } from '../copy'
+import commoditiesGlyph from '../assets/in/commodities.svg'
+import { ShortcutArt } from './ShortcutArt'
+import styles from './Home.module.css'
+
+/** A navbar glyph at full strength (its 40% / 60% parts made solid), as in InShortcutsF1. */
+const solid = (glyph: string) => glyph.replace(/fill-opacity='0\.\d+'/g, '')
+
+const productIcons: Record<string, ReactNode> = {
+  fno: <MaskIcon src={solid(fnoGlyph)} />,
+  commodities: <MaskIcon src={commoditiesGlyph} />,
+  'mutual-funds': <MaskIcon src={solid(mutualFundGlyph)} />,
+  'smart-invest': <Icon icon={msAutorenew} size={24} />,
+}
+
+type Tile = { id: string; label: string; icon: ReactNode }
+
+function Row({ tiles, onOpen }: { tiles: Tile[]; onOpen?: (id: string) => void }) {
+  return (
+    <Grid columns={4} gap="00">
+      {tiles.map((tile) => (
+        <Card key={tile.id} variant="flat" padding="none" className={styles.shortcutCard} onClick={() => onOpen?.(tile.id)}>
+          <span className={`${styles.shortcut} ${styles.shortcutPlain}`}>
+            <span className={styles.shortcutIcon}>{tile.icon}</span>
+            <span className={styles.shortcutPlainLabel}>{tile.label}</span>
+          </span>
+        </Card>
+      ))}
+    </Grid>
+  )
+}
+
+export function InAllShortcuts({ onProduct, onShortcut }: { onProduct?: (id: string) => void; onShortcut?: (id: string) => void }) {
+  const products: Tile[] = productsF1.map((p) => ({
+    id: p.id,
+    label: p.name,
+    icon: <span className={styles.shortcutGlyph} aria-hidden="true"><span className={styles.productGlyph}>{productIcons[p.id]}</span></span>,
+  }))
+  const more: Tile[] = shortcuts.map((s) => {
+    const art = <span className={styles.shortcutGlyph} aria-hidden="true"><ShortcutArt art={s.art} /></span>
+    return { id: s.id, label: s.label, icon: s.badge ? <Badge count={s.badge.count} color="error" label={t('shortcuts.newBadge')}>{art}</Badge> : art }
+  })
+  return (
+    <Stack as="section" gap="16" aria-label={t('shortcuts.title')}>
+      <Inset paddingInline="16" paddingBlock="00">
+        <Card padding="none" className={styles.shortcutsPanel}>
+          <Row tiles={products} onOpen={onProduct} />
+          <hr className={styles.shortcutsRowDivider} />
+          <Row tiles={more} onOpen={onShortcut} />
+        </Card>
+      </Inset>
+    </Stack>
   )
 }
 ```
@@ -23201,9 +23306,10 @@ function ShareholdingPattern({ page }: { page: StockPageData }) {
   return (
     <Stack as="section" gap="16" aria-label={t('stock.shareholding')}>
       <SectionHeader title={t('stock.shareholding')} />
+      {/* The quarter tabs sit with the header, outside the card (19 Nov). */}
+      <Tabs appearance="pill" emphasis="primary" size="sm" behavior="filter" aria-label={t('stock.quarter')} value={quarter} onChange={setQuarter}
+        items={page.shareholding.map((s) => ({ value: s.quarter, label: s.quarter }))} />
       <div className={styles.panel}>
-        <Tabs appearance="pill" emphasis="primary" size="sm" behavior="filter" aria-label={t('stock.quarter')} value={quarter} onChange={setQuarter}
-          items={page.shareholding.map((s) => ({ value: s.quarter, label: s.quarter }))} />
         <Stack gap="16">
           {groups.map(([label, pct]) => (
             <Stack key={label} gap="08">
@@ -23229,9 +23335,10 @@ function Financials({ page }: { page: StockPageData }) {
   return (
     <Stack as="section" gap="16" aria-label={t('stock.financials')}>
       <SectionHeader title={t('stock.financials')} action={{ type: 'switcher', label: period === 'quarterly' ? t('stock.quarterly') : t('stock.yearly'), 'aria-label': t('stock.period'), onClick: () => setPeriod(period === 'quarterly' ? 'yearly' : 'quarterly') }} />
+      {/* The metric tabs sit with the header, outside the card (19 Nov). */}
+      <Tabs appearance="pill" emphasis="primary" size="sm" behavior="filter" aria-label={t('stock.metric')} value={metric} onChange={(v) => setMetric(v as FinancialMetric)}
+        items={(['revenue', 'profit', 'networth'] as const).map((m) => ({ value: m, label: t(`stock.${m}`) }))} />
       <div className={styles.panel}>
-        <Tabs appearance="pill" emphasis="primary" size="sm" behavior="filter" aria-label={t('stock.metric')} value={metric} onChange={(v) => setMetric(v as FinancialMetric)}
-          items={(['revenue', 'profit', 'networth'] as const).map((m) => ({ value: m, label: t(`stock.${m}`) }))} />
         <div className={styles.bars} role="img" aria-label={`${t('stock.barsLabel', { metric: metricLabel, from: bars[0].label, to: bars[bars.length - 1].label })}: ${bars.map((b) => `${b.label} ₹${num(b[metric], 0)} Cr`).join(', ')}`}>
           {bars.map((b) => (
             <div key={b.label} className={styles.barCol}>
@@ -24084,6 +24191,9 @@ export type HomeVersion = {
   /** V14's top with the product cards (Mutual funds · Equity F&O · Commodities) inside the hero, in place of its two
    *  buttons, on both tabs; IND then has the old shortcuts in place of the MF · F&O · Commodities strip. */
   cards?: boolean
+  /** With `cards`: the products leave the hero for one IND shortcuts card, two rows of four (products over shortcuts),
+   *  and the US hero has no row (V19, 19 Nov). Without it the product row sits in the hero (V17, V18). */
+  oneCard?: boolean
   /** With `usHome: 'f1'`: the F1 top (hero, product cards, round shortcuts) over the earlier US feed (UsHome, as on V14)
    *  instead of the F1 feed (V18). */
   usBody?: 'classic'
@@ -24138,7 +24248,7 @@ export const homeVersions: HomeVersion[] = [
   { id: 'v18', name: 'F1 top · V14 body', figma: '', place: 'top', scope: 'page', look: 'underline', labels: 'stocks', flags: true, usNew: false, tiles: 'today', ticker: true, usHome: 'f1', cards: true, usBody: 'classic' },
   // V19 (18 Nov, the user's ask): V18 with the index marquee moved from under the top bar to between the hero (the
   // header) and the feed (the body), scrolling with the page; only the IN / US tabs stay sticky.
-  { id: 'v19', name: 'V18 · marquee under the hero', figma: '', place: 'top', scope: 'page', look: 'underline', labels: 'stocks', flags: true, usNew: false, tiles: 'today', ticker: true, tickerPlace: 'between', usHome: 'f1', cards: true, usBody: 'classic' },
+  { id: 'v19', name: 'V18 · marquee under the hero', figma: '', place: 'top', scope: 'page', look: 'underline', labels: 'stocks', flags: true, usNew: false, tiles: 'today', ticker: true, tickerPlace: 'between', usHome: 'f1', cards: true, oneCard: true, usBody: 'classic' },
 ]
 
 // Archived 2026-11-02 (V2, V3, V4, V5, V6, V9), back in the picker the same day. V9, V10 and V11 archived again later that day. V2–V7 archived too (playground), leaving V8, V12 and V13. V14 added 5 Nov. V15 (One home) added and archived 5 Nov. V16 and V17 archived 17 Nov (V18 keeps their F1 top). V8, V12, V13 and V14 archived 18 Nov: V18 is the only home.
@@ -29579,8 +29689,27 @@ export function Glossary({ kind, onBack }: { kind: keyof typeof TERMS; onBack: (
 }
 
 .dockedTicker > * {
-  background: var(--l3-surface-accent-discover-light);
+  background: var(--l3-surface-default); /* white once docked, like the band above it (the user's call, 19 Nov) */
   box-shadow: inset 0 -1px 0 var(--l3-border-light); /* 1px hairline */
+}
+
+/* Docking is one movement, not a swap: the copy takes over in the scrolling strip's blue, then turns white and gets its
+   hairline (19 Nov: it used to appear in one frame). The animation restarts each time it docks. */
+.dockedTicker[data-open] > * {
+  animation: ticker-dock var(--l3-motion-duration-long) var(--l3-motion-easing-standard);
+}
+
+@keyframes ticker-dock {
+  0% {
+    background: var(--l3-surface-accent-discover-light);
+    box-shadow: inset 0 -1px 0 transparent;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dockedTicker[data-open] > * {
+    animation: none;
+  }
 }
 
 .dockedTicker [role='region'] > * > [data-interactive] { padding-block: var(--l3-spacing-12); }
@@ -29626,6 +29755,7 @@ import { UsHero } from '../components/us/UsHero'
 import { UsFtuxSheet } from '../components/us/sheets/UsFtuxSheet'
 import { HeroButtons, HeroShell, HoldingsHero } from '../components/HoldingsHero'
 import { getCompany } from '../../../shared/data/companies'
+import { InAllShortcuts } from '../components/InAllShortcuts'
 import { InShortcutsF1 } from '../components/InShortcutsF1'
 import { holdings } from '../../../shared/data/portfolio'
 import { inr } from '../../../shared/data/format'
@@ -30047,6 +30177,8 @@ export function Home({ scrollTo = 'top', market = 'in', movers, onStock, onTab, 
   // V17: the product row (Figma 6548:45253) inside the hero, in place of its two buttons (Buy NVDA · Add USD, Buy
   // RELIANCE · Add INR), and under the status card where there's no hero (8 Nov).
   const heroCards = f1 && !!version.cards
+  // V19 (19 Nov): the products leave the hero for the IND shortcuts card (InAllShortcuts); the US row is hidden.
+  const oneCard = heroCards && !!version.oneCard
   const onRowProduct = (id: string) => {
     if (id === 'mutual-funds') onTab?.('mutualFund')
     else if (id === 'fno') onTab?.('fno')
@@ -30061,19 +30193,19 @@ export function Home({ scrollTo = 'top', market = 'in', movers, onStock, onTab, 
       onUsEtfs?.()
     }
   }
-  // The US tab's row: Boosted ETFs, Themes, Fractional.
+  // The product row in the hero (V17, V18). V19: none (oneCard).
   const cardsRail = (m: Market) => <ProductRowF1 items={m === 'us' ? productsF1Us : productsF1} fill={m === 'us'} onProduct={onRowProduct} />
   const topCards = (
     <div className={styles.cardTrack} data-market-card>
       {markets.map((m) => (
         <div key={m} className={styles.cardSlide} data-side={m === tab ? undefined : m === 'us' ? 'after' : 'before'} aria-hidden={m !== tab || undefined} inert={m !== tab || undefined}>
-          {m === 'us' && f1Hero ? (heroCards ? <UsHero onHoldings={onUsHoldings}>{cardsRail(m)}</UsHero> : <UsHero onHoldings={onUsHoldings} onBuy={onUsStock} onAddUsd={onWallet} />)
+          {m === 'us' && f1Hero ? (heroCards ? <UsHero onHoldings={onUsHoldings}>{oneCard ? false : cardsRail(m)}</UsHero> : <UsHero onHoldings={onUsHoldings} onBuy={onUsStock} onAddUsd={onWallet} />)
             : m === 'in' && f1 ? (
               // IND hero (no Figma): the US hero's look with the green glow. The products are in the shortcut strip under it.
               <HoldingsHero market="in" value={inr(holdings.current)} returnPct={holdings.returnPct} onHoldings={onInHoldings}>
                 {/* As the US hero's pair. Buy RELIANCE does nothing yet: the prototype has no Indian stock page. V17: the
                     product cards instead. */}
-                {heroCards ? cardsRail(m) : <HeroButtons
+                {heroCards ? (oneCard ? null : cardsRail(m)) : <HeroButtons
                   buy={{ label: t('f1.hero.buy', { sym: IN_HERO_STOCK }), mark: getCompany(IN_HERO_STOCK)?.logoUrl, round: true }}
                   add={{ label: t('f1.hero.addMoney'), icon: <Icon icon={msCurrencyRupee} size={20} />, onClick: onAddMoney }}
                 />}
@@ -30081,12 +30213,12 @@ export function Home({ scrollTo = 'top', market = 'in', movers, onStock, onTab, 
             )
             // Money ready on V16: the holdings hero as when holding (the NVDA holding), no card; the "Your money is
             // ready" aerobar says it (8 Nov).
-            : f1 && m === 'us' && usState === 'ready' ? (heroCards ? <UsHero onHoldings={onUsHoldings}>{cardsRail(m)}</UsHero> : <UsHero onHoldings={onUsHoldings} onBuy={onUsStock} onAddUsd={onWallet} />)
+            : f1 && m === 'us' && usState === 'ready' ? (heroCards ? <UsHero onHoldings={onUsHoldings}>{oneCard ? false : cardsRail(m)}</UsHero> : <UsHero onHoldings={onUsHoldings} onBuy={onUsStock} onAddUsd={onWallet} />)
             // Money on the way on V16: the activated hero at $0.00 with the "Money on the way" card in place of its buttons (8 Nov).
             : f1 && m === 'us' && usState === 'onTheWay' ? (heroCards
-              ? <UsHero empty onHoldings={onUsHoldings}><Stack gap="16"><TransferStatusCard onOpen={onActivateUs} />{cardsRail(m)}</Stack></UsHero>
+              ? <UsHero empty onHoldings={onUsHoldings}>{oneCard ? <TransferStatusCard onOpen={onActivateUs} /> : <Stack gap="16"><TransferStatusCard onOpen={onActivateUs} />{cardsRail(m)}</Stack>}</UsHero>
               : <UsHero empty onHoldings={onUsHoldings}><TransferStatusCard onOpen={onActivateUs} /></UsHero>)
-            : f1 ? <HeroShell market={m} tone={shellTone} subtle={preActivation || justActivated}>{heroCards ? <Stack gap="16">{inCard(topCard(m))}{inCard(cardsRail(m))}</Stack> : inCard(topCard(m))}</HeroShell>
+            : f1 ? <HeroShell market={m} tone={shellTone} subtle={preActivation || justActivated}>{heroCards && !oneCard ? <Stack gap="16">{inCard(topCard(m))}{inCard(cardsRail(m))}</Stack> : inCard(topCard(m))}</HeroShell>
             : inCard(topCard(m))}
         </div>
       ))}
@@ -30201,9 +30333,13 @@ export function Home({ scrollTo = 'top', market = 'in', movers, onStock, onTab, 
           )}
           {tab === 'in' ? (
             <Stack key="in" gap="32" data-market-part>
-              {f1 && !version.cards
-                ? <InShortcutsF1 onMutualFunds={() => onTab?.('mutualFund')} onFno={() => onTab?.('fno')} onCommodities={onCommodities} />
-                : <Shortcuts />}
+              {/* V19, 19 Nov: the IND products (Equity F&O, Commodity, Mutual Funds, Smart Invest) left the hero and joined the
+                  shortcuts: one card, products over shortcuts, two rows of four. */}
+              {oneCard
+                ? <InAllShortcuts onProduct={onRowProduct} />
+                : f1 && !version.cards
+                  ? <InShortcutsF1 onMutualFunds={() => onTab?.('mutualFund')} onFno={() => onTab?.('fno')} onCommodities={onCommodities} />
+                  : <Shortcuts />}
               <div data-home="movers"><TopMovers initial={movers} onStock={onStock} /></div>
               <Watchlists />
               <Section paddingBlock="24" className={styles.tinted} data-tint="brand" data-home="invest"><SmartInvest /></Section>

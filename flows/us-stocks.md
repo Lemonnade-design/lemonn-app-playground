@@ -199,6 +199,8 @@ Every tap he wired is kept. The main path: FTUX sheet → Activate → Declarati
 → Pay on bank → Money ready → Stock → Buy → Executed → Wallet → Withdraw.
 
 ### Changelog
+- 2026-11-19 — Asset pages (stock, ETF, every state): the dock's fade now shows. The page was cut at the dock's top edge, so nothing passed behind it; the frame now lays the dock over the scrolling page (`data-float-dock`), the dock is solid behind the buttons and fades over the 24 above them, and the page's end stays clear of the buttons.
+- 2026-11-19 — US stock page: the Company financials statement tabs (Income · Balance sheet · Cashflow) moved out of the card to sit with the section header, between the title and the card.
 - 2026-11-18 — **Order pad V2 · Minted layout (the default).** New prototype setting **Order pad** (group Trade): V1 · Commodity pad layout, V2 · Minted layout. V2 takes the layout of Minted's order pad (`~/minted`, screens s05 / s13 / s14 / s06 / s16): stock header, a centred Market / Limit / SL switch, a big centred amount with the quick chips and one helper line under it, limit / trigger prices as filled cards with the Stepper, the note as a grey strip, then Balance · Approx. req., the Buy / Sell button and the app keypad. Results and processing take Minted's result layout (status icon over a tinted top, big heading, details below). Same states, data and navigation as V1 (`orderPads.tsx`, `orderResults.ts`); only the layout differs. Minted's Futures tab, leverage card, SIP and "sell automatically at a profit" are left out: US stocks are cash, Day orders only. Code: `screens/trade/version.ts` (`useOrderPadVersion()`), `OrderPadV2.tsx`, `OrderResultV2.tsx`; V1 stays in `OrderPad.tsx` / `OrderResult.tsx`. Header: no line under it, title centred (a 24 spacer balances the back button), stock logo 16. L3 gap: Avatar has no 16 size (smallest 24) — sized down locally (`.logo16`). Built from L3: Actionbar, Avatar, PriceChange, Tabs (order type, chips), Select (Amount ⇄ Shares, swap icon), Card filled (limit / trigger price), Stepper, Button (Buy / Sell, ghost Req.), Stack. Other L3 gaps: Stepper has no on-grey fill (set to surface/primary locally); no large amount field (raw input); no centred logo + price Actionbar title; no note strip (a token-styled line); a pill group has no equal-width hug option (order-type pills made equal locally, `.orderTypes`). Order-type tabs are Medium and their pill slides from the type you came from.
 - 2026-11-18 — Order pad V2: the amount's typing caret is drawn (a blinking discover-blue 2px bar, L3 TextField's Typing colour) so it shows on Market, Limit and SL; the line under the amount always shows the ≈ ₹ value of the order (live USDINR rate) in the same line, 8 apart, no separator dot; SL is now an amount in $ with the $ / shares switch, like Market and Limit; the amount field has a fixed 48 height so emptying it no longer moves the cards; the Buy / Sell button shows the order’s ₹ value after a dot ("Buy · ₹9,345"), the ₹ in Description 14 (2 smaller than the label, regular weight), just the label when the amount is empty; the $ before the amount is Heading 24 (the amount stays Heading 36); the price cards' labels (Limit, Trigger Price) are Description 12; every field takes typing: tap the amount or a price (Limit, Trigger Price) and the keypad types into it (first key replaces the value, the blue caret moves there, a typed price sets its Stepper %; a Stepper tap keeps the field you were typing in). The whole left part of a price card (label + price, out to the card's edges, up to the Stepper) is the tap target for typing. The order note above the balance line has no grey band. The price cards are L3 default cards (white, 1px border/light) instead of grey filled ones, so the Steppers keep L3's own grey pill (the local on-grey override is gone) with dark ± buttons (surface/inverted, local: L3 gap, its Small buttons are light blue and merge with the grey pill). On SL, "Req." is underlined in secondary text (a link, local style: L3 gap) and opens the Fee Breakdown sheet over the same SL page (us-stocks-42 is now a sheet over us-stocks-41: no slide, typed values kept; closing returns to it). The line under the amount (shares hint + ≈ ₹) is gone — the ₹ value is in the button; only an error shows there. Switching order type dissolves the fields instead of sliding them sideways: the old ones drop 8 (spacing 08) and fade out (140 ms), then the new ones rise 8 into place and fade in (220 ms); none with reduced motion. Price cards merged: on SL (two prices) both sit in one bordered card with a hairline between them, inset 12 like the text; the earlier card-per-price layout stays as the prototype setting "Price cards" (Trade → Separate) for A/B testing. The ₹ amount in the Buy / Sell button now has the label's weight (Heading/14 beside Heading/16), and a hairline separates the dock from the page above. FLAG: the price is a raw input like the amount (L3 has no inline price field), whatever the app's ₹ setting.
 - 2026-11-18 — Stock and ETF pages (Classic, F1 and the previous ETF page): one bottom dock in every user state, `AssetDock` in `screens/activation/details.tsx`. Same padding, floating over the page's end on a gradient of the page's colour (the body shows through as it scrolls under); only the buttons inside change: Buy · Sell, Go Long · Go Short, or the one activation button (Complete KYC, Activate US Stocks, Under review, Contact support, Retry activation). It was L3 ButtonGroup on the ETF page and the activation states. L3 gap: no floating dock / fade.
@@ -22153,6 +22155,20 @@ export function InlineSvg({ src, w, h = w, className }: { src: string; w?: numbe
 
 .sheets { position: absolute; inset: 0; z-index: 30; pointer-events: none; }
 .sheets > * { pointer-events: auto; }
+
+/* A floating dock (the asset pages' trade dock, data-float-dock): the footer lies over the bottom of the body, so the
+   page scrolls on behind the dock's fade instead of stopping at its top edge. The body's end keeps the last content
+   clear of the buttons: the dock's 8 below, its Large buttons and its 8 above them (the 24 of fade may sit over it). */
+.page:has(> .footer [data-float-dock]) > .footer {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.page:has(> .footer [data-float-dock]) > .body {
+  padding-bottom: calc(var(--app-body-end) + var(--l3-spacing-08) + var(--l3-size-control-lg) + var(--l3-spacing-08));
+}
 ```
 
 ### `src/flows/us-stocks/components/Phone.tsx`
@@ -25805,12 +25821,12 @@ export const ADDRESS = 'Flat 12, Green Park, Baner, Pune 411045'
 }
 
 /* The dock floats over the page's end (18 Nov, the user's call): a gradient of the page's colour, full at the bottom
-   to clear at the top, so the page shows through as it scrolls under. The 24 above the buttons is the fade; the
-   negative margin pulls it over the scrolling body (the footer sits above the body). L3 gap: no dock / fade token. */
+   to clear at the top, so the page shows through as it scrolls under. The 24 above the buttons is the fade. The
+   frame lays the footer over the body (data-float-dock, components/Phone.module.css), so the page's content runs on
+   behind the whole dock instead of being cut at its top (19 Nov). L3 gap: no dock / fade token. */
 footer > .dock {
-  margin-top: calc(-1 * var(--l3-spacing-24));
   padding-top: calc(var(--l3-spacing-24) + var(--l3-spacing-08));
-  background: linear-gradient(to top, var(--page-surface, var(--l3-surface-default)), transparent);
+  background: linear-gradient(to top, var(--page-surface, var(--l3-surface-default)) calc(100% - var(--l3-spacing-24)), transparent); /* solid behind the buttons, the fade only in the 24 above them */
 }
 
 /* ---- Figma 6538:84949 polish (8 Nov) ---- */
@@ -26164,7 +26180,7 @@ export function AboutBlock({ logo, title, text }: { logo: ReactNode; title: stri
  *  call); its .bell style stays in details.module.css. */
 export function AssetDock({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <div className={styles.dock} role="group" aria-label={label}>
+    <div className={styles.dock} role="group" aria-label={label} data-float-dock="">
       {children}
     </div>
   )
@@ -26629,17 +26645,18 @@ export function Financials() {
   return (
     <section className={styles.section}>
       <SectionTitle title="Company financials" info />
+      {/* The statement tabs sit with the header, outside the card (19 Nov). */}
+      <Tabs
+        appearance="pill"
+        emphasis="primary"
+        size="sm"
+        aria-label="Statement"
+        value={statement}
+        onChange={(v) => setStatement(v as Statement)}
+        items={(Object.keys(STATEMENTS) as Statement[]).map((k) => ({ value: k, label: STATEMENTS[k].label }))}
+      />
       <div className={styles.financials}>
         <div className={styles.chartArea}>
-          <Tabs
-            appearance="pill"
-            emphasis="primary"
-            size="sm"
-            aria-label="Statement"
-            value={statement}
-            onChange={(v) => setStatement(v as Statement)}
-            items={(Object.keys(STATEMENTS) as Statement[]).map((k) => ({ value: k, label: STATEMENTS[k].label }))}
-          />
           <div className={styles.legend}>
             <span data-tone="up">{spec.series[0].toUpperCase()}</span>
             <span>{spec.series[1].toUpperCase()}</span>

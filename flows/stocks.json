@@ -377,6 +377,7 @@
     "src/flows/stocks/components/HubSummary.module.css",
     "src/flows/stocks/components/HubSummary.tsx",
     "src/flows/stocks/components/Ideas.tsx",
+    "src/flows/stocks/components/InAllShortcuts.tsx",
     "src/flows/stocks/components/InShortcutsF1.module.css",
     "src/flows/stocks/components/InShortcutsF1.tsx",
     "src/flows/stocks/components/Invest.tsx",
