@@ -1,6 +1,6 @@
 # Flow: Overtrading nudges (playground) (`nudges`)
 
-> One self-contained file for converting this flow to another platform. Read https://lemonnade-design.github.io/lemonn-app-prototype/CONVERT.md first. Design system: Lemonnade V3 @ `c9e9b87` (components, tokens and rules: https://lemonnade-design.github.io/lemonnade-v3-docs/llms.txt).
+> One self-contained file for converting this flow to another platform. Read https://lemonnade-design.github.io/lemonn-app-prototype/CONVERT.md first. Design system: Lemonnade V3 @ `3cd03a0` (components, tokens and rules: https://lemonnade-design.github.io/lemonnade-v3-docs/llms.txt).
 
 Journey-aware P&L limit and TP/SL prompts: silent help on the order pad, and one nudge sheet when the revenge flag and the journey engine agree.
 
@@ -1072,8 +1072,9 @@ export function OrderPad({ side = 'buy', product: initialProduct = 'delivery', t
 /* Loss limit and TP/SL sheets. */
 .body { padding: 0; }
 
-/* 24 above the content, as below it (L3's sheet has 16 on top). Same in NudgeSheet. */
-.sheet [data-sheet-content] { padding-top: var(--l3-spacing-24); }
+/* 24 more above the content (L3's 16 top space + 24, as since L3 2.3; 2.4 made the 16 the content's own padding).
+   Same in NudgeSheet. */
+.sheet [data-sheet-content] { padding-top: calc(var(--l3-spacing-16) + var(--l3-spacing-24)); }
 ```
 
 ### `src/flows/nudges/sheets/GuardrailSheets.tsx`
@@ -1189,11 +1190,12 @@ export function TpslSheet({ onSave, onClose }: { onSave: (tpsl: { targetPct: num
   .icon::after, .bar, .heroValue, .alertIcon::after, .chip, .chipLabel { animation: none; }
 }
 
-/* 24 above the content, as below it (L3's sheet has 16 on top). Same in GuardrailSheets. */
-.sheet [data-sheet-content] { padding-top: var(--l3-spacing-24); }
+/* 24 more above the content (L3's 16 top space + 24, as these sheets have looked since L3 2.3; 2.4 made the 16 the
+   content's own padding). Same in GuardrailSheets. */
+.sheet [data-sheet-content] { padding-top: calc(var(--l3-spacing-16) + var(--l3-spacing-24)); }
 /* Layouts 4 and 5: the meter / bar starts 16 below the sheet's top edge — L3's own 16 top space, no extra padding
    (the picture leads, no header above it). */
-.riskSheet [data-sheet-content] { padding-top: 0; }
+.riskSheet [data-sheet-content] { padding-top: var(--l3-spacing-16); }
 
 /* Layout 1 · Chip header: ✋ + "Overtrading Detected" in one big light-red pill, shaped like an L3 pill tab (full radius,
    40 high). Not tappable, so not a Tab; L3 has no static pill (L3 gap).
@@ -1234,8 +1236,8 @@ export function TpslSheet({ onSave, onClose }: { onSave: (tpsl: { targetPct: num
     storyIn var(--l3-motion-duration-long) var(--l3-motion-easing-decelerate) var(--story-line) both,
     storyQuiet var(--story-rise-time) var(--l3-motion-easing-standard) var(--story-rise) both;
 }
-/* The dock (the footer after the sheet's bottom space): hidden and untappable until the story ends. */
-.storySheet > [data-sheet-space='bottom'] + * { animation: storyIn calc(var(--l3-motion-duration-long) * 1.5) var(--l3-motion-easing-decelerate) var(--story-dock) both; }
+/* The dock (the footer after the sheet's content): hidden and untappable until the story ends. */
+.storySheet > [data-sheet-content] + * { animation: storyIn calc(var(--l3-motion-duration-long) * 1.5) var(--l3-motion-easing-decelerate) var(--story-dock) both; }
 /* No drag to dismiss either: L3's BottomSheet still follows the finger when it has nowhere to close to (L3 gap). */
 :global([role='dialog']):has(> * > .storySheet), :global([role='dialog']):has(> .storySheet) { transform: none !important; }
 @keyframes storyRise { from { transform: translateY(var(--story-drop, 0px)); } }
@@ -1249,7 +1251,7 @@ export function TpslSheet({ onSave, onClose }: { onSave: (tpsl: { targetPct: num
 @keyframes storySettle { from { scale: 1.2; } }
 @keyframes storyQuiet { from { color: var(--l3-content-primary); } }
 @media (prefers-reduced-motion: reduce) {
-  .storyHeader, .storyHeader h2, .storyHeader p, .storySheet > [data-sheet-space='bottom'] + * { animation: none; }
+  .storyHeader, .storyHeader h2, .storyHeader p, .storySheet > [data-sheet-content] + * { animation: none; }
 }
 ```
 

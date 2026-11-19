@@ -1,6 +1,6 @@
 # Flow: Market (`market`)
 
-> One self-contained file for converting this flow to another platform. Read https://lemonnade-design.github.io/lemonn-app-prototype/CONVERT.md first. Design system: Lemonnade V3 @ `c9e9b87` (components, tokens and rules: https://lemonnade-design.github.io/lemonnade-v3-docs/llms.txt).
+> One self-contained file for converting this flow to another platform. Read https://lemonnade-design.github.io/lemonn-app-prototype/CONVERT.md first. Design system: Lemonnade V3 @ `3cd03a0` (components, tokens and rules: https://lemonnade-design.github.io/lemonnade-v3-docs/llms.txt).
 
 The Market tab — Indian and US stock lists (all, gainers, losers, under 100 / 500) and Filters.
 
@@ -1122,11 +1122,11 @@ export function Market({ market: initialMarket, tab: initialTab = 'all', filters
 }
 
 /* 18 Nov fix: the split used to pull itself over the sheet's top / bottom spaces with negative margins, but the sheet
-   body scrolls and clips, so those strips stayed white above and below the grey rail. The sheet's spaces go
-   (L3 marks them data-sheet-space) and the split takes their height, so the rail is grey from the header line to the
-   dock. */
-.sheet > [data-sheet-space] {
-  display: none;
+   body scrolls and clips, so those strips stayed white above and below the grey rail. The sheet's spaces go (L3 2.4:
+   they're the content's top / bottom padding) and the split takes their height, so the rail is grey from the header
+   line to the dock. */
+.sheet > [data-sheet-content] {
+  padding-block: 0;
 }
 
 .pane {

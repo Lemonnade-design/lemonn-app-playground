@@ -1,6 +1,6 @@
 # Flow: F&O (`fno`)
 
-> One self-contained file for converting this flow to another platform. Read https://lemonnade-design.github.io/lemonn-app-prototype/CONVERT.md first. Design system: Lemonnade V3 @ `c9e9b87` (components, tokens and rules: https://lemonnade-design.github.io/lemonnade-v3-docs/llms.txt).
+> One self-contained file for converting this flow to another platform. Read https://lemonnade-design.github.io/lemonn-app-prototype/CONVERT.md first. Design system: Lemonnade V3 @ `3cd03a0` (components, tokens and rules: https://lemonnade-design.github.io/lemonnade-v3-docs/llms.txt).
 
 Equity F&O home: P&L, indices, chart metrics, watchlists, Smart Options, Futures Heatmap and Smart Futures.
 
@@ -7915,15 +7915,13 @@ export function Home({ product = 'equity', segment = 'equity', picker, onProduct
   font: var(--l3-text-label-10);
 }
 
-/* The chart-tools sheet brings its own layout: no content padding. No top hairline either (L3 draws one above every
-   sheet; over the dimmed screen it read as a stray line) — the sheet keeps its shadow. */
+/* The chart-tools sheet brings its own layout: no content padding (L3 2.4: that includes its 16 top and 24 bottom
+   spaces) — edge to edge. No top hairline either (L3 draws one above every sheet; over the dimmed screen it read as a
+   stray line) — the sheet keeps its shadow. */
+/* Raised so it beats L3's no-dock rule (.surface[data-placement] > .content:last-child adds 24 + the safe area). */
+.sheet.sheet.sheet [data-sheet-content]:last-child,
 .sheet [data-sheet-content] {
   padding: 0;
-}
-
-/* …and none of L3's spaces around the content either (2.3.5: 16 above it, 24 under it) — edge to edge. */
-.sheet [data-sheet-space] {
-  display: none;
 }
 
 .sheet.sheet.sheet {

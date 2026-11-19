@@ -4,7 +4,7 @@
   "description": "Activate US Stocks, add money to the USD wallet, buy and sell, withdraw (teammate import, under review).",
   "designSystem": {
     "name": "Lemonnade V3 (L3)",
-    "commit": "c9e9b87",
+    "commit": "3cd03a0",
     "docs": "https://lemonnade-design.github.io/lemonnade-v3-docs/llms.txt"
   },
   "prototype": {
@@ -268,6 +268,8 @@
     "src/flows/us-stocks/screens/trade/OrderResult.tsx",
     "src/flows/us-stocks/screens/trade/OrderResultV2.module.css",
     "src/flows/us-stocks/screens/trade/OrderResultV2.tsx",
+    "src/flows/us-stocks/screens/trade/PriceField.module.css",
+    "src/flows/us-stocks/screens/trade/PriceField.tsx",
     "src/flows/us-stocks/screens/trade/Tpsl.module.css",
     "src/flows/us-stocks/screens/trade/Tpsl.tsx",
     "src/flows/us-stocks/screens/trade/format.ts",

@@ -1,6 +1,6 @@
 # Flow: US Stocks (`us-stocks`)
 
-> One self-contained file for converting this flow to another platform. Read https://lemonnade-design.github.io/lemonn-app-prototype/CONVERT.md first. Design system: Lemonnade V3 @ `c9e9b87` (components, tokens and rules: https://lemonnade-design.github.io/lemonnade-v3-docs/llms.txt).
+> One self-contained file for converting this flow to another platform. Read https://lemonnade-design.github.io/lemonn-app-prototype/CONVERT.md first. Design system: Lemonnade V3 @ `3cd03a0` (components, tokens and rules: https://lemonnade-design.github.io/lemonnade-v3-docs/llms.txt).
 
 Activate US Stocks, add money to the USD wallet, buy and sell, withdraw (teammate import, under review).
 
@@ -199,10 +199,25 @@ Every tap he wired is kept. The main path: FTUX sheet → Activate → Declarati
 → Pay on bank → Money ready → Stock → Buy → Executed → Wallet → Withdraw.
 
 ### Changelog
+- 19 Nov: Order pad V2: the amount's "$" is 34 (2 under the amount's 36), local token --app-orderpad-currency-size. L3 gap: no 34 size.
+- 19 Nov: Order pad V2: the amount's "$" is the amount's size (Heading/36, was 24), still secondary grey.
+- 19 Nov: PriceField (screens/trade/PriceField.tsx): one component for every price card — the pad's Limit / SL prices (one box or merged with a hairline), the TP/SL trigger / limit rows (unit switch, empty state, red with an error) and the trailing sheet's box (hint over the unit, Stepper only). Every row is 12 padded all round (the trailing box was 16, the pad's merged card spaced rows by 12 + a line). L3 gaps: no inline price field, no Card error state, no on-grey Stepper.
+- 19 Nov: TP/SL error copy made short: "Enter trigger price", "TP should be above buy price, $X" / "SL should be below …", "SL should be above $0.00", "TP should be 0.25%+ above buy price", "Enter limit price", "Limit should be at or above trigger" (SL: below), "Limit should be above $0.00", "Trail should be under $X".
+- 19 Nov: TP/SL errors sit inside the card, right under the trigger box (4 below it); the Est. row under the card stays and shows "--" while there's an error.
+- 19 Nov: TP/SL price fields: with the placeholder showing, the typing caret sits at the start of it (before "Enter price"), and after the text once typed.
+- 19 Nov: TP/SL leg cards expand and collapse (one card; the body and the Est. row slide open / shut on L3's medium motion, MKT / LMT fades in). L3 gap: no Collapse part, done with a 0fr ⇄ 1fr grid row.
+- 19 Nov: TP/SL sheet errors, checked against the buy price (Market: last price; Limit / SL: the limit price): no trigger, TP not above / SL not below the buy price, SL at $0, a trigger closer than 0.25%, no limit price, a limit on the wrong side of its trigger, a trail as big as the gap. The message replaces the Est. row and Save stays off. A leg that's off shows only its name and switch (no MKT / LMT), and a tap anywhere on the card turns it on.
+- 19 Nov: Leverage sheet — the liquidation warning's line in content/secondary (Aerobar's own is secondary at 60%). L3 gap: Aerobar has no full-strength paragraph option.
+- 19 Nov: Leverage sheet's example at 3x (was 4x), to match the card: +$3 / −$3 per 1%, liquidation at a 33% drop.
+- 19 Nov: Leverage card — a tap on its info strip opens the explainer sheet ("How leverage works", the Activate sheet read-only: Got it, no checkbox).
+- 19 Nov: "Order pad" option archived — V2 (Minted layout) is the only pad; V1 (commodity pad layout) code kept, unused.
+- 19 Nov: Leverage card is a simple toggle at a fixed 3x — no rolling 2x / 3x / 4x, no leverage chips when on (only the info strip).
+- 19 Nov: Order pad V2 quick-amount chips (+$10 … Max) use the big (md) pill tabs.
 - 19 Nov: A stock, ETF or bank with no logo shows one letter (its first), not two or three — app-wide (companies, market list, US banks, every Avatar / disc fallback).
 - 19 Nov: ETF tables (ETFs with the stock, fund peers): logo 24 → 32, so rows are 48 like Peers.
 - 19 Nov: Share bars (Key Holders, ETF allocation) end on the panel's 12 (last row's bottom 8 dropped). Peers: logo 24 → 32, name Label 14. Analyst Ratings card rows and footer follow the page (Description 12 names, Heading 12 figures) instead of Figma's 10. View Order History Label 14.
-- 2026-11-19 — TP/SL sheet: take profit and stop loss both start on Market (MKT); the LMT ⇄ MKT switch at the top of each card is discover blue; Points ⇄ Percentage and the trail unit stay primary. L3 gap: Select has no discover tone. The "Trigger at" / "Limit at" labels are Description 12. The sheet's 24 above the dock is the end of its scroll, not a fixed gap, so scrolled content runs up to the dock (L3 gap: BottomSheet's bottom space is always fixed). Trailing sheet: the box is outlined like the leg cards, not grey, with the same Stepper. In the sheet, as on the order pad, a tap outside a price (label + price) and the keypad closes the keypad; tapping a price opens it again; it slides in and out (shared `KeypadSlide`). The sheet's heading is "TP SL & More" (was "Set TP/SL"). The order moved into the TP/SL sheet header: "Qty 0.6405" is the description (was "Applies to this order only."), the stock with its last price and change sits at the right (differs from L3: the header's right slot is meant for one icon button or a Tag).
+- 2026-11-19 — L3 moved to BottomSheet 2.4.0: the sheet's 16 top / 24 bottom spaces are the content's own padding and scroll with it, so the TP/SL sheet's local workaround is gone.
+- 2026-11-19 — TP/SL sheet: take profit and stop loss both start on Market (MKT); the LMT ⇄ MKT switch at the top of each card is discover blue; Points ⇄ Percentage and the trail unit stay primary. L3 gap: Select has no discover tone. The "Trigger at" / "Limit at" labels are Description 12. The sheet's 24 above the dock is the end of its scroll, not a fixed gap, so scrolled content runs up to the dock (L3 BottomSheet 2.4.0 does this for every sheet). Trailing sheet: the box is outlined like the leg cards, not grey, with the same Stepper. In the sheet, as on the order pad, a tap outside a price (label + price) and the keypad closes the keypad; tapping a price opens it again; it slides in and out (shared `KeypadSlide`). The sheet's heading is "TP SL & More" (was "Set TP/SL"). The order moved into the TP/SL sheet header: "Qty 0.6405" is the description (was "Applies to this order only."), the stock with its last price and change sits at the right (differs from L3: the header's right slot is meant for one icon button or a Tag).
 - 2026-11-19 — Order pad V2: a tap anywhere outside the typable areas (the amount row, a price card's label + price, the keypad) closes the keypad and the field loses its caret; tapping a field opens it again on that field. The keypad slides up from the bottom when it opens (260 ms, ease-out) and down to the bottom when it closes (200 ms, ease-in), the dock moving with it; reduced motion skips the slide. TP/SL summary card: the head row has 12 on all four sides.
 - 2026-11-19 — Trailing sheet (Figma 4494:29124): "Trailing TP / SL"; one filled box with "Trailing TP will move in" over "Points ⇅" (its own points ⇄ percentage switch, converted at the last price) at the left and a Small Stepper on a white pill at the right; the dock holds the centred "Make trailing … your default" checkbox over Save. Set TP/SL now shows on all three order types (Market under the leverage card, Limit / SL under the prices).
 - 2026-11-19 — Order pads (V1, V2, TP/SL sheet): the Small Stepper's ± buttons on its grey pill are white (surface/primary) with the blue icon (content/accent/discover), not dark / light-blue. L3 gap: no on-grey Stepper option. TP/SL sheet: the trigger / limit box is outlined like the pad's cards, not grey. Trailing sheet (Figma 4292:33108): the value is Heading 24 and "Trail will move in …" sits under the box.
@@ -22533,19 +22548,8 @@ export const usStocks: Flow = {
     { id: 'wallet', title: 'USD wallet' },
   ],
   options: [
-    // The order pad's layout (18 Nov): V1 the commodity-pad layout, V2 Minted's order pad (the default).
-    {
-      id: 'orderPad',
-      group: 'Trade',
-      label: 'Order pad',
-      picker: 'dropdown',
-      values: [
-        { value: 'v1', label: 'V1 · Commodity pad layout' },
-        { value: 'v2', label: 'V2 · Minted layout' },
-      ],
-      default: 'v2',
-      floatOn: ['us-stocks-33', 'us-stocks-34', 'us-stocks-35', 'us-stocks-36', 'us-stocks-37', 'us-stocks-38', 'us-stocks-39', 'us-stocks-40', 'us-stocks-41', 'us-stocks-47', 'us-stocks-48', 'us-stocks-49', 'us-stocks-50', 'us-stocks-43', 'us-stocks-44', 'us-stocks-45', 'us-stocks-46', 'us-stocks-51', 'us-stocks-52'],
-    },
+    // "Order pad" archived 19 Nov (the user's call): V2 · Minted layout kept; V1 · Commodity pad layout archived.
+    // useOrderPadVersion() returns 'v2'; the V1 code stays in OrderPad.tsx / OrderResult.tsx.
     // The V2 order pad's price cards (18 Nov): merged (one card, a line between the prices) or separate (a card each).
     {
       id: 'priceCards',
@@ -38142,7 +38146,7 @@ export function FeeBreakdownSheet({ onClose, orderUsd }: { onClose: () => void; 
 ### `src/flows/us-stocks/screens/trade/LeverageCard.module.css`
 
 ```css
-/* Leverage card (Minted, Figma 8870:209735): a 56 header row, then (on) the choices and the info strip. */
+/* Leverage card (Minted, Figma 8870:209735): a 56 header row, then (on) the info strip. */
 /* gap 0: L3 Card's own gap would leave 8 under the header while it's shut. */
 .card { align-self: stretch; overflow: hidden; gap: 0; }
 
@@ -38173,37 +38177,7 @@ export function FeeBreakdownSheet({ onClose, orderUsd }: { onClose: () => void; 
   color: var(--l3-content-primary);
   white-space: nowrap;
 }
-.chosen {
-  display: inline-block;
-  color: var(--l3-content-accent-success-default);
-  animation: chosen var(--l3-motion-duration-short) var(--l3-motion-easing-decelerate);
-}
-/* The picked leverage drops into place (each pick re-keys it). */
-@keyframes chosen { from { opacity: 0; transform: translateY(-50%); } }
-
-/* The rolling number: 2x → 3x → 4x → 2x, one line tall, each held for a moment. */
-.roll {
-  display: inline-flex;
-  flex-direction: column;
-  height: var(--l3-size-16);
-  overflow: hidden;
-  vertical-align: top;
-  color: var(--l3-content-accent-success-default);
-}
-.roll > span {
-  display: block;
-  height: var(--l3-size-16);
-  line-height: var(--l3-size-16);
-  animation: roll 6s cubic-bezier(0.6, 0, 0.2, 1) infinite;
-}
-@keyframes roll {
-  0%, 26% { transform: translateY(0); }
-  33%, 59% { transform: translateY(-100%); }
-  66%, 92% { transform: translateY(-200%); }
-  100% { transform: translateY(-300%); }
-}
-@media (prefers-reduced-motion: reduce) { .roll > span, .chosen { animation: none; } }
-.srOnly { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.chosen { color: var(--l3-content-accent-success-default); }
 
 /* Grows open / shut (Minted: 0.2s ease-out) — a 0fr → 1fr row, so it animates to the content's own height. */
 .grow {
@@ -38215,11 +38189,15 @@ export function FeeBreakdownSheet({ onClose, orderUsd }: { onClose: () => void; 
 .on .grow { grid-template-rows: 1fr; }
 @media (prefers-reduced-motion: reduce) { .grow { transition: none; } }
 
-/* On: a line under the header, the choices 12 from every side, then the info strip across the card's foot. */
+/* On: a line under the header, then the info strip across the card's foot. */
 /* The line only while open: a border on the shut row would keep it 1 tall. */
 .on .body { border-top: 1px solid var(--l3-border-light); }
-.choices { padding: var(--l3-spacing-12); }
 .strip {
+  /* A button (opens the explainer sheet): reset its own box. */
+  width: 100%;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -38236,41 +38214,34 @@ export function FeeBreakdownSheet({ onClose, orderUsd }: { onClose: () => void; 
 
 ```tsx
 // Leverage card on the Market pad (19 Nov, the user's call: "import the boosted / leverage thing from Minted"), Minted's
-// card (Figma 8870:209735, ~/minted reference s05 / s13): a bolt tile, "Enable leverage upto 2x / 3x / 4x" (the number
-// rolls while it's off) and a switch. On: a line, then 2x · 3x · 4x (2x picked) and an info strip — "Leverage can
-// multiply your profits and losses." The title then shows the chosen leverage in green.
+// card (Figma 8870:209735, ~/minted reference s05 / s13): a bolt tile, "Enable leverage upto 3x" (3x in green) and a
+// switch. On: a line, then an info strip — "Leverage can multiply your profits and losses."
 // Interaction as in Minted: the first switch-on opens the "Activate leverage" sheet (LeverageSheet) and the card
 // switches on only on Confirm (until "Don't show this again" is confirmed); the card grows open / shut (0.2s ease-out)
 // instead of jumping. Plain card and bolt (the user's call: no gradients).
 // Chips: L3 pill chips, secondary emphasis (the user's call), not the primary pill group.
 // Prototype only: the leverage doesn't change the dock's numbers (Balance / Req. / the ₹ value).
 // FLAG: copy hard-coded like the rest of the pad (no copy.ts in this flow yet).
-// FLAG: the rolling 2x → 3x → 4x, the bolt tile and the grow are hand-made (LeverageCard.module.css); L3 has none.
+// 19 Nov (the user's call): a simple toggle at a fixed 3x — no rolling number, no 2x · 3x · 4x choice.
+// FLAG: the bolt tile and the grow are hand-made (LeverageCard.module.css); L3 has none.
 import { useId, useState } from 'react'
 import { Card } from '@l3/components/Card'
 import { Icon } from '@l3/components/Icon'
-import { Stack } from '@l3/components/Stack'
 import { Switch } from '@l3/components/Switch'
-import { Tabs } from '@l3/components/Tabs'
 import { msBoltFill, msInfo } from '@l3/icons/material'
 import { LeverageSheet, leverageSheetSeen } from './LeverageSheet'
 import styles from './LeverageCard.module.css'
 
-const LEVERAGES = ['2', '3', '4'] as const
-type Leverage = (typeof LEVERAGES)[number]
+const LEVERAGE = 3
 
 export function LeverageCard() {
   const [on, setOn] = useState(false)
   const [sheet, setSheet] = useState(false)
-  const [leverage, setLeverage] = useState<Leverage>('2')
+  const [explainer, setExplainer] = useState(false)
   const titleId = useId()
-  const switchOn = () => {
-    setLeverage('2') // switched on: 2x, as in Figma
-    setOn(true)
-  }
   const toggle = () => {
     if (on) setOn(false)
-    else if (leverageSheetSeen()) switchOn()
+    else if (leverageSheetSeen()) setOn(true)
     else setSheet(true)
   }
   return (
@@ -38280,40 +38251,18 @@ export function LeverageCard() {
         <div className={styles.head} onPointerDown={(e) => e.preventDefault()} onClick={toggle}>
           <span className={styles.tile} aria-hidden="true"><Icon icon={msBoltFill} size={20} /></span>
           <p id={titleId} className={styles.title}>
-            Enable leverage upto{' '}
-            {on ? (
-              <span key={leverage} className={styles.chosen}>{leverage}x</span>
-            ) : (
-              <span className={styles.roll} aria-hidden="true">
-                <span>2x</span><span>3x</span><span>4x</span><span>2x</span>
-              </span>
-            )}
-            {!on && <span className={styles.srOnly}>4x</span>}
+            Enable leverage upto <span className={styles.chosen}>{LEVERAGE}x</span>
           </p>
           <Switch size="sm" checked={on} onChange={toggle} onClick={(e) => e.stopPropagation()} aria-labelledby={titleId} />
         </div>
         {/* Always rendered so it can grow open and shut; hidden from everyone while shut. */}
         <div className={styles.grow} aria-hidden={!on} inert={!on}>
           <div className={styles.body} onPointerDown={(e) => e.preventDefault()}>
-            <Stack gap="00">
-              <div className={styles.choices}>
-                <Tabs
-                  appearance="pill"
-                  emphasis="secondary"
-                  size="sm"
-                  behavior="toggle"
-                  width="fill"
-                  aria-label="Leverage"
-                  items={LEVERAGES.map((value) => ({ value, label: `${value}x` }))}
-                  value={leverage}
-                  onChange={(value) => setLeverage(value as Leverage)}
-                />
-              </div>
-              <p className={styles.strip}>
-                <Icon icon={msInfo} size={14} />
-                Leverage can multiply your profits and losses.
-              </p>
-            </Stack>
+            {/* A tap opens the explainer sheet (19 Nov, the user's call). */}
+            <button type="button" className={styles.strip} onClick={() => setExplainer(true)}>
+              <Icon icon={msInfo} size={14} />
+              Leverage can multiply your profits and losses.
+            </button>
           </div>
         </div>
       </Card>
@@ -38322,9 +38271,10 @@ export function LeverageCard() {
         onClose={() => setSheet(false)}
         onConfirm={() => {
           setSheet(false)
-          switchOn()
+          setOn(true)
         }}
       />
+      <LeverageSheet mode="explain" open={explainer} onClose={() => setExplainer(false)} onConfirm={() => setExplainer(false)} />
     </>
   )
 }
@@ -38369,6 +38319,11 @@ export function LeverageCard() {
   color: var(--l3-content-primary);
   cursor: pointer;
 }
+
+/* The liquidation warning's line in content/secondary (19 Nov, the user's call): L3 Aerobar's soft paragraph is
+   secondary at 60%, which reads as tertiary. FLAG: L3 gap — Aerobar has no option for a full-strength paragraph; set
+   through its --ab-paragraph variable. */
+.risk { --ab-paragraph: var(--l3-content-secondary); }
 ```
 
 ### `src/flows/us-stocks/screens/trade/LeverageSheet.tsx`
@@ -38376,7 +38331,7 @@ export function LeverageCard() {
 ```tsx
 // "Activate leverage" sheet (19 Nov, the user's call: Minted shows it before leverage switches on the first time —
 // ~/minted reference, "Combined asset page: Activate leverage confirmation sheet"). It explains leverage with a
-// $100 example at 1x and 4x, warns about liquidation, and has "Don't show this again" (ticked, as in Minted) +
+// $100 example at 1x and 3x, warns about liquidation, and has "Don't show this again" (ticked, as in Minted) +
 // Confirm. Confirm switches the card on; closing the sheet (backdrop, drag) leaves it off.
 // FLAG: copy hard-coded like the rest of the pad (no copy.ts in this flow yet).
 // FLAG: the example table is hand-laid (LeverageSheet.module.css) — L3 has no table.
@@ -38405,10 +38360,15 @@ export function leverageSheetSeen(): boolean {
 
 const EXAMPLE = [
   { leverage: 1, move: 1 },
-  { leverage: 4, move: 4 },
+  { leverage: 3, move: 3 },
 ]
 
-export function LeverageSheet({ open, onClose, onConfirm }: { open: boolean; onClose: () => void; onConfirm: () => void }) {
+/**
+ * `activate` (the first switch-on): Confirm + "Don't show this again". `explain` (a tap on the card's info strip, 19 Nov,
+ * the user's call): the same explainer, read-only — "Got it" closes it, no checkbox.
+ */
+export function LeverageSheet({ open, onClose, onConfirm, mode = 'activate' }: { open: boolean; onClose: () => void; onConfirm: () => void; mode?: 'activate' | 'explain' }) {
+  const explain = mode === 'explain'
   const layer = useSheetLayer()
   const headingId = useId()
   const [dontShow, setDontShow] = useState(true)
@@ -38428,10 +38388,12 @@ export function LeverageSheet({ open, onClose, onConfirm }: { open: boolean; onC
       onClose={onClose}
       container={layer}
       aria-labelledby={headingId}
-      header={<BottomSheetHeader size="sm" heading="Activate leverage" headingId={headingId} description="Leverage multiplies your gains and your losses." />}
+      header={<BottomSheetHeader size="sm" heading={explain ? 'How leverage works' : 'Activate leverage'} headingId={headingId} description="Leverage multiplies your gains and your losses." />}
       footer={
         <ButtonGroup>
-          <Button size="lg" onClick={confirm}>Confirm</Button>
+          {explain
+            ? <Button size="lg" onClick={onClose}>Got it</Button>
+            : <Button size="lg" onClick={confirm}>Confirm</Button>}
         </ButtonGroup>
       }
     >
@@ -38453,17 +38415,18 @@ export function LeverageSheet({ open, onClose, onConfirm }: { open: boolean; onC
           ))}
         </div>
         <Aerobar
+          className={styles.risk}
           floating
           placement="inline"
           type="danger"
           emphasis="secondary"
           heading="Liquidation risk"
-          paragraph="At 4x, a 25% price drop closes your position and you lose your $100."
+          paragraph="At 3x, a 33% price drop closes your position and you lose your $100."
         />
-        <label className={styles.dontShow}>
+        {!explain && <label className={styles.dontShow}>
           <Checkbox checked={dontShow} onChange={(e) => setDontShow(e.target.checked)} />
           Don’t show this again
-        </label>
+        </label>}
       </Stack>
     </BottomSheet>
   )
@@ -38772,7 +38735,7 @@ function OrderPadV1({ config, backdrop, sheet }: OrderPadProps) {
 
 /* The big amount: "$" and the typed digits, centred; the input is focused (Typing) with the keypad up. */
 .amountRow { display: inline-flex; align-items: center; justify-content: center; gap: var(--l3-spacing-04); max-width: 100%; }
-.prefix { font: var(--l3-text-heading-24); color: var(--l3-content-secondary); }
+.prefix { font: var(--l3-text-heading-36); font-size: var(--app-orderpad-currency-size); color: var(--l3-content-secondary); } /* 2 under the amount (34, a local token: L3 has no 34), still secondary */
 .amount { min-width: 0; margin: 0; padding: 0; border: 0; outline: none; background: none; font: var(--l3-text-heading-36); color: var(--l3-content-primary); text-align: left; field-sizing: content; height: var(--l3-size-48); /* fixed: an empty field (placeholder) would be 3 taller and push the cards down */ caret-color: transparent; }
 /* The typing caret, drawn (the native one only paints while the page has focus and hides in captures): always blinking
    while the keypad is up, as L3 TextField's Typing state (--tf-caret colour). 2px is the caret's own width. */
@@ -38786,16 +38749,7 @@ function OrderPadV1({ config, backdrop, sheet }: OrderPadProps) {
 .helperLine + .helperLine { margin-left: var(--l3-spacing-08); }
 .error { margin: 0; font: var(--l3-text-label-12); color: var(--l3-content-accent-error-default); text-align: center; }
 
-/* Limit / trigger price: a filled card, label over the value, the L3 Stepper at the right. */
-/* L3 Card filled (surface/secondary, radius 12, padding 12), stretched to the column width. */
-.priceCard { align-self: stretch; }
-.priceText { flex: 1; min-width: 0; align-self: stretch; margin: calc(-1 * var(--l3-spacing-12)) 0 calc(-1 * var(--l3-spacing-12)) calc(-1 * var(--l3-spacing-12)); padding: var(--l3-spacing-12) 0 var(--l3-spacing-12) var(--l3-spacing-12); cursor: text; } /* reaches the card's left, top and bottom edges: a big tap target for the price */
-.priceLabel { font: var(--l3-text-description-12); color: var(--l3-content-secondary); }
-.priceValue { display: flex; align-items: center; font: var(--l3-text-heading-16); color: var(--l3-content-primary); }
-/* The price is typed like the amount: a raw input sized to its text, with the drawn caret when it's the keypad's field. */
-.priceInput { min-width: 0; height: var(--l3-size-24); margin: 0; padding: 0; border: 0; outline: none; background: none; font: inherit; color: inherit; field-sizing: content; caret-color: transparent; }
-.priceCaret { width: 2px; height: var(--l3-size-20); margin-left: var(--l3-spacing-02); background: var(--l3-content-accent-discover-default); animation: caretBlink 1s steps(1) infinite; }
-@media (prefers-reduced-motion: reduce) { .priceCaret { animation: none; } }
+/* Limit / trigger price cards: PriceField.tsx (one component for every price card, 19 Nov). */
 
 /* Dock: the note strip, Balance · Approx. req., the main button, then the keypad. The note sits above the dock's
    hairline (on the page, outside the button dock); the hairline opens the dock itself. */
@@ -38818,15 +38772,8 @@ function OrderPadV1({ config, backdrop, sheet }: OrderPadProps) {
 .orderTypes.orderTypes { display: inline-grid; grid-auto-flow: column; grid-auto-columns: 1fr; width: fit-content; }
 .ctaInr { font: var(--l3-text-heading-14); white-space: pre; } /* 2 smaller than the label (Heading/16), same weight */
 
-/* On the Stepper's grey pill, L3's light-blue Small buttons blur into it, so the enabled ± buttons are white
-   (surface/primary) with the blue icon (content/accent/discover). L3 gap: Stepper has no on-grey button option. */
-.stepperOnGrey.stepperOnGrey[data-size] button:not(:disabled) { background: var(--l3-surface-primary); color: var(--l3-content-accent-discover-default); }
-
 /* "Req." opens the fee sheet: secondary text, underlined like a link (L3 gap: no link-style Button). */
 .reqLink.reqLink { color: var(--l3-content-secondary); text-decoration: underline; text-underline-offset: var(--l3-spacing-02); }
-
-/* Merged price card: the line between two prices, inset by the card's padding (12, like the text). 1px hairline. */
-.priceDivider { margin: 0; border: 0; height: 1px; background: var(--l3-border-light); }
 ```
 
 ### `src/flows/us-stocks/screens/trade/OrderPadV2.tsx`
@@ -38845,15 +38792,13 @@ function OrderPadV1({ config, backdrop, sheet }: OrderPadProps) {
 // FLAG: the big amount is a raw <input> (L3 has no large amount field); it is focused, typed from the shared Keyboard.
 // The keypad has "." (shared Keyboard `decimal`): $ amounts take 2 decimals, shares 4, whole-share stocks none. The first key replaces the prefilled value.
 // FLAG: duplicates the app's Indian order pad (src/flows/stocks) for US stocks.
-import { Fragment, useEffect, useLayoutEffect, useRef, useState, type ReactNode, type SyntheticEvent } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode, type SyntheticEvent } from 'react'
 import { Actionbar } from '@l3/components/Actionbar'
 import { Avatar } from '@l3/components/Avatar'
 import { Button } from '@l3/components/Button'
-import { Card } from '@l3/components/Card'
 import { PriceChange } from '@l3/components/PriceChange'
 import { Select } from '@l3/components/Select'
 import { Stack } from '@l3/components/Stack'
-import { Stepper } from '@l3/components/Stepper'
 import { Tabs } from '@l3/components/Tabs'
 import { Keyboard, KeypadSlide, keypadFieldProps, typeKey } from '../../../../shared/ui/Keyboard'
 import { Phone } from '../../components/Phone'
@@ -38867,6 +38812,7 @@ import { usePriceCards } from './version'
 import { LeverageCard } from './LeverageCard'
 import { TpslControl } from './Tpsl'
 import { FeeBreakdownSheet } from './FeeBreakdown'
+import { PriceField, PriceFieldBox } from './PriceField'
 import styles from './OrderPadV2.module.css'
 
 const ORDER_TYPES: { value: OrderType; label: string }[] = [
@@ -39058,7 +39004,7 @@ export function OrderPadV2({ config, backdrop, sheet }: { config: OrderPadConfig
       const target = e.target as HTMLElement
       const screen = bodyRef.current?.closest('section')
       if (!screen?.contains(target)) return
-      if (!keypadRef.current || target.closest(`input, .${styles.amountRow}, .${styles.priceText}, [aria-label="Number keypad"]`)) return
+      if (!keypadRef.current || target.closest(`input, .${styles.amountRow}, [data-price-field], [aria-label="Number keypad"]`)) return
       showKeypad(false)
       activeRef.current?.blur()
     }
@@ -39112,54 +39058,31 @@ export function OrderPadV2({ config, backdrop, sheet }: { config: OrderPadConfig
     ).finished.then(() => go(target), () => go(target))
   }
 
-  // One price row: the label + price (the tap target for typing) and its % Stepper.
+  // One price row (PriceField, use 1): the label + typed price (the tap target for typing) and its % Stepper.
   const priceRow = (price: NonNullable<OrderPadConfig['prices']>[number], i: number) => (
-              <Stack direction="horizontal" justify="between" align="center" gap="08">
-                {/* The whole left part of the card (label + price, to the card's edges) is the tap target for typing the price. */}
-                <Stack
-                  gap="04"
-                  className={styles.priceText}
-                  onPointerDown={(e) => {
-                    const input = e.currentTarget.querySelector('input')
-                    if (!input || e.target === input) return
-                    e.preventDefault()
-                    input.focus({ preventScroll: true })
-                    pickField(i, input)
-                  }}
-                >
-                  <span className={styles.priceLabel}>{price.label}</span>
-                  {/* FLAG: a raw input like the amount (L3 has no inline price field); typed from the shared Keyboard. */}
-                  <label className={styles.priceValue}>
-                    <span>$</span>
-                    <input
-                      className={styles.priceInput}
-                      {...keypadFieldProps()}
-                      autoComplete="off"
-                      aria-label={price.label}
-                      value={active === i && priceDraft !== null ? priceDraft : prices[i].toFixed(2)}
-                      onFocus={pick(i)}
-                      onPointerDown={pick(i)}
-                      onBlur={keepFocus}
-                      onChange={() => undefined}
-                    />
-                    {keypad && active === i && <span className={styles.priceCaret} aria-hidden="true" />}
-                  </label>
-                </Stack>
-              <Stepper
-                size="sm"
-                label={`${price.label} % from last price`}
-                value={pcts[i]}
-                onChange={(pct) => {
-                  setPcts((all) => all.map((old, j) => (j === i ? pct : old)))
-                  if (active === i) { setPriceDraft(null); setFresh(true) }
-                }}
-                min={-20}
-                max={20}
-                step={0.5}
-                format={(pct) => `${pct.toFixed(1)}%`}
-                className={styles.stepperOnGrey}
-              />
-              </Stack>
+    <PriceField
+      key={price.label}
+      label={price.label}
+      price={{
+        text: active === i && priceDraft !== null ? priceDraft : prices[i].toFixed(2),
+        typing: keypad && active === i,
+        'aria-label': price.label,
+        onPick: (input) => pickField(i, input),
+        inputProps: { onBlur: keepFocus },
+      }}
+      stepper={{
+        label: `${price.label} % from last price`,
+        value: pcts[i],
+        onChange: (pct) => {
+          setPcts((all) => all.map((old, j) => (j === i ? pct : old)))
+          if (active === i) { setPriceDraft(null); setFresh(true) }
+        },
+        min: -20,
+        max: 20,
+        step: 0.5,
+        format: (pct) => `${pct.toFixed(1)}%`,
+      }}
+    />
   )
 
   const fieldError = typeof config.fieldError === 'function' ? config.fieldError(derived) : config.fieldError
@@ -39220,7 +39143,7 @@ export function OrderPadV2({ config, backdrop, sheet }: { config: OrderPadConfig
           {config.chips && mode === config.mode && (
             <Tabs
               appearance="pill"
-              size="sm"
+              size="md"
               behavior="filter"
               aria-label={mode === 'amount' ? 'Add amount' : 'Shares to sell'}
               items={config.chips.map((chip, i) => ({ value: String(i), label: typeof chip.label === 'function' ? chip.label(usd) : chip.label }))}
@@ -39237,25 +39160,14 @@ export function OrderPadV2({ config, backdrop, sheet }: { config: OrderPadConfig
           {config.type === 'market' && <LeverageCard />}
           {/* Price cards (flow option "Price cards"): one card holding every price, a line between (merged, the default),
               or a card per price (separate, the earlier design, kept for A/B). */}
-          {priceCards === 'merged' && (config.prices ?? []).length > 1 ? (
-            <Card className={styles.priceCard}>
-              <Stack gap="12">
-                {(config.prices ?? []).map((price, i) => (
-                  <Fragment key={price.label}>
-                    {i > 0 && <hr className={styles.priceDivider} />}
-                    {priceRow(price, i)}
-                  </Fragment>
-                ))}
-              </Stack>
-            </Card>
+          {priceCards === 'merged' ? (
+            (config.prices ?? []).length > 0 && <PriceFieldBox>{(config.prices ?? []).map(priceRow)}</PriceFieldBox>
           ) : (
-            (config.prices ?? []).map((price, i) => (
-              <Card key={price.label} className={styles.priceCard}>{priceRow(price, i)}</Card>
-            ))
+            (config.prices ?? []).map((price, i) => <PriceFieldBox key={price.label}>{priceRow(price, i)}</PriceFieldBox>)
           )}
           {/* Every order type (Market, Limit, SL): TP/SL — the "Set TP/SL" chip, then (once set) its summary card, full
               width (Tpsl.tsx). Under the leverage card on Market, under the prices on Limit / SL. */}
-          <TpslControl order={{ symbol: config.stock.symbol, ltp: config.stock.price, change: config.stock.change, qty: config.mode === 'shares' ? value : unitPrice ? value / unitPrice : 0 }} />
+          <TpslControl order={{ symbol: config.stock.symbol, ltp: config.stock.price, change: config.stock.change, qty: config.mode === 'shares' ? value : unitPrice ? value / unitPrice : 0, entry: unitPrice }} />
         </Stack>
       </Stack>
       {sheet}
@@ -39568,6 +39480,154 @@ export function OrderResultV2({ config }: { config: OrderResultConfig }) {
 }
 ```
 
+### `src/flows/us-stocks/screens/trade/PriceField.module.css`
+
+```css
+/* Price field (PriceField.tsx): one box, rows 12 padded all round, a hairline between rows. */
+
+/* L3 Card (padding none: the rows bring the 12), its own 8 gap off — the hairline separates rows. */
+.box { gap: 0; }
+/* With an error the border is red. L3 gap: Card has no error state — its border variable is set here. */
+.boxError.boxError { --card-border: inset 0 0 0 1px var(--l3-border-accent-error-default); }
+
+.row { padding: var(--l3-spacing-12); }
+.row + .row { border-top: 1px solid var(--l3-border-light); } /* 1px hairline */
+
+/* The tap target for typing: the left part of the row, out to the box's left, top and bottom edges. */
+.text { flex: 1; min-width: 0; align-self: stretch; margin: calc(-1 * var(--l3-spacing-12)) 0 calc(-1 * var(--l3-spacing-12)) calc(-1 * var(--l3-spacing-12)); padding: var(--l3-spacing-12) 0 var(--l3-spacing-12) var(--l3-spacing-12); cursor: text; }
+.label { font: var(--l3-text-description-12); color: var(--l3-content-secondary); }
+.hint { font: var(--l3-text-description-14); color: var(--l3-content-secondary); }
+.value { display: flex; align-items: center; font: var(--l3-text-heading-16); color: var(--l3-content-primary); }
+/* A raw input sized to its text; the native caret is hidden and drawn instead (it only paints while the page has
+   focus and hides in captures), as L3 TextField's Typing state. */
+.input { min-width: 0; height: var(--l3-size-24); margin: 0; padding: 0; border: 0; outline: none; background: none; font: inherit; color: inherit; field-sizing: content; caret-color: transparent; }
+.input::placeholder { color: var(--l3-content-secondary); opacity: 1; }
+.caret { width: 2px; height: var(--l3-size-20); margin-left: var(--l3-spacing-02); background: var(--l3-content-accent-discover-default); animation: caretBlink 1s steps(1) infinite; }
+.caret[data-start] { margin: 0 var(--l3-spacing-02) 0 0; }
+@keyframes caretBlink { 50% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .caret { animation: none; } }
+
+/* On the Stepper's grey pill, L3's light-blue Small buttons blur into it: the enabled ± are white with the blue icon.
+   L3 gap: Stepper has no on-grey button option. */
+.stepper.stepper[data-size] button:not(:disabled) { background: var(--l3-surface-primary); color: var(--l3-content-accent-discover-default); }
+```
+
+### `src/flows/us-stocks/screens/trade/PriceField.tsx`
+
+```tsx
+// Price field — the US Stocks trade screens' price card, one component for every use (19 Nov, the user's call: "make it
+// a component … same padding 12 in all cards"). Before, each screen drew its own (12 / 16 padding, filled or outlined).
+//
+// The uses it covers (audited 19 Nov):
+//  1. Order pad V2, Limit / SL order prices (OrderPadV2): label ("Limit price"), the typed $ price, a % Stepper. One box
+//     per price, or one box holding every price with a hairline between (flow option "Price cards").
+//  2. TP/SL sheet, trigger / limit rows (Tpsl LegCard): label + a unit switch (Points ⇄ Percentage) on the trigger row;
+//     empty ("Enter price" placeholder, the caret at its start, "--" in the Stepper); the box red with an error.
+//  3. Trailing TP / SL sheet (Tpsl TrailSheet): no typed price — a hint ("Trailing TP will move in") over a Medium unit
+//     switch; the Stepper is the value.
+//
+// Anatomy: PriceFieldBox (an L3 Card, padding none) holds one or more PriceField rows. Every row is 12 padded all round
+// and the box puts a 1px hairline between rows. The left part of a row (label + price, to the box's edges) is the tap
+// target for typing the price from the app keypad; the Stepper sits at the right.
+import type { InputHTMLAttributes, ReactNode } from 'react'
+import { Card } from '@l3/components/Card'
+import { Select } from '@l3/components/Select'
+import { Stack } from '@l3/components/Stack'
+import { Stepper, type StepperProps } from '@l3/components/Stepper'
+import { keypadFieldProps } from '../../../../shared/ui/Keyboard'
+import styles from './PriceField.module.css'
+
+/** The box round one or more PriceField rows. `error`: the border turns red (the message goes under the box). */
+export function PriceFieldBox({ error = false, children, className }: { error?: boolean; children: ReactNode; className?: string }) {
+  return (
+    <Card padding="none" className={[styles.box, error && styles.boxError, className].filter(Boolean).join(' ')}>
+      {children}
+    </Card>
+  )
+}
+
+/** A unit switch on the row (Points ⇄ Percentage): an L3 Select with the swap icon. */
+export type PriceFieldUnit = { label: string; onSwitch: () => void; 'aria-label': string }
+
+/** The typed price (uses 1 and 2). */
+export type PriceFieldPrice = {
+  /** What's typed / the price, without the "$" ('' shows the placeholder). */
+  text: string
+  placeholder?: string
+  /** This is the keypad's field: the drawn caret shows (at the placeholder's start when empty, after the text when not). */
+  typing: boolean
+  'aria-label': string
+  /** The row was tapped or the input focused: make this the keypad's field. */
+  onPick: (input: HTMLInputElement) => void
+  /** Extra input handlers (e.g. the pad keeps focus on blur). */
+  inputProps?: Pick<InputHTMLAttributes<HTMLInputElement>, 'onBlur'>
+}
+
+export type PriceFieldProps = {
+  /** "Limit price", "Trigger at", or the trail's hint ("Trailing TP will move in"). */
+  label: string
+  unit?: PriceFieldUnit
+  /** Omit for a stepper-only row (use 3): the unit switch then sits under the label, at Medium. */
+  price?: PriceFieldPrice
+  /** The L3 Small Stepper at the right (its ± buttons are white on the grey pill). */
+  stepper: Omit<StepperProps, 'size'>
+}
+
+export function PriceField({ label, unit, price, stepper }: PriceFieldProps) {
+  const stepperEl = <Stepper {...stepper} size="sm" className={[styles.stepper, stepper.className].filter(Boolean).join(' ')} />
+  if (!price) {
+    return (
+      <Stack direction="horizontal" justify="between" align="center" gap="12" className={styles.row}>
+        <Stack gap="04">
+          <span className={styles.hint}>{label}</span>
+          {unit && <Select size="md" icon="swap" onClick={unit.onSwitch} aria-label={unit['aria-label']}>{unit.label}</Select>}
+        </Stack>
+        {stepperEl}
+      </Stack>
+    )
+  }
+  const empty = price.text === ''
+  return (
+    <Stack direction="horizontal" justify="between" align="center" gap="08" className={styles.row} data-price-field>
+      <Stack
+        gap="04"
+        className={styles.text}
+        onPointerDown={(e) => {
+          const input = e.currentTarget.querySelector('input')
+          if (!input || (e.target as HTMLElement).closest('button')) return
+          if (e.target !== input) e.preventDefault()
+          input.focus({ preventScroll: true })
+          price.onPick(input)
+        }}
+      >
+        <Stack direction="horizontal" align="center" gap="04">
+          <span className={styles.label}>{label}</span>
+          {unit && <Select size="sm" icon="swap" onClick={unit.onSwitch} aria-label={unit['aria-label']}>{unit.label}</Select>}
+        </Stack>
+        {/* FLAG: a raw input (L3 has no inline price field), typed from the shared app Keyboard. */}
+        <label className={styles.value} data-empty={empty || undefined}>
+          {!empty && <span>$</span>}
+          {price.typing && empty && <span className={styles.caret} data-start aria-hidden="true" />}
+          <input
+            className={styles.input}
+            {...keypadFieldProps()}
+            autoComplete="off"
+            aria-label={price['aria-label']}
+            placeholder={price.placeholder}
+            value={price.text}
+            onFocus={(e) => price.onPick(e.currentTarget)}
+            onChange={() => undefined}
+            {...price.inputProps}
+          />
+          {price.typing && !empty && <span className={styles.caret} aria-hidden="true" />}
+        </label>
+      </Stack>
+      {stepperEl}
+    </Stack>
+  )
+}
+```
+
 ### `src/flows/us-stocks/screens/trade/Tpsl.module.css`
 
 ```css
@@ -39594,38 +39654,32 @@ export function OrderResultV2({ config }: { config: OrderResultConfig }) {
 
 /* A leg card in the sheet. */
 .leg { gap: 0; }
+/* The card's head: name (+ MKT / LMT once on) and the switch, the card's 12 padding. Off, it's a <label> (no Stack: L3
+   Stack renders a div) so a tap anywhere on the card turns the leg on. */
+.head { padding: var(--l3-spacing-12); }
+.head[data-off] { display: flex; align-items: center; justify-content: space-between; gap: var(--l3-spacing-08); cursor: pointer; }
+.body { padding: 0 var(--l3-spacing-12) var(--l3-spacing-12); }
+.fadeIn { animation: fadeIn var(--l3-motion-duration-medium) var(--l3-motion-easing-standard); }
+@keyframes fadeIn { from { opacity: 0; } }
+
+/* Expand / collapse: the row track animates 0fr ⇄ 1fr (the content's own height), the inner box clips it. L3 gap: no
+   Collapse / Accordion part, so it's done here with L3's motion tokens. */
+.collapse { display: grid; grid-template-rows: 0fr; opacity: 0; transition: grid-template-rows var(--l3-motion-duration-medium) var(--l3-motion-easing-standard), opacity var(--l3-motion-duration-short) var(--l3-motion-easing-standard); }
+.collapse[data-open] { grid-template-rows: 1fr; opacity: 1; }
+.collapseInner { min-height: 0; overflow: hidden; }
+@media (prefers-reduced-motion: reduce) { .collapse, .fadeIn { transition: none; animation: none; } }
+
 .legName { font: var(--l3-text-label-14); color: var(--l3-content-primary); }
 
-/* Trigger / limit rows in an outlined box, a hairline between — outlined like the pad's cards, not Figma's grey; red
-   with an error (production). */
-.fields {
-  border-radius: var(--l3-radius-12);
-  border: 1px solid var(--l3-border-light);
-  padding: 0 var(--l3-spacing-12);
-}
-.fields[data-error] { border-color: var(--l3-border-accent-error-default); }
 
 .stockName { font: var(--l3-text-label-14); color: var(--l3-content-primary); }
 .stockPrice { font: var(--l3-text-label-14); color: var(--l3-content-primary); }
 
-/* A field's price, typed from the keypad like the pad's price cards: a raw input sized to its text, the drawn caret on
-   the field being typed. The left part of the row is the tap target. */
-.priceText { flex: 1; min-width: 0; align-self: stretch; padding-block: var(--l3-spacing-12); cursor: text; }
-.priceValue { display: flex; align-items: center; font: var(--l3-text-heading-16); color: var(--l3-content-primary); }
-.priceInput { min-width: 0; height: var(--l3-size-24); margin: 0; padding: 0; border: 0; outline: none; background: none; font: inherit; color: inherit; field-sizing: content; caret-color: transparent; }
-.priceInput::placeholder { color: var(--l3-content-secondary); opacity: 1; }
-.priceCaret { width: 2px; height: var(--l3-size-20); margin-left: var(--l3-spacing-02); background: var(--l3-content-accent-discover-default); animation: caretBlink 1s steps(1) infinite; }
-@keyframes caretBlink { 50% { opacity: 0; } }
-@media (prefers-reduced-motion: reduce) { .priceCaret { animation: none; } }
 
 /* Under each card: est. profit / loss (or the error) and Clear. Clear's ghost padding is pulled back so it lines up. */
-.estRow { min-height: var(--l3-size-24); padding-inline: var(--l3-spacing-04) 0; }
+.estRow { min-height: var(--l3-size-24); padding: var(--l3-spacing-08) 0 0 var(--l3-spacing-04); } /* the 8 above it rides in the collapse */
 .error { margin: 0; font: var(--l3-text-label-12); color: var(--l3-content-accent-error-default); }
 
-/* Small steppers: enabled ± buttons white with the blue icon on the grey pill (as the pad). L3 gap: no on-grey option. */
-.stepper.stepper[data-size] button:not(:disabled) { background: var(--l3-surface-primary); color: var(--l3-content-accent-discover-default); }
-.field { min-height: var(--l3-size-56); }
-.field + .field { border-top: 1px solid var(--l3-border-light); }
 
 .target { margin: 0; font: var(--l3-text-description-12); color: var(--l3-content-secondary); }
 .up { font: var(--l3-text-label-12); color: var(--l3-content-accent-success-default); }
@@ -39650,14 +39704,6 @@ export function OrderResultV2({ config }: { config: OrderResultConfig }) {
   cursor: pointer;
 }
 
-/* The trailing sheet's box (Figma 4494:29124): the unit at the left, the Stepper at the right. Outlined like the leg
-   cards, not Figma's grey (the user's call); the Stepper as the leg cards' (white ± on its grey pill). */
-.trailBox {
-  padding: var(--l3-spacing-16);
-  border-radius: var(--l3-radius-12);
-  border: 1px solid var(--l3-border-light);
-}
-.trailHint { font: var(--l3-text-description-14); color: var(--l3-content-secondary); }
 
 /* The trailing sheet's checkbox row, in the dock above Save (Figma): as tall as its text, the 48 tap target kept with
    padding pulled back by negative margins; 16 from Save. */
@@ -39677,13 +39723,6 @@ export function OrderResultV2({ config }: { config: OrderResultConfig }) {
 .select.select { color: var(--l3-content-accent-discover-default); }
 
 /* A price field's label ("Trigger at", "Limit at"): Description 12, secondary (the user's call). */
-.priceLabel { font: var(--l3-text-description-12); color: var(--l3-content-secondary); }
-
-/* The TP/SL sheet's 24 above the dock is the end of its scroll, not a fixed gap: L3's bottom space is dropped and the
-   content ends with 24 instead, so scrolled content runs right up to the dock (the user's call). L3 gap: BottomSheet's
-   bottom space is always fixed. */
-.sheetBody { padding-bottom: var(--l3-spacing-24); }
-:global([data-sheet-content]):has(> .sheetBody) + :global([data-sheet-space='bottom']) { display: none; }
 ```
 
 ### `src/flows/us-stocks/screens/trade/Tpsl.tsx`
@@ -39715,14 +39754,14 @@ import { KeyValueList, KeyValueRow } from '@l3/components/KeyValueList'
 import { PriceChange } from '@l3/components/PriceChange'
 import { Select } from '@l3/components/Select'
 import { Stack } from '@l3/components/Stack'
-import { Stepper } from '@l3/components/Stepper'
 import { Switch } from '@l3/components/Switch'
 import { Tabs } from '@l3/components/Tabs'
 import { Tag } from '@l3/components/Tag'
 import { msAdd, msCheckCircleFill, msEdit } from '@l3/icons/material'
 import { useSheetLayer } from '../../components/Phone'
 import { Usd, useUsd } from '../../../../shared/money'
-import { Keyboard, KeypadSlide, keypadFieldProps, typeKey } from '../../../../shared/ui/Keyboard'
+import { Keyboard, KeypadSlide, typeKey } from '../../../../shared/ui/Keyboard'
+import { PriceField, PriceFieldBox } from './PriceField'
 import styles from './Tpsl.module.css'
 
 type Side = 'tp' | 'sl'
@@ -39732,8 +39771,9 @@ type Field = 'trigger' | 'limitAt'
  *  null = not entered yet ("Enter price"); `trail` is in its own `trailUnit`. */
 export type TpslLeg = { on: boolean; limit: boolean; unit: Unit; trigger: number | null; limitAt: number | null; trail: number | null; trailUnit: Unit }
 export type Tpsl = { tp: TpslLeg; sl: TpslLeg }
-/** The order TP/SL is for: the stock (symbol, last price, day change) and its quantity in shares. */
-export type TpslOrder = { symbol: string; ltp: number; change: number; qty: number }
+/** The order TP/SL is for: the stock (symbol, last price, day change), its quantity in shares, and the buy price TP/SL
+ *  are checked against (`entry`: the last price on Market, the limit price on Limit / SL). */
+export type TpslOrder = { symbol: string; ltp: number; change: number; qty: number; entry: number }
 
 /** What the sheet opens with the first time (Figma's values; both legs Market — the user's call). */
 const TPSL_START: Tpsl = {
@@ -39759,13 +39799,45 @@ const closeAt = (leg: TpslLeg, ltp: number, side: Side) => {
 }
 const targetPrice = (ltp: number, leg: TpslLeg, side: Side) => closeAt(leg, ltp, side) ?? ltp
 
-/** What's wrong with a leg that's on (production's messages), or null. */
-function legError(leg: TpslLeg, ltp: number, side: Side, usd: (n: number) => string) {
-  if (!leg.on || leg.trigger === null) return null
+/** The smallest gap between the buy price and a trigger (0.25%): a trigger any closer would fire on ordinary ticks. */
+export const MIN_GAP_PCT = 0.25
+
+/**
+ * What's wrong with a leg that's on, or null (19 Nov, the user's call: "handle the error cases"; copy kept short, same
+ * day). Checked against the order's buy price (`entry`), first match wins:
+ *  1. No trigger                          → "Enter trigger price"
+ *  2. TP at or under / SL at or over the buy price → "TP should be above buy price, $X" ("SL should be below …")
+ *  3. SL at $0 or less                    → "SL should be above $0.00"
+ *  4. Closer than 0.25% to the buy price  → "TP should be 0.25%+ above buy price" ("SL should be 0.25%+ below …")
+ *  5. Limit order, no limit price         → "Enter limit price"
+ *  6. Limit on the wrong side of the trigger (TP: under it; SL: over it — it might never fill)
+ *                                         → "Limit should be at or above trigger" ("at or below" for SL)
+ *  7. SL limit at $0 or less              → "Limit should be above $0.00"
+ *  8. Trail as big as the gap to the buy price (it would move past the buy price at once)
+ *                                         → "Trail should be under $X"
+ */
+function legError(leg: TpslLeg, ltp: number, entry: number, side: Side, usd: (n: number) => string) {
+  if (!leg.on) return null
+  const short = side.toUpperCase()
+  const above = side === 'tp'
+  const dir = above ? 'above' : 'below'
+  if (leg.trigger === null) return 'Enter trigger price'
   const trigger = priceOf(ltp, leg.unit, side, leg.trigger)
-  if (side === 'tp' && trigger <= ltp) return `Take profit must be above ${usd(ltp)}`
-  if (side === 'sl' && (trigger >= ltp || trigger <= 0)) return `Stop loss must be below ${usd(ltp)}`
-  if (leg.limit && leg.limitAt === null) return 'Limit price is required'
+  if (above ? trigger <= entry : trigger >= entry) return `${short} should be ${dir} buy price, ${usd(entry)}`
+  if (!above && trigger <= 0) return `${short} should be above ${usd(0)}`
+  const edge = entry * (1 + (DIR[side] * MIN_GAP_PCT) / 100)
+  if (above ? trigger < edge : trigger > edge) return `${short} should be ${MIN_GAP_PCT}%+ ${dir} buy price`
+  if (leg.limit) {
+    if (leg.limitAt === null) return 'Enter limit price'
+    const limit = priceOf(ltp, leg.unit, side, leg.limitAt)
+    if (above ? limit < trigger : limit > trigger) return `Limit should be at or ${dir} trigger`
+    if (limit <= 0) return `Limit should be above ${usd(0)}`
+  }
+  if (leg.trail !== null) {
+    const gap = Math.abs(trigger - entry)
+    const trail = leg.trailUnit === 'points' ? leg.trail : (entry * leg.trail) / 100
+    if (trail >= gap) return `Trail should be under ${usd(gap)}`
+  }
   return null
 }
 
@@ -39805,7 +39877,7 @@ export function TpslControl({ order }: { order: TpslOrder }) {
         <div className={styles.chip}>
           <Tabs
             appearance="pill"
-            size="sm"
+            size="md"
             behavior="filter"
             aria-label="Take profit and stop loss"
             items={[{ value: 'tpsl', label: 'Set TP/SL', iconLeft: <Icon icon={msAdd} size={16} /> }]}
@@ -39879,7 +39951,7 @@ type Typing = { side: Side; field: Field; text: string | null; fresh: boolean }
 function TpslSheet({ open, order, start, onClose, onSave }: { open: boolean; order: TpslOrder; start: Tpsl; onClose: () => void; onSave: (tpsl: Tpsl) => void }) {
   const layer = useSheetLayer()
   const usd = useUsd()
-  const { ltp } = order
+  const { ltp, entry } = order
   const [draft, setDraft] = useState<Tpsl>(start)
   const [trailing, setTrailing] = useState<Side | null>(null)
   const [typing, setTyping] = useState<Typing | null>(null)
@@ -39891,7 +39963,7 @@ function TpslSheet({ open, order, start, onClose, onSave }: { open: boolean; ord
     const onDown = (e: PointerEvent) => {
       const target = e.target as HTMLElement
       const sheet = document.getElementById('tpsl-title')?.closest('[role="dialog"]')
-      if (!sheet?.contains(target) || target.closest(`.${styles.priceText}, [aria-label="Number keypad"]`)) return
+      if (!sheet?.contains(target) || target.closest(`[data-price-field], [aria-label="Number keypad"]`)) return
       setTyping(null)
       ;(document.activeElement as HTMLElement | null)?.blur()
     }
@@ -39899,8 +39971,8 @@ function TpslSheet({ open, order, start, onClose, onSave }: { open: boolean; ord
     return () => document.removeEventListener('pointerdown', onDown)
   }, [typingOn])
   const setLeg = (side: Side) => (leg: TpslLeg) => setDraft((d) => ({ ...d, [side]: leg }))
-  const errors = { tp: legError(draft.tp, ltp, 'tp', (n) => usd(n)), sl: legError(draft.sl, ltp, 'sl', (n) => usd(n)) }
-  const canSave = (['tp', 'sl'] as const).every((side) => !draft[side].on || (draft[side].trigger !== null && !errors[side]))
+  const errors = { tp: legError(draft.tp, ltp, entry, 'tp', (n) => usd(n)), sl: legError(draft.sl, ltp, entry, 'sl', (n) => usd(n)) }
+  const canSave = (['tp', 'sl'] as const).every((side) => !errors[side])
 
   // One key into the typed price: up to 2 decimals; the price sets the move (unrounded, so the field shows what was typed).
   const onKey = (key: string) => {
@@ -39953,13 +40025,14 @@ function TpslSheet({ open, order, start, onClose, onSave }: { open: boolean; ord
         }
         utility={<KeypadSlide open={typing !== null}><Keyboard decimal onKey={onKey} /></KeypadSlide>}
       >
-        <Stack gap="16" className={styles.sheetBody}>
+        <Stack gap="16">
           {(['tp', 'sl'] as const).map((side) => (
             <LegCard
               key={side}
               side={side}
               leg={draft[side]}
               ltp={ltp}
+              entry={entry}
               qty={order.qty}
               error={errors[side]}
               typing={typing?.side === side ? typing : null}
@@ -39990,88 +40063,78 @@ function TpslSheet({ open, order, start, onClose, onSave }: { open: boolean; ord
   )
 }
 
-function LegCard({ side, leg, ltp, qty, error, typing, onPick, onChange, onTrail }: {
-  side: Side; leg: TpslLeg; ltp: number; qty: number; error: string | null; typing: Typing | null
+function LegCard({ side, leg, ltp, entry, qty, error, typing, onPick, onChange, onTrail }: {
+  side: Side; leg: TpslLeg; ltp: number; entry: number; qty: number; error: string | null; typing: Typing | null
   onPick: (field: Field) => void; onChange: (leg: TpslLeg) => void; onTrail: () => void
 }) {
   const name = NAME[side]
   const steps = leg.unit === 'points' ? { step: 0.5, min: 0.5, max: 500 } : { step: 1, min: 1, max: 90 }
   const close = closeAt(leg, ltp, side)
-  const est = close === null || qty <= 0 ? null : (close - ltp) * qty
+  // From the buy price (on Limit / SL that's the limit price, not the last price).
+  const est = close === null || qty <= 0 ? null : (close - entry) * qty
   const hasValue = leg.trigger !== null || leg.limitAt !== null || leg.trail !== null
-  // One field row (as the pad's price cards): label + the typed $ price at the left (the tap target), the move on a Stepper at the right.
+  // One field row (PriceField, use 2): label (+ the unit switch on the trigger) and the typed $ price at the left, the
+  // move on a Stepper at the right.
   const row = (field: Field) => {
     const move = leg[field]
     const active = typing?.field === field
-    const text = active && typing.text !== null ? typing.text : move === null ? '' : priceOf(ltp, leg.unit, side, move).toFixed(2)
+    const what = field === 'trigger' ? 'trigger' : 'limit'
     return (
-      <Stack direction="horizontal" justify="between" align="center" gap="08" className={styles.field}>
-        <Stack
-          gap="04"
-          className={styles.priceText}
-          onPointerDown={(e) => {
-            const input = e.currentTarget.querySelector('input')
-            if (!input || (e.target as HTMLElement).closest('button')) return
-            if (e.target !== input) e.preventDefault()
-            input.focus({ preventScroll: true })
-            onPick(field)
-          }}
-        >
-          <Stack direction="horizontal" align="center" gap="04">
-            <span className={styles.priceLabel}>{FIELD_LABEL[field]}</span>
-            {field === 'trigger' && (
-              <Select size="sm" icon="swap" onClick={() => onChange(switchUnit(leg, ltp))} aria-label={`Move in ${leg.unit}. Switch`}>
-                {leg.unit === 'points' ? 'Points' : 'Percentage'}
-              </Select>
-            )}
-          </Stack>
-          {/* FLAG: a raw input like the pad's price cards (L3 has no inline price field); typed from the shared Keyboard. */}
-          <label className={styles.priceValue} data-empty={text === '' || undefined}>
-            {text !== '' && <span>$</span>}
-            <input
-              className={styles.priceInput}
-              {...keypadFieldProps()}
-              autoComplete="off"
-              aria-label={`${name} ${field === 'trigger' ? 'trigger' : 'limit'} price`}
-              placeholder={field === 'trigger' ? 'Enter price' : 'Enter limit price'}
-              value={text}
-              onFocus={() => onPick(field)}
-              onChange={() => undefined}
-            />
-            {active && <span className={styles.priceCaret} aria-hidden="true" />}
-          </label>
-        </Stack>
-        <Stepper
-          size="sm"
-          className={styles.stepper}
-          label={`${name} ${field === 'trigger' ? 'trigger' : 'limit'} in ${leg.unit}`}
-          value={move ?? 0}
-          onChange={(v) => onChange({ ...leg, [field]: v })}
-          format={(v) => (move === null ? '--' : fmt(leg.unit, v))}
-          {...steps}
-        />
-      </Stack>
+      <PriceField
+        key={field}
+        label={FIELD_LABEL[field]}
+        unit={field === 'trigger' ? { label: leg.unit === 'points' ? 'Points' : 'Percentage', onSwitch: () => onChange(switchUnit(leg, ltp)), 'aria-label': `Move in ${leg.unit}. Switch` } : undefined}
+        price={{
+          text: active && typing.text !== null ? typing.text : move === null ? '' : priceOf(ltp, leg.unit, side, move).toFixed(2),
+          placeholder: field === 'trigger' ? 'Enter price' : 'Enter limit price',
+          typing: active,
+          'aria-label': `${name} ${what} price`,
+          onPick: () => onPick(field),
+        }}
+        stepper={{
+          label: `${name} ${what} in ${leg.unit}`,
+          value: move ?? 0,
+          onChange: (v) => onChange({ ...leg, [field]: v }),
+          format: (v) => (move === null ? '--' : fmt(leg.unit, v)),
+          ...steps,
+        }}
+      />
     )
   }
   return (
-    <Stack gap="08">
-      <Card className={styles.leg}>
-        <Stack gap="12">
-          <Stack direction="horizontal" justify="between" align="center" gap="08">
+    <Stack>
+      {/* One card that opens and closes (19 Nov, the user's call: "the whole card should expand and collapse"). Off: just
+          the name and the switch, and the whole head is the tap target — a <label> round the switch. MKT / LMT fades in
+          once the leg is on. The body (and the Est. row under the card) always render, in a collapse that animates its
+          height; closed, they're inert. */}
+      <Card className={styles.leg} padding="none">
+        {leg.on ? (
+          <Stack direction="horizontal" justify="between" align="center" gap="08" className={styles.head}>
             <Stack direction="horizontal" align="center" gap="08">
               <span className={styles.legName}>{name}</span>
-              <Select className={styles.select} size="sm" icon="swap" onClick={() => onChange({ ...leg, limit: !leg.limit })} aria-label={`${name}: ${leg.limit ? 'limit' : 'market'} order. Switch`}>
+              <Select className={`${styles.select} ${styles.fadeIn}`} size="sm" icon="swap" onClick={() => onChange({ ...leg, limit: !leg.limit })} aria-label={`${name}: ${leg.limit ? 'limit' : 'market'} order. Switch`}>
                 {leg.limit ? 'LMT' : 'MKT'}
               </Select>
             </Stack>
-            <Switch size="sm" checked={leg.on} onChange={() => onChange({ ...leg, on: !leg.on })} aria-label={name} />
+            <Switch size="sm" checked onChange={() => onChange({ ...leg, on: false })} aria-label={name} />
           </Stack>
-          {leg.on && (
-            <>
-              <div className={styles.fields} data-error={error ? true : undefined}>
-                {row('trigger')}
-                {leg.limit && row('limitAt')}
-              </div>
+        ) : (
+          <label className={styles.head} data-off>
+            <span className={styles.legName}>{name}</span>
+            <Switch size="sm" checked={false} onChange={() => onChange({ ...leg, on: true })} aria-label={name} />
+          </label>
+        )}
+        <div className={styles.collapse} data-open={leg.on || undefined} inert={!leg.on}>
+          <div className={styles.collapseInner}>
+            <Stack gap="12" className={styles.body}>
+              {/* The error sits right under the trigger box it's about (19 Nov, the user's call), not under the card. */}
+              <Stack gap="04">
+                <PriceFieldBox error={Boolean(error)}>
+                  {row('trigger')}
+                  {leg.limit && row('limitAt')}
+                </PriceFieldBox>
+                {error && <p className={styles.error} role={leg.on ? 'alert' : undefined}>{error}</p>}
+              </Stack>
               <div className={styles.trailRow}>
                 <label className={styles.check}>
                   <Checkbox checked={leg.trail !== null} onChange={() => (leg.trail === null ? onTrail() : onChange({ ...leg, trail: null }))} />
@@ -40081,27 +40144,26 @@ function LegCard({ side, leg, ltp, qty, error, typing, onPick, onChange, onTrail
                   <Button variant="ghost" size="sm" className={styles.edit} onClick={onTrail}>Edit</Button>
                 )}
               </div>
-            </>
-          )}
-        </Stack>
+            </Stack>
+          </div>
+        </div>
       </Card>
-      {leg.on && (
-        <Stack direction="horizontal" justify="between" align="center" gap="08" className={styles.estRow}>
-          {error ? (
-            <p className={styles.error} role="alert">{error}</p>
-          ) : (
+      <div className={styles.collapse} data-open={leg.on || undefined} inert={!leg.on}>
+        <div className={styles.collapseInner}>
+          <Stack direction="horizontal" justify="between" align="center" gap="08" className={styles.estRow}>
+            {/* With an error the estimate is "--": a price that can't be placed has no profit / loss. */}
             <p className={styles.target}>
               {side === 'tp' ? 'Est. profit' : 'Est. loss'}{' '}
               <span className={side === 'tp' ? styles.up : styles.down}>
-                {est === null ? '--' : <Usd value={est} sign layout="inline" />}
+                {est === null || error ? '--' : <Usd value={est} sign layout="inline" />}
               </span>
             </p>
-          )}
-          {hasValue && (
-            <Button variant="ghost" size="sm" className={styles.edit} onClick={() => onChange({ ...leg, trigger: null, limitAt: null, trail: null })}>Clear</Button>
-          )}
-        </Stack>
-      )}
+            {hasValue && (
+              <Button variant="ghost" size="sm" className={styles.edit} onClick={() => onChange({ ...leg, trigger: null, limitAt: null, trail: null })}>Clear</Button>
+            )}
+          </Stack>
+        </div>
+      </div>
     </Stack>
   )
 }
@@ -40148,28 +40210,25 @@ function TrailSheet({ side, ltp, startUnit, start, onClose, onDone }: { side: Si
       }
       utility={<Keyboard decimal onKey={type} />}
     >
-      <Stack direction="horizontal" justify="between" align="center" gap="12" className={styles.trailBox}>
-        <Stack gap="04">
-          <span className={styles.trailHint}>Trailing {short} will move in</span>
-          <Select size="md" icon="swap" onClick={switchTrailUnit} aria-label={`Trail in ${unit}. Switch`}>
-            {unit === 'points' ? 'Points' : 'Percentage'}
-          </Select>
-        </Stack>
-        <Stepper
-          size="sm"
-          className={styles.stepper}
-          label={`Trail in ${unit}`}
-          value={value}
-          onChange={(v) => {
-            setText(show(unit, v))
-            setFresh(true)
+      {/* PriceField, use 3: no typed price — the hint over the unit switch, the Stepper is the value. */}
+      <PriceFieldBox>
+        <PriceField
+          label={`Trailing ${short} will move in`}
+          unit={{ label: unit === 'points' ? 'Points' : 'Percentage', onSwitch: switchTrailUnit, 'aria-label': `Trail in ${unit}. Switch` }}
+          stepper={{
+            label: `Trail in ${unit}`,
+            value,
+            onChange: (v) => {
+              setText(show(unit, v))
+              setFresh(true)
+            },
+            step: unit === 'points' ? 0.1 : 0.5,
+            min: unit === 'points' ? 0.1 : 0.5,
+            max: unit === 'points' ? 100 : 50,
+            format: (v) => (unit === 'points' ? String(Number(v.toFixed(1))) : `${v}%`),
           }}
-          step={unit === 'points' ? 0.1 : 0.5}
-          min={unit === 'points' ? 0.1 : 0.5}
-          max={unit === 'points' ? 100 : 50}
-          format={(v) => (unit === 'points' ? String(Number(v.toFixed(1))) : `${v}%`)}
         />
-      </Stack>
+      </PriceFieldBox>
     </BottomSheet>
   )
 }
@@ -40705,8 +40764,8 @@ import { useFlowOption } from '../../../../shared/prototype'
 export type OrderPadVersion = 'v1' | 'v2'
 export const DEFAULT_ORDER_PAD_VERSION: OrderPadVersion = 'v2'
 
-export const useOrderPadVersion = (): OrderPadVersion =>
-  useFlowOption('us-stocks', 'orderPad', DEFAULT_ORDER_PAD_VERSION) === 'v1' ? 'v1' : 'v2'
+// The "Order pad" option was archived 19 Nov (the user's call): V2 only. V1's code is kept, unused.
+export const useOrderPadVersion = (): OrderPadVersion => DEFAULT_ORDER_PAD_VERSION
 
 // The V2 pad's price cards (flow option "Price cards", group Trade): merged · every price in one card, a line between
 // (the default since 18 Nov); separate · a card per price (the earlier design, kept for A/B testing).
