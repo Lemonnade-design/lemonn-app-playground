@@ -16,7 +16,7 @@
       "id": "market-01",
       "name": "Market · All",
       "figma": "",
-      "note": "The filter bar shows \"Apply filters\" until something is applied.",
+      "note": "The filter bar names the list and its count (\"All (56)\"); with filters applied, \"Filtered stocks (n)\". Opens on the market Home was last on (IN / US).",
       "goesTo": [
         "search-24",
         "us-stocks-13",
@@ -100,7 +100,7 @@
       "id": "market-08",
       "name": "Market · filters applied",
       "figma": "",
-      "note": "One removable chip per pick; the filter button gets a dot.",
+      "note": "The title reads \"Filtered stocks (n)\"; the filter button gets a red dot.",
       "goesTo": [
         "search-24",
         "us-stocks-13",

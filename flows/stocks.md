@@ -433,8 +433,10 @@ lower on the page is scrolled into view first). `components/MarketSwitchGuide.ts
   16 / 24 icon or an Avatar only — event rows are plain buttons laid out with Stack.
 
 ### Changelog
+- 2026-11-19 — Brands You Know · View all: edge-to-edge rows split by a hairline (were cards 12 apart). Themes: 24 between the theme's overview card and its stock list (was 32).
 - 2026-11-19 — V19 index strip: once it docks under the sticky tabs it is white (was the strip's blue), turning from blue to white with its hairline over 400 ms (motion long, standard easing; none with reduced motion) instead of swapping in one frame. IN shortcuts card: 12 either side of the row line (the tiles keep 18 at the card's top and bottom); the line is a 1px border-light border, like the column lines.
 - 2026-11-19 — Stock page (Overview): the pill tabs of Shareholding Pattern (quarters) and Financials (Revenue · Profit · Networth) moved out of their grey cards to sit with the section header, between the title and the card.
+- 2026-11-19 — US risk disclosure sheet is back (`components/us/sheets/RiskDisclosureSheet.tsx`, restored): it opens the first time the US tab is tapped in a session (sessionStorage `us-risk-agreed`; a US tab chosen by User status does not open it). Agree and Continue stays on US and is not asked again this session; closing it goes back to IND.
 - 2026-11-19 — Product row (V19 only, every state; V17 and V18 keep it in the hero): out of the hero. IN tab: the products (Equity F&O, Commodity, Mutual Funds, Smart Invest) joined the shortcuts in one card (`components/InAllShortcuts.tsx`), two rows of four: products with icons (navbar F&O and Mutual Fund glyphs, the commodities glyph, Material autorenew for Smart Invest) over Trade Ideas · IPO · Watchlist · Referral, a hairline between the rows inset 12 from the card's sides. US tab: the row (Boosted ETFs, Themes, Fractional) is hidden, so the hero is just the holdings (money on the way: the transfer card only).
 - 2026-11-18 — The floating Homepage version switch (V19 / V18 …, phone app mode) shows only on the Home screens (IND and US tab, every state), not on other pages.
 
@@ -775,6 +777,7 @@ lower on the page is scrolled into view first). `components/MarketSwitchGuide.ts
 - 2026-11-18 — Archived the Home settings "Analyst picks" (List kept, Cards archived) and "Shortcuts" (V2 kept, V1 archived); the archived code stays behind constants.
 - 2026-11-18 — Archived the Home setting "Chips" (V2 kept: L3 switcher pill + outlined chips; V1 behind a constant in UsHome.tsx).
 - 2026-11-18 — Archived the Home setting "US shortcuts": the round US shortcuts under the hero are always on.
+- 2026-11-19 — V19 US tab: the one shortcuts card (as IND): Boosted ETFs · Themes · Fractional over ETFs · Analyst picks · Watchlist · Referral, icons in the US blue-to-black gradient.
 
 
 ## Source — this flow
@@ -21034,6 +21037,11 @@ export function HeroButtons({ buy, add }: HeroButtonsProps) {
 .shortcutsRowDivider + * .shortcutPlain {
   padding-top: var(--l3-spacing-12);
 }
+/* US card: the product icons (masks) take the US shortcuts' gradient, discover blue at the top to content/primary at
+   the bottom (L3 gap: no gradient icon colour — drawn from two L3 tokens, as .usArt). */
+.usProducts .productGlyph > * {
+  background: linear-gradient(var(--l3-content-accent-discover-default), var(--l3-content-primary));
+}
 ```
 
 ### `src/flows/stocks/components/HomeSwitcher.module.css`
@@ -21677,6 +21685,9 @@ export function Disclosure() {
 // 12 short of the card's sides like the column lines are of its top and bottom.
 // Product icons as in InShortcutsF1: the navbar's F&O and Mutual Fund glyphs and the commodities glyph, solid, in the shortcuts' green;
 // Smart Invest (auto buy / sell) is Material "autorenew". The second row keeps its own two-tone art.
+// US (19 Nov, the user's call: V19 had dropped Boosted ETFs with the hero's row): the same card, Boosted ETFs · Themes ·
+// Fractional (three columns, solid Material bolt / category / pie chart) over ETFs · Analyst picks · Watchlist · Referral,
+// every icon in the US shortcuts' blue-to-black gradient (UsArtGradient).
 import type { ReactNode } from 'react'
 import { Badge } from '@l3/components/Badge'
 import { fno as fnoGlyph, mutualFund as mutualFundGlyph } from '@l3/components/BottomNavbar/glyphs'
@@ -21686,11 +21697,12 @@ import { Icon } from '@l3/components/Icon'
 import { Inset } from '@l3/components/Inset'
 import { MaskIcon } from '@l3/components/MaskIcon'
 import { Stack } from '@l3/components/Stack'
-import { msAutorenew } from '@l3/icons/material'
-import { productsF1, shortcuts } from '../data'
+import { msAutorenew, msBoltFill, msCategoryFill, msPieChartFill } from '@l3/icons/material'
+import { productsF1, productsF1Us, shortcuts, type Product, type ShortcutArt as Art } from '../data'
 import { t } from '../copy'
 import commoditiesGlyph from '../assets/in/commodities.svg'
 import { ShortcutArt } from './ShortcutArt'
+import { UsArtGradient } from './us/UsHomeF1'
 import styles from './Home.module.css'
 
 /** A navbar glyph at full strength (its 40% / 60% parts made solid), as in InShortcutsF1. */
@@ -21701,13 +21713,24 @@ const productIcons: Record<string, ReactNode> = {
   commodities: <MaskIcon src={commoditiesGlyph} />,
   'mutual-funds': <MaskIcon src={solid(mutualFundGlyph)} />,
   'smart-invest': <Icon icon={msAutorenew} size={24} />,
+  'boosted-etfs': <Icon icon={msBoltFill} size={24} />,
+  themes: <Icon icon={msCategoryFill} size={24} />,
+  fractional: <Icon icon={msPieChartFill} size={24} />,
 }
+
+/** The US tab's second row: what its round shortcuts showed (ETFs · Analyst picks · Watchlist · Referral). */
+const usShortcuts: { id: string; label: string; art: Art }[] = [
+  { id: 'etfs', label: t('f1.shortcuts.etfs'), art: 'etf' },
+  { id: 'picks', label: t('f1.shortcuts.picks'), art: 'analysis' },
+  { id: 'watchlist', label: t('f1.shortcuts.watchlist'), art: 'watchlist' },
+  { id: 'referral', label: t('f1.shortcuts.referral'), art: 'referral' },
+]
 
 type Tile = { id: string; label: string; icon: ReactNode }
 
 function Row({ tiles, onOpen }: { tiles: Tile[]; onOpen?: (id: string) => void }) {
   return (
-    <Grid columns={4} gap="00">
+    <Grid columns={tiles.length === 3 ? 3 : 4} gap="00">
       {tiles.map((tile) => (
         <Card key={tile.id} variant="flat" padding="none" className={styles.shortcutCard} onClick={() => onOpen?.(tile.id)}>
           <span className={`${styles.shortcut} ${styles.shortcutPlain}`}>
@@ -21720,18 +21743,20 @@ function Row({ tiles, onOpen }: { tiles: Tile[]; onOpen?: (id: string) => void }
   )
 }
 
-export function InAllShortcuts({ onProduct, onShortcut }: { onProduct?: (id: string) => void; onShortcut?: (id: string) => void }) {
-  const products: Tile[] = productsF1.map((p) => ({
+export function InAllShortcuts({ market = 'in', onProduct, onShortcut }: { market?: 'in' | 'us'; onProduct?: (id: string) => void; onShortcut?: (id: string) => void }) {
+  const us = market === 'us'
+  const productList: Product[] = us ? productsF1Us : productsF1
+  const products: Tile[] = productList.map((p) => ({
     id: p.id,
     label: p.name,
     icon: <span className={styles.shortcutGlyph} aria-hidden="true"><span className={styles.productGlyph}>{productIcons[p.id]}</span></span>,
   }))
-  const more: Tile[] = shortcuts.map((s) => {
+  const more: Tile[] = (us ? usShortcuts.map((s) => ({ ...s, badge: undefined as { count: number } | undefined })) : shortcuts).map((s) => {
     const art = <span className={styles.shortcutGlyph} aria-hidden="true"><ShortcutArt art={s.art} /></span>
     return { id: s.id, label: s.label, icon: s.badge ? <Badge count={s.badge.count} color="error" label={t('shortcuts.newBadge')}>{art}</Badge> : art }
   })
-  return (
-    <Stack as="section" gap="16" aria-label={t('shortcuts.title')}>
+  const card = (
+    <Stack as="section" gap="16" aria-label={t('shortcuts.title')} className={us ? styles.usProducts : undefined}>
       <Inset paddingInline="16" paddingBlock="00">
         <Card padding="none" className={styles.shortcutsPanel}>
           <Row tiles={products} onOpen={onProduct} />
@@ -21741,6 +21766,7 @@ export function InAllShortcuts({ onProduct, onShortcut }: { onProduct?: (id: str
       </Inset>
     </Stack>
   )
+  return us ? <UsArtGradient>{card}</UsArtGradient> : card
 }
 ```
 
@@ -26428,6 +26454,8 @@ type UsHomeF1Props = {
   onPicks?: () => void
   /** V17: the shortcuts as round icons over their labels (IND's look), not the outlined strip (8 Nov). */
   roundShortcuts?: boolean
+  /** V19: one card (products over shortcuts, InAllShortcuts) in place of the shortcuts. */
+  shortcutsCard?: ReactNode
 }
 
 const moverIcons: Record<F1MoverChip, string> = { watchlist: watchlistIcon, active: activeIcon, gainers: gainersIcon, losers: losersIcon }
@@ -26435,14 +26463,14 @@ const moverIcons: Record<F1MoverChip, string> = { watchlist: watchlistIcon, acti
 // Archived 18 Nov: the round US shortcuts are always shown. Set false to see the hero's cards alone.
 const US_SHORTCUTS_ON: boolean = true
 
-export function UsHomeF1({ onStock, onMarket, onTheme, onEtfs, onEtf, onPicks, roundShortcuts = false }: UsHomeF1Props) {
+export function UsHomeF1({ onStock, onMarket, onTheme, onEtfs, onEtf, onPicks, roundShortcuts = false, shortcutsCard }: UsHomeF1Props) {
   const open = (sym: string) => {
     viewUsStock(sym)
     onStock?.(sym)
   }
   return (
     <>
-      <Shortcuts onEtfs={onEtfs} onPicks={onPicks} round={roundShortcuts} />
+      {shortcutsCard ?? <Shortcuts onEtfs={onEtfs} onPicks={onPicks} round={roundShortcuts} />}
       <StartTrading onOpen={open} />
       <TopMovers onOpen={open} onMarket={onMarket} />
       <ByMarketCap onOpen={open} />
@@ -26483,6 +26511,23 @@ function Shortcuts({ onEtfs, onPicks, round = false }: { onEtfs?: () => void; on
   // card) switches them as on the IND tab. The icons are V14’s two-tone set with a blue-to-black gradient (.usArt, 18 Nov).
   // Watchlist and Referral do nothing yet.
   return (
+    <UsArtGradient>
+      <HomeShortcuts
+        items={[
+          { id: 'etfs', label: t('f1.shortcuts.etfs'), art: 'etf' },
+          { id: 'picks', label: t('f1.shortcuts.picks'), art: 'analysis' },
+          { id: 'watchlist', label: t('f1.shortcuts.watchlist'), art: 'watchlist' },
+          { id: 'referral', label: t('f1.shortcuts.referral'), art: 'referral' },
+        ]}
+        onOpen={(id) => { if (id === 'etfs') onEtfs?.(); else if (id === 'picks') onPicks?.() }}
+      />
+    </UsArtGradient>
+  )
+}
+
+/** The US shortcuts' icon gradient (18 Nov): two-tone art inside reads it in place of the success green. */
+export function UsArtGradient({ children }: { children: ReactNode }) {
+  return (
     <div className={styles.usArt}>
       {/* The icons' gradient (18 Nov): discover blue at the top to content/primary at the bottom. The art's fills read
           --l3-content-accent-success-default, which .usArt points at this gradient. Units are the art's own (≈ 20 tall). */}
@@ -26494,15 +26539,7 @@ function Shortcuts({ onEtfs, onPicks, round = false }: { onEtfs?: () => void; on
           </linearGradient>
         </defs>
       </svg>
-      <HomeShortcuts
-        items={[
-          { id: 'etfs', label: t('f1.shortcuts.etfs'), art: 'etf' },
-          { id: 'picks', label: t('f1.shortcuts.picks'), art: 'analysis' },
-          { id: 'watchlist', label: t('f1.shortcuts.watchlist'), art: 'watchlist' },
-          { id: 'referral', label: t('f1.shortcuts.referral'), art: 'referral' },
-        ]}
-        onOpen={(id) => { if (id === 'etfs') onEtfs?.(); else if (id === 'picks') onPicks?.() }}
-      />
+      {children}
     </div>
   )
 }
@@ -27450,6 +27487,90 @@ export function ActivationSubmittedSheet({ onOkay }: { onOkay?: () => void }) {
         </ButtonGroup>
       }
     />
+  )
+}
+```
+
+### `src/flows/stocks/components/us/sheets/RiskDisclosureSheet.module.css`
+
+```css
+/* The risk disclosure's bullets (as before 4 Nov, from the US Stocks prototype's Activation.module.css). */
+/* FLAG: hand-made bullet list (a dot drawn with a pseudo-element) — L3 has no list component. */
+.bullets {
+  display: flex;
+  flex-direction: column;
+  gap: var(--l3-spacing-08);
+  margin: 0;
+  padding: 0 0 0 var(--l3-spacing-16);
+  color: var(--l3-content-primary);
+  font: var(--l3-text-label-12);
+}
+
+.bullets li {
+  position: relative;
+  list-style: none;
+}
+
+.bullets li::before {
+  content: '';
+  position: absolute;
+  top: var(--l3-spacing-08);
+  left: calc(-1 * var(--l3-spacing-12));
+  width: var(--l3-size-04);
+  height: var(--l3-size-04);
+  border-radius: var(--l3-radius-full);
+  background: currentColor;
+}
+
+.inlineLink {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--l3-content-accent-discover-default);
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+```
+
+### `src/flows/stocks/components/us/sheets/RiskDisclosureSheet.tsx`
+
+```tsx
+import { useId } from 'react'
+import { BottomSheetHeader } from '@l3/components/BottomSheet'
+import { Button } from '@l3/components/Button'
+import { ButtonGroup } from '@l3/components/ButtonGroup'
+import { Sheet } from '../../../../../shared/ui/Sheet'
+import { t } from '../../../copy'
+import styles from './RiskDisclosureSheet.module.css'
+
+/**
+ * Risk disclosure for US Stocks, over the US tab: shown the first time the US tab is tapped in a session (19 Nov, back
+ * from before 4 Nov). Agree and Continue closes it on the US tab; closing it goes back to IND. (Figma 5756:71475.)
+ */
+export function RiskDisclosureSheet({ onAgree, onClose }: { onAgree?: () => void; onClose?: () => void }) {
+  const id = useId()
+  return (
+    <Sheet
+      labelledBy={id}
+      onClose={onClose}
+      header={<BottomSheetHeader size="sm" headingId={id} heading={t('us.risk.title')} description={t('us.risk.description')} />}
+      footer={
+        <ButtonGroup aria-label={t('us.risk.actions')}>
+          <Button onClick={onAgree}>{t('us.risk.agree')}</Button>
+        </ButtonGroup>
+      }
+    >
+      <ul className={styles.bullets}>
+        <li>{t('us.risk.1')}</li>
+        <li>{t('us.risk.2')}</li>
+        <li>{t('us.risk.3')}</li>
+        <li>{t('us.risk.4')}</li>
+        <li>
+          {t('us.risk.full')} <button type="button" className={styles.inlineLink}>{t('us.risk.here')}</button>
+        </li>
+      </ul>
+    </Sheet>
   )
 }
 ```
@@ -28432,7 +28553,17 @@ export function useLiveHeatmap(symbols: string[] = heatSymbols): HeatValue[] {
   "hub.usState.failed": "Activation failed · Retry",
   "hub.usState.addMoney": "Add money to start",
   "hub.usState.onTheWay": "Money on the way",
-  "hub.usState.ready": "Money ready to invest"
+  "hub.usState.ready": "Money ready to invest",
+"us.risk.title": "Risk disclosure",
+  "us.risk.description": "For US Stocks",
+  "us.risk.1": "US stocks carry price, currency and liquidity risk, and prices can move without a daily cap.",
+  "us.risk.2": "Your account is with ViewTrade IFSC through India INX Global Access, in GIFT City, regulated by IFSCA.",
+  "us.risk.3": "Your money is held in your own ViewTrade IFSC account, not by Lemonn.",
+  "us.risk.4": "SEBI investor protection and grievance redressal do not apply to these investments.",
+  "us.risk.full": "Read the full disclosure",
+  "us.risk.here": "here",
+  "us.risk.agree": "Agree and Continue",
+  "us.risk.actions": "Risk disclosure"
 }
 ```
 
@@ -29218,7 +29349,7 @@ type BrandsPageProps = {
 function BrandRow({ brand, onOpen }: { brand: Brand; onOpen: (sym: string) => void }) {
   const stock = usStock(brand.sym, brand.name)
   const live = useLiveQuote(brand.sym, stock.price, stock.change)
-  return <StockListCard symbol={brand.sym} name={brand.name} logoUrl={usLogo(brand.sym)} price={<Usd value={live.price} layout="inline" />} changePct={live.changePct} onOpen={() => onOpen(brand.sym)} />
+  return <StockListCard symbol={brand.sym} name={brand.name} logoUrl={usLogo(brand.sym)} price={<Usd value={live.price} layout="inline" />} changePct={live.changePct} look="list" onOpen={() => onOpen(brand.sym)} />
 }
 
 export function BrandsPage({ onStock }: BrandsPageProps) {
@@ -29228,12 +29359,13 @@ export function BrandsPage({ onStock }: BrandsPageProps) {
     <Screen
       top={<Actionbar title={t('brandsPage.title')} description={t('brandsPage.count', { count: allBrands.length })} headingLevel={2} onBack={() => { if (!back?.()) go('stocks-09') }} backLabel={t('brandsPage.back')} />}
     >
-      <Inset paddingInline="16" paddingBlock="24">
-        <Stack gap="32">
-          <Stack gap="12">
+      {/* Edge-to-edge rows split by a hairline (19 Nov; were cards 12 apart), as the Market and theme lists. */}
+      <Inset paddingInline="00" paddingBlock="08">
+        <Stack gap="24">
+          <Stack gap="00">
             {allBrands.map((brand) => <BrandRow key={brand.sym} brand={brand} onOpen={open} />)}
           </Stack>
-          <p className={styles.footnote}>{t('brandsPage.footnote')}</p>
+          <Inset paddingInline="16" paddingBlock="00"><p className={styles.footnote}>{t('brandsPage.footnote')}</p></Inset>
         </Stack>
       </Inset>
     </Screen>
@@ -29753,6 +29885,7 @@ import { UsActivationCard } from '../components/us/UsActivationCard'
 import { UsHome } from '../components/us/UsHome'
 import { UsHero } from '../components/us/UsHero'
 import { UsFtuxSheet } from '../components/us/sheets/UsFtuxSheet'
+import { RiskDisclosureSheet } from '../components/us/sheets/RiskDisclosureSheet'
 import { HeroButtons, HeroShell, HoldingsHero } from '../components/HoldingsHero'
 import { getCompany } from '../../../shared/data/companies'
 import { InAllShortcuts } from '../components/InAllShortcuts'
@@ -29850,6 +29983,12 @@ export const markUsIntroSeen = () => {
  */
 /** Archived "Header" variant: true puts the holdings inside the top card (the card the US tab uses for activation). */
 const HEADER_CARD = false as boolean
+
+/** The US risk disclosure is agreed to once per session (sessionStorage: a new session shows it again). */
+const RISK_AGREED_KEY = 'us-risk-agreed'
+const riskAgreedThisSession = () => {
+  try { return sessionStorage.getItem(RISK_AGREED_KEY) === '1' } catch { return false }
+}
 
 export function Home({ scrollTo = 'top', market = 'in', movers, onStock, onTab, onSearch, onProfile, onWallet, onCommodities, onAddMoney, usState = 'activate', onActivateUs, onUsHoldings, onInHoldings, onUsStock, onUsMarket, onUsTheme, onUsEtfs, onUsFractional, onUsEtf, onUsPicks, onUsBrands, autoNext, sheet, introOnOpen = false }: Props) {
   // Money on the way: its card opens the deposit explainer over Home (the timed move to "money ready" waits while it's open).
@@ -30063,17 +30202,24 @@ export function Home({ scrollTo = 'top', market = 'in', movers, onStock, onTab, 
 
   // IND ↔ US in place: tap the switcher or swipe the top card. A swipe slides the card across; a tap switches at once
   // (no slide-out first: it read as a ~1 s lag on phones, the user's call, 3 Nov). Either way the feed fades in.
-  const switchTo = (next: Market) => {
+  const switchTo = (next: Market, byUser = true) => {
     if (next === tab) return
     setStripSlides(true)
     setTab(next)
+    // The risk disclosure for US Stocks: the first time the user opens the US tab in a session (19 Nov).
+    if (byUser && next === 'us' && !riskAgreedThisSession()) setRisk(true)
+  }
+  const [risk, setRisk] = useState(false)
+  const agreeRisk = () => {
+    try { sessionStorage.setItem(RISK_AGREED_KEY, '1') } catch { /* storage off: it shows again next time */ }
+    setRisk(false)
   }
   // Prototype: a new US Stocks state picked in the settings ("Home state") is shown on the US tab, where it changes things.
   const shownState = useRef(usState)
   useEffect(() => {
     if (usState === shownState.current) return
     shownState.current = usState
-    switchTo('us')
+    switchTo('us', false) // a prototype setting, not the user's tap: no risk disclosure
   }, [usState])
   const markets: Market[] = ['in', 'us']
   const hasSwitchNow = useRef(hasSwitch)
@@ -30177,8 +30323,10 @@ export function Home({ scrollTo = 'top', market = 'in', movers, onStock, onTab, 
   // V17: the product row (Figma 6548:45253) inside the hero, in place of its two buttons (Buy NVDA · Add USD, Buy
   // RELIANCE · Add INR), and under the status card where there's no hero (8 Nov).
   const heroCards = f1 && !!version.cards
-  // V19 (19 Nov): the products leave the hero for the IND shortcuts card (InAllShortcuts); the US row is hidden.
+  // V19 (19 Nov): the products leave the hero for one shortcuts card per tab (InAllShortcuts: IND, and US with Boosted ETFs · Themes · Fractional).
   const oneCard = heroCards && !!version.oneCard
+  // V19's US card: Boosted ETFs · Themes · Fractional over ETFs · Analyst picks · Watchlist · Referral.
+  const usShortcutsCard = <InAllShortcuts market="us" onProduct={(id) => onRowProduct(id)} onShortcut={(id) => { if (id === 'etfs') onUsEtfs?.(); else if (id === 'picks') onUsPicks?.() }} />
   const onRowProduct = (id: string) => {
     if (id === 'mutual-funds') onTab?.('mutualFund')
     else if (id === 'fno') onTab?.('fno')
@@ -30247,7 +30395,7 @@ export function Home({ scrollTo = 'top', market = 'in', movers, onStock, onTab, 
 
   return (
     <Screen
-      sheet={sheet ?? (explaining ? <DepositProgressSheet deposit={depositOnTheWay()} eta={DEPOSIT_ETA} onClose={() => setExplaining(false)} /> : intro && f1 ? introSheet : guiding && <MarketSwitchGuide key={version.id} onView={() => switchInPage('us')} onClose={() => setGuideDoneFor(version.id)} />)}
+      sheet={sheet ?? (risk ? <RiskDisclosureSheet onAgree={agreeRisk} onClose={() => { setRisk(false); switchTo('in') }} /> : explaining ? <DepositProgressSheet deposit={depositOnTheWay()} eta={DEPOSIT_ETA} onClose={() => setExplaining(false)} /> : intro && f1 ? introSheet : guiding && <MarketSwitchGuide key={version.id} onView={() => switchInPage('us')} onClose={() => setGuideDoneFor(version.id)} />)}
       toast={showToast && <Aerobar type="success" floating icon={<Icon icon={msCheckCircle} />} heading={t('us.ready.title')} paragraph={t('us.ready.subtitle')} duration={3000} action={{ label: t('us.ready.ok'), onClick: () => setToastGone(true) }} onDismiss={() => setToastGone(true)} />}
       bottom={<MainNav value="stocks" onChange={onTab} />}
     >
@@ -30352,11 +30500,11 @@ export function Home({ scrollTo = 'top', market = 'in', movers, onStock, onTab, 
           ) : f1 && version.usBody === 'classic' ? (
             // V18: V17's top over V14's US feed, with V17's round shortcuts in place of its strip (the hero has the card).
             <Stack key="us" gap="32" data-market-part>
-              <UsHome card={false} shortcuts={<UsRoundShortcuts onEtfs={onUsEtfs} onPicks={onUsPicks} />} usState={usState} onActivate={onActivateUs} onStock={onUsStock} onMarket={onUsMarket} onTheme={onUsTheme} onEtfs={onUsEtfs} onEtf={onUsEtf} onPicks={onUsPicks} onBrands={onUsBrands} />
+              <UsHome card={false} shortcuts={oneCard ? usShortcutsCard : <UsRoundShortcuts onEtfs={onUsEtfs} onPicks={onUsPicks} />} usState={usState} onActivate={onActivateUs} onStock={onUsStock} onMarket={onUsMarket} onTheme={onUsTheme} onEtfs={onUsEtfs} onEtf={onUsEtf} onPicks={onUsPicks} onBrands={onUsBrands} />
             </Stack>
           ) : f1 ? (
             <Stack key="us-f1" gap="32" data-market-part>
-              <UsHomeF1 roundShortcuts={heroCards} onStock={onUsStock} onMarket={onUsMarket} onTheme={onUsTheme} onEtfs={onUsEtfs} onEtf={onUsEtf} onPicks={onUsPicks} />
+              <UsHomeF1 roundShortcuts={heroCards} shortcutsCard={oneCard ? usShortcutsCard : undefined} onStock={onUsStock} onMarket={onUsMarket} onTheme={onUsTheme} onEtfs={onUsEtfs} onEtf={onUsEtf} onPicks={onUsPicks} />
             </Stack>
           ) : (
             <Stack key="us" gap="32" data-market-part>
@@ -30869,14 +31017,17 @@ function ThemeBody({ id, onOpen }: { id: ThemeId; onOpen: (sym: string) => void 
   return (
     <Inset paddingInline="00" paddingBlock="24" data-page-end>
       <Stack gap="32">
-        <Inset paddingInline="16" paddingBlock="00"><ThemeOverview id={id} /></Inset>
-        {/* All stocks: edge-to-edge list rows (StockListCard look="list", as Market's lists), a hairline between them. No
-            header (hidden 18 Nov, the user's call): the count sits in the overview's heading. */}
-        <Section gap="08">
-          <Stack gap="00">
-            {theme.symbols.map((sym) => <ThemeStock key={sym} sym={sym} onOpen={onOpen} />)}
-          </Stack>
-        </Section>
+        {/* 24 between the overview card and the list (19 Nov, the user's call: 8 less; the first row brings its own 16). */}
+        <Stack gap="24">
+          <Inset paddingInline="16" paddingBlock="00"><ThemeOverview id={id} /></Inset>
+          {/* All stocks: edge-to-edge list rows (StockListCard look="list", as Market's lists), a hairline between them. No
+              header (hidden 18 Nov, the user's call): the count sits in the overview's heading. */}
+          <Section gap="08">
+            <Stack gap="00">
+              {theme.symbols.map((sym) => <ThemeStock key={sym} sym={sym} onOpen={onOpen} />)}
+            </Stack>
+          </Section>
+        </Stack>
         <Inset paddingInline="16" paddingBlock="00"><p className={styles.footnote}>{t('us.themes.footnote')}</p></Inset>
       </Stack>
     </Inset>
@@ -57516,6 +57667,9 @@ let restoring: { screen: string; market: 'in' | 'us' } | null = null
 export function rememberStocksHome(screen: string, market: 'in' | 'us') {
   lastStocks = { screen, market }
 }
+
+/** The IND / US tab the Stocks home was last on (none before it has opened): Market opens on that market (19 Nov). */
+export const lastStocksMarket = (): 'in' | 'us' | undefined => lastStocks?.market
 
 /**
  * The Stocks home, when it opens: the IND / US tab to come back to — if the navbar brought the user back to it, or a

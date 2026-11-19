@@ -408,6 +408,8 @@
     "src/flows/stocks/components/us/data.ts",
     "src/flows/stocks/components/us/sheets/ActivationApprovedSheet.tsx",
     "src/flows/stocks/components/us/sheets/ActivationSubmittedSheet.tsx",
+    "src/flows/stocks/components/us/sheets/RiskDisclosureSheet.module.css",
+    "src/flows/stocks/components/us/sheets/RiskDisclosureSheet.tsx",
     "src/flows/stocks/components/us/sheets/UsFtuxSheet.module.css",
     "src/flows/stocks/components/us/sheets/UsFtuxSheet.tsx",
     "src/flows/stocks/components/us/useAutoSlide.ts",

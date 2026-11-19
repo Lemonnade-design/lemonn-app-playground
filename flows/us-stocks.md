@@ -199,6 +199,10 @@ Every tap he wired is kept. The main path: FTUX sheet → Activate → Declarati
 → Pay on bank → Money ready → Stock → Buy → Executed → Wallet → Withdraw.
 
 ### Changelog
+- 2026-11-19 — Related ETFs on every US stock page (was NVIDIA and Tesla only): real single-stock Boosted funds added for Apple (AAPU / AAPD), Microsoft (MSFU / MSFD), Amazon (AMZU / AMZD), Google (GGLL / GGLS), Meta (METU / METD), AMD (AMDL), Broadcom (AVL), Palantir (PLTU), Netflix (NFXL), Coinbase (CONL); every other stock shows the Boosted index / sector funds that hold it most — **Boosted ETFs on chip stocks / tech stocks / bank stocks / the Nasdaq-100 / China's big companies**, and the S&P 500 pair for the rest (`boostedOn` returns `on`). Funds shown there aren't repeated in "ETFs with …".
+- 2026-11-19 — Long stock / ETF lists are edge-to-edge rows split by a hairline (StockListCard `look="list"`, as Market and the theme pages; were cards 12 apart): ETFs (Regular and Boosted), ETF · Top holdings, Fractional shares' popular stocks. ETFs list filters: the Country / Sector switcher is an L3 primary pill (tap to switch) and the country / sector filters secondary (outline) pills, as Home's US ETFs chips (was an outlined hand-made chip + primary pills). Stock page and "ETFs with …" titles use each stock's short name (`usShortName`, src/shared/data/usShortNames.ts: the names the app's lists already show, e.g. "Procter & Gamble", "Qualcomm"; any other falls back to its full name without "The" and legal endings).
+- 2026-11-19 — Stock page: Related ETFs, as two sections after "ETFs with …" — **Boosted ETFs on {stock}** (funds that aim for 1.2x–2x the stock's daily move: gain when it rises) and **Bet against {stock}** (gain when it falls), each in the funds table (Leverage · Today · Expense, or Returns); a tap opens the ETF. Shown only for stocks with such funds (NVIDIA, Tesla). The catalogue gains NVIDIA's other single-stock funds (NVDU, NVDX, NVDW, NVDG, NVDD, NVDQ, NVDS — from another app's NVDA page); until the US snapshot has them, their day move is NVIDIA's real move × the leverage (the other way for short ones). These funds no longer appear in "ETFs with {stock}". Section titles call the company by its name without "The" and the legal ending ("ETFs with The" → "ETFs with Walt Disney").
+- 2026-11-19 — Asset pages: the dock's gradient runs behind the buttons in three stops: the page's colour at 100% at the bottom, 80% halfway, 0% at the top.
 - 2026-11-19 — Asset pages (stock, ETF, every state): the dock's fade now shows. The page was cut at the dock's top edge, so nothing passed behind it; the frame now lays the dock over the scrolling page (`data-float-dock`), the dock is solid behind the buttons and fades over the 24 above them, and the page's end stays clear of the buttons.
 - 2026-11-19 — US stock page: the Company financials statement tabs (Income · Balance sheet · Cashflow) moved out of the card to sit with the section header, between the title and the card.
 - 2026-11-18 — **Order pad V2 · Minted layout (the default).** New prototype setting **Order pad** (group Trade): V1 · Commodity pad layout, V2 · Minted layout. V2 takes the layout of Minted's order pad (`~/minted`, screens s05 / s13 / s14 / s06 / s16): stock header, a centred Market / Limit / SL switch, a big centred amount with the quick chips and one helper line under it, limit / trigger prices as filled cards with the Stepper, the note as a grey strip, then Balance · Approx. req., the Buy / Sell button and the app keypad. Results and processing take Minted's result layout (status icon over a tinted top, big heading, details below). Same states, data and navigation as V1 (`orderPads.tsx`, `orderResults.ts`); only the layout differs. Minted's Futures tab, leverage card, SIP and "sell automatically at a profit" are left out: US stocks are cash, Day orders only. Code: `screens/trade/version.ts` (`useOrderPadVersion()`), `OrderPadV2.tsx`, `OrderResultV2.tsx`; V1 stays in `OrderPad.tsx` / `OrderResult.tsx`. Header: no line under it, title centred (a 24 spacer balances the back button), stock logo 16. L3 gap: Avatar has no 16 size (smallest 24) — sized down locally (`.logo16`). Built from L3: Actionbar, Avatar, PriceChange, Tabs (order type, chips), Select (Amount ⇄ Shares, swap icon), Card filled (limit / trigger price), Stepper, Button (Buy / Sell, ghost Req.), Stack. Other L3 gaps: Stepper has no on-grey fill (set to surface/primary locally); no large amount field (raw input); no centred logo + price Actionbar title; no note strip (a token-styled line); a pill group has no equal-width hug option (order-type pills made equal locally, `.orderTypes`). Order-type tabs are Medium and their pill slides from the type you came from.
@@ -438,6 +442,9 @@ Every tap he wired is kept. The main path: FTUX sheet → Activate → Declarati
 - 2026-11-17 · Top bars: Portfolio's search and wallet are the shared `SearchWalletActions` (shared/ui/TopBarAction: round 38, border/light, no shadow, Material search / wallet icons) instead of its own SVG icons. Mutual Fund home's top bar is now an Actionbar like Market's: "Mutual Fund" title, then the same search (→ Search) and wallet (→ the wallet); the search field is gone.
 - 2026-11-17 · Mutual Fund home: 16 between the top bar and the holdings (was 0, set for the old search-field bar).
 - 2026-11-18 — Archived the app setting "₹ equivalent" (User status → US Stocks money): US money shows in $ only; the ₹ below / $ ⇄ ₹ switch code stays in shared/money.tsx (INR_DISPLAY). Stock and ETF pages keep their ≈ ₹ under the price.
+- 2026-11-19 — Order pad V2: the "US market is live till 2:30 AM IST" note sits above the dock's hairline (outside the button dock).
+- 2026-11-19 — Order pad V2, Market: Minted's leverage card (Figma 8870:209735) — bolt tile, "Enable leverage upto 2x/3x/4x" (rolling while off), switch; on: 2x · 3x · 4x choices and an info strip. Prototype only: the dock numbers don't change.
+- 2026-11-19 — Leverage card: the first switch-on opens Minted's "Activate leverage" sheet ($100 example at 1x / 4x, liquidation risk, "Don't show this again" ticked, Confirm); the card switches on only on Confirm. It grows open / shut (0.2s), the header has Minted's top gradient and the bolt its gradient, and the 2x · 3x · 4x chips are L3 secondary pill chips.
 
 
 ## Source — this flow
@@ -24476,12 +24483,13 @@ import { currentStock } from '../../data'
 import { useFlowOption } from '../../../../shared/prototype'
 import { useLiveQuote } from '../../../../shared/data/live'
 import { usLogo, usQuote } from '../../../../shared/data/usStocks'
+import { usShortName } from '../../../../shared/data/usShortNames'
 import { Usd, formatInr, useUsd, useUsdInrRate } from '../../../../shared/money'
 import { useUsNav } from '../../nav'
 import { ImgIcon } from './components/ImgIcon'
 import { NEWS, PERIODS, periodReturn, priceSeries, type NewsItem } from './data'
 import {
-  AboutCompany, AnalystRatings, DailyPerformance, Events, Financials, Fundamentals, HoldingsSection, KeyHolders, News, Peers, EtfsWithStock, RelatedEtfs, stockDayStats,
+  AboutCompany, AnalystRatings, DailyPerformance, Events, Financials, Fundamentals, HoldingsSection, KeyHolders, News, Peers, EtfsWithStock, BoostedOnStock, stockDayStats,
 } from './sections'
 import {
   BUY_PAD, KYC_START, RISK_DISCLOSURE, SELL_PAD_HOLDING, SELL_PAD_NO_HOLDINGS,
@@ -24525,6 +24533,7 @@ export function activationFooter(state: StockState, go: (figma: string) => void)
   return <AssetDock label="US Stocks">{button}</AssetDock>
 }
 
+
 export function StockPage({ state, backdrop, emptyWallet }: { state: StockState; backdrop?: boolean; emptyWallet?: boolean }) {
   const f1Details = useF1Details()
   const { go, back } = useUsNav()
@@ -24536,7 +24545,7 @@ export function StockPage({ state, backdrop, emptyWallet }: { state: StockState;
   const usdInr = useUsdInrRate()
   const quote = usQuote(stock.sym)
   const isNvda = stock.sym === 'NVDA'
-  const shortName = isNvda ? 'NVIDIA' : stock.name.split(' ')[0]
+  const shortName = usShortName(stock.sym, stock.name)
   // The day's range is real (the snapshot) when it has one, else the NVDA sample scaled to this price.
   const scale = snapshotStock.price / 188.42
   const low = Math.min(quote?.dayLow ?? 185.9 * scale, stock.price)
@@ -24635,6 +24644,7 @@ export function StockPage({ state, backdrop, emptyWallet }: { state: StockState;
             <News items={news} stock={shortName} />
             <Peers stock={stock} />
             <EtfsWithStock sym={stock.sym} name={shortName} />
+            <BoostedOnStock sym={stock.sym} name={shortName} />
             <KeyHolders />
           </div>
           <AboutBlock logo={aboutLogo} title={`About ${shortName}`} text={COMPANY_PROFILES[stock.sym] ?? `${stock.name} is listed on the ${stock.exchange ?? 'NASDAQ'} and trades in US dollars.`} />
@@ -24764,8 +24774,8 @@ export function StockPage({ state, backdrop, emptyWallet }: { state: StockState;
                   <AboutCompany stock={stock} />
                   <Peers stock={stock} />
                   <EtfsWithStock sym={stock.sym} name={shortName} />
-                  {/* Related ETFs (leveraged only) are off for now (2 Nov). */}
-                  {false && <RelatedEtfs sym={stock.sym} />}
+                  {/* Related ETFs (19 Nov): the Boosted funds on this stock, long and short (sections.tsx). */}
+                  <BoostedOnStock sym={stock.sym} name={shortName} />
                   <KeyHolders />
                   <Financials />
                 </div>
@@ -25826,7 +25836,14 @@ export const ADDRESS = 'Flat 12, Green Park, Baner, Pune 411045'
    behind the whole dock instead of being cut at its top (19 Nov). L3 gap: no dock / fade token. */
 footer > .dock {
   padding-top: calc(var(--l3-spacing-24) + var(--l3-spacing-08));
-  background: linear-gradient(to top, var(--page-surface, var(--l3-surface-default)) calc(100% - var(--l3-spacing-24)), transparent); /* solid behind the buttons, the fade only in the 24 above them */
+  /* Three stops (19 Nov, the user's call): the page's colour at 100% at the bottom, 80% halfway, 0% at the top, so the
+     fade runs on behind the buttons too. */
+  background: linear-gradient(
+    to top,
+    var(--page-surface, var(--l3-surface-default)) 0%,
+    color-mix(in srgb, var(--page-surface, var(--l3-surface-default)) 80%, transparent) 50%,
+    transparent 100%
+  );
 }
 
 /* ---- Figma 6538:84949 polish (8 Nov) ---- */
@@ -26318,8 +26335,8 @@ export const screens: UsScreenMap = {
 // The scrolling sections of the stock page, top to bottom: holdings (holding state only), daily performance, analyst
 // ratings, fundamentals, about, peers, related ETFs, key holders, company financials; and the News & Events tab (events, news).
 // FLAG: layout is raw display:flex + gap/padding (module CSS) instead of L3 Stack/Section/Inset/Grid; panels, rows and bars are hand-made.
-import { EtfsHolding } from '../etf/EtfPeers'
-import { ETFS_WITH_STOCK, etfsHolding } from '../etf/data'
+import { BoostedFunds, EtfsHolding } from '../etf/EtfPeers'
+import { ETFS_WITH_STOCK, boostedOn, etfsHolding } from '../etf/data'
 import { useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import { Stack } from '@l3/components/Stack'
 import { Card } from '@l3/components/Card'
@@ -26820,6 +26837,34 @@ export function RelatedEtfs({ sym }: { sym: string }) {
         ))}
       </div>
     </section>
+  )
+}
+
+/**
+ * Related ETFs (19 Nov, the user's call, from another app's NVDA page): Boosted funds in two sections because they're
+ * two different bets — "Boosted ETFs on …" gain when it rises (by 1x–3x the daily move), "Bet against …" gain when it
+ * falls. Each in the funds table of "ETFs with {stock}" (Leverage · Today · Expense, or Returns). Every stock has them
+ * (19 Nov): its own single-stock funds where they exist (NVIDIA, Tesla, Apple …), otherwise the index or sector funds
+ * that hold it most ("Boosted ETFs on chip stocks", the S&P 500 for the rest). A side with no funds isn't shown.
+ */
+export function BoostedOnStock({ sym, name }: { sym: string; name: string }) {
+  const { long, short, on } = boostedOn(sym)
+  const subject = on ?? name
+  return (
+    <>
+      {long.length > 0 && (
+        <section className={styles.section}>
+          <SectionTitle title={`Boosted ETFs on ${subject}`} />
+          <BoostedFunds funds={long} label={on ? `Boosted ETFs on ${subject}` : `Boosted ETFs on ${name}, gain when ${name} rises`} />
+        </section>
+      )}
+      {short.length > 0 && (
+        <section className={styles.section}>
+          <SectionTitle title={`Bet against ${subject}`} />
+          <BoostedFunds funds={short} label={on ? `Bet against ${subject}` : `ETFs that gain when ${name} falls`} />
+        </section>
+      )}
+    </>
   )
 }
 
@@ -31575,6 +31620,10 @@ export function BoostedSheet({ open, onClose }: { open: boolean; onClose: () => 
 
 .switchName{animation:.22s cubic-bezier(.2,0,0,1) switch-in}
 
+/* The filter switcher (19 Nov): a one-tab L3 primary pill; tapping it switches Country ⇄ Sector. Its arrow at 14. */
+.switchPill{display:flex;flex:none;cursor:pointer}
+.switchPill [role='tab']>span:last-child{width:var(--l3-icon-size-14);height:var(--l3-icon-size-14)}
+
 @keyframes switch-in{0%{opacity:0;translate:0 var(--l3-spacing-04)}}
 
 @media (prefers-reduced-motion:reduce){.switchName{animation:none}}
@@ -32646,6 +32695,7 @@ export function ShareBars({ parts, count, label }: { parts: DonutPart[]; count: 
 // header / end-of-list note).
 import { Actionbar } from '@l3/components/Actionbar'
 import { Section } from '@l3/components/Section'
+import { Inset } from '@l3/components/Inset'
 import { StockListCard } from '../../../../shared/ui/StockListCard'
 import { Phone } from '../../components/Phone'
 import { useUsNav } from '../../nav'
@@ -32670,13 +32720,15 @@ export function EtfHoldingsScreen({ backdrop }: { backdrop?: boolean }) {
       gesture="none"
       topLine
     >
-      {/* 24 under the bar, 16 at the sides; the cards 12 apart, as the Market list (3 Nov). */}
-      <Section paddingInline="16" paddingBlock="24" gap="12">
-        <p className={styles.fullHead} aria-hidden="true">
-          <span>Top {top.length} of {total.toLocaleString('en-US')}</span>
-          <span>Weight</span>
-        </p>
-        <Section as="ul" gap="12" aria-label={`${etf.sym}: top ${top.length} of ${total} holdings`}>
+      {/* 24 under the bar; edge-to-edge rows split by a hairline (19 Nov; were cards 12 apart), as the Market list. */}
+      <Section paddingBlock="24" gap="04">
+        <Inset paddingInline="16" paddingBlock="00">
+          <p className={styles.fullHead} aria-hidden="true">
+            <span>Top {top.length} of {total.toLocaleString('en-US')}</span>
+            <span>Weight</span>
+          </p>
+        </Inset>
+        <Section as="ul" gap="00" aria-label={`${etf.sym}: top ${top.length} of ${total} holdings`}>
           {top.map((h) => {
             const name = stockName(h.sym)
             return (
@@ -32687,6 +32739,7 @@ export function EtfHoldingsScreen({ backdrop }: { backdrop?: boolean }) {
                   logo={<HoldingLogo sym={h.sym} size={40} />}
                   price={`${h.weight.toFixed(1)}%`}
                   onOpen={() => { if (!backdrop) openHolding(go, h.sym) }}
+                  look="list"
                   aria-label={`${name}, ${h.weight}% of the ETF. Open stock`}
                 />
               </li>
@@ -32696,9 +32749,9 @@ export function EtfHoldingsScreen({ backdrop }: { backdrop?: boolean }) {
         {/* The end of the list (3 Nov): big funds hold hundreds or thousands of stocks, so the page lists only the
             biggest — this says so, and how much of the fund the rest are together. */}
         {rest > 0 && (
-          <p className={styles.fullEnd}>
+          <Inset paddingInline="16" paddingBlock="08"><p className={styles.fullEnd}>
             {`That's the top ${top.length} of ${total.toLocaleString('en-US')}. The other ${rest.toLocaleString('en-US')} ${rest === 1 ? 'stock is' : 'stocks are'} ${restWeight.toFixed(1)}% of the fund together.`}
-          </p>
+          </p></Inset>
         )}
       </Section>
     </Phone>
@@ -32729,6 +32782,7 @@ import { lmSwitchArrowVertical } from '@l3/icons/lemonnade'
 import { msGlobe, msShowChart } from '@l3/icons/material'
 import { Avatar } from '@l3/components/Avatar'
 import { Section } from '@l3/components/Section'
+import { Inset } from '@l3/components/Inset'
 import { Tabs } from '@l3/components/Tabs'
 import { Phone } from '../../components/Phone'
 import { useUsNav } from '../../nav'
@@ -32773,6 +32827,7 @@ function EtfCard({ etf, onOpen }: { etf: Etf; onOpen: () => void }) {
         price={<Usd value={etf.price} align="end" />}
         changePct={etf.change}
         onOpen={onOpen}
+        look="list"
         aria-label={`${plain}, ${etf.sym}, ${etf.name}`}
       />
     </li>
@@ -32820,6 +32875,7 @@ function FundRow({ etf, onClick }: { etf: Etf; onClick: () => void }) {
       price={<Usd value={etf.price} align="end" />}
       changePct={etf.change}
       onOpen={onClick}
+      look="list"
       aria-label={`${plain}, ${etf.sym}, ${etf.name}${etf.kind === 'leveraged' ? `, ${etf.lev} ${etf.side === 'long' ? 'Long' : 'Short'}` : ''}`}
     />
   )
@@ -32952,15 +33008,24 @@ export function EtfListScreen({ backdrop }: { backdrop?: boolean }) {
 
   const filters = (
     <Stack direction="horizontal" align="center" gap="12" className={styles.filterRow}>
-      <button type="button" className={styles.switchChip} aria-label={`Filter by ${FILTER_BY[filterBy]}, tap to switch`} onClick={switchFilter}>
-        <span className={styles.switchName} key={filterBy}>{FILTER_BY[filterBy]}</span>
-        <Icon icon={lmSwitchArrowVertical} size={16} />
-      </button>
+      {/* The switcher is an L3 primary pill (selected, the filter's name and a switch arrow), the filters below it the
+          secondary (outline) pills: as Home's US ETFs chips (19 Nov; was a hand-made outlined chip + primary pills). */}
+      <div className={styles.switchPill} onClick={switchFilter}>
+        <Tabs
+          appearance="pill"
+          size="md"
+          aria-label={`Filter by ${FILTER_BY[filterBy]}, tap to switch`}
+          items={[{ value: filterBy, label: FILTER_BY[filterBy], iconRight: <Icon icon={lmSwitchArrowVertical} size={14} /> }]}
+          value={filterBy}
+          onChange={() => {}}
+        />
+      </div>
       <span className={styles.filterDivider} aria-hidden="true" />
       {filterBy === 'country' ? (
         <Tabs
           appearance="pill"
           behavior="filter"
+          emphasis="secondary"
           aria-label="Country"
           className={styles.filterTabs}
           items={[
@@ -32974,6 +33039,7 @@ export function EtfListScreen({ backdrop }: { backdrop?: boolean }) {
         <Tabs
           appearance="pill"
           behavior="filter"
+          emphasis="secondary"
           aria-label="Sector"
           className={styles.filterTabs}
           items={[{ value: 'all', label: 'All' }, ...SECTORS.map((v) => ({ value: v, label: v }))]}
@@ -33002,8 +33068,9 @@ export function EtfListScreen({ backdrop }: { backdrop?: boolean }) {
       gesture="none"
     >
       {tab === 'normal' ? (
-        <Section paddingBlock="16" gap="16">
-          <Section as="ul" paddingInline="16" gap="12" aria-label="Regular ETFs">
+        // Edge-to-edge rows split by a hairline (19 Nov; were cards 12 apart), as the Market and theme lists.
+        <Section paddingBlock="08" gap="16">
+          <Section as="ul" gap="00" aria-label="Regular ETFs">
             {regular.map((e) => (
               <EtfCard key={e.sym} etf={e} onOpen={() => open(e.sym)} />
             ))}
@@ -33012,9 +33079,10 @@ export function EtfListScreen({ backdrop }: { backdrop?: boolean }) {
       ) : (
         // Boosted (jojo, 3 Nov): what Boosted means, quiet but always there (a tap opens "How Boosted ETFs work"), then
         // one list, long then short for each index; the leverage sits on each card.
-        <Section paddingBlock="16" paddingInline="16" gap="16">
-          <BoostNote kind={boostNote} tone={boostTone} onOpen={() => setBoostOpen(true)} />
-          <Section as="ul" gap="12" aria-label="Boosted ETFs">
+        <Section paddingBlock="16" gap="08">
+          <Inset paddingInline="16" paddingBlock="00"><BoostNote kind={boostNote} tone={boostTone} onOpen={() => setBoostOpen(true)} /></Inset>
+          {/* Edge-to-edge rows split by a hairline (19 Nov; were cards 12 apart). */}
+          <Section as="ul" gap="00" aria-label="Boosted ETFs">
             {leveragedGroups().flatMap((g) => g.etfs).map((e) => (
               <li key={e.sym}>
                 <FundRow etf={e} onClick={() => open(e.sym)} />
@@ -34051,6 +34119,19 @@ export function EtfsHolding({ sym, label, limit, onAll }: { sym: string; label: 
   return <FundTable label={label} rows={rows} columns={columns} onOpen={open} more={rest.length && onAll ? { rest, onAll } : undefined} />
 }
 
+/** A stock's Related ETFs (19 Nov): one side of the Boosted funds built on it (boostedOn) — how many times the stock's
+ *  daily move each aims for, today's move and the cheapest expense highlighted; Returns as everywhere. Tapping one opens it. */
+export function BoostedFunds({ funds, label }: { funds: Etf[]; label: string }) {
+  const { go } = useUsNav()
+  const leverage: Column = { label: 'Leverage', v: (e) => ({ text: e.lev ?? '—' }) }
+  const columns: Record<View, Column[]> = { overview: [leverage, COLUMNS.overview[0], COLUMNS.overview[1]], returns: COLUMNS.returns }
+  const open = (fund: string) => {
+    setCurrentEtf(fund)
+    go(ETF_PAGE)
+  }
+  return <FundTable label={label} rows={funds} columns={columns} onOpen={open} />
+}
+
 /** The funds table: a header cell that cycles Overview / Returns, then one row per fund; `self` is the page's own fund. */
 function FundTable({ label, rows, self, columns: views, onOpen, more, ref }: { label: string; rows: Etf[]; self?: Etf; columns: Record<View, Column[]>; onOpen: (sym: string) => void; more?: { rest: Etf[]; onAll: () => void }; ref?: Ref<HTMLDivElement> }) {
   const [view, setView] = useState<View>('overview')
@@ -34283,14 +34364,13 @@ import { currentStock } from '../../data'
 import { useUsNav } from '../../nav'
 import { STOCK_PAGE_ID } from './data'
 import { EtfsHolding } from './EtfPeers'
+import { usShortName } from '../../../../shared/data/usShortNames'
 
-/** The stock's short name, as the stock page's section title ("NVIDIA", "Apple"). */
-const shortNameOf = (sym: string, name: string) => (sym === 'NVDA' ? 'NVIDIA' : name.split(' ')[0])
 
 export function EtfsWithStockScreen() {
   const { back } = useUsNav()
   const stock = currentStock()
-  const title = `ETFs with ${shortNameOf(stock.sym, stock.name)}`
+  const title = `ETFs with ${usShortName(stock.sym, stock.name)}`
   return (
     <Phone label={title} header={<Actionbar onBack={() => back(STOCK_PAGE_ID)} title={title} />} gesture="none" topLine>
       {/* 24 under the bar, 16 at the sides, as the Top holdings page. */}
@@ -34349,6 +34429,10 @@ export function EtfsWithStockScreen() {
   font: var(--l3-text-description-14);
   color: var(--l3-content-secondary);
 }
+
+/* The popular stocks list runs edge to edge (19 Nov): out of the page's 16 side padding, so the rows' own 16 lines up
+   with the page and the hairlines run as in the Market list. */
+.edgeList { margin-inline: calc(-1 * var(--l3-spacing-16)); }
 ```
 
 ### `src/flows/us-stocks/screens/etf/FractionalScreen.tsx`
@@ -34407,7 +34491,8 @@ export function FractionalScreen({ backdrop = false }: { backdrop?: boolean }) {
 
         <Section gap="16">
           <SectionHeader title={t('fractional.popular.title')} description={t('fractional.popular.description')} />
-          <Section as="ul" gap="12" aria-label={t('fractional.popular.title')}>
+          {/* Edge-to-edge rows split by a hairline (19 Nov; were cards 12 apart): the list breaks out of the page's 16. */}
+          <Section as="ul" gap="00" className={styles.edgeList} aria-label={t('fractional.popular.title')}>
             {popular.map((s) => (
               <li key={s.sym}>
                 <StockListCard
@@ -34417,6 +34502,7 @@ export function FractionalScreen({ backdrop = false }: { backdrop?: boolean }) {
                   price={<Usd value={s.price} align="end" />}
                   changePct={s.change}
                   onOpen={() => { if (!backdrop) openStock(go, s) }}
+                  look="list"
                   aria-label={`${s.name}, ${s.sym}. Open stock`}
                 />
               </li>
@@ -34484,7 +34570,8 @@ export type Etf = {
   kind: 'normal' | 'leveraged'
   /** Leveraged ETFs only: long gains when the index rises, short when it falls. */
   side?: 'long' | 'short'
-  lev?: '2x' | '3x'
+  /** How many times the stock's or index's daily move (1x: the same move, the other way, for a short one). */
+  lev?: '1x' | '1.2x' | '1.5x' | '2x' | '3x'
   country: string
   /** Regular ETFs: the sector filter's pick (SECTORS). A country or whole-market fund is 'Broad market'. */
   sector?: EtfSector
@@ -34560,6 +34647,15 @@ export const ETFS: Etf[] = [
   { sym: 'SOXS', name: 'Direxion Daily Semiconductor Bear 3X Shares', description: 'Aims for 3x the opposite daily move of 30 big chip stocks', tracks: 'ICE Semiconductor', kind: 'leveraged', side: 'short', lev: '3x', country: 'US', price: 4.12, change: -5.38, expense: 1.0, aum: '$1.8B', holdings: SEMIS },
   { sym: 'NVDL', name: 'GraniteShares 2x Long NVDA Daily ETF', description: 'Aims for 2x the daily move of NVIDIA stock', tracks: 'NVIDIA', kind: 'leveraged', side: 'long', lev: '2x', country: 'US', price: 92.7, change: 2.46, expense: 1.05, aum: '$3.8B', holdings: weights(['NVDA', 100]) },
   { sym: 'NVD', name: 'GraniteShares 2x Short NVDA Daily ETF', description: 'Aims for 2x the opposite daily move of NVIDIA stock', tracks: 'NVIDIA', kind: 'leveraged', side: 'short', lev: '2x', country: 'US', price: 6.84, change: -2.5, expense: 1.35, aum: '$55M', holdings: weights(['NVDA', 100]) },
+  // The rest of the single-stock funds on NVIDIA (19 Nov, from the user's screenshot of another app's Related ETFs):
+  // the stock page's "Boosted ETFs on NVIDIA" (long) and "Bet against NVIDIA" (short).
+  { sym: 'NVDU', name: 'Direxion Daily NVDA Bull 2X ETF', description: 'Aims for 2x the daily move of NVIDIA stock', tracks: 'NVIDIA', kind: 'leveraged', side: 'long', lev: '2x', country: 'US', price: 60.62, change: 2.44, expense: 0.92, aum: '$0.9B', holdings: weights(['NVDA', 100]) },
+  { sym: 'NVDX', name: 'T-REX 2X Long NVIDIA Daily Target ETF', description: 'Aims for 2x the daily move of NVIDIA stock', tracks: 'NVIDIA', kind: 'leveraged', side: 'long', lev: '2x', country: 'US', price: 8.55, change: 2.4, expense: 1.05, aum: '$0.6B', holdings: weights(['NVDA', 100]) },
+  { sym: 'NVDW', name: 'Roundhill NVDA WeeklyPay ETF', description: 'Aims for 1.2x the weekly move of NVIDIA stock, and pays out every week', tracks: 'NVIDIA', kind: 'leveraged', side: 'long', lev: '1.2x', country: 'US', price: 21.41, change: 1.31, expense: 1.0, aum: '$0.3B', holdings: weights(['NVDA', 100]) },
+  { sym: 'NVDG', name: 'Leverage Shares 2X Long NVDA Daily ETF', description: 'Aims for 2x the daily move of NVIDIA stock', tracks: 'NVIDIA', kind: 'leveraged', side: 'long', lev: '2x', country: 'US', price: 38.2, change: 2.42, expense: 0.75, aum: '$0.1B', holdings: weights(['NVDA', 100]) },
+  { sym: 'NVDD', name: 'Direxion Daily NVDA Bear 1X ETF', description: 'Aims for the opposite of NVIDIA stock\'s daily move', tracks: 'NVIDIA', kind: 'leveraged', side: 'short', lev: '1x', country: 'US', price: 42.69, change: -1.22, expense: 1.01, aum: '$30M', holdings: weights(['NVDA', 100]) },
+  { sym: 'NVDQ', name: 'T-REX 2X Inverse NVIDIA Daily Target ETF', description: 'Aims for 2x the opposite daily move of NVIDIA stock', tracks: 'NVIDIA', kind: 'leveraged', side: 'short', lev: '2x', country: 'US', price: 17.14, change: -2.47, expense: 1.05, aum: '$40M', holdings: weights(['NVDA', 100]) },
+  { sym: 'NVDS', name: 'Tradr 1.5X Short NVDA Daily ETF', description: 'Aims for 1.5x the opposite daily move of NVIDIA stock', tracks: 'NVIDIA', kind: 'leveraged', side: 'short', lev: '1.5x', country: 'US', price: 31.43, change: -1.86, expense: 1.45, aum: '$60M', holdings: weights(['NVDA', 100]) },
   { sym: 'SPXL', name: 'Direxion Daily S&P 500 Bull 3X Shares', description: 'Aims for 3x the S&P 500\'s daily move', tracks: 'S&P 500', kind: 'leveraged', side: 'long', lev: '3x', country: 'US', price: 201.5, change: 1.02, expense: 0.84, aum: '$6.9B', holdings: SP500 },
   { sym: 'SPXS', name: 'Direxion Daily S&P 500 Bear 3X Shares', description: 'Aims for 3x the opposite of the S&P 500\'s daily move', tracks: 'S&P 500', kind: 'leveraged', side: 'short', lev: '3x', country: 'US', price: 4.37, change: -1.04, expense: 1.04, aum: '$339M', holdings: SP500 },
   // Added to fill every Country / Sector chip and the Boosted tab with real US-listed funds. Sample expense, size and holdings (approx.); price and change are real (snapshot).
@@ -34589,6 +34685,23 @@ export const ETFS: Etf[] = [
   { sym: 'YINN', name: 'Direxion Daily FTSE China Bull 3X Shares', description: "Aims for 3x the daily move of China's 50 biggest companies", tracks: 'FTSE China 50', kind: 'leveraged', side: 'long', lev: '3x', country: 'US', price: 45.0, change: 0, expense: 1.38, aum: '$1B', holdings: weights(['TCEHY', 11.0], ['BABA', 9.5], ['CICHY', 6.5], ['IDCBY', 5.5], ['XIACY', 4.2], ['MPNGY', 4.0]) },
   { sym: 'YANG', name: 'Direxion Daily FTSE China Bear 3X Shares', description: "Aims for 3x the opposite of the daily move of China's 50 biggest companies", tracks: 'FTSE China 50', kind: 'leveraged', side: 'short', lev: '3x', country: 'US', price: 3.0, change: 0, expense: 1.4, aum: '$0.1B', holdings: weights(['TCEHY', 11.0], ['BABA', 9.5], ['CICHY', 6.5], ['IDCBY', 5.5], ['XIACY', 4.2], ['MPNGY', 4.0]) },
   { sym: 'KORU', name: 'Direxion Daily MSCI South Korea Bull 3X Shares', description: "Aims for 3x the daily move of South Korea's big companies", tracks: 'MSCI Korea 25/50', kind: 'leveraged', side: 'long', lev: '3x', country: 'US', price: 20.0, change: 0, expense: 1.06, aum: '$0.1B', holdings: weights(['HXSCF', 23.7], ['SSNLF', 22.8], ['SKSQF', 3.1], ['SMSEF', 2.7], ['KB', 1.9]) },
+  // Single-stock Boosted funds for the big names (19 Nov, so every big stock page has its own Related ETFs). Real
+  // US-listed funds; sample price, expense and size. Their day change follows the stock (the loop below).
+  { sym: 'AAPU', name: 'Direxion Daily AAPL Bull 2X Shares', description: "Aims for 2x Apple's daily move", tracks: 'Apple', kind: 'leveraged', side: 'long', lev: '2x', country: 'US', price: 34.6, change: 0, expense: 0.97, aum: '$0.3B', holdings: weights(['AAPL', 100]) },
+  { sym: 'AAPD', name: 'Direxion Daily AAPL Bear 1X Shares', description: "Aims for the opposite of Apple's daily move", tracks: 'Apple', kind: 'leveraged', side: 'short', lev: '1x', country: 'US', price: 15.2, change: 0, expense: 0.95, aum: '$40M', holdings: weights(['AAPL', 100]) },
+  { sym: 'MSFU', name: 'Direxion Daily MSFT Bull 2X Shares', description: "Aims for 2x Microsoft's daily move", tracks: 'Microsoft', kind: 'leveraged', side: 'long', lev: '2x', country: 'US', price: 51.8, change: 0, expense: 0.97, aum: '$0.2B', holdings: weights(['MSFT', 100]) },
+  { sym: 'MSFD', name: 'Direxion Daily MSFT Bear 1X Shares', description: "Aims for the opposite of Microsoft's daily move", tracks: 'Microsoft', kind: 'leveraged', side: 'short', lev: '1x', country: 'US', price: 13.4, change: 0, expense: 0.95, aum: '$25M', holdings: weights(['MSFT', 100]) },
+  { sym: 'AMZU', name: 'Direxion Daily AMZN Bull 2X Shares', description: "Aims for 2x Amazon's daily move", tracks: 'Amazon', kind: 'leveraged', side: 'long', lev: '2x', country: 'US', price: 40.3, change: 0, expense: 0.97, aum: '$0.3B', holdings: weights(['AMZN', 100]) },
+  { sym: 'AMZD', name: 'Direxion Daily AMZN Bear 1X Shares', description: "Aims for the opposite of Amazon's daily move", tracks: 'Amazon', kind: 'leveraged', side: 'short', lev: '1x', country: 'US', price: 8.1, change: 0, expense: 0.95, aum: '$30M', holdings: weights(['AMZN', 100]) },
+  { sym: 'GGLL', name: 'Direxion Daily GOOGL Bull 2X Shares', description: "Aims for 2x Alphabet's daily move", tracks: 'Google', kind: 'leveraged', side: 'long', lev: '2x', country: 'US', price: 71.2, change: 0, expense: 0.99, aum: '$0.4B', holdings: weights(['GOOGL', 100]) },
+  { sym: 'GGLS', name: 'Direxion Daily GOOGL Bear 1X Shares', description: "Aims for the opposite of Alphabet's daily move", tracks: 'Google', kind: 'leveraged', side: 'short', lev: '1x', country: 'US', price: 9.3, change: 0, expense: 0.95, aum: '$20M', holdings: weights(['GOOGL', 100]) },
+  { sym: 'METU', name: 'Direxion Daily META Bull 2X Shares', description: "Aims for 2x Meta's daily move", tracks: 'Meta', kind: 'leveraged', side: 'long', lev: '2x', country: 'US', price: 58.9, change: 0, expense: 0.97, aum: '$0.3B', holdings: weights(['META', 100]) },
+  { sym: 'METD', name: 'Direxion Daily META Bear 1X Shares', description: "Aims for the opposite of Meta's daily move", tracks: 'Meta', kind: 'leveraged', side: 'short', lev: '1x', country: 'US', price: 12.6, change: 0, expense: 0.95, aum: '$15M', holdings: weights(['META', 100]) },
+  { sym: 'AMDL', name: 'GraniteShares 2x Long AMD Daily ETF', description: "Aims for 2x AMD's daily move", tracks: 'AMD', kind: 'leveraged', side: 'long', lev: '2x', country: 'US', price: 15.4, change: 0, expense: 1.15, aum: '$0.5B', holdings: weights(['AMD', 100]) },
+  { sym: 'AVL', name: 'Direxion Daily AVGO Bull 2X Shares', description: "Aims for 2x Broadcom's daily move", tracks: 'Broadcom', kind: 'leveraged', side: 'long', lev: '2x', country: 'US', price: 68.5, change: 0, expense: 0.97, aum: '$0.1B', holdings: weights(['AVGO', 100]) },
+  { sym: 'PLTU', name: 'Direxion Daily PLTR Bull 2X Shares', description: "Aims for 2x Palantir's daily move", tracks: 'Palantir', kind: 'leveraged', side: 'long', lev: '2x', country: 'US', price: 82.7, change: 0, expense: 0.97, aum: '$0.4B', holdings: weights(['PLTR', 100]) },
+  { sym: 'NFXL', name: 'Direxion Daily NFLX Bull 2X Shares', description: "Aims for 2x Netflix's daily move", tracks: 'Netflix', kind: 'leveraged', side: 'long', lev: '2x', country: 'US', price: 61.0, change: 0, expense: 0.97, aum: '$50M', holdings: weights(['NFLX', 100]) },
+  { sym: 'CONL', name: 'GraniteShares 2x Long COIN Daily ETF', description: "Aims for 2x Coinbase's daily move", tracks: 'Coinbase', kind: 'leveraged', side: 'long', lev: '2x', country: 'US', price: 36.8, change: 0, expense: 1.15, aum: '$1.1B', holdings: weights(['COIN', 100]) },
   { sym: 'TSLL', name: 'Direxion Daily TSLA Bull 2X Shares', description: "Aims for 2x Tesla's daily move", tracks: 'Tesla', kind: 'leveraged', side: 'long', lev: '2x', country: 'US', price: 13.0, change: 0, expense: 0.95, aum: '$5B', holdings: weights(['TSLA', 100.0]) },
   { sym: 'TSLQ', name: 'Tradr 2X Short TSLA Daily ETF', description: "Aims for 2x the opposite of Tesla's daily move", tracks: 'Tesla', kind: 'leveraged', side: 'short', lev: '2x', country: 'US', price: 22.0, change: 0, expense: 1.15, aum: '$0.6B', holdings: weights(['TSLA', 100.0]) },
 ]
@@ -34598,6 +34711,13 @@ export const ETFS: Etf[] = [
 for (const etf of ETFS) {
   const real = catalogue[etf.sym]
   if (real) Object.assign(etf, { price: real.price, change: real.change })
+}
+// A fund built on one stock that the snapshot doesn't have yet (the NVIDIA ones added 19 Nov) moves with that stock
+// today: its real move × the leverage, the other way for a short one — so the Related ETFs never show a Boosted fund
+// rising on a day its stock falls. The next `npm run us:snapshot` fetches their own prices.
+for (const etf of ETFS) {
+  const stock = etf.kind === 'leveraged' && etf.holdings.length === 1 && !catalogue[etf.sym] ? catalogue[etf.holdings[0].sym] : undefined
+  if (stock) etf.change = Math.round(stock.change * parseFloat(etf.lev ?? '1') * (etf.side === 'short' ? -1 : 1) * 100) / 100
 }
 
 export const COUNTRIES = ['US', 'India', 'China', 'Japan', 'Europe', 'Korea']
@@ -34995,9 +35115,41 @@ export const percent = (n: number) => `${n.toFixed(2)}%`
 export const ETF_LIST = '9001:1'
 export const ETF_PAGE = '9001:2'
 
+/** A Boosted (leveraged) fund built on this one stock (NVDL on NVIDIA). */
+const isBoostedOn = (etf: Etf, sym: string) => etf.kind === 'leveraged' && etf.holdings.length === 1 && etf.holdings[0].sym === sym
+
+// A Boosted fund that follows a whole index or sector, named the way a stock page says it ("Boosted ETFs on chip stocks").
+const BOOSTED_GROUP: Record<string, string> = {
+  'ICE Semiconductor': 'chip stocks', 'Technology Select Sector': 'tech stocks', 'Financial Select Sector': 'bank stocks',
+  'Nasdaq-100': 'the Nasdaq-100', 'S&P 500': 'the S&P 500', 'FTSE China 50': "China's big companies", 'MSCI Korea': 'Korean stocks',
+}
+const byLeverage = (a: Etf, b: Etf) => parseFloat(b.lev ?? '1') - parseFloat(a.lev ?? '1') || a.expense - b.expense
+const sides = (funds: Etf[]) => ({ long: funds.filter((e) => e.side === 'long'), short: funds.filter((e) => e.side === 'short') })
+
+/**
+ * A stock's Related ETFs (19 Nov): Boosted funds split by side — `long` gains when the stock rises (Boosted ETFs on …),
+ * `short` when it falls (Bet against …). Highest leverage first, then the cheapest.
+ * - The funds built on this one stock (NVDL on NVIDIA), when it has any (`on` is undefined: they're on the stock).
+ * - Otherwise (every other stock, 19 Nov) the Boosted index / sector funds that hold it the most (AMD in SOXL, JPM in
+ *   FAS), and the S&P 500 pair for a stock none of them holds — `on` names what they follow ("chip stocks").
+ */
+export function boostedOn(sym: string): { long: Etf[]; short: Etf[]; on?: string } {
+  const own = ETFS.filter((etf) => isBoostedOn(etf, sym)).sort(byLeverage)
+  if (own.length) return sides(own)
+  const groups = ETFS.filter((etf) => etf.kind === 'leveraged' && BOOSTED_GROUP[etf.tracks])
+  const weightIn = (etf: Etf) => etf.holdings.find((h) => h.sym === sym)?.weight ?? 0
+  const best = groups.reduce<Etf | undefined>((top, etf) => (weightIn(etf) > (top ? weightIn(top) : 0) ? etf : top), undefined)
+  const tracks = best?.tracks ?? 'S&P 500'
+  return { ...sides(groups.filter((etf) => etf.tracks === tracks).sort(byLeverage)), on: BOOSTED_GROUP[tracks] }
+}
+
 /** Every ETF in the catalogue that holds this stock, the biggest share of the fund first (a stock page's "ETFs with …"). */
 export function etfsHolding(sym: string): { etf: Etf; weight: number }[] {
+  const { long, short } = boostedOn(sym)
+  const related = new Set([...long, ...short])
   return ETFS.flatMap((etf) => {
+    // The page's Related ETFs (boostedOn) aren't listed again here.
+    if (related.has(etf)) return []
     const h = etf.holdings.find((x) => x.sym === sym)
     return h ? [{ etf, weight: h.weight }] : []
   }).sort((a, b) => b.weight - a.weight)
@@ -38013,6 +38165,337 @@ function FeeBreakdownSheet({ onClose }: { onClose: () => void }) {
 }
 ```
 
+### `src/flows/us-stocks/screens/trade/LeverageCard.module.css`
+
+```css
+/* Leverage card (Minted, Figma 8870:209735): a 56 header row, then (on) the choices and the info strip. */
+/* gap 0: L3 Card's own gap would leave 8 under the header while it's shut. */
+.card { align-self: stretch; overflow: hidden; gap: 0; }
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: var(--l3-spacing-12);
+  height: var(--l3-size-56);
+  padding: 0 var(--l3-spacing-12);
+  cursor: pointer;
+}
+/* The bolt on a 32 tile in the success colours (Minted's dark green tile). */
+.tile {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: var(--l3-size-32);
+  height: var(--l3-size-32);
+  border-radius: var(--l3-radius-08);
+  background: var(--l3-surface-accent-success-light);
+  color: var(--l3-content-accent-success-default);
+}
+.title {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  font: var(--l3-text-label-12);
+  color: var(--l3-content-primary);
+  white-space: nowrap;
+}
+.chosen {
+  display: inline-block;
+  color: var(--l3-content-accent-success-default);
+  animation: chosen var(--l3-motion-duration-short) var(--l3-motion-easing-decelerate);
+}
+/* The picked leverage drops into place (each pick re-keys it). */
+@keyframes chosen { from { opacity: 0; transform: translateY(-50%); } }
+
+/* The rolling number: 2x → 3x → 4x → 2x, one line tall, each held for a moment. */
+.roll {
+  display: inline-flex;
+  flex-direction: column;
+  height: var(--l3-size-16);
+  overflow: hidden;
+  vertical-align: top;
+  color: var(--l3-content-accent-success-default);
+}
+.roll > span {
+  display: block;
+  height: var(--l3-size-16);
+  line-height: var(--l3-size-16);
+  animation: roll 6s cubic-bezier(0.6, 0, 0.2, 1) infinite;
+}
+@keyframes roll {
+  0%, 26% { transform: translateY(0); }
+  33%, 59% { transform: translateY(-100%); }
+  66%, 92% { transform: translateY(-200%); }
+  100% { transform: translateY(-300%); }
+}
+@media (prefers-reduced-motion: reduce) { .roll > span, .chosen { animation: none; } }
+.srOnly { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* Grows open / shut (Minted: 0.2s ease-out) — a 0fr → 1fr row, so it animates to the content's own height. */
+.grow {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.2s ease-out;
+}
+.grow > * { min-height: 0; overflow: hidden; }
+.on .grow { grid-template-rows: 1fr; }
+@media (prefers-reduced-motion: reduce) { .grow { transition: none; } }
+
+/* On: a line under the header, the choices 12 from every side, then the info strip across the card's foot. */
+/* The line only while open: a border on the shut row would keep it 1 tall. */
+.on .body { border-top: 1px solid var(--l3-border-light); }
+.choices { padding: var(--l3-spacing-12); }
+.strip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--l3-spacing-06);
+  height: var(--l3-size-32);
+  margin: 0;
+  background: var(--l3-surface-secondary);
+  font: var(--l3-text-description-12);
+  color: var(--l3-content-secondary);
+}
+```
+
+### `src/flows/us-stocks/screens/trade/LeverageCard.tsx`
+
+```tsx
+// Leverage card on the Market pad (19 Nov, the user's call: "import the boosted / leverage thing from Minted"), Minted's
+// card (Figma 8870:209735, ~/minted reference s05 / s13): a bolt tile, "Enable leverage upto 2x / 3x / 4x" (the number
+// rolls while it's off) and a switch. On: a line, then 2x · 3x · 4x (2x picked) and an info strip — "Leverage can
+// multiply your profits and losses." The title then shows the chosen leverage in green.
+// Interaction as in Minted: the first switch-on opens the "Activate leverage" sheet (LeverageSheet) and the card
+// switches on only on Confirm (until "Don't show this again" is confirmed); the card grows open / shut (0.2s ease-out)
+// instead of jumping. Plain card and bolt (the user's call: no gradients).
+// Chips: L3 pill chips, secondary emphasis (the user's call), not the primary pill group.
+// Prototype only: the leverage doesn't change the dock's numbers (Balance / Req. / the ₹ value).
+// FLAG: copy hard-coded like the rest of the pad (no copy.ts in this flow yet).
+// FLAG: the rolling 2x → 3x → 4x, the bolt tile and the grow are hand-made (LeverageCard.module.css); L3 has none.
+import { useId, useState } from 'react'
+import { Card } from '@l3/components/Card'
+import { Icon } from '@l3/components/Icon'
+import { Stack } from '@l3/components/Stack'
+import { Switch } from '@l3/components/Switch'
+import { Tabs } from '@l3/components/Tabs'
+import { msBoltFill, msInfo } from '@l3/icons/material'
+import { LeverageSheet, leverageSheetSeen } from './LeverageSheet'
+import styles from './LeverageCard.module.css'
+
+const LEVERAGES = ['2', '3', '4'] as const
+type Leverage = (typeof LEVERAGES)[number]
+
+export function LeverageCard() {
+  const [on, setOn] = useState(false)
+  const [sheet, setSheet] = useState(false)
+  const [leverage, setLeverage] = useState<Leverage>('2')
+  const titleId = useId()
+  const switchOn = () => {
+    setLeverage('2') // switched on: 2x, as in Figma
+    setOn(true)
+  }
+  const toggle = () => {
+    if (on) setOn(false)
+    else if (leverageSheetSeen()) switchOn()
+    else setSheet(true)
+  }
+  return (
+    <>
+      <Card padding="none" className={`${styles.card} ${on ? styles.on : ""}`}>
+        {/* The header row toggles (pointer-down kept off the amount field, so the keypad stays on it). */}
+        <div className={styles.head} onPointerDown={(e) => e.preventDefault()} onClick={toggle}>
+          <span className={styles.tile} aria-hidden="true"><Icon icon={msBoltFill} size={20} /></span>
+          <p id={titleId} className={styles.title}>
+            Enable leverage upto{' '}
+            {on ? (
+              <span key={leverage} className={styles.chosen}>{leverage}x</span>
+            ) : (
+              <span className={styles.roll} aria-hidden="true">
+                <span>2x</span><span>3x</span><span>4x</span><span>2x</span>
+              </span>
+            )}
+            {!on && <span className={styles.srOnly}>4x</span>}
+          </p>
+          <Switch size="sm" checked={on} onChange={toggle} onClick={(e) => e.stopPropagation()} aria-labelledby={titleId} />
+        </div>
+        {/* Always rendered so it can grow open and shut; hidden from everyone while shut. */}
+        <div className={styles.grow} aria-hidden={!on} inert={!on}>
+          <div className={styles.body} onPointerDown={(e) => e.preventDefault()}>
+            <Stack gap="00">
+              <div className={styles.choices}>
+                <Tabs
+                  appearance="pill"
+                  emphasis="secondary"
+                  size="sm"
+                  behavior="toggle"
+                  width="fill"
+                  aria-label="Leverage"
+                  items={LEVERAGES.map((value) => ({ value, label: `${value}x` }))}
+                  value={leverage}
+                  onChange={(value) => setLeverage(value as Leverage)}
+                />
+              </div>
+              <p className={styles.strip}>
+                <Icon icon={msInfo} size={14} />
+                Leverage can multiply your profits and losses.
+              </p>
+            </Stack>
+          </div>
+        </div>
+      </Card>
+      <LeverageSheet
+        open={sheet}
+        onClose={() => setSheet(false)}
+        onConfirm={() => {
+          setSheet(false)
+          switchOn()
+        }}
+      />
+    </>
+  )
+}
+```
+
+### `src/flows/us-stocks/screens/trade/LeverageSheet.module.css`
+
+```css
+/* The $100 example: a bordered table, a light header row, hairlines between rows (Minted's .lvx-ex). */
+.table {
+  border: 1px solid var(--l3-border-light);
+  border-radius: var(--l3-radius-12);
+  overflow: hidden;
+}
+.row {
+  padding: var(--l3-spacing-12);
+  font: var(--l3-text-label-12);
+  color: var(--l3-content-primary);
+}
+.row + .row { border-top: 1px solid var(--l3-border-light); }
+.head {
+  background: var(--l3-surface-secondary);
+  font: var(--l3-text-description-10);
+  color: var(--l3-content-secondary);
+}
+.row > :nth-child(2),
+.row > :nth-child(3) { text-align: center; }
+.row > :nth-child(4) { text-align: right; }
+.up { color: var(--l3-content-accent-success-default); }
+.down { color: var(--l3-content-accent-error-default); }
+
+/* The row is the checkbox's 48 tap target tall, so its invisible input (48 around the 24 box) stays inside the sheet's
+   content — otherwise it overflows 12, the content scrolls, and ticking it scrolls the sheet. Pulled up 12 so the
+   gap above still reads as 16. */
+.dontShow {
+  min-height: var(--l3-size-tap-target);
+  margin-top: calc(-1 * var(--l3-spacing-12));
+  display: flex;
+  align-items: center;
+  gap: var(--l3-spacing-08);
+  font: var(--l3-text-label-14);
+  color: var(--l3-content-primary);
+  cursor: pointer;
+}
+```
+
+### `src/flows/us-stocks/screens/trade/LeverageSheet.tsx`
+
+```tsx
+// "Activate leverage" sheet (19 Nov, the user's call: Minted shows it before leverage switches on the first time —
+// ~/minted reference, "Combined asset page: Activate leverage confirmation sheet"). It explains leverage with a
+// $100 example at 1x and 4x, warns about liquidation, and has "Don't show this again" (ticked, as in Minted) +
+// Confirm. Confirm switches the card on; closing the sheet (backdrop, drag) leaves it off.
+// FLAG: copy hard-coded like the rest of the pad (no copy.ts in this flow yet).
+// FLAG: the example table is hand-laid (LeverageSheet.module.css) — L3 has no table.
+import { useId, useState } from 'react'
+import { Aerobar } from '@l3/components/Aerobar'
+import { BottomSheet, BottomSheetHeader } from '@l3/components/BottomSheet'
+import { Button } from '@l3/components/Button'
+import { ButtonGroup } from '@l3/components/ButtonGroup'
+import { Checkbox } from '@l3/components/Checkbox'
+import { Grid } from '@l3/components/Grid'
+import { Stack } from '@l3/components/Stack'
+import { useSheetLayer } from '../../components/Phone'
+import { Usd } from '../../../../shared/money'
+import styles from './LeverageSheet.module.css'
+
+const SKIP_KEY = 'us-stocks.leverage-sheet-seen'
+
+/** Whether the sheet was confirmed with "Don't show this again" ticked. */
+export function leverageSheetSeen(): boolean {
+  try {
+    return localStorage.getItem(SKIP_KEY) === '1'
+  } catch {
+    return false
+  }
+}
+
+const EXAMPLE = [
+  { leverage: 1, move: 1 },
+  { leverage: 4, move: 4 },
+]
+
+export function LeverageSheet({ open, onClose, onConfirm }: { open: boolean; onClose: () => void; onConfirm: () => void }) {
+  const layer = useSheetLayer()
+  const headingId = useId()
+  const [dontShow, setDontShow] = useState(true)
+  const confirm = () => {
+    if (dontShow) {
+      try {
+        localStorage.setItem(SKIP_KEY, '1')
+      } catch {
+        /* prototype: the sheet just shows again */
+      }
+    }
+    onConfirm()
+  }
+  return (
+    <BottomSheet
+      open={open}
+      onClose={onClose}
+      container={layer}
+      aria-labelledby={headingId}
+      header={<BottomSheetHeader size="sm" heading="Activate leverage" headingId={headingId} description="Leverage multiplies your gains and your losses." />}
+      footer={
+        <ButtonGroup>
+          <Button size="lg" onClick={confirm}>Confirm</Button>
+        </ButtonGroup>
+      }
+    >
+      <Stack gap="16">
+        <div className={styles.table} role="table" aria-label="Example with $100">
+          <Grid columns={4} gap="00" className={`${styles.row} ${styles.head}`} role="row">
+            <span role="columnheader">Investment</span>
+            <span role="columnheader">Leverage</span>
+            <span role="columnheader">Price +1%</span>
+            <span role="columnheader">Price −1%</span>
+          </Grid>
+          {EXAMPLE.map(({ leverage, move }) => (
+            <Grid key={leverage} columns={4} gap="00" className={styles.row} role="row">
+              <span role="cell"><Usd value={100} decimals={0} /></span>
+              <span role="cell">{leverage}x</span>
+              <span role="cell" className={styles.up}><Usd value={move} decimals={0} sign /></span>
+              <span role="cell" className={styles.down}><Usd value={-move} decimals={0} /></span>
+            </Grid>
+          ))}
+        </div>
+        <Aerobar
+          floating
+          placement="inline"
+          type="danger"
+          emphasis="secondary"
+          heading="Liquidation risk"
+          paragraph="At 4x, a 25% price drop closes your position and you lose your $100."
+        />
+        <label className={styles.dontShow}>
+          <Checkbox checked={dontShow} onChange={(e) => setDontShow(e.target.checked)} />
+          Don’t show this again
+        </label>
+      </Stack>
+    </BottomSheet>
+  )
+}
+```
+
 ### `src/flows/us-stocks/screens/trade/OrderPad.module.css`
 
 ```css
@@ -38338,10 +38821,11 @@ function OrderPadV1({ config, backdrop, sheet }: OrderPadProps) {
 .priceCaret { width: 2px; height: var(--l3-size-20); margin-left: var(--l3-spacing-02); background: var(--l3-content-accent-discover-default); animation: caretBlink 1s steps(1) infinite; }
 @media (prefers-reduced-motion: reduce) { .priceCaret { animation: none; } }
 
-/* Dock: the note strip, Balance · Approx. req., the main button, then the keypad. */
-.dock { background: var(--l3-surface-primary); border-top: 1px solid var(--l3-border-light); } /* hairline separator above the dock */
+/* Dock: the note strip, Balance · Approx. req., the main button, then the keypad. The note sits above the dock's
+   hairline (on the page, outside the button dock); the hairline opens the dock itself. */
+.dock { background: var(--l3-surface-primary); }
 .note { margin: 0; padding: var(--l3-spacing-08) var(--l3-spacing-16); font: var(--l3-text-label-12); color: var(--l3-content-secondary); text-align: center; }
-.dockBody { padding: var(--l3-spacing-12) var(--l3-spacing-16); }
+.dockBody { padding: var(--l3-spacing-12) var(--l3-spacing-16); border-top: 1px solid var(--l3-border-light); }
 .funds { font: var(--l3-text-label-12); }
 .funds strong { font: var(--l3-text-heading-12); color: var(--l3-content-primary); }
 .muted { color: var(--l3-content-secondary); }
@@ -38377,7 +38861,8 @@ function OrderPadV1({ config, backdrop, sheet }: OrderPadProps) {
 // price + change; the order type switch (Market / Limit / SL); the big centred amount (or share count) typed on the
 // app keypad, with the amount ⇄ shares switch under it; quick chips; one helper line; the limit / trigger price cards
 // with a Stepper; then the dock: note strip, Balance · Approx. req., the main button and the keypad.
-// Differences from Minted: no Markets / Futures tabs and no leverage card (US stocks are cash only); the switch is
+// Differences from Minted: no Markets / Futures tabs (US stocks are cash only); the leverage card is on the Market pad
+// (LeverageCard, 19 Nov) but is a prototype only; the switch is
 // Market / Limit / SL (not Instant / Limit / SIP) and moves between the pads of the same page group like V1;
 // the US "Day" validity is not a Tag any more — Limit / SL notes start with "Day order ·".
 // FLAG: L3 Actionbar has no centred title; the logo + symbol + price block is centred inside the Actionbar's content.
@@ -38403,6 +38888,7 @@ import { Usd, formatInr, useUsd, useUsdInrRate } from '../../../../shared/money'
 import { al, forCurrentStock } from './format'
 import type { Derived, OrderPadConfig, OrderType, PadMode } from './types'
 import { usePriceCards } from './version'
+import { LeverageCard } from './LeverageCard'
 import styles from './OrderPadV2.module.css'
 
 const ORDER_TYPES: { value: OrderType; label: string }[] = [
@@ -38730,6 +39216,8 @@ export function OrderPadV2({ config, backdrop, sheet }: { config: OrderPadConfig
           )}
           {/* No helper line under the amount: the order's ₹ value is in the Buy / Sell button. Only an error shows here. */}
           {derived.error && <p className={styles.error}>{forCurrentStock(derived.error)}</p>}
+          {/* Market pad only: Minted's leverage card (Enable leverage upto 2x / 3x / 4x). */}
+          {config.type === 'market' && <LeverageCard />}
           {/* Price cards (flow option "Price cards"): one card holding every price, a line between (merged, the default),
               or a card per price (separate, the earlier design, kept for A/B). */}
           {priceCards === 'merged' && (config.prices ?? []).length > 1 ? (
@@ -42556,7 +43044,9 @@ const ISSUER_OF: Record<string, string> = {
   IYF: 'ishares', IBB: 'ishares', IHI: 'ishares', INDY: 'ishares', SMIN: 'ishares', JPXN: 'ishares', EWG: 'ishares', EWU: 'ishares',
   OIH: 'vaneck', UPRO: 'proshares', SPXU: 'proshares',
   TECL: 'direxion', TECS: 'direxion', FAS: 'direxion', FAZ: 'direxion', YINN: 'direxion', YANG: 'direxion', KORU: 'direxion', TSLL: 'direxion',
-  NVDL: 'graniteshares', NVD: 'graniteshares', SGOV: 'ishares', SHV: 'ishares', BIL: 'spdr',
+  NVDL: 'graniteshares', NVD: 'graniteshares', NVDU: 'direxion', NVDD: 'direxion', SGOV: 'ishares', SHV: 'ishares', BIL: 'spdr',
+  AAPU: 'direxion', AAPD: 'direxion', MSFU: 'direxion', MSFD: 'direxion', AMZU: 'direxion', AMZD: 'direxion', GGLL: 'direxion', GGLS: 'direxion',
+  METU: 'direxion', METD: 'direxion', AVL: 'direxion', PLTU: 'direxion', NFXL: 'direxion', AMDL: 'graniteshares', CONL: 'graniteshares',
 }
 
 /**
@@ -66618,6 +67108,55 @@ export const setSentDeposit = (deposit: SentDeposit) => {
 export const depositOnTheWay = (): SentDeposit => sent ?? SAMPLE_DEPOSIT
 ```
 
+### `src/shared/data/usShortNames.ts`
+
+```ts
+// The short name people know each US stock by ("Procter & Gamble", not "The Procter & Gamble Company"): for titles
+// and sentences like "ETFs with Procter & Gamble". Collected from the names the app already shows in its lists.
+// A symbol not here falls back to its catalogue name without "The" and legal endings (usShortName).
+export const US_SHORT_NAMES: Record<string, string> = {
+  AAL: "American Airlines", AAPL: "Apple", ABBV: "AbbVie", ABNB: "Airbnb", ADBE: "Adobe", ADI: "Analog Devices",
+  AEO: "American Eagle", AMAT: "Applied Materials", AMC: "AMC Entertainment", AMD: "AMD", AMZN: "Amazon",
+  ANF: "Abercrombie & Fitch", ARM: "Arm", ASML: "ASML", ASTS: "AST SpaceMobile", AVGO: "Broadcom", BA: "Boeing",
+  BABA: "Alibaba", BAC: "Bank of America", BB: "BlackBerry", BBWI: "Bath & Body Works", BIDU: "Baidu",
+  BIRK: "Birkenstock", BLNK: "Blink Charging", BOOT: "Boot Barn", BROS: "Dutch Bros", BYND: "Beyond Meat",
+  CAKE: "Cheesecake Factory", CAR: "Avis Budget", CAVA: "CAVA Group", CHPT: "ChargePoint", CHWY: "Chewy",
+  CLOV: "Clover Health", CMG: "Chipotle", COIN: "Coinbase", COLM: "Columbia Sportswear", COP: "ConocoPhillips",
+  COST: "Costco", CPRI: "Capri", CRM: "Salesforce", CROX: "Crocs", CRWD: "CrowdStrike", CSCO: "Cisco",
+  CVX: "Chevron", CZR: "Caesars", DAL: "Delta Air Lines", DASH: "DoorDash", DDOG: "Datadog", DELL: "Dell",
+  DIS: "Disney", EBAY: "eBay", ELF: "e.l.f. Beauty", ETSY: "Etsy", F: "Ford", FIVE: "Five Below", FUBO: "FuboTV",
+  GAP: "Gap", GE: "GE Aerospace", GM: "General Motors", GOOG: "Google", GOOGL: "Google", GPRO: "GoPro",
+  GRMN: "Garmin", HAS: "Hasbro", HD: "Home Depot", HOG: "Harley-Davidson", HOOD: "Robinhood", IBM: "IBM",
+  INTC: "Intel", ISRG: "Intuitive Surgical", JBLU: "JetBlue", JNJ: "Johnson & Johnson", JPM: "JPMorgan", KLAC: "KLA",
+  KO: "Coca-Cola", LAZR: "Luminar", LCID: "Lucid", LEVI: "Levi Strauss", LLY: "Eli Lilly", LMT: "Lockheed Martin",
+  LRCX: "Lam Research", LULU: "Lululemon", LYFT: "Lyft", M: "Macy’s", MA: "Mastercard", MAR: "Marriott",
+  MAT: "Mattel", MCD: "McDonald’s", META: "Meta", MRK: "Merck", MRVL: "Marvell", MSFT: "Microsoft", MU: "Micron",
+  MUFG: "Mitsubishi UFJ", NET: "Cloudflare", NIO: "NIO", NKE: "Nike", NOC: "Northrop Grumman", NVDA: "NVIDIA",
+  NVO: "Novo Nordisk", NXPI: "NXP Semiconductors", OPEN: "Opendoor", ORCL: "Oracle", PDD: "PDD",
+  PENN: "PENN Entertainment", PEP: "PepsiCo", PFE: "Pfizer", PG: "Procter & Gamble", PLAY: "Dave & Buster’s",
+  PLNT: "Planet Fitness", PLTR: "Palantir", PLUG: "Plug Power", PTON: "Peloton", PYPL: "PayPal", QCOM: "Qualcomm",
+  QS: "QuantumScape", RBLX: "Roblox", RH: "RH", RIG: "Transocean", RIVN: "Rivian", RKLB: "Rocket Lab", RTX: "RTX",
+  SAP: "SAP", SBUX: "Starbucks", SHAK: "Shake Shack", SHOP: "Shopify", SIRI: "SiriusXM", SLB: "SLB", SNAP: "Snap",
+  SNOW: "Snowflake", SONO: "Sonos", SONY: "Sony", SOUN: "SoundHound", SPCE: "Virgin Galactic", SPOT: "Spotify",
+  SSNLF: "Samsung Electronics", TGT: "Target", TLRY: "Tilray", TM: "Toyota", TMUS: "T-Mobile", TRIP: "Tripadvisor",
+  TSLA: "Tesla", TSM: "TSMC", TTD: "The Trade Desk", TXN: "Texas Instruments", U: "Unity", UAL: "United Airlines",
+  UBER: "Uber", UNH: "UnitedHealth", URBN: "Urban Outfitters", V: "Visa", VFC: "VF Corp", WEN: "Wendy’s",
+  WFC: "Wells Fargo", WING: "Wingstop", WMT: "Walmart", WOOF: "Petco", XOM: "ExxonMobil", YETI: "YETI", ZM: "Zoom",
+}
+
+/** A US stock's short name: the list above, else its full name without a leading "The" and legal endings (Inc., Corp …). */
+export function usShortName(sym: string, fullName: string): string {
+  if (US_SHORT_NAMES[sym]) return US_SHORT_NAMES[sym]
+  const ending = /[,\s]+(inc\.?|incorporated|corp\.?|corporation|company|co\.?|ltd\.?|limited|plc|holdings?|group|n\.?v\.?|s\.?a\.?|se|class [a-c]|common stock|ordinary shares|ads|\(the\))$/i
+  let short = fullName.replace(/^the\s+/i, '').trim()
+  for (let before = ''; before !== short; ) {
+    before = short
+    short = short.replace(ending, '').trim()
+  }
+  return short || fullName
+}
+```
+
 ### `src/shared/data/usStocks.ts`
 
 ```ts
@@ -67871,6 +68410,9 @@ let restoring: { screen: string; market: 'in' | 'us' } | null = null
 export function rememberStocksHome(screen: string, market: 'in' | 'us') {
   lastStocks = { screen, market }
 }
+
+/** The IND / US tab the Stocks home was last on (none before it has opened): Market opens on that market (19 Nov). */
+export const lastStocksMarket = (): 'in' | 'us' | undefined => lastStocks?.market
 
 /**
  * The Stocks home, when it opens: the IND / US tab to come back to — if the navbar brought the user back to it, or a
