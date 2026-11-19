@@ -112,12 +112,20 @@
     "src/flows/nudges/options.ts",
     "src/flows/nudges/screens/OrderPad.module.css",
     "src/flows/nudges/screens/OrderPad.tsx",
+    "src/flows/nudges/sheets/BlockDial.module.css",
+    "src/flows/nudges/sheets/BlockDial.tsx",
     "src/flows/nudges/sheets/GuardrailSheets.module.css",
     "src/flows/nudges/sheets/GuardrailSheets.tsx",
+    "src/flows/nudges/sheets/Meter.module.css",
+    "src/flows/nudges/sheets/Meter.tsx",
     "src/flows/nudges/sheets/NudgeSheet.module.css",
     "src/flows/nudges/sheets/NudgeSheet.tsx",
+    "src/flows/nudges/sheets/RiskScale.module.css",
+    "src/flows/nudges/sheets/RiskScale.tsx",
     "src/flows/nudges/sheets/RiskVisuals.module.css",
-    "src/flows/nudges/sheets/RiskVisuals.tsx"
+    "src/flows/nudges/sheets/RiskVisuals.tsx",
+    "src/flows/nudges/sheets/SoftDial.module.css",
+    "src/flows/nudges/sheets/SoftDial.tsx"
   ],
   "shared": [
     "src/shared/copy.ts",
