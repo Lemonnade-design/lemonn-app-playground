@@ -222,7 +222,8 @@ Every tap he wired is kept. The main path: FTUX sheet → Activate → Declarati
 - 19 Nov: A stock, ETF or bank with no logo shows one letter (its first), not two or three — app-wide (companies, market list, US banks, every Avatar / disc fallback).
 - 19 Nov: ETF tables (ETFs with the stock, fund peers): logo 24 → 32, so rows are 48 like Peers.
 - 19 Nov: Share bars (Key Holders, ETF allocation) end on the panel's 12 (last row's bottom 8 dropped). Peers: logo 24 → 32, name Label 14. Analyst Ratings card rows and footer follow the page (Description 12 names, Heading 12 figures) instead of Figma's 10. View Order History Label 14.
-- 2026-11-19 — Order pad: the Actionbar keeps its 1px border-light line from the start (`Phone topLine`), not only once the page scrolls, with 6 below the two-line title so it does not sit on the line.
+- 2026-11-19 — Stock page: in Related ETFs and Company financials the Long / Short (statement) filters sit 8 under the section title and 16 above the table, so the title and its filters read as one header.
+- 2026-11-19 — Order pad: the Actionbar keeps its 1px border-light line from the start (`Phone topLine`), not only once the page scrolls, with 6 below the two-line title so it does not sit on the line. A tap in the dock (market note, Balance · Req.) no longer closes the keypad; only the page and header above it do. Order pad versions (flow option "Order pad", group Trade): **US** (the default) — stop loss only (Sl.tsx: a "Set SL" chip, a Stop loss sheet with MKT ⇄ LMT, trigger in points ⇄ %, Est. loss, Clear, and Remove when editing; once set an "SL ✓" card), no take profit, no trailing, no leverage card; SL isn't available on fractional shares: tapping Set SL with a qty that isn't whole shows a floating warning Aerobar for 4 s (SlFractionalToast, above the dock), and a set SL is cleared (same toast) once the qty turns fractional. **Indian** — as Indian stocks will have it: the leverage card on Market and TP + SL + trailing (Tpsl.tsx, kept as it was). Switching Market / Limit / SL keeps the keypad as it was: up stays up (no slide), closed stays closed; only the part under the amount (chips, prices, SL) drops and fades — the tabs, the amount and the dock stay put.
 - 2026-11-19 — L3 moved to BottomSheet 2.4.0: the sheet's 16 top / 24 bottom spaces are the content's own padding and scroll with it, so the TP/SL sheet's local workaround is gone.
 - 2026-11-19 — TP/SL sheet: take profit and stop loss both start on Market (MKT); the LMT ⇄ MKT switch at the top of each card is discover blue; Points ⇄ Percentage and the trail unit stay primary. L3 gap: Select has no discover tone. The "Trigger at" / "Limit at" labels are Description 12. The sheet's 24 above the dock is the end of its scroll, not a fixed gap, so scrolled content runs up to the dock (L3 BottomSheet 2.4.0 does this for every sheet). Trailing sheet: the box is outlined like the leg cards, not grey, with the same Stepper. In the sheet, as on the order pad, a tap outside a price (label + price) and the keypad closes the keypad; tapping a price opens it again; it slides in and out (shared `KeypadSlide`). The sheet's heading is "TP SL & More" (was "Set TP/SL"). The order moved into the TP/SL sheet header: "Qty 0.6405" is the description (was "Applies to this order only."), the stock with its last price and change sits at the right (differs from L3: the header's right slot is meant for one icon button or a Tag).
 - 2026-11-19 — Order pad V2: a tap anywhere outside the typable areas (the amount row, a price card's label + price, the keypad) closes the keypad and the field loses its caret; tapping a field opens it again on that field. The keypad slides up from the bottom when it opens (260 ms, ease-out) and down to the bottom when it closes (200 ms, ease-in), the dock moving with it; reduced motion skips the slide. TP/SL summary card: the head row has 12 on all four sides.
@@ -22579,6 +22580,21 @@ export const usStocks: Flow = {
       default: 'merged',
       floatOn: ['us-stocks-41'],
     },
+    // Order pad version (19 Nov, the user's call): US · stop loss only (no take profit, no trailing, no SL on fractional
+    // shares) and no leverage card, the default; Indian · the pad as Indian stocks will have it: the leverage card on
+    // Market and TP + SL + trailing (Tpsl.tsx, kept as it was).
+    {
+      id: 'padVersion',
+      group: 'Trade',
+      label: 'Order pad',
+      picker: 'dropdown',
+      values: [
+        { value: 'us', label: 'US · SL only, no leverage' },
+        { value: 'india', label: 'Indian · leverage + TP/SL + trailing' },
+      ],
+      default: 'us',
+      floatOn: ['us-stocks-33'],
+    },
     // The processing screen's loader (19 Nov, from Minted): glass ring (default) or Minted's other processing animations.
     {
       id: 'procAnim',
@@ -26713,17 +26729,19 @@ export function Financials() {
   }
   return (
     <section className={styles.section}>
-      <SectionTitle title="Company financials" info />
-      {/* The statement tabs sit with the header, outside the card (19 Nov). */}
-      <Tabs
-        appearance="pill"
-        emphasis="primary"
-        size="sm"
-        aria-label="Statement"
-        value={statement}
-        onChange={(v) => setStatement(v as Statement)}
-        items={(Object.keys(STATEMENTS) as Statement[]).map((k) => ({ value: k, label: STATEMENTS[k].label }))}
-      />
+      {/* The statement tabs sit with the header, outside the card (19 Nov), 8 under the title — 16 to the content. */}
+      <Stack gap="08">
+        <SectionTitle title="Company financials" info />
+        <Tabs
+          appearance="pill"
+          emphasis="primary"
+          size="sm"
+          aria-label="Statement"
+          value={statement}
+          onChange={(v) => setStatement(v as Statement)}
+          items={(Object.keys(STATEMENTS) as Statement[]).map((k) => ({ value: k, label: STATEMENTS[k].label }))}
+        />
+      </Stack>
       <div className={styles.financials}>
         <div className={styles.chartArea}>
           <div className={styles.legend}>
@@ -26911,18 +26929,21 @@ export function BoostedOnStock({ sym, name }: { sym: string; name: string }) {
   const shown = sides.find((x) => x.value === side) ?? sides[0]
   return (
     <section className={styles.section}>
-      <SectionTitle title="Related ETFs" />
-      {sides.length > 1 && (
-        <Tabs
-          appearance="pill"
-          emphasis="primary"
-          size="sm"
-          aria-label="Long or short"
-          value={shown.value}
-          onChange={(v) => setSide(v as 'long' | 'short')}
-          items={sides.map((x) => ({ value: x.value, label: x.label }))}
-        />
-      )}
+      {/* The Long / Short filters sit 8 under the title, 16 above the table (19 Nov, the user's call). */}
+      <Stack gap="08">
+        <SectionTitle title="Related ETFs" />
+        {sides.length > 1 && (
+          <Tabs
+            appearance="pill"
+            emphasis="primary"
+            size="sm"
+            aria-label="Long or short"
+            value={shown.value}
+            onChange={(v) => setSide(v as 'long' | 'short')}
+            items={sides.map((x) => ({ value: x.value, label: x.label }))}
+          />
+        )}
+      </Stack>
       <BoostedFunds key={shown.value} funds={shown.funds} label={shown.label2} />
     </section>
   )
@@ -39290,9 +39311,11 @@ import { useUsNav } from '../../nav'
 import { Usd, formatInr, useUsd, useUsdInrRate } from '../../../../shared/money'
 import { al, forCurrentStock } from './format'
 import type { Derived, OrderPadConfig, OrderType, PadMode } from './types'
-import { usePriceCards } from './version'
+import { usePadVersion, usePriceCards } from './version'
 import { LeverageCard } from './LeverageCard'
 import { TpslControl } from './Tpsl'
+import { SlControl } from './Sl'
+import { SlFractionalToast } from './SlFractionalToast'
 import { FeeBreakdownSheet } from './FeeBreakdown'
 import { PriceField, PriceFieldBox } from './PriceField'
 import styles from './OrderPadV2.module.css'
@@ -39305,6 +39328,10 @@ const ORDER_TYPES: { value: OrderType; label: string }[] = [
 
 /** The pad on screen (its order type, and when it closed): an order type switch dissolves the fields (leaveTo / fields below). */
 let shownPad: { type: OrderType; closedAt: number | null } | null = null
+/** The pad just switched away from (a Market / Limit / SL tap), if any. */
+const padSwitchedFrom = () => (shownPad && (shownPad.closedAt === null || performance.now() - shownPad.closedAt < 500) ? shownPad : undefined)
+/** The keypad as it was when Market / Limit / SL was tapped: the next pad takes it over (read once). */
+let keypadOnSwitch: boolean | null = null
 
 const MAX_DIGITS = 7
 
@@ -39340,8 +39367,16 @@ export function OrderPadV2({ config, backdrop, sheet }: { config: OrderPadConfig
   const activeRef = useRef<HTMLInputElement | null>(null)
   // The keypad is up while a field is being typed. A tap anywhere on the page outside the fields closes it (the field
   // loses its caret); tapping a field (the amount, or a price card's price) opens it again on that field.
-  const [keypad, setKeypad] = useState(true)
-  const keypadRef = useRef(true)
+  // Switching Market / Limit / SL keeps it as it was — up stays up (no slide), closed stays closed (the user's call, 19 Nov).
+  const [startKeypad] = useState(() => keypadOnSwitch ?? true)
+  // Read once: cleared after mount (not in the initializer, which React may run twice).
+  useEffect(() => { keypadOnSwitch = null }, [])
+  const [keypad, setKeypad] = useState(startKeypad)
+  // Flow option "Order pad": us · SL only, no leverage (the default); india · leverage card + TP/SL + trailing. And the
+  // fractional-shares toast's counter (US: no SL on fractional shares).
+  const padVersion = usePadVersion()
+  const [slToast, setSlToast] = useState(0)
+  const keypadRef = useRef(startKeypad)
   // It slides in and out (KeypadSlide).
   const showKeypad = (open: boolean) => {
     keypadRef.current = open
@@ -39355,6 +39390,7 @@ export function OrderPadV2({ config, backdrop, sheet }: { config: OrderPadConfig
   const current = shown(mode)
   const setShown = (next: number) => setValue(mode === config.mode ? next : config.mode === 'amount' ? next * unitPrice : next / unitPrice)
 
+  const tpslOrder = { symbol: config.stock.symbol, ltp: config.stock.price, change: config.stock.change, qty: config.mode === 'shares' ? value : unitPrice ? value / unitPrice : 0, entry: unitPrice }
   const derived: Derived = config.derive(value, prices, mode, { usd, inr: (n) => inr(n) })
   // What the order is worth in $ (the field is kept in the config's unit), for the ₹ on the Buy / Sell button.
   const orderUsd = config.mode === 'amount' ? value : value * unitPrice
@@ -39461,6 +39497,8 @@ export function OrderPadV2({ config, backdrop, sheet }: { config: OrderPadConfig
   const note = derived.note ? `${config.type === 'market' ? '' : 'Day order · '}${forCurrentStock(derived.note)}` : undefined
   const footer = (
     <div className={styles.dock}>
+      {/* "Set SL" on fractional shares: a floating bar just above the dock (SlFractionalToast). */}
+      <SlFractionalToast shown={slToast} onHide={() => setSlToast(0)} />
       {note && <p className={styles.note}>{note}</p>}
       <Stack gap="12" className={styles.dockBody}>
         <Stack direction="horizontal" justify="between" align="center" className={styles.funds}>
@@ -39479,15 +39517,16 @@ export function OrderPadV2({ config, backdrop, sheet }: { config: OrderPadConfig
     </div>
   )
 
-  // A tap anywhere on the screen (page, header, dock) outside the typable areas — the amount row, a price card's label +
-  // price — and outside the keypad closes the keypad.
+  // A tap on the page or header outside the typable areas — the amount row, a price card's label + price — closes the
+  // keypad. The dock (note, Balance · Req., the button, the keypad) and the Market / Limit / SL switch leave it open
+  // (the user's call, 19 Nov).
   useEffect(() => {
     // On the document, checked at tap time: the phone mounts its body after this pad renders.
     const onDown = (e: PointerEvent) => {
       const target = e.target as HTMLElement
       const screen = bodyRef.current?.closest('section')
       if (!screen?.contains(target)) return
-      if (!keypadRef.current || target.closest(`input, .${styles.amountRow}, [data-price-field], [aria-label="Number keypad"]`)) return
+      if (!keypadRef.current || target.closest(`input, .${styles.amountRow}, [data-price-field], footer, .${styles.orderTypes}`)) return
       showKeypad(false)
       activeRef.current?.blur()
     }
@@ -39495,7 +39534,7 @@ export function OrderPadV2({ config, backdrop, sheet }: { config: OrderPadConfig
     return () => document.removeEventListener('pointerdown', onDown)
   }, [])
   // Slides the fields in once, when they first attach (a callback ref: the phone mounts its body after this pad renders).
-  const [cameFrom] = useState(() => (shownPad && (shownPad.closedAt === null || performance.now() - shownPad.closedAt < 500) ? shownPad.type : undefined))
+  const [cameFrom] = useState(() => padSwitchedFrom()?.type)
   useLayoutEffect(() => {
     const pad = { type: config.type, closedAt: null as number | null }
     shownPad = pad
@@ -39593,18 +39632,20 @@ export function OrderPadV2({ config, backdrop, sheet }: { config: OrderPadConfig
           value={tabValue}
           onChange={(type) => {
             const target = config.to?.[type]
-            if (type !== config.type && target) leaveTo(target)
+            if (type === config.type || !target) return
+            keypadOnSwitch = keypadRef.current
+            leaveTo(target)
           }}
         />
-        {/* The part that changes with the order type: it dissolves (drops + fades out, rises + fades in); the tabs stay put. */}
-        <Stack gap="16" align="center" className={styles.fields} ref={fields}>
+        <Stack gap="16" align="center" className={styles.fields}>
+          {/* The amount is the same on every order type: it stays put while the part under it dissolves. */}
           <Stack gap="08" align="center">
             <label className={styles.amountRow} data-error={fieldError || undefined}>
               {mode === 'amount' && <span className={styles.prefix}>$</span>}
               <input
                 className={styles.amount}
                 {...keypadFieldProps()}
-                autoFocus
+                autoFocus={startKeypad}
                 onFocus={pick('amount')}
                 onPointerDown={pick('amount')}
                 onBlur={keepFocus}
@@ -39623,6 +39664,9 @@ export function OrderPadV2({ config, backdrop, sheet }: { config: OrderPadConfig
               </Select>
             )}
           </Stack>
+          {/* The part that changes with the order type (chips, prices, SL): it dissolves — drops + fades out, rises + fades
+              in (19 Nov, the user's call: only this part moves; the tabs, the amount and the dock stay put). */}
+          <Stack gap="16" align="center" className={styles.fields} ref={fields}>
           {config.chips && mode === config.mode && (
             <Tabs
               appearance="pill"
@@ -39639,8 +39683,8 @@ export function OrderPadV2({ config, backdrop, sheet }: { config: OrderPadConfig
           )}
           {/* No helper line under the amount: the order's ₹ value is in the Buy / Sell button. Only an error shows here. */}
           {derived.error && <p className={styles.error}>{forCurrentStock(derived.error)}</p>}
-          {/* Market pad only: Minted's leverage card (Enable leverage upto 2x / 3x / 4x). */}
-          {config.type === 'market' && <LeverageCard />}
+          {/* Market pad, Indian order pad only (flow option "Order pad"): Minted's leverage card (Enable leverage upto 2x / 3x / 4x). */}
+          {padVersion === 'india' && config.type === 'market' && <LeverageCard />}
           {/* Price cards (flow option "Price cards"): one card holding every price, a line between (merged, the default),
               or a card per price (separate, the earlier design, kept for A/B). */}
           {priceCards === 'merged' ? (
@@ -39648,10 +39692,16 @@ export function OrderPadV2({ config, backdrop, sheet }: { config: OrderPadConfig
           ) : (
             (config.prices ?? []).map((price, i) => <PriceFieldBox key={price.label}>{priceRow(price, i)}</PriceFieldBox>)
           )}
-          {/* Every order type (Market, Limit, SL): TP/SL — the "Set TP/SL" chip, then (once set) its summary card, full
-              width (Tpsl.tsx). Under the leverage card on Market, under the prices on Limit / SL. */}
-          <TpslControl order={{ symbol: config.stock.symbol, ltp: config.stock.price, change: config.stock.change, qty: config.mode === 'shares' ? value : unitPrice ? value / unitPrice : 0, entry: unitPrice }} />
+          {/* Every order type (Market, Limit, SL): the "Set SL" chip, then (once set) its summary card, full width (Sl.tsx);
+              the Indian pad (flow option "Order pad") → "Set TP/SL" (Tpsl.tsx). Under the prices on Limit / SL. */}
+          {padVersion === 'india' ? (
+            <TpslControl order={tpslOrder} />
+          ) : (
+            // No SL on fractional shares: a qty that isn't whole ($100 of NVDA = 0.64 shares) shows the toast instead.
+            <SlControl order={tpslOrder} fractional={tpslOrder.qty > 0 && !Number.isInteger(Number(tpslOrder.qty.toFixed(4)))} onBlocked={() => setSlToast((n) => n + 1)} />
+          )}
         </Stack>
+          </Stack>
       </Stack>
       {sheet}
       {feesOpen && <FeeBreakdownSheet orderUsd={orderUsd} onClose={() => setFeesOpen(false)} />}
@@ -40309,6 +40359,436 @@ export function PriceField({ label, unit, price, stepper }: PriceFieldProps) {
       </Stack>
       {stepperEl}
     </Stack>
+  )
+}
+```
+
+### `src/flows/us-stocks/screens/trade/Sl.module.css`
+
+```css
+/* Stop loss on the order pad (Sl.tsx). Same look as Tpsl.module.css, one card only. */
+
+/* "Set SL" chip: centred, like the pad's other rows. */
+.chip { display: flex; justify-content: center; }
+
+/* Summary card, full width: a head row, a hairline, the target. gap 0: L3 Card's own gap. */
+.summary { align-self: stretch; gap: 0; }
+.summaryHead { padding: var(--l3-spacing-12); }
+.summaryTitle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--l3-spacing-04);
+  font: var(--l3-text-label-14);
+  color: var(--l3-content-primary);
+}
+.ok { color: var(--l3-content-accent-success-default); }
+.summaryBody { padding: var(--l3-spacing-12); border-top: 1px solid var(--l3-border-light); }
+.legLabel { display: inline-flex; align-items: center; gap: var(--l3-spacing-06); }
+.legValue { display: inline-flex; align-items: baseline; gap: var(--l3-spacing-04); }
+
+/* The sheet's card. */
+.card { gap: 0; }
+.head { padding: var(--l3-spacing-12); }
+.body { padding: 0 var(--l3-spacing-12) var(--l3-spacing-12); }
+.legName { font: var(--l3-text-label-14); color: var(--l3-content-primary); }
+.stockName { font: var(--l3-text-label-14); color: var(--l3-content-primary); }
+.stockPrice { font: var(--l3-text-label-14); color: var(--l3-content-primary); }
+
+/* Under the card: est. loss and Clear. */
+.estRow { min-height: var(--l3-size-24); padding: var(--l3-spacing-08) 0 0 var(--l3-spacing-04); }
+.error { margin: 0; font: var(--l3-text-label-12); color: var(--l3-content-accent-error-default); }
+.target { margin: 0; font: var(--l3-text-description-12); color: var(--l3-content-secondary); }
+.down { font: var(--l3-text-label-12); color: var(--l3-content-accent-error-default); }
+
+/* Clear: a ghost Button in the discover blue, so it reads as a link. L3 gap: no link-style Button. */
+.edit.edit { color: var(--l3-content-accent-discover-default); }
+
+/* The order-type switch (LMT / MKT) is discover blue so it reads as tappable. L3 gap: Select has only primary and subtle. */
+.select.select { color: var(--l3-content-accent-discover-default); }
+```
+
+### `src/flows/us-stocks/screens/trade/Sl.tsx`
+
+```tsx
+// Stop loss on the order pad (US stocks) — the SL-only version of TP/SL.
+// - US stocks get a stop loss only: no take profit and no trailing (19 Nov 2026, the user's call). Fractional shares can't
+//   have a stop loss: tapping "Set SL" on one calls `onBlocked()` instead of opening the sheet, and if the quantity turns
+//   fractional while an SL is set, the SL is cleared (chip returns) and `onBlocked()` is called once.
+// - Before it's set: a "Set SL" chip (L3 pill chip with a plus), centred under the leverage card.
+// - The chip opens "Stop loss": one card — MKT ⇄ LMT, the trigger in points ⇄ percentage (Stepper), a limit (limit orders
+//   only), prices typed from the keypad — then Est. loss and Clear under it, the error under the field box. New SL: one
+//   "Save" (off till valid). Editing: "Remove" (clears the SL) + "Save". Closing without Save changes nothing.
+// - Once set: a full-width card in the chip's place — "SL ✓", an edit button, one row with the target price and % from
+//   the last price, tagged Limit / Market.
+// The archived V1 (TP, SL and trailing) is Tpsl.tsx, behind the flow option "TP/SL".
+// FLAG: copy hard-coded like the rest of the pad (no copy.ts in this flow yet). No ⓘ tooltips. The hairlines are
+// hand-laid (Sl.module.css).
+import { useEffect, useRef, useState } from 'react'
+import { BottomSheet, BottomSheetHeader } from '@l3/components/BottomSheet'
+import { Button } from '@l3/components/Button'
+import { ButtonGroup } from '@l3/components/ButtonGroup'
+import { Card } from '@l3/components/Card'
+import { Icon } from '@l3/components/Icon'
+import { KeyValueList, KeyValueRow } from '@l3/components/KeyValueList'
+import { PriceChange } from '@l3/components/PriceChange'
+import { Select } from '@l3/components/Select'
+import { Stack } from '@l3/components/Stack'
+import { Tabs } from '@l3/components/Tabs'
+import { Tag } from '@l3/components/Tag'
+import { msAdd, msCheckCircleFill, msEdit } from '@l3/icons/material'
+import { useSheetLayer } from '../../components/Phone'
+import { Usd, useUsd } from '../../../../shared/money'
+import { Keyboard, KeypadSlide, typeKey } from '../../../../shared/ui/Keyboard'
+import { PriceField, PriceFieldBox } from './PriceField'
+import { MIN_GAP_PCT, type TpslOrder } from './Tpsl'
+import styles from './Sl.module.css'
+
+type Unit = 'points' | 'percent'
+type Field = 'trigger' | 'limitAt'
+/** The stop loss: `trigger` / `limitAt` are the move down from the last price in `unit` (points = $), null = not entered. */
+type SlLeg = { limit: boolean; unit: Unit; trigger: number | null; limitAt: number | null }
+
+/** What the sheet opens with the first time: Market, 7%, limit 10%. */
+const SL_START: SlLeg = { limit: false, unit: 'percent', trigger: 7, limitAt: 10 }
+const FIELD_LABEL: Record<Field, string> = { trigger: 'Trigger at', limitAt: 'Limit at' }
+
+const round2 = (v: number) => Number(v.toFixed(2))
+const fmt = (unit: Unit, v: number) => (unit === 'points' ? v.toFixed(2) : `${round2(v)}%`)
+const fmtQty = (q: number) => String(Number(q.toFixed(4)))
+/** A move down from the last price → the price, and back. */
+const priceOf = (ltp: number, unit: Unit, move: number) => (unit === 'points' ? ltp - move : ltp * (1 - move / 100))
+const moveOf = (ltp: number, unit: Unit, price: number) => (unit === 'points' ? ltp - price : (1 - price / ltp) * 100)
+/** The price the order closes at: the limit for a limit order, else the trigger. */
+const closeAt = (leg: SlLeg, ltp: number) => {
+  const move = leg.limit ? leg.limitAt : leg.trigger
+  return move === null ? null : priceOf(ltp, leg.unit, move)
+}
+
+/** What's wrong with the stop loss, or null; first match wins (Tpsl's rules for SL, minus the trail rule). */
+function slError(leg: SlLeg, ltp: number, entry: number, usd: (n: number) => string) {
+  if (leg.trigger === null) return 'Enter trigger price'
+  const trigger = priceOf(ltp, leg.unit, leg.trigger)
+  if (trigger >= entry) return `SL should be below buy price, ${usd(entry)}`
+  if (trigger <= 0) return `SL should be above ${usd(0)}`
+  if (trigger > entry * (1 - MIN_GAP_PCT / 100)) return `SL should be ${MIN_GAP_PCT}%+ below buy price`
+  if (leg.limit) {
+    if (leg.limitAt === null) return 'Enter limit price'
+    const limit = priceOf(ltp, leg.unit, leg.limitAt)
+    if (limit > trigger) return 'Limit should be at or below trigger'
+    if (limit <= 0) return `Limit should be above ${usd(0)}`
+  }
+  return null
+}
+
+/** Points ⇄ percentage keeps the same price: 15 pts on $156 ≈ 10%. */
+function switchUnit(leg: SlLeg, ltp: number): SlLeg {
+  const toPct = (v: number | null) => (v === null ? null : Math.max(1, Math.round((v / ltp) * 100)))
+  const toPts = (v: number | null) => (v === null ? null : Math.max(0.5, Math.round(((ltp * v) / 100) * 2) / 2))
+  const conv = leg.unit === 'points' ? toPct : toPts
+  return { ...leg, unit: leg.unit === 'points' ? 'percent' : 'points', trigger: conv(leg.trigger), limitAt: conv(leg.limitAt) }
+}
+
+/** The chip until the SL is set, then the summary card; both open the sheet (fractional shares can't: `onBlocked`). */
+export function SlControl({ order, fractional, onBlocked }: { order: TpslOrder; fractional: boolean; onBlocked: () => void }) {
+  const ltp = order.ltp
+  const [sl, setSl] = useState<SlLeg | null>(null)
+  const [sheetOpen, setSheetOpen] = useState(false)
+  const [round, setRound] = useState(0) // a new key per open, so the sheet starts from the saved values
+  const blocked = useRef(onBlocked)
+  blocked.current = onBlocked
+  const open = () => {
+    if (fractional) return onBlocked()
+    setRound((n) => n + 1)
+    setSheetOpen(true)
+  }
+  // The quantity turned fractional with an SL set: it can't stay.
+  const hasSl = sl !== null
+  useEffect(() => {
+    if (!fractional || !hasSl) return
+    setSl(null)
+    setSheetOpen(false)
+    blocked.current()
+  }, [fractional, hasSl])
+  return (
+    <>
+      {sl ? (
+        <SlCard sl={sl} ltp={ltp} onEdit={open} />
+      ) : (
+        <div className={styles.chip}>
+          <Tabs
+            appearance="pill"
+            size="md"
+            behavior="filter"
+            aria-label="Stop loss"
+            items={[{ value: 'sl', label: 'Set SL', iconLeft: <Icon icon={msAdd} size={16} /> }]}
+            value=""
+            onChange={open}
+          />
+        </div>
+      )}
+      <SlSheet
+        key={round}
+        open={sheetOpen}
+        order={order}
+        saved={sl}
+        onClose={() => setSheetOpen(false)}
+        onSave={(next) => {
+          setSl(next)
+          setSheetOpen(false)
+        }}
+        onRemove={() => {
+          setSl(null)
+          setSheetOpen(false)
+        }}
+      />
+    </>
+  )
+}
+
+/** Once set: "SL ✓", edit, and the target with its % from the last price. */
+function SlCard({ sl, ltp, onEdit }: { sl: SlLeg; ltp: number; onEdit: () => void }) {
+  const price = closeAt(sl, ltp) ?? ltp
+  return (
+    <Card padding="none" className={styles.summary} aria-label="SL">
+      <Stack direction="horizontal" justify="between" align="center" gap="08" className={styles.summaryHead}>
+        <span className={styles.summaryTitle}>
+          SL
+          <Icon icon={msCheckCircleFill} size={16} className={styles.ok} />
+        </span>
+        <Button variant="ghost" size="sm" iconLeft={<Icon icon={msEdit} size={20} />} aria-label="Edit SL" onClick={onEdit} />
+      </Stack>
+      <div className={styles.summaryBody}>
+        <KeyValueList size="sm" aria-label="SL target">
+          <KeyValueRow
+            label={
+              <span className={styles.legLabel}>
+                Stop loss
+                <Tag size="sm" color="discover" variant="secondary">{sl.limit ? 'Limit' : 'Market'}</Tag>
+              </span>
+            }
+            value={
+              <span className={styles.legValue}>
+                <Usd value={price} layout="inline" />
+                <PriceChange value={(price / ltp - 1) * 100} unit="percent" size="sm" />
+              </span>
+            }
+          />
+        </KeyValueList>
+      </div>
+    </Card>
+  )
+}
+
+/** The price field the keypad is typing into, and its text while typed. */
+type Typing = { field: Field; text: string | null; fresh: boolean }
+
+/** "Stop loss" sheet: the stock and qty, one card (prices typed from the keypad or stepped), est. loss, Clear, the error. */
+function SlSheet({ open, order, saved, onClose, onSave, onRemove }: { open: boolean; order: TpslOrder; saved: SlLeg | null; onClose: () => void; onSave: (sl: SlLeg) => void; onRemove: () => void }) {
+  const layer = useSheetLayer()
+  const usd = useUsd()
+  const { ltp, entry, qty } = order
+  const [draft, setDraft] = useState<SlLeg>(saved ?? SL_START)
+  const [typing, setTyping] = useState<Typing | null>(null)
+  // A tap anywhere in the sheet outside a price and the keypad closes the keypad; tapping a price opens it again.
+  const typingOn = typing !== null
+  useEffect(() => {
+    if (!typingOn) return
+    const onDown = (e: PointerEvent) => {
+      const target = e.target as HTMLElement
+      const sheet = document.getElementById('sl-title')?.closest('[role="dialog"]')
+      if (!sheet?.contains(target) || target.closest(`[data-price-field], [aria-label="Number keypad"]`)) return
+      setTyping(null)
+      ;(document.activeElement as HTMLElement | null)?.blur()
+    }
+    document.addEventListener('pointerdown', onDown)
+    return () => document.removeEventListener('pointerdown', onDown)
+  }, [typingOn])
+  const error = slError(draft, ltp, entry, (n) => usd(n))
+  const close = closeAt(draft, ltp)
+  // From the buy price (on Limit / SL that's the limit price, not the last price).
+  const est = close === null || qty <= 0 ? null : (close - entry) * qty
+  const hasValue = draft.trigger !== null || draft.limitAt !== null
+  const steps = draft.unit === 'points' ? { step: 0.5, min: 0.5, max: 500 } : { step: 1, min: 1, max: 90 }
+
+  // One key into the typed price: up to 2 decimals; the price sets the move (unrounded, so the field shows what was typed).
+  const onKey = (key: string) => {
+    if (!typing) return
+    const base = typing.fresh ? '' : (typing.text ?? '')
+    let text: string | undefined
+    if (key === '.') text = base.includes('.') ? undefined : (base || '0') + '.'
+    else if (/^\d$/.test(key) && (base.split('.')[1]?.length ?? 0) >= 2 && base.includes('.')) text = undefined
+    else text = typeKey(base, key, 8).replace(/^0+(?=\d)/, '')
+    if (text === undefined) return
+    setTyping({ ...typing, text, fresh: false })
+    const price = Number(text) || 0
+    setDraft({ ...draft, [typing.field]: price > 0 ? moveOf(ltp, draft.unit, price) : null })
+  }
+  const change = (leg: SlLeg) => {
+    setDraft(leg)
+    if (typing) setTyping({ ...typing, text: null, fresh: true })
+  }
+  const pick = (field: Field) => {
+    if (typing?.field === field) return
+    setTyping({ field, text: null, fresh: true })
+  }
+  const row = (field: Field) => {
+    const move = draft[field]
+    const active = typing?.field === field
+    const what = field === 'trigger' ? 'trigger' : 'limit'
+    return (
+      <PriceField
+        key={field}
+        label={FIELD_LABEL[field]}
+        unit={field === 'trigger' ? { label: draft.unit === 'points' ? 'Points' : 'Percentage', onSwitch: () => change(switchUnit(draft, ltp)), 'aria-label': `Move in ${draft.unit}. Switch` } : undefined}
+        price={{
+          text: active && typing.text !== null ? typing.text : move === null ? '' : priceOf(ltp, draft.unit, move).toFixed(2),
+          placeholder: field === 'trigger' ? 'Enter price' : 'Enter limit price',
+          typing: active,
+          'aria-label': `Stop loss ${what} price`,
+          onPick: () => pick(field),
+        }}
+        stepper={{
+          label: `Stop loss ${what} in ${draft.unit}`,
+          value: move ?? 0,
+          onChange: (v) => change({ ...draft, [field]: v }),
+          format: (v) => (move === null ? '--' : fmt(draft.unit, v)),
+          ...steps,
+        }}
+      />
+    )
+  }
+
+  return (
+    <BottomSheet
+      open={open}
+      onClose={onClose}
+      container={layer}
+      aria-labelledby="sl-title"
+      header={
+        <BottomSheetHeader
+          heading="Stop loss"
+          headingId="sl-title"
+          description={`Qty ${qty > 0 ? fmtQty(qty) : '--'}`}
+          trailing={
+            <Stack gap="04" align="end">
+              <span className={styles.stockName}>{order.symbol}</span>
+              <span className={styles.legValue}>
+                <Usd value={ltp} layout="inline" className={styles.stockPrice} />
+                <PriceChange value={order.change} unit="percent" size="sm" />
+              </span>
+            </Stack>
+          }
+        />
+      }
+      footer={
+        saved ? (
+          <ButtonGroup aria-label="Edit stop loss" direction="horizontal">
+            <Button variant="secondary" size="lg" fullWidth onClick={onRemove}>Remove</Button>
+            <Button size="lg" fullWidth disabled={Boolean(error)} onClick={() => onSave(draft)}>Save</Button>
+          </ButtonGroup>
+        ) : (
+          <ButtonGroup aria-label="Set stop loss">
+            <Button size="lg" fullWidth disabled={Boolean(error)} onClick={() => onSave(draft)}>Save</Button>
+          </ButtonGroup>
+        )
+      }
+      utility={<KeypadSlide open={typing !== null}><Keyboard decimal onKey={onKey} /></KeypadSlide>}
+    >
+      <Stack>
+        <Card className={styles.card} padding="none">
+          {/* MKT ⇄ LMT right after the name, as on the Indian pad's cards (the user's call, 19 Nov). */}
+          <Stack direction="horizontal" align="center" gap="08" className={styles.head}>
+            <span className={styles.legName}>Stop loss</span>
+            <Select className={styles.select} size="sm" icon="swap" onClick={() => change({ ...draft, limit: !draft.limit })} aria-label={`Stop loss: ${draft.limit ? 'limit' : 'market'} order. Switch`}>
+              {draft.limit ? 'LMT' : 'MKT'}
+            </Select>
+          </Stack>
+          <Stack gap="04" className={styles.body}>
+            <PriceFieldBox error={Boolean(error)}>
+              {row('trigger')}
+              {draft.limit && row('limitAt')}
+            </PriceFieldBox>
+            {error && <p className={styles.error} role="alert">{error}</p>}
+          </Stack>
+        </Card>
+        <Stack direction="horizontal" justify="between" align="center" gap="08" className={styles.estRow}>
+          {/* With an error the estimate is "--": a price that can't be placed has no loss. */}
+          <p className={styles.target}>
+            Est. loss{' '}
+            <span className={styles.down}>{est === null || error ? '--' : <Usd value={est} sign layout="inline" />}</span>
+          </p>
+          {hasValue && (
+            <Button variant="ghost" size="sm" className={styles.edit} onClick={() => change({ ...draft, trigger: null, limitAt: null })}>Clear</Button>
+          )}
+        </Stack>
+      </Stack>
+    </BottomSheet>
+  )
+}
+```
+
+### `src/flows/us-stocks/screens/trade/SlFractionalToast.module.css`
+
+```css
+/* Sits on the footer's top edge, over the page body; only the toast takes taps. */
+.layer {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 100%;
+  pointer-events: none;
+}
+
+.layer > * {
+  pointer-events: auto;
+}
+```
+
+### `src/flows/us-stocks/screens/trade/SlFractionalToast.tsx`
+
+```tsx
+// Floating L3 Aerobar (toast) for the US order pad: "Set SL" was tapped while the order is in fractional shares
+// (US stocks allow no stop loss on fractional shares).
+//
+// HOW TO MOUNT: render it as the FIRST child of the pad's `footer` (the node passed to the US `Phone`'s `footer`
+// prop), above the dock content:
+//   const [slToast, setSlToast] = useState(0)
+//   footer={<>
+//     <SlFractionalToast shown={slToast} onHide={() => setSlToast(0)} />
+//     …dock…
+//   </>}
+//   // on "Set SL" when fractional:  setSlToast((n) => n + 1)
+// Phone's `footer` is `position: relative`, so the toast is absolutely placed on the footer's top edge (bottom: 100%)
+// and floats over the page body just above the dock; it never covers the Buy button.
+//
+// `shown`: 0 = hidden; every increment shows it again and restarts the 4 s timer (L3's toast rule — the Aerobar
+// itself times out, pauses on hover / focus, and handles its own enter motion + prefers-reduced-motion).
+// L3 floating Aerobars have no ✕ (they time out; a ✕ exists only on full-width bars), so none is shown.
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { Aerobar } from '@l3/components/Aerobar'
+import styles from './SlFractionalToast.module.css'
+
+export function SlFractionalToast({ shown, onHide }: { shown: number; onHide: () => void }) {
+  const [open, setOpen] = useState(shown > 0)
+  useEffect(() => { setOpen(shown > 0) }, [shown])
+  // One stable dismiss: L3's Aerobar restarts its 4 s timer whenever onDismiss changes, and the pad re-renders on every
+  // price tick, so an inline function would keep the toast up for good.
+  const onHideRef = useRef(onHide)
+  onHideRef.current = onHide
+  const dismiss = useCallback(() => { setOpen(false); onHideRef.current() }, [])
+  if (!open || shown === 0) return null
+  return (
+    <div className={styles.layer}>
+      <Aerobar
+        key={shown}
+        floating
+        placement="bottom"
+        type="warning"
+        emphasis="secondary"
+        heading="You can’t set SL for fractional shares"
+        paragraph="Buy whole shares to add a stop loss."
+        onDismiss={dismiss}
+      />
+    </div>
   )
 }
 ```
@@ -41467,6 +41947,12 @@ export const useProcessingAnimation = (): ProcessingAnimation => {
   const value = useFlowOption('us-stocks', 'procAnim', 'glass') as ProcessingAnimation
   return PROCESSING_ANIMATIONS.includes(value) ? value : 'glass'
 }
+
+// The order pad version (flow option "Order pad", group Trade, 19 Nov): us · stop loss only (Sl.tsx: no take profit, no
+// trailing, no SL on fractional shares) and no leverage card, the default; india · as Indian stocks will have it: the
+// leverage card on Market (LeverageCard) and take profit + stop loss + trailing (Tpsl.tsx).
+export type PadVersion = 'us' | 'india'
+export const usePadVersion = (): PadVersion => (useFlowOption('us-stocks', 'padVersion', 'us') === 'india' ? 'india' : 'us')
 ```
 
 ### `src/flows/us-stocks/screens/types.ts`

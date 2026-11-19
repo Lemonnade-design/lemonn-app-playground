@@ -434,6 +434,7 @@ lower on the page is scrolled into view first). `components/MarketSwitchGuide.ts
 
 ### Changelog
 - 19 Nov: A stock, ETF or bank with no logo shows one letter (its first), not two or three — app-wide (companies, market list, US banks, every Avatar / disc fallback).
+- 2026-11-19 — Stock page dock: SIP is an icon-only secondary button (square, aria-label "SIP"), so Buy and Sell take the width.
 - 2026-11-19 — Flags are the system flag emoji (🇮🇳 🇺🇸 🇨🇳 🇯🇵 🇪🇺 🇰🇷, shared `Flag`) everywhere — IN / US tabs, hub, US home, global markets — instead of round SVGs. L3 gap: no flag icons, and Tabs' icon slot is square only, so the flag widens it locally. Sticky ticker tray: its foot keeps its 20 corners until the last 16 px before the tabs, then squares off as it meets them (was over the whole approach).
 - 2026-11-19 — Brands You Know · View all: edge-to-edge rows split by a hairline (were cards 12 apart). Themes: 24 between the theme's overview card and its stock list (was 32).
 - 2026-11-19 — V19 index strip: once it docks under the sticky tabs it is white (was the strip's blue), turning from blue to white with its hairline over 400 ms (motion long, standard easing; none with reduced motion) instead of swapping in one frame. IN shortcuts card: 12 either side of the row line (the tiles keep 18 at the card's top and bottom); the line is a 1px border-light border, like the column lines.
@@ -442,6 +443,9 @@ lower on the page is scrolled into view first). `components/MarketSwitchGuide.ts
 - 2026-11-19 — Product row (V19 only, every state; V17 and V18 keep it in the hero): out of the hero. IN tab: the products (Equity F&O, Commodity, Mutual Funds, Smart Invest) joined the shortcuts in one card (`components/InAllShortcuts.tsx`), two rows of four: products with icons (navbar F&O and Mutual Fund glyphs, the commodities glyph, Material autorenew for Smart Invest) over Trade Ideas · IPO · Watchlist · Referral, a hairline between the rows inset 12 from the card's sides. US tab: the row (Boosted ETFs, Themes, Fractional) is hidden, so the hero is just the holdings (money on the way: the transfer card only).
 - 2026-11-18 — The floating Homepage version switch (V19 / V18 …, phone app mode) shows only on the Home screens (IND and US tab, every state), not on other pages.
 
+- 2026-11-19 — IND instruments order: Mutual funds · Equity F&O · IPO · Commodities (IPO and Commodities swapped), in the circles and the card.
+- 2026-11-19 — Holdings panel over the tray: 40 above the overline (from the tabs' line) and 40 under the P&L tag — equal, was 32 / 24. Optical centring: the Themes icon sits 2px right of centre (its page-and-pencil is left-heavy), Mutual funds 1.5px and Commodities 2.5px right, ETFs and Boosted ETFs 1px right; on the US card, Analyst picks 2px and Watchlist 1.5px right.
+- 2026-11-19 — Ticker tray: its grey is surface/secondary at 50% (was 100%); the bar it turns into on scroll starts from the same grey.
 - 2026-11-19 — **One-row card sized as Figma 6660:10742.** 360 × 68: 12 above the 24 icon, 4 to the label, 12 under it, column lines 44 (it was 74 with 18 / 12). 24 from the tray to the card and 24 from the card to Top Movers (the circles keep 32 to Top Movers).
 - 2026-11-19 — **IND icons in the US style.** Mutual funds (a donut with one solid slice — a pooled fund split into holdings; it was a sprout in a pot), Equity F&O (two candles), Commodities (three stacked bars with a glint; it was a barrel with a drop) and IPO (a rocket) are two-tone art like the US set — a white → light green fill, light green → green lines, one solid part — in `assets/in/instruments/*.svg`, on both the circles and the card. Drawn here: the Figma frame (6662:8516) has no IND art. FLAG: their greens are fixed values, as the US exports' blues are.
 - 2026-11-19 — **Card version, circles and the tray's scroll.** Card on the IND tab shows the instruments (Mutual funds · Equity F&O · Commodities · IPO, the same four as the circles; `InAllShortcuts items`), not Trade Ideas · IPO · Watchlist · Referral. Card on the US tab uses the frame's own icons (`assets/us/card/*.svg`: a white → light blue fill, light blue → blue lines), not the blue → black gradient. Circles: the 24 icon is centred in the 40 disc (L3 gap: Avatar's icon slot is 20 at size 40); IND's Mutual funds is a pie chart and Commodities an oil barrel. Tray on scroll: over its last 56px before the tabs the tray's own row turns into the bar under them — the strip stays as it is (no swap or fade), the grey eases to white, the rounded foot squares off and the hairline lightens, all tied to the scroll.
@@ -20780,7 +20784,8 @@ export function Watchlists({ lists = watchlists, onOpen, onViewAll }: { lists?: 
   border-bottom: 1px solid var(--l3-border-default); /* 1px hairline */
   border-radius: 0 0 var(--l3-radius-20) var(--l3-radius-20);
   margin-bottom: var(--l3-spacing-04); /* with the feed's 20: 24 from the tray to the shortcuts */
-  background: var(--l3-surface-secondary);
+  /* The tray's grey at 50% (the user's call, 19 Nov): surface/secondary half-mixed into the page's surface. */
+  background: color-mix(in srgb, var(--l3-surface-secondary) 50%, var(--l3-surface-default));
   --edge: var(--l3-content-accent-us-stock-default);
 }
 
@@ -20792,9 +20797,10 @@ export function Watchlists({ lists = watchlists, onOpen, onViewAll }: { lists?: 
   display: none;
 }
 
-/* 16 above the overline (32 from the tabs with the summary's 16), 24 under the P&L tag. */
+/* Room to breathe, the same above and below (the user's call, 19 Nov): 40 from the tabs' line to the overline (24 here +
+   the summary's 16) and 40 under the P&L tag. Was 32 / 24. */
 .hero:has([data-hero-ticker='tray']) .value {
-  padding: var(--l3-spacing-16) var(--l3-spacing-16) var(--l3-spacing-24);
+  padding: var(--l3-spacing-24) var(--l3-spacing-16) var(--l3-spacing-40);
   border-bottom: 1px solid color-mix(in srgb, var(--edge) 20%, var(--l3-surface-primary)); /* 1px hairline */
   border-radius: 0 0 var(--l3-radius-24) var(--l3-radius-24);
   background:
@@ -22345,6 +22351,10 @@ const usShortcuts: { id: string; label: string; art: Art }[] = [
  *  blue fill, light blue → blue lines) — not UsArtGradient's blue → black. */
 const usCardArt: Record<string, string> = { etfs: usEtfsArt, picks: usPicksArt, watchlist: usWatchlistArt, referral: usReferralArt }
 
+/** Optical centring: px to the right for art whose weight sits left of its box (FLAG: raw px). Analyst picks' chart is
+ *  left-heavy under its star (the user's catch, 19 Nov). */
+const usCardNudge: Record<string, number> = { picks: 2, watchlist: 1.5 }
+
 type Tile = { id: string; label: string; icon: ReactNode }
 
 function Row({ tiles, onOpen }: { tiles: Tile[]; onOpen?: (id: string) => void }) {
@@ -22372,7 +22382,7 @@ export function InAllShortcuts({ market = 'in', rows = 'both', items, onProduct,
   }))
   const more: Tile[] = (us ? usShortcuts.map((s) => ({ ...s, badge: undefined as { count: number } | undefined })) : shortcuts).map((s) => {
     const art = us && rows === 'shortcuts'
-      ? <span className={styles.shortcutGlyph} aria-hidden="true"><img src={usCardArt[s.id]} alt="" width={24} height={24} /></span>
+      ? <span className={styles.shortcutGlyph} aria-hidden="true"><img src={usCardArt[s.id]} alt="" width={24} height={24} style={usCardNudge[s.id] ? { translate: `${usCardNudge[s.id]}px 0` } : undefined} /></span>
       : <span className={styles.shortcutGlyph} aria-hidden="true"><ShortcutArt art={s.art} /></span>
     return { id: s.id, label: s.label, icon: s.badge ? <Badge count={s.badge.count} color="error" label={t('shortcuts.newBadge')}>{art}</Badge> : art }
   })
@@ -30423,7 +30433,8 @@ export function Glossary({ kind, onBack }: { kind: keyof typeof TERMS; onBack: (
 .stuckTicker[data-look='tray'] .stuckShape {
   inset: 0;
   border-radius: 0 0 calc(var(--l3-radius-20) * var(--ce)) calc(var(--l3-radius-20) * var(--ce));
-  background: color-mix(in srgb, var(--l3-surface-default) calc(var(--e) * 100%), var(--l3-surface-secondary));
+  /* From the tray's own grey (surface/secondary at 50%) to the bar's white. */
+  background: color-mix(in srgb, var(--l3-surface-default) calc(var(--e) * 100%), color-mix(in srgb, var(--l3-surface-secondary) 50%, var(--l3-surface-default)));
   box-shadow: inset 0 -1px 0 color-mix(in srgb, var(--l3-border-light) calc(var(--e) * 100%), var(--l3-border-default)); /* 1px hairline */
 }
 
@@ -31302,18 +31313,19 @@ export function Home({ scrollTo = 'top', market = 'in', movers, onStock, onTab, 
   const glyph = (icon: string) => <Icon icon={icon} size={24} />
   // The two versions' icons are two-tone art, not system icons: US the Figma frame's own (6662:8516); IND drawn here in the
   // same style in the market's green (assets/in/instruments — the frame has no IND art).
-  const art = (src: string, fallback: string) => (instrumentLook === 'mini' || shortcutsLook === 'v2' ? <img src={src} alt="" width={24} height={24} /> : glyph(fallback))
+  // `nudge`: px to the right, for art whose weight sits left of its box (optical centring; FLAG: raw px).
+  const art = (src: string, fallback: string, nudge = 0) => (instrumentLook === 'mini' || shortcutsLook === 'v2' ? <img src={src} alt="" width={24} height={24} style={nudge ? { translate: `${nudge}px 0` } : undefined} /> : glyph(fallback))
   const instruments: Record<Market, Instrument[]> = {
     in: [
-      { id: 'mutual-funds', label: t('f1.in.mutualFunds'), icon: art(inMutualFundsArt, msPieChartFill) },
+      { id: 'mutual-funds', label: t('f1.in.mutualFunds'), icon: art(inMutualFundsArt, msPieChartFill, 1.5) },
       { id: 'fno', label: t('f1.in.fno'), icon: art(inFnoArt, msCandlestickChartFill) },
-      { id: 'commodities', label: t('f1.in.commodities'), icon: art(inCommoditiesArt, msOilBarrelFill) },
       { id: 'ipo', label: t('f3.in.ipo'), icon: art(inIpoArt, msRocketLaunchFill) },
+      { id: 'commodities', label: t('f1.in.commodities'), icon: art(inCommoditiesArt, msOilBarrelFill, 2.5) },
     ],
     us: [
-      { id: 'etfs', label: t('f1.shortcuts.etfs'), icon: art(etfsArt, msPieChartFill) },
-      { id: 'boosted-etfs', label: t('f3.us.boosted'), icon: art(boostedEtfsArt, msBoltFill), isNew: true },
-      { id: 'themes', label: t('f3.us.themes'), icon: art(themesArt, msInterestsFill) },
+      { id: 'etfs', label: t('f1.shortcuts.etfs'), icon: art(etfsArt, msPieChartFill, 1) },
+      { id: 'boosted-etfs', label: t('f3.us.boosted'), icon: art(boostedEtfsArt, msBoltFill, 1), isNew: true },
+      { id: 'themes', label: t('f3.us.themes'), icon: art(themesArt, msInterestsFill, 2) },
       { id: 'fractional', label: t('f3.us.fractional'), icon: art(fractionalArt, msDonutSmallFill) },
     ],
   }
@@ -31810,7 +31822,8 @@ export function StockPage({ tab: initialTab = 'overview', scrollTo = 'top', rang
   // No order pad or SIP flow in the prototype yet: the dock's buttons don't go anywhere.
   const dock = (
     <ButtonGroup aria-label={t('stock.trade', { symbol: page.symbol })} direction="horizontal">
-      <Button variant="secondary" iconLeft={<Icon icon={msEventRepeat} size={20} />} className={styles.sip} onClick={() => {}}>{t('stock.sip')}</Button>
+      {/* SIP is icon-only, square, so Buy and Sell get the width (19 Nov, the user's call). */}
+      <Button variant="secondary" aria-label={t('stock.sip')} iconLeft={<Icon icon={msEventRepeat} size={20} />} className={styles.sip} onClick={() => {}} />
       <Button variant="brand" onClick={() => {}}>{t('stock.buy')}</Button>
       <Button variant="secondary" onClick={() => {}}>{t('stock.sell')}</Button>
     </ButtonGroup>
