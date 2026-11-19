@@ -199,6 +199,11 @@ Every tap he wired is kept. The main path: FTUX sheet → Activate → Declarati
 → Pay on bank → Money ready → Stock → Buy → Executed → Wallet → Withdraw.
 
 ### Changelog
+- 2026-11-19 — ShareBars rows (Key Holders, the ETF page's Allocation) use Label 14 for the name and the share, not Heading 14.
+- 2026-11-19 — Stock page: Related ETFs is one section with **Long / Short** pill sub-tabs (as Company financials) instead of "Related ETFs" + "Bet against …". A side with no funds has no tab; with one side only (AMD, Netflix …) no tabs.
+- 2026-11-19 — Key Holders uses the ETF Allocation panel (ShareBars: "4 holder types · Weight", name, short bar, share) instead of the bar-behind-the-number rows. The share column is a fixed 48 wide ("100.0%" in heading-14 measures 48), right-aligned, so every bar lines up — Allocation, Top holdings / Tracks and Key Holders. Holding rows show the short name only ("Broadcom", no "Inc" and no ticker).
+- 2026-11-19 — Stock page: Key Holders rows sit in a card (title outside), bars 24 high (were 28). The rising-side Boosted section is titled **Related ETFs** (was "Boosted ETFs on {stock}"); "Bet against …" stays. Every table (Peers, ETFs with …, Related ETFs, ETF peers) drops the yellow best-figure highlight.
+- 2026-11-19 — Stock page Key Holders: the donut is replaced by concentration rows (like a fund app's "Stocks concentration") — each holder's name, then its share on a light `surface-secondary` bar behind the number, the bar's length relative to the biggest holder (which fills 60% of the row).
 - 2026-11-19 — Related ETFs on every US stock page (was NVIDIA and Tesla only): real single-stock Boosted funds added for Apple (AAPU / AAPD), Microsoft (MSFU / MSFD), Amazon (AMZU / AMZD), Google (GGLL / GGLS), Meta (METU / METD), AMD (AMDL), Broadcom (AVL), Palantir (PLTU), Netflix (NFXL), Coinbase (CONL); every other stock shows the Boosted index / sector funds that hold it most — **Boosted ETFs on chip stocks / tech stocks / bank stocks / the Nasdaq-100 / China's big companies**, and the S&P 500 pair for the rest (`boostedOn` returns `on`). Funds shown there aren't repeated in "ETFs with …".
 - 2026-11-19 — Long stock / ETF lists are edge-to-edge rows split by a hairline (StockListCard `look="list"`, as Market and the theme pages; were cards 12 apart): ETFs (Regular and Boosted), ETF · Top holdings, Fractional shares' popular stocks. ETFs list filters: the Country / Sector switcher is an L3 primary pill (tap to switch) and the country / sector filters secondary (outline) pills, as Home's US ETFs chips (was an outlined hand-made chip + primary pills). Stock page and "ETFs with …" titles use each stock's short name (`usShortName`, src/shared/data/usShortNames.ts: the names the app's lists already show, e.g. "Procter & Gamble", "Qualcomm"; any other falls back to its full name without "The" and legal endings).
 - 2026-11-19 — Stock page: Related ETFs, as two sections after "ETFs with …" — **Boosted ETFs on {stock}** (funds that aim for 1.2x–2x the stock's daily move: gain when it rises) and **Bet against {stock}** (gain when it falls), each in the funds table (Leverage · Today · Expense, or Returns); a tap opens the ETF. Shown only for stocks with such funds (NVIDIA, Tesla). The catalogue gains NVIDIA's other single-stock funds (NVDU, NVDX, NVDW, NVDG, NVDD, NVDQ, NVDS — from another app's NVDA page); until the US snapshot has them, their day move is NVIDIA's real move × the leverage (the other way for short ones). These funds no longer appear in "ETFs with {stock}". Section titles call the company by its name without "The" and the legal ending ("ETFs with The" → "ETFs with Walt Disney").
@@ -444,7 +449,8 @@ Every tap he wired is kept. The main path: FTUX sheet → Activate → Declarati
 - 2026-11-18 — Archived the app setting "₹ equivalent" (User status → US Stocks money): US money shows in $ only; the ₹ below / $ ⇄ ₹ switch code stays in shared/money.tsx (INR_DISPLAY). Stock and ETF pages keep their ≈ ₹ under the price.
 - 2026-11-19 — Order pad V2: the "US market is live till 2:30 AM IST" note sits above the dock's hairline (outside the button dock).
 - 2026-11-19 — Order pad V2, Market: Minted's leverage card (Figma 8870:209735) — bolt tile, "Enable leverage upto 2x/3x/4x" (rolling while off), switch; on: 2x · 3x · 4x choices and an info strip. Prototype only: the dock numbers don't change.
-- 2026-11-19 — Leverage card: the first switch-on opens Minted's "Activate leverage" sheet ($100 example at 1x / 4x, liquidation risk, "Don't show this again" ticked, Confirm); the card switches on only on Confirm. It grows open / shut (0.2s), the header has Minted's top gradient and the bolt its gradient, and the 2x · 3x · 4x chips are L3 secondary pill chips.
+- 2026-11-19 — Leverage card: the first switch-on opens Minted's "Activate leverage" sheet ($100 example at 1x / 4x, liquidation risk, "Don't show this again" ticked, Confirm); the card switches on only on Confirm. It grows open / shut (0.2s), and the 2x · 3x · 4x chips are L3 secondary pill chips. Plain card and bolt (no gradients); shut, the card is only its header. The sheet's content doesn't scroll (the checkbox row is its 48 tap target tall).
+- 2026-11-19 — Order pad V2: "Req." is always an underlined link and opens the Fee Breakdown sheet over the pad with the fees on this order (brokerage 0.25%, GST 18% on it, IFSCA turnover fee 0.005% — the 0.3% Req. adds); SL still goes to its Fee Breakdown screen.
 
 
 ## Source — this flow
@@ -25015,15 +25021,12 @@ export function ImgIcon({ src, w, h = w, className }: { src: string; w: number; 
   overflow: hidden;
 }
 
-/* The best figure of a % column: a light yellow highlight behind it. */
+/* A figure cell. The best figure's light yellow highlight was removed from every table (19 Nov, the user's call);
+   `data-best` still marks it, unstyled. */
 .figure {
   display: inline-block;
   padding: var(--l3-spacing-02) var(--l3-spacing-04);
   border-radius: var(--l3-radius-04);
-}
-
-.num[data-best] .figure {
-  background: var(--l3-surface-accent-warning-light);
 }
 ```
 
@@ -25031,8 +25034,8 @@ export function ImgIcon({ src, w, h = w, className }: { src: string; w: number; 
 
 ```tsx
 // "Peers" section: this stock first (styled like the others, so it's easy to compare against) and five peers; the
-// header cell cycles Overview / Returns / Ratios, rows open the peer's page. In each % column the best figure sits on a
-// light yellow (warning light) highlight.
+// header cell cycles Overview / Returns / Ratios, rows open the peer's page. No figure is highlighted (the yellow
+// best-figure highlight was removed from every table, 19 Nov).
 // FLAG: hand-made table (div role=table) with row buttons and a hand-made logo disc — L3 has no table; the logo is not L3 Avatar / BrandLogo.
 // FLAG: layout is raw display:flex/grid + gap/padding instead of L3 Stack/Grid.
 import { useState } from 'react'
@@ -26351,7 +26354,7 @@ import { useUsNav } from '../../nav'
 import { usQuote } from '../../../../shared/data/usStocks'
 import { Usd, formatUsd, useUsd } from '../../../../shared/money'
 import { setCurrentEtf } from '../etf/currentEtf'
-import { ShareDonut } from '../etf/EtfHoldings'
+import { ShareBars } from '../etf/EtfHoldings'
 import { LevTag } from '../etf/parts'
 import { COMPANY_PROFILES } from './companyProfiles'
 import { PeerTable } from './components/PeerTable'
@@ -26610,13 +26613,14 @@ export function Peers({ stock }: { stock: UsStock }) {
 }
 
 /** Key Holders: who holds the stock, for the latest quarter only (no quarter picker, 3 Nov). Drawn like the ETF
- *  page's Allocation (3 Nov): a donut with the biggest holder in the middle, the legend beside it. */
+ *  page's Allocation (19 Nov, the user's call): the ShareBars panel — "4 holder types · Weight", then each holder's
+ *  name, a short bar against the biggest and its share. */
 export function KeyHolders() {
   const parts = HOLDERS[QUARTERS[0]].map(([name, pct]) => ({ name, weight: pct }))
   return (
     <section className={styles.section}>
       <SectionTitle title="Key Holders" />
-      <ShareDonut parts={parts} of="the shares" legendLabel="Who holds the shares" format={(n) => `${n.toFixed(2)}%`} />
+      <ShareBars parts={parts} count={`${parts.length} holder types`} label="Who holds the shares" />
     </section>
   )
 }
@@ -26841,30 +26845,38 @@ export function RelatedEtfs({ sym }: { sym: string }) {
 }
 
 /**
- * Related ETFs (19 Nov, the user's call, from another app's NVDA page): Boosted funds in two sections because they're
- * two different bets — "Boosted ETFs on …" gain when it rises (by 1x–3x the daily move), "Bet against …" gain when it
- * falls. Each in the funds table of "ETFs with {stock}" (Leverage · Today · Expense, or Returns). Every stock has them
- * (19 Nov): its own single-stock funds where they exist (NVIDIA, Tesla, Apple …), otherwise the index or sector funds
- * that hold it most ("Boosted ETFs on chip stocks", the S&P 500 for the rest). A side with no funds isn't shown.
+ * Related ETFs (19 Nov, the user's call, from another app's NVDA page): one section with Long / Short sub-tabs (pill,
+ * as Company financials) — Long funds gain when it rises (by 1x–3x the daily move), Short ones when it falls. Each in
+ * the funds table of "ETFs with {stock}" (Leverage · Today · Expense, or Returns). Every stock has them: its own
+ * single-stock funds where they exist (NVIDIA, Tesla, Apple …), otherwise the index or sector funds that hold it most
+ * (chip stocks, the S&P 500 for the rest). A side with no funds has no tab; with one side only, no tabs at all.
  */
 export function BoostedOnStock({ sym, name }: { sym: string; name: string }) {
   const { long, short, on } = boostedOn(sym)
   const subject = on ?? name
+  const [side, setSide] = useState<'long' | 'short'>('long')
+  const sides = [
+    { value: 'long', label: 'Long', funds: long, label2: `Long ETFs on ${subject}, gain when ${on ? 'they rise' : `${name} rises`}` },
+    { value: 'short', label: 'Short', funds: short, label2: `Short ETFs on ${subject}, gain when ${on ? 'they fall' : `${name} falls`}` },
+  ].filter((x) => x.funds.length > 0)
+  if (!sides.length) return null
+  const shown = sides.find((x) => x.value === side) ?? sides[0]
   return (
-    <>
-      {long.length > 0 && (
-        <section className={styles.section}>
-          <SectionTitle title={`Boosted ETFs on ${subject}`} />
-          <BoostedFunds funds={long} label={on ? `Boosted ETFs on ${subject}` : `Boosted ETFs on ${name}, gain when ${name} rises`} />
-        </section>
+    <section className={styles.section}>
+      <SectionTitle title="Related ETFs" />
+      {sides.length > 1 && (
+        <Tabs
+          appearance="pill"
+          emphasis="primary"
+          size="sm"
+          aria-label="Long or short"
+          value={shown.value}
+          onChange={(v) => setSide(v as 'long' | 'short')}
+          items={sides.map((x) => ({ value: x.value, label: x.label }))}
+        />
       )}
-      {short.length > 0 && (
-        <section className={styles.section}>
-          <SectionTitle title={`Bet against ${subject}`} />
-          <BoostedFunds funds={short} label={on ? `Bet against ${subject}` : `ETFs that gain when ${name} falls`} />
-        </section>
-      )}
-    </>
+      <BoostedFunds key={shown.value} funds={shown.funds} label={shown.label2} />
+    </section>
   )
 }
 
@@ -32330,7 +32342,11 @@ export function AllocationF1({ etf }: { etf: Etf }) {
   color: var(--l3-content-primary);
   font-variant-numeric: tabular-nums;
   flex: none;
+  /* A fixed column (19 Nov) so every row's bar lines up: "100.0%", the widest share, measures 48 in heading-14. */
+  width: var(--l3-size-48);
+  text-align: right;
 }
+.weightPill .weight { width: auto; }
 
 /* "Holding weight" versions (3 Nov, to test). Mini: a short bar just before the number. */
 .miniBar {
@@ -32487,7 +32503,10 @@ export function AllocationF1({ etf }: { etf: Etf }) {
 .shareName {
   flex: 1;
   min-width: 0;
+  /* Label text, not heading (19 Nov, the user's call) — the name and the share of a ShareBars row. */
+  font: var(--l3-text-label-14);
 }
+.shareRow > .weight { font: var(--l3-text-label-14); }
 ```
 
 ### `src/flows/us-stocks/screens/etf/EtfHoldings.tsx`
@@ -32510,6 +32529,7 @@ import { useFlowOption } from '../../../../shared/prototype'
 import { HoldingLogo } from './parts'
 import listStyles from './Etf.module.css'
 import styles from './EtfHoldings.module.css'
+import { usShortName } from '../../../../shared/data/usShortNames'
 
 const TOP = 6
 
@@ -32525,13 +32545,14 @@ export type WeightLook = 'bar' | 'none' | 'mini' | 'fill' | 'pill'
 
 /** One holding row: logo, name and ticker, then its share — shown as `look` says (against `biggest`). Opens the stock. */
 export function HoldingRow({ sym, weight, biggest, onOpen, look = 'bar' }: { sym: string; weight: number; biggest: number; onOpen: (sym: string) => void; look?: WeightLook }) {
-  const name = stockName(sym)
+  // One name, the short one (19 Nov): "Broadcom", not "Broadcom Inc AVGO".
+  const name = usShortName(sym, stockName(sym))
   const share = `${(weight / biggest) * 100}%`
   return (
     <button type="button" className={styles.row} data-look={look} onClick={() => onOpen(sym)} aria-label={`${name}, ${weight}% of the ETF. Open stock`}>
       <HoldingLogo sym={sym} size={32} />
       <span className={styles.text}>
-        <span className={styles.name}>{name}<span className={styles.sym}>{sym}</span></span>
+        <span className={styles.name}>{name}</span>
         {look === 'bar' && <span className={styles.bar} aria-hidden="true"><span style={{ width: share }} /></span>}
       </span>
       {look === 'mini' && <span className={`${styles.bar} ${styles.miniBar}`} aria-hidden="true"><span style={{ width: share }} /></span>}
@@ -34030,7 +34051,7 @@ function LeverageStrip({ etf, onOpen }: { etf: ReturnType<typeof getCurrentEtf>;
 ```tsx
 // "Similar ETFs" on the ETF page (4 Nov): the stock page's Peers table for funds — this ETF first (to compare against),
 // then up to five like it (similarEtfs), each row by its ticker and issuer logo. The header cell cycles Overview /
-// Returns; in each column the best figure sits on the light yellow highlight (for the expense ratio, the lowest).
+// Returns; no figure is highlighted (the yellow best-figure highlight was removed, 19 Nov).
 // Tapping a row opens that ETF on this same page, scrolled back to the top.
 // The same table lists, on a stock's page, every ETF that holds the stock (EtfsHolding, 17 Nov): by its weight in each.
 // FLAG: the stock page's hand-made table (activation/components/PeerTable.module.css) — L3 has no table.
@@ -38108,13 +38129,24 @@ import styles from './FeeBreakdown.module.css'
 
 const FEES = { total: 1.13, brokerage: 0.94, charges: 0.02, taxes: 0.17 }
 
+/** The fees on an order of `orderUsd` — the 0.3% the pads add to "Req." (CHARGE_FACTOR), split: brokerage 0.25%, GST 18%
+ * of it (0.045%), IFSCA turnover fee 0.005%. */
+export function feesFor(orderUsd: number) {
+  const brokerage = orderUsd * 0.0025
+  const taxes = brokerage * 0.18
+  const charges = orderUsd * 0.00005
+  return { total: brokerage + taxes + charges, brokerage, charges, taxes }
+}
+
 /** The SL order pad drawn behind (its own screen, us-stocks-41, stays put: this is a sheet over it), with the fee sheet on top. */
 export function FeeBreakdownScreen({ backdrop }: { backdrop?: boolean }) {
   const { back } = useUsNav()
   return <OrderPad config={orderPads[tradeIds.T08]} backdrop sheet={backdrop ? undefined : <FeeBreakdownSheet onClose={() => back(tradeIds.T08)} />} />
 }
 
-function FeeBreakdownSheet({ onClose }: { onClose: () => void }) {
+/** Fee Breakdown: fixed Figma amounts (the SL screen), or the fees on `orderUsd` (order pad V2's "Req." link). */
+export function FeeBreakdownSheet({ onClose, orderUsd }: { onClose: () => void; orderUsd?: number }) {
+  const FEES_SHOWN = orderUsd === undefined ? FEES : feesFor(orderUsd)
   const layer = useSheetLayer()
   const { open, close } = useSheetClose(onClose)
   return (
@@ -38138,24 +38170,24 @@ function FeeBreakdownSheet({ onClose }: { onClose: () => void }) {
     >
       <div className={styles.body}>
         <KeyValueList aria-label="Estimated fee">
-          <KeyValueRow total label="Estimated Fee" value={<Usd value={FEES.total} align="end" layout="stack" />} />
+          <KeyValueRow total label="Estimated Fee" value={<Usd value={FEES_SHOWN.total} align="end" layout="stack" />} />
         </KeyValueList>
         <hr className={styles.divider} />
         <div className={styles.group} data-gap="4">
           <KeyValueList aria-label="Brokerage">
-            <KeyValueRow label="Brokerage" value={<Usd value={FEES.brokerage} align="end" layout="stack" />} />
+            <KeyValueRow label="Brokerage" value={<Usd value={FEES_SHOWN.brokerage} align="end" layout="stack" />} />
           </KeyValueList>
           <p className={styles.small} data-narrow>Note: Brokerage is 0.25% of the order value. GST at 18% is charged on it.</p>
         </div>
         <hr className={styles.divider} />
         <KeyValueList size="sm" aria-label="Charges">
-          <KeyValueRow size="md" label="Charges" value={<Usd value={FEES.charges} align="end" layout="stack" />} />
-          <KeyValueRow label="• IFSCA turnover fee" value={<Usd value={FEES.charges} align="end" layout="stack" />} />
+          <KeyValueRow size="md" label="Charges" value={<Usd value={FEES_SHOWN.charges} align="end" layout="stack" />} />
+          <KeyValueRow label="• IFSCA turnover fee" value={<Usd value={FEES_SHOWN.charges} align="end" layout="stack" />} />
         </KeyValueList>
         <hr className={styles.divider} />
         <KeyValueList size="sm" aria-label="Taxes">
-          <KeyValueRow size="md" label="Taxes" value={<Usd value={FEES.taxes} align="end" layout="stack" />} />
-          <KeyValueRow label="• GST on brokerage" value={<Usd value={FEES.taxes} align="end" layout="stack" />} />
+          <KeyValueRow size="md" label="Taxes" value={<Usd value={FEES_SHOWN.taxes} align="end" layout="stack" />} />
+          <KeyValueRow label="• GST on brokerage" value={<Usd value={FEES_SHOWN.taxes} align="end" layout="stack" />} />
         </KeyValueList>
         <hr className={styles.divider} />
         <p className={styles.small} data-center>Note: The amounts mentioned above are approximate values and may vary slightly at the time of execution.</p>
@@ -38889,6 +38921,7 @@ import { al, forCurrentStock } from './format'
 import type { Derived, OrderPadConfig, OrderType, PadMode } from './types'
 import { usePriceCards } from './version'
 import { LeverageCard } from './LeverageCard'
+import { FeeBreakdownSheet } from './FeeBreakdown'
 import styles from './OrderPadV2.module.css'
 
 const ORDER_TYPES: { value: OrderType; label: string }[] = [
@@ -38946,7 +38979,10 @@ export function OrderPadV2({ config, backdrop, sheet }: { config: OrderPadConfig
   const ctaInr = orderUsd > 0 ? formatInr(orderUsd * rate, { decimals: 0 }) : undefined
   const ctaDisabled = typeof config.cta.disabled === 'function' ? config.cta.disabled(derived) : config.cta.disabled
   const goTo = (key: keyof NonNullable<OrderPadConfig['to']>) => (config.to?.[key] ? () => go(config.to![key]!) : undefined)
-  const onReq = goTo('req')
+  // "Req." is always a link (19 Nov, the user's call): a pad with its own target goes there (SL → the Fee Breakdown
+  // screen); every other pad opens the same Fee Breakdown sheet over itself, with the fees on this order.
+  const [feesOpen, setFeesOpen] = useState(false)
+  const onReq = goTo('req') ?? (() => setFeesOpen(true))
 
   const textOf = (n: number) => (n ? String(n) : '')
   const switchMode = () => {
@@ -39239,6 +39275,7 @@ export function OrderPadV2({ config, backdrop, sheet }: { config: OrderPadConfig
         </Stack>
       </Stack>
       {sheet}
+      {feesOpen && <FeeBreakdownSheet orderUsd={orderUsd} onClose={() => setFeesOpen(false)} />}
     </Phone>
   )
 }
