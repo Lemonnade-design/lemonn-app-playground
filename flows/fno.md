@@ -18,8 +18,8 @@ Prototype: https://lemonnade-design.github.io/lemonn-app-prototype/#/fno · mach
 | `fno-05` | Scalper | — | `dash-20` | From ScalpPro on F&O home, the Expiring cards, the Expiry calendar or the Scalper bottom-nav tab — always a new page in from the right; back returns to the page it was opened from. The chart-tools sheet groups personal DASH AI indicators separately from Lemon indicators. |
 | `fno-06` | Scalper · DASH indicator | — | `dash-20` | From DASH AI’s View indicator. Opens the chart-tools sheet directly on Indicators, the saved DASH AI indicator under Your indicators with a focus guide. Tap rows to add / remove indicators (several at once); search filters the list. |
 | `fno-07` | Scalper · indicator applied | — | `dash-20` | With the saved DASH AI indicator on the chart: “1 ▾” at the chart’s top-left and illustrative EMA 9 / 21 lines on the NIFTY 50 candles. |
-| `fno-35` | Break Even · position + breakeven line | [11756:78739](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=11756-78739) | `dash-20` | Version C (Boxed chip): an open position on the option chart — TP pill (drag ⠿ to move, ✕ removes), entry row (Exit · +65 · live P&L), SL pill (+ Add Trail), and the yellow dashed breakeven line ending in a “Breakeven ⓘ” chip flush to the price axis (Figma’s “B/E 105.55”: spelled out, no price — designer’s call; the label still reads the price) (tap → How breakeven works). Breakeven = entry + round-trip charges per unit (data.ts breakevenPrice). Buy at Mkt on fno-05 opens a position the same way; the first buy also opens How breakeven works. Exit buttons are 24 tall to sit on the pills (Figma), not Large. |
-| `fno-36` | Break Even · How breakeven works (sheet) | [11783:5569](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=11783-5569) | `dash-20` | Two versions (setting “Breakeven sheet”, floating card beside the phone): Version 2 (default) — heading “What is breakeven price?” + a description, the charges table, no info lines; Version 1 — “How breakeven works” with the two info lines, no table. Opens on the first buy and from the B/E chip’s ⓘ (and Settings → Breakeven line ⓘ). The example card plays once (then stops on the finished chart; a tap replays it) a 9.3 s explainer copied from the designer’s recording: on a white chart the buy at ₹100; the chart zooms in 2× and the orange charges zone fills one band per charge from the F&O options rate card, in ₹ on the ₹100 buy (top down: STT ₹0.15, transaction ₹0.07, stamp duty, SEBI, then brokerage ₹0.02 last at the bottom with a smaller tag; they come in top down — no GST band: it’s charged on the charges; heights by cost), then zooms back out to one thin zone, the tags sliding down under it and stacking into one “Order charges ≈₹0.26” tag (GST included); the dashed B/E line at ₹100.30 draws along its top, an LTP bubble rides the price line up through B/E (a ringed marker pulses) to “Sold at ₹102”, the green Net Profit zone fills, and it stops there. “I understand” is locked until the chart has played once (9.3 s), a loader line filling along its top edge, then turns primary (Figma’s button variants). Reduced motion: the finished chart, button ready. Under the example, the same trade as a calculation table (a card on the secondary surface, no heading, compact L3 key-value rows, one line each, no lines inside): Bought at ₹100.00 · Order charges (incl. GST) ≈₹0.26 — tap the row to open the breakdown (closed by default: STT, transaction, brokerage, stamp duty, SEBI, GST 18%) — and Breakeven price ₹100.30 in bold (L3 total row). Labels are L3’s 12 styles (the recording’s are ~11). The zoomed-in charges aren’t in Figma or the recording (designer’s brief). A V2 (starts zoomed in on a blue ₹0 → ₹100 fill, zooms out true to scale, sold 12% up at ₹112) is archived in fno/archive/BreakevenExplainerV2.tsx. |
+| `fno-35` | Break Even · position + breakeven line | [11756:78739](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=11756-78739) | `dash-20` | Version C (Boxed chip): an open position on the option chart — TP pill (drag ⠿ to move, ✕ removes), entry row (Exit · +65 · live P&L), SL pill (+ Add Trail), and the solid warning-light breakeven line with a boxed “Breakeven ⓘ” tag on it, 8 left of the price axis (Figma’s “B/E 105.55”: spelled out, no price — designer’s call; the label still reads the price) (tap → How breakeven works). Breakeven = entry + round-trip charges per unit (data.ts breakevenPrice). Buy at Mkt on fno-05 opens a position the same way; the first buy also opens How breakeven works. Exit buttons are 24 tall to sit on the pills (Figma), not Large. |
+| `fno-36` | Break Even · How breakeven works (sheet) | [11783:5569](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=11783-5569) | `dash-20` | Two versions (setting “Breakeven sheet”, floating card beside the phone): Version 2 (default) — heading “What is breakeven line?” (no description; “price” → “line”, 19 Nov), the charges table, no info lines; Version 1 — “How breakeven works” with the two info lines, no table. Opens on the first buy and from the B/E chip’s ⓘ (and Settings → Breakeven line ⓘ). The example card loops (a tap replays it): every play opens with the “Introducing Breakeven Line” intro (2.5 s), then a 9.3 s chart copied from the designer’s recording: on a white chart the buy at ₹100; the chart zooms in 2× and the orange charges zone fills one band per charge from the F&O options rate card, in ₹ on the ₹100 buy (top down: STT ₹0.15, transaction ₹0.07, stamp duty, SEBI, then brokerage ₹0.02 last at the bottom with a smaller tag; they come in top down — no GST band: it’s charged on the charges; heights by cost), then zooms back out to one thin zone, the tags sliding down under it and stacking into one “Order charges ≈₹0.26” tag (GST included); the dashed B/E line at ₹100.30 draws along its top with the chart’s “Breakeven” tag (text only, no price), an LTP bubble rides the price line up through B/E (a ringed marker pulses) to “Sold at ₹102”, the green Net Profit zone fills; it holds, then plays again from the intro. “I understand” is locked until the chart has played once (intro + chart, 11.8 s), a loader line filling along its top edge, then turns primary (Figma’s button variants). Reduced motion: the finished chart, button ready. Under the example, the same trade as a calculation table (a card on the secondary surface, no heading, compact L3 key-value rows, one line each, no lines inside): Bought at ₹100.00 · Order charges (incl. GST) ≈₹0.26 — tap the row to open the breakdown (closed by default: STT, transaction, brokerage, stamp duty, SEBI, GST 18%) — and Breakeven price ₹100.30 in bold (L3 total row). Labels are L3’s 12 styles (the recording’s are ~11). The zoomed-in charges aren’t in Figma or the recording (designer’s brief). A V2 (starts zoomed in on a blue ₹0 → ₹100 fill, zooms out true to scale, sold 12% up at ₹112) is archived in fno/archive/BreakevenExplainerV2.tsx. |
 | `fno-37` | Break Even · chart settings (breakeven line) | [11754:69563](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=11754-69563) | `dash-20` | The chart-tools sheet on Settings: Auto TP/SL (animated mark, Applied), Chart type (Candles / Heikin Ashi / Line), Stop Loss Preference (radio), View on chart (Breakeven line ⓘ New, Buy/Sell executions, Sync Charts). Changes are a draft: Apply keeps them (unticking Breakeven line hides the B/E line and chip), Cancel or closing drops them. Figma’s rail (Bolt, Indicators, Drawings, Settings) is the live app’s six groups here. |
 | `fno-08` | Commodities home | [6754:63637](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=6754-63637) | — | The Commodities product tab. Gold / Silver / Crude Oil / Natural Gas shortcuts open the Lot summary (Gold Summary). The chart’s instrument selector (“Gold”) opens the contract picker. Popular commodities: Options ⇕ Futures switch; Futures Heatmap: Bullion / Energy / Metals. |
 | `fno-09` | Commodities · heatmap & Smart Futures | [6754:63637](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=6754-63637) | — | The same long screen, scrolled to the Futures Heatmap. |
@@ -160,9 +160,9 @@ Figma: "Scalper screen · C · Boxed chip" (the yellow chip version; A / B are n
   - **SL pill**: ⠿ · red Tag "SL Qty:65" · the P&L if it fills · ✕ · Add Trail (toggles; "✓ Trailing" when on);
   - **dragging** a ⠿ (or focusing it and ↑ / ↓, Shift = ×20) moves TP / SL in ₹0.05 ticks. TP stays above the last
     price and SL below it, both at least 30 px clear of the entry row and 12 px inside the plot. The P&L updates live;
-  - **the breakeven line**: yellow dashed (`border-accent-warning-default`) at the breakeven price, ending in the
-    boxed chip "Breakeven ⓘ" (Figma reads "B/E 105.55"; spelled out without the price, designer's call 2026-11-03 — its accessible label keeps the price) flush to the price axis (Figma 11756:79332: warning-light surface and edge, no right
-    edge, left corners 4, Label/10 in warning, 12 ⓘ). Tap → How breakeven works. Hidden when Settings → Breakeven
+  - **the breakeven line**: solid 1px `border-accent-warning-light` at the breakeven price (Figma 11756:79330), with the
+    boxed tag "Breakeven ⓘ" on it (Figma reads "B/E 105.55"; spelled out without the price, designer's call 2026-11-03 — its accessible label keeps the price) 8 left of the price axis (Figma 11756:79332: warning-light surface and 1px
+    edge all round, radius 4, Label/10 in warning, 16 tall, Figma's 12 info_outline tinted in the text colour). Tap → How breakeven works. Hidden when Settings → Breakeven
     line is off.
 - **Breakeven price** (`data.ts` `breakevenPrice`): entry + the round trip's charges ÷ quantity, rounded **up** to the
   ₹0.05 tick, so selling at it is never a loss. Charges (`optionCharges`): brokerage ₹20 × 2 orders, STT 0.1% of the
@@ -186,8 +186,8 @@ Figma: "Scalper screen · C · Boxed chip" (the yellow chip version; A / B are n
   (≈₹0.26) up to the next tick = ₹100.30, sold ₹102, the price path's five turns.
 
   **Versions** (F&O setting "Breakeven sheet", also a floating card beside the phone on fno-36; 2026-11-16):
-  **Version 2** (default) — heading "What is breakeven price?" with a one-line description under it (L3 sheet header
-  `description`), the example, then the charges table; the two info lines are hidden. **Version 1** — the sheet as it
+  **Version 2** (default) — heading "What is breakeven line?" (was "… price?" with a description
+  under it; both changed 19 Nov), the example, then the charges table; the two info lines are hidden. **Version 1** — the sheet as it
   first shipped: heading "How breakeven works", the example, then the two info lines; no table.
   **Charges table** (under the example card, `ChargesTable` in the sheet; 2026-11-16): the same trade as a calculation,
   on a secondary-surface card (radius 12, no edge, no lines inside) so it stands out on the sheet (no heading): compact
@@ -223,13 +223,18 @@ Figma: "Scalper screen · C · Boxed chip" (the yellow chip version; A / B are n
   | 1550 | the bands fill up one every 350 (STT, transaction, stamp duty, SEBI, then brokerage): each grows up from the one below (300, ease-out) as its tag fades in rising 4 → 0 with its leader; the last is in by 3600 |
   | 4100 | zoom out (600, ease-in-out); the leaders fade (150); the whole zone fades in over the bands, closing their gaps; the tags slide to the zone's label spot (8.5 in, 10.5 under B/E), top tag first, each 30 later (450, ease-in-out), stacking up |
   | 4600 | the stacked tags cross-fade (150) into one white "Order charges" tag in the charges orange; 4950 its pill fades (250), leaving the label |
-  | 4750 | B/E line draws left → right along the zone's top (450, ease-in-out); 5200 its chip fades and scales 0.9 → 1 (200) |
+  | 4750 | B/E line draws left → right along the zone's top (450, ease-in-out); 5200 its "Breakeven" tag (text only, as on the chart) fades and scales 0.9 → 1 (200) |
   | 5550 | LTP bubble pops in at ₹100.00 (150) |
   | 5800 | the price line draws at a steady pace to ₹102 (2150); the bubble rides its head showing the last turn passed (cross-fades 100 ms at each); at B/E a ringed marker appears and pulses (r 7.5 → 14, fading, 400 ms) |
   | 7950 | the line ends: a green ring; 8000 the bubble fades (150), the green dot pops in (200), 8200 it pulses (500) |
   | 8250 | "Sold at ₹102" fades in sliding 6 → 0 from the right (150) |
   | 8450 | net-profit zone grows up from B/E to ₹102 (550, ease-out); 9150 "Net Profit" fades in (150) |
-  | 9300 | it stops on the finished chart. A tap (or Enter / Space) plays it again from 0. The recording's intro (11750: the Breakeven mark, INTRODUCING, Breakeven Line, the one-liner; 15000: fade and loop) is kept in the code but not reached |
+  | 9300 | it holds on the finished chart (2.2 s), then the next play starts with the intro, on loop. A tap (or Enter / Space) after the first play starts it again from the intro |
+
+  **Every play opens with the intro** (19 Nov): for 2.5 s before the chart's t = 0 — the Breakeven mark, INTRODUCING,
+  Breakeven Line, the one-liner (Figma's reveal), fading (300) into the blank chart — on open, on each loop and on a tap.
+  The times above are the chart's own, from when the intro has gone. "I understand" unlocks when the chart first
+  finishes (2.5 + 9.3 s).
 
   **V2 — archived 2026-11-04, not in the app** (`archive/BreakevenExplainerV2.tsx` + its CSS, with the steps to bring it
   back): starts zoomed in, the line rises from the bottom to the buy at ₹100 over a blue ₹0 → ₹100 fill, the charges
@@ -496,6 +501,12 @@ The source uses old D2 controls alongside L3; their code equivalents are L3 comp
 - 2026-11-17 — Calendar days: “2 today · 1 tomorrow” is the default.
 - 2026-11-17 — Calendar today: on the calendar page (fno-38) today's date block is inverted (surface-inverted, content-inverted text) instead of ringed; the home's short calendar no longer marks today.
 - 2026-11-18 — The profile avatar in the top bar has its 1px indigo ring back (only the user's profile; other avatars and logos stay borderless).
+- 2026-11-19 — Break Even · How breakeven works: the example opens every play with the "Introducing Breakeven Line" intro (2.5 s, fading into the chart) — on open, on each loop and on a tap — then the chart, which holds 2.2 s and loops (it had stopped on the chart, the intro unreached, since 4 Nov). "I understand" unlocks when the chart first finishes (11.8 s).
+- 2026-11-19 — Breakeven icon in the "Introducing Breakeven Line" intro matches Figma (11989:36412): Figma's own arrow (`assets/breakeven-tile-arrow.svg`, lime gradient) in a 48 tile, radius 12, 12 padding, a dark gradient with a soft lift at the top — and the same colours in light and dark mode (fixed base neutrals, not theme tokens).
+- 2026-11-19 — Breakeven tag and line on the chart match Figma (11756:79332 / 79330) in light and dark: the line is solid 1px border/accent-warning-light (was a dashed warning line); the tag is boxed on all four sides (radius 4, 1px warning-light border, warning-light fill, Label/10 warning text, 16 tall), 8 left of the price axis (was flush, open on the right), with Figma's own info_outline (12) tinted in the text colour. All L3 theme tokens, so dark mode follows.
+- 2026-11-19 — How breakeven works · example: the "B/E ₹100.30" chip on the animated breakeven line is now the chart's own "Breakeven" tag — text only, no price (warning-light fill and edge, radius 4, Label/10 warning text, 16 tall), in light and dark.
+- 2026-11-19 — Breakeven sheet Version 2: the description under "What is breakeven price?" is gone (heading only). Copy `breakeven.descriptionV2` is kept, unused.
+- 2026-11-19 — Breakeven sheet Version 2 heading: "What is breakeven line?" (was "What is breakeven price?").
 
 
 ## Source — this flow
@@ -1422,6 +1433,36 @@ function useWidth(ref: React.RefObject<HTMLElement | null>, fallback: number) {
   }, [ref])
   return width
 }
+```
+
+### `src/flows/fno/assets/breakeven-info.svg`
+
+```tsx
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="D2 &#226;&#134;&#146; info_outline">
+<path id="Vector" d="M5.5 3.5H6.5V4.5H5.5V3.5ZM6 8.5C6.275 8.5 6.5 8.275 6.5 8V6C6.5 5.725 6.275 5.5 6 5.5C5.725 5.5 5.5 5.725 5.5 6V8C5.5 8.275 5.725 8.5 6 8.5ZM6 1C3.24 1 1 3.24 1 6C1 8.76 3.24 11 6 11C8.76 11 11 8.76 11 6C11 3.24 8.76 1 6 1ZM6 10C3.795 10 2 8.205 2 6C2 3.795 3.795 2 6 2C8.205 2 10 3.795 10 6C10 8.205 8.205 10 6 10Z" fill="#9F7502" style="fill:#9F7502;fill:color(display-p3 0.6235 0.4593 0.0078);fill-opacity:1;"/>
+</g>
+</svg>
+```
+
+### `src/flows/fno/assets/breakeven-tile-arrow.svg`
+
+```tsx
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="Frame">
+<g id="Union">
+<use xlink:href="#stroke0_0_4" fill="#0F9958" style="fill:#0F9958;fill:color(display-p3 0.0588 0.6000 0.3451);fill-opacity:1;"/>
+<use xlink:href="#stroke0_0_4" fill="url(#paint0_linear_0_4)"/>
+</g>
+</g>
+<defs>
+<linearGradient id="paint0_linear_0_4" x1="12.0001" y1="3.00098" x2="12.0001" y2="22.9896" gradientUnits="userSpaceOnUse">
+<stop stop-color="#EDFBBF" style="stop-color:#EDFBBF;stop-color:color(display-p3 0.9294 0.9843 0.7490);stop-opacity:1;"/>
+<stop offset="1" stop-color="#B1E50E" style="stop-color:#B1E50E;stop-color:color(display-p3 0.6941 0.8980 0.0549);stop-opacity:1;"/>
+</linearGradient>
+<path id="stroke0_0_4" d="M11.9728 2.00098C12.2803 2.00098 12.5498 2.11606 12.7804 2.34668L18.0499 7.62793C18.2805 7.85851 18.3925 8.13119 18.3849 8.44629C18.3772 8.76147 18.2581 9.035 18.0275 9.26562C17.7969 9.48087 17.5274 9.59192 17.2199 9.59961C16.9124 9.6073 16.6429 9.49623 16.4122 9.26562L13.1261 5.97852V14.3066H14.3058C14.9426 14.3066 15.459 14.8232 15.4591 15.46C15.4591 16.0968 14.9426 16.6133 14.3058 16.6133H13.1261V20.8359C13.1261 21.151 13.0149 21.4237 12.7921 21.6543C12.5692 21.8849 12.2957 21.9969 11.9728 21.9893C11.6501 21.9815 11.3773 21.8695 11.1544 21.6543C10.9316 21.4391 10.8205 21.1664 10.8205 20.8359V16.6133H9.6935C9.05678 16.6131 8.54018 16.0967 8.54018 15.46C8.54027 14.8233 9.05683 14.3068 9.6935 14.3066H10.8205V5.97852L7.53334 9.26562C7.30286 9.49592 7.03394 9.60725 6.7267 9.59961C6.41925 9.59192 6.14969 9.48082 5.91908 9.26562C5.68078 9.035 5.55763 8.76147 5.54994 8.44629C5.5423 8.13119 5.65434 7.85851 5.8849 7.62793L11.1662 2.34668C11.3967 2.11616 11.6655 2.00107 11.9728 2.00098ZM6.23451 14.3066C6.87126 14.3067 7.38774 14.8232 7.38783 15.46C7.38783 16.0968 6.87132 16.6132 6.23451 16.6133H1.62221C0.985364 16.6133 0.468889 16.0968 0.468889 15.46C0.468981 14.8232 0.985421 14.3066 1.62221 14.3066H6.23451ZM22.3781 14.3066C23.0148 14.3067 23.5313 14.8232 23.5314 15.46C23.5314 16.0968 23.0149 16.6132 22.3781 16.6133H17.7658C17.1289 16.6133 16.6124 16.0968 16.6124 15.46C16.6125 14.8232 17.129 14.3066 17.7658 14.3066H22.3781Z"/>
+</defs>
+</svg>
 ```
 
 ### `src/flows/fno/assets/commodities.svg`
@@ -4132,26 +4173,19 @@ export function AutoTpSlIcon() {
 }
 
 .chip {
+  /* The chart's "Breakeven" tag (PositionOverlay, Figma 11756:79332), text only: warning-light fill and 1px edge,
+     radius 4, Label/10 warning text, 16 tall (Figma 2 / 4 / 2 / 6 with the border inside). L3 theme tokens, so dark
+     mode follows. */
   display: inline-flex;
   align-items: center;
-  gap: var(--l3-spacing-04);
-  padding: var(--l3-spacing-02) var(--l3-spacing-04) var(--l3-spacing-02) var(--l3-spacing-02);
-  border: 1px solid var(--l3-border-light);
-  border-radius: var(--l3-radius-06);
-  background: var(--l3-surface-primary);
-  box-shadow: var(--l3-shadow-elevation-low);
-  color: var(--l3-content-primary);
-  font: var(--l3-text-label-12);
+  padding: calc(var(--l3-spacing-02) - 1px) calc(var(--l3-spacing-04) - 1px) calc(var(--l3-spacing-02) - 1px) calc(var(--l3-spacing-06) - 1px);
+  border: 1px solid var(--l3-border-accent-warning-light);
+  border-radius: var(--l3-radius-04);
+  background: var(--l3-surface-accent-warning-light);
+  color: var(--l3-content-accent-warning-default);
+  font: var(--l3-text-label-10);
   transform: translate(-100%, -50%);
   transform-origin: right center;
-}
-
-.chipTag {
-  padding: 1px var(--l3-spacing-02);
-  border-radius: var(--l3-radius-02);
-  background: var(--app-be-tag);
-  color: var(--l3-static-black); /* like L3's warning Tag: black on the solid, in both modes */
-  font: var(--l3-text-heading-10);
 }
 
 /* ---- The price line, the buy dot, the ringed crossing marker, the green sell dot and their pulses. ---- */
@@ -4413,24 +4447,28 @@ import styles from './BreakevenExplainer.module.css'
  *    the bottom. They come in top down, so brokerage comes in last (₹0.02, a thin band, its tag the small one);
  * 3. it zooms back out: the bands close into one orange charges zone and the tags slide down under it, stacking into one
  *    tag that reads "Order charges" and stays under the zone; the breakeven line draws across its top at ₹100.30
- *    and its B/E chip comes in;
+ *    and its "Breakeven" tag comes in (the chart's tag: text only, no price);
  * 3. an LTP bubble rides the price line as it draws up to ₹102 (showing the last price it passed); where it crosses the
  *    breakeven line a ringed marker pulses;
  * 4. at ₹102 the bubble goes, a green dot pulses, "Sold at ₹102" slides in and the green net-profit zone grows from the
  *    breakeven line up to the sell price, labelled "Net Profit"; it holds;
- * 5. it plays once and stops on the finished chart (at 9.3 s); a tap on it plays it again from the start.
- * (The recording looped on into an intro — the Breakeven mark, INTRODUCING, Breakeven Line, the one-liner — at 11.75 s;
- * kept below but not reached while it stops on the chart.)
+ * 5. it holds on the finished chart, then plays again, on loop.
+ * Every play OPENS with the intro (19 Nov, Anshul_Risk_Meter: "it should come every time") — the Breakeven mark,
+ * INTRODUCING, Breakeven Line, the one-liner — for 2.5 s, fading into the chart: on open, on each loop and on a tap,
+ * which (after the first play) starts it again from the intro.
  * `still` (reduced motion) shows the finished chart and no intro.
  */
 export function BreakevenExplainer({ still = false }: { still?: boolean }) {
   const stageRef = useRef<HTMLDivElement>(null)
   const width = useWidth(stageRef, FIGMA_WIDTH)
   const [run, setRun] = useState(0)
-  const elapsed = useElapsed(!still, PLAYED, run)
+  // Runs on: the loop (LOOP) brings the intro in at INTRO_AT and starts the chart again.
+  const elapsed = useElapsed(!still, Infinity, run)
   const loop = Math.floor(elapsed / LOOP)
-  const time = still ? PLAYED : elapsed % LOOP
-  const replay = () => { if (!still && elapsed >= PLAYED) setRun(run + 1) }
+  const inLoop = elapsed % LOOP
+  // The chart's own clock starts once the intro has had its time.
+  const time = still ? PLAYED : Math.max(0, inLoop - INTRO_HOLD)
+  const replay = () => { if (!still && elapsed >= EXPLAINER_LENGTH) setRun(run + 1) }
 
   return (
     <div
@@ -4444,8 +4482,7 @@ export function BreakevenExplainer({ still = false }: { still?: boolean }) {
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); replay() } }}
     >
       <ExampleChart time={time} width={width} />
-      {!still && time >= INTRO_AT && <Intro key={loop} />}
-      {!still && loop > 0 && time < INTRO_OUT && <Intro key={loop - 1} fade={1 - ramp(time, [0, INTRO_OUT])} />}
+      {!still && inLoop < INTRO_HOLD && <Intro key={loop} fade={1 - ramp(inLoop, [INTRO_HOLD - INTRO_OUT, INTRO_OUT])} />}
     </div>
   )
 }
@@ -4480,13 +4517,15 @@ const SHOT = {
 
 const CHARGE_STEP = 350
 const TAG_MERGE_STEP = 30
-const LOOP = 15000
-/** How long one play takes (ms): it stops on the finished chart, its Net Profit label in. */
-export const EXPLAINER_LENGTH = SHOT.profitLabel[0] + SHOT.profitLabel[1]
-const PLAYED = EXPLAINER_LENGTH
-/** The hard cut to the intro, and how long the intro takes to fade when the loop starts again. */
-const INTRO_AT = 11750
-const INTRO_OUT = 200
+/** The intro opens every play: its reveal (~1.1 s) and a hold, then it fades (INTRO_OUT) into the chart. */
+const INTRO_HOLD = 2500
+const INTRO_OUT = 300
+/** How long the chart takes to finish (ms), its Net Profit label in. */
+const PLAYED = SHOT.profitLabel[0] + SHOT.profitLabel[1]
+/** From open until the chart has finished once (the sheet's button unlocks then; a tap can replay after it). */
+export const EXPLAINER_LENGTH = INTRO_HOLD + PLAYED
+/** One play: the intro, the chart, then 2.2 s on the finished chart before the next play's intro. */
+const LOOP = EXPLAINER_LENGTH + 2200
 /** The LTP value cross-fades for this long when the line passes a turn. */
 const LTP_SWAP = 100
 
@@ -4632,8 +4671,8 @@ function ExampleChart({ time, width }: { time: number; width: number }) {
       ))}
 
       <span className={styles.chip} style={{ ...at(plotRight, y(breakeven), ramp(time, SHOT.breakevenChip, easeOut)), scale: `${0.9 + 0.1 * ramp(time, SHOT.breakevenChip, easeOut)}` }}>
-        <span className={styles.chipTag}>{t('breakeven.beTag')}</span>
-        {inr(breakeven)}
+        {/* Just "Breakeven", the chart's own tag (Figma 11756:79332), no price (19 Nov, user). */}
+        {t('breakeven.chip')}
       </span>
 
       <span
@@ -4723,7 +4762,7 @@ function Pulse({ cx, cy, time, shot, className }: { cx: number; cy: number; time
   return <circle className={className} cx={cx} cy={cy} r={7.5 + 6.5 * p} opacity={0.4 * (1 - p)} />
 }
 
-/** The intro the loop ends on: Figma's reveal (its timings are CSS animations, so it plays each time it mounts). */
+/** The intro every play opens with: Figma's reveal (its timings are CSS animations, so it plays each time it mounts). */
 function Intro({ fade = 1 }: { fade?: number }) {
   return (
     <div className={styles.intro} style={{ opacity: fade }}>
@@ -4794,31 +4833,26 @@ function useWidth(ref: React.RefObject<HTMLElement | null>, fallback: number) {
 ```css
 /* Breakeven marks (How breakeven works). L3 colour tokens only. */
 
-/* 48 tile: flat surface/inverted, radius 12 (designer's call, 2026-11-03: Figma's quaternary → inverted gradient
-   washed out to white at the top). */
+/* 48 tile (Figma 11989:36412): radius 12, 12 padding around the 24 arrow, a dark gradient — surface/quaternary far above
+   the tile fading into surface/inverted, so only a soft lift shows at the top. The SAME in light and dark mode (19 Nov,
+   user): L3's fixed base neutrals (charcoal-200 / -900 = the light theme's quaternary / inverted), not the theme tokens,
+   which flip in dark mode. */
 .tile {
   display: grid;
   place-items: center;
   width: var(--l3-size-48);
   height: var(--l3-size-48);
+  box-sizing: border-box;
+  padding: var(--l3-spacing-12);
   border-radius: var(--l3-radius-12);
-  background: var(--l3-surface-inverted);
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--l3-base-neutral-charcoal-200) 20%, var(--l3-base-neutral-charcoal-900)) 0%,
+    var(--l3-base-neutral-charcoal-900) 100%
+  );
 }
 
-.dashed {
-  stroke: var(--l3-content-inverted);
-  stroke-width: 1.5;
-  stroke-dasharray: 3 3;
-  opacity: 0.7;
-}
-
-.arrow {
-  fill: none;
-  stroke: var(--l3-content-accent-brand-default);
-  stroke-width: 3;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
+.tile img { display: block; }
 
 .small {
   display: block;
@@ -4853,11 +4887,12 @@ function useWidth(ref: React.RefObject<HTMLElement | null>, fallback: number) {
 ### `src/flows/fno/components/BreakevenIcon.tsx`
 
 ```tsx
+import tileArrow from '../assets/breakeven-tile-arrow.svg'
 import styles from './BreakevenIcon.module.css'
 
 type BreakevenIconProps = {
   /**
-   * tile: the 48 "Breakeven" mark (Figma 11783:12564) — a dark tile, a lime arrow rising through a dashed line;
+   * tile: the 48 "Breakeven" mark (Figma 11989:36412) — a dark tile, Figma's own 24 arrow (lime gradient) in the middle;
    * line: 20, the yellow breakeven line with its chip (11783:12573); up: 20, a green arrow over the line (11783:12586).
    */
   variant: 'tile' | 'line' | 'up'
@@ -4865,17 +4900,15 @@ type BreakevenIconProps = {
 }
 
 /**
- * The breakeven marks of How breakeven works. Figma's exports can't be downloaded here, so they're drawn to match in
- * SVG on L3 colour tokens (listed as an L3 gap: no breakeven icon in the icon set).
+ * The breakeven marks of How breakeven works. The tile uses Figma's exported arrow (assets/breakeven-tile-arrow.svg,
+ * 19 Nov) and keeps the same colours in light and dark mode; the 20 marks are drawn to match in SVG on L3 colour tokens
+ * (an L3 gap: no breakeven icon in the icon set).
  */
 export function BreakevenIcon({ variant, className }: BreakevenIconProps) {
   if (variant === 'tile') {
     return (
       <span className={`${styles.tile} ${className ?? ''}`} aria-hidden="true">
-        <svg viewBox="0 0 48 48" width="48" height="48">
-          <line className={styles.dashed} x1="6" y1="27" x2="42" y2="27" />
-          <path className={styles.arrow} d="M24 36V13M16 21l8-8 8 8" />
-        </svg>
+        <img src={tileArrow} width="24" height="24" alt="" />
       </span>
     )
   }
@@ -5242,11 +5275,10 @@ export function Overview({ onDestination }: { onDestination: (name: string) => v
   border-top-color: var(--l3-border-accent-indicator-down-light);
 }
 
-/* Breakeven: yellow, a longer dash than the others (Figma 4 / 4). */
+/* Breakeven: a solid 1px warning-light line (Figma 11756:79330, #FFDF88 in light); the theme token follows dark mode. */
 .line[data-kind='be'] {
-  border-top: 0;
-  height: 1px;
-  background: repeating-linear-gradient(90deg, var(--l3-border-accent-warning-default) 0 var(--l3-spacing-04), transparent var(--l3-spacing-04) var(--l3-spacing-08));
+  border-top-color: var(--l3-border-accent-warning-light);
+  border-top-style: solid;
 }
 
 /* The entry price on the axis: inverted, as tall as the last price's tag. */
@@ -5353,10 +5385,10 @@ export function Overview({ onDestination }: { onDestination: (name: string) => v
   display: flex;
   align-items: center;
   gap: var(--l3-spacing-02);
-  padding: var(--l3-spacing-02) var(--l3-spacing-04) var(--l3-spacing-02) var(--l3-spacing-06);
+  /* Figma 2 / 4 / 2 / 6 with the 1px border drawn inside (16 tall in all): each side's padding less the border. */
+  padding: calc(var(--l3-spacing-02) - 1px) calc(var(--l3-spacing-04) - 1px) calc(var(--l3-spacing-02) - 1px) calc(var(--l3-spacing-06) - 1px);
   border: 1px solid var(--l3-border-accent-warning-light);
-  border-right: 0;
-  border-radius: var(--l3-radius-04) 0 0 var(--l3-radius-04);
+  border-radius: var(--l3-radius-04);
   background: var(--l3-surface-accent-warning-light);
   color: var(--l3-content-accent-warning-default);
   font: var(--l3-text-label-10);
@@ -5364,6 +5396,14 @@ export function Overview({ onDestination }: { onDestination: (name: string) => v
   translate: 0 -50%;
   cursor: pointer;
   pointer-events: auto;
+}
+
+/* The tag's info icon: 12, Figma's own glyph, in the tag's text colour. */
+.breakevenInfo {
+  display: block;
+  flex: none;
+  width: var(--l3-size-12);
+  height: var(--l3-size-12);
 }
 ```
 
@@ -5373,8 +5413,10 @@ export function Overview({ onDestination }: { onDestination: (name: string) => v
 import { useRef, type KeyboardEvent, type PointerEvent } from 'react'
 import { Button } from '@l3/components/Button'
 import { Icon } from '@l3/components/Icon'
+import { MaskIcon } from '@l3/components/MaskIcon'
 import { Tag } from '@l3/components/Tag'
-import { msAdd, msCheck, msClose, msDragIndicator, msInfo } from '@l3/icons/material'
+import { msAdd, msCheck, msClose, msDragIndicator } from '@l3/icons/material'
+import infoOutline from '../assets/breakeven-info.svg'
 import { t } from '../copy'
 import { OPTION_TICK, SCALPER_TP_SL_GAP, type ScalperPosition } from '../data'
 import type { PaneScale } from './TradingPane'
@@ -5406,8 +5448,8 @@ const EDGE = 12
  * - entry: Exit · blue "+65" (the quantity) · the live P&L · ✕ (exits too); "Add TP" / "Add SL" when one is removed;
  * - SL: drag handle · red "SL Qty:65" · the P&L if it fills · ✕ · Add Trail (the stop-loss follows the price up).
  * Drag a handle (or focus it and use ↑ / ↓) to move TP or SL: they stay on their side of the price and clear of the
- * entry row, in ₹0.05 steps. The breakeven line (yellow, dashed) ends in a boxed chip flush to the price axis:
- * "B/E 105.55 ⓘ"; tapping it opens How breakeven works.
+ * entry row, in ₹0.05 steps. The breakeven line (solid, warning-light, Figma 11756:79330) runs to the price axis with a
+ * boxed "Breakeven ⓘ" tag on it, 8 left of the axis (Figma 11756:79332); tapping it opens How breakeven works.
  */
 export function PositionOverlay({ scale, position, last, breakeven, onChange, onExit, onBreakevenInfo }: PositionOverlayProps) {
   const { y, price, plotW, plotH, axis } = scale
@@ -5513,9 +5555,10 @@ export function PositionOverlay({ scale, position, last, breakeven, onChange, on
       )}
 
       {breakeven !== null && (
-        <button type="button" className={styles.breakeven} style={{ top: y(breakeven), right: axis }} onClick={onBreakevenInfo} aria-label={t('breakeven.chipLabel', { price: breakeven.toFixed(2) })}>
+        <button type="button" className={styles.breakeven} style={{ top: y(breakeven), right: `calc(${axis}px + var(--l3-spacing-08))` }} onClick={onBreakevenInfo} aria-label={t('breakeven.chipLabel', { price: breakeven.toFixed(2) })}>
           {t('breakeven.chip')}
-          <Icon icon={msInfo} size={12} />
+          {/* Figma's info_outline (12), tinted with the tag's text colour so it follows light / dark. */}
+          <span className={styles.breakevenInfo}><MaskIcon src={infoOutline} /></span>
         </button>
       )}
     </div>
@@ -6410,7 +6453,7 @@ function addMinutes(start: string, add: number) {
   "breakeven.chip": "Breakeven",
   "breakeven.chipLabel": "Breakeven ₹{price}. How breakeven works",
   "breakeven.title": "How breakeven works",
-  "breakeven.titleV2": "What is breakeven price?",
+  "breakeven.titleV2": "What is breakeven line?",
   "breakeven.descriptionV2": "The price your trade must sell above to cover what you paid plus all order charges. Sell above it and you make a profit.",
   "breakeven.understand": "I understand",
   "breakeven.playing": "Example playing",
@@ -6771,7 +6814,7 @@ export const fno: Flow = {
   description: 'Equity F&O home: P&L, indices, chart metrics, watchlists, Smart Options, Futures Heatmap and Smart Futures.',
   figmaFile: 'nLs24dTJdPz9A5pu3AWMbe',
   options: [
-    // The breakeven sheet (fno-36): Version 2 (default) = What is breakeven price? + a description + the charges table,
+    // The breakeven sheet (fno-36): Version 2 (default) = What is breakeven line? + the charges table,
     // no info lines; Version 1 = the sheet as it first shipped (How breakeven works, two info lines, no table).
     { id: 'breakevenSheet', group: 'Scalper', label: 'Breakeven sheet', values: [{ value: 'v1', label: 'Version 1' }, { value: 'v2', label: 'Version 2' }], default: 'v2', floatOn: ['fno-36'] },
     // Expiring This Week (Commodities, fno-08): Version 1 = the sideways card rail; Version 2 = a short calendar (the
@@ -6802,8 +6845,8 @@ export const fno: Flow = {
     { id: 'fno-05', section: 'scalper', name: 'Scalper', figma: '', note: 'From ScalpPro on F&O home, the Expiring cards, the Expiry calendar or the Scalper bottom-nav tab — always a new page in from the right; back returns to the page it was opened from. The chart-tools sheet groups personal DASH AI indicators separately from Lemon indicators.', render: (go) => <Scalper onBack={() => backOr(go, 'fno-01')} onCreateIndicator={() => go('dash-20')} /> },
     { id: 'fno-06', section: 'scalper', group: 'scalper', name: 'Scalper · DASH indicator', figma: '', note: 'From DASH AI’s View indicator. Opens the chart-tools sheet directly on Indicators, the saved DASH AI indicator under Your indicators with a focus guide. Tap rows to add / remove indicators (several at once); search filters the list.', render: (go) => <Scalper onBack={() => backOr(go, 'fno-01')} createdIndicator="Supertrend (10, 3) with EMA 20" onCreateIndicator={() => go('dash-20')} /> },
     { id: 'fno-07', section: 'scalper', group: 'scalper', name: 'Scalper · indicator applied', figma: '', note: 'With the saved DASH AI indicator on the chart: “1 ▾” at the chart’s top-left and illustrative EMA 9 / 21 lines on the NIFTY 50 candles.', render: (go) => <Scalper onBack={() => backOr(go, 'fno-01')} createdIndicator="Supertrend (10, 3) with EMA 20" openIndicators={false} initialIndicator="Supertrend (10, 3) with EMA 20" onCreateIndicator={() => go('dash-20')} /> },
-    { id: 'fno-35', section: 'scalper', group: 'scalper', name: 'Break Even · position + breakeven line', figma: '11756:78739', badge: 'new', note: 'Version C (Boxed chip): an open position on the option chart — TP pill (drag ⠿ to move, ✕ removes), entry row (Exit · +65 · live P&L), SL pill (+ Add Trail), and the yellow dashed breakeven line ending in a “Breakeven ⓘ” chip flush to the price axis (Figma’s “B/E 105.55”: spelled out, no price — designer’s call; the label still reads the price) (tap → How breakeven works). Breakeven = entry + round-trip charges per unit (data.ts breakevenPrice). Buy at Mkt on fno-05 opens a position the same way; the first buy also opens How breakeven works. Exit buttons are 24 tall to sit on the pills (Figma), not Large.', render: (go) => <Scalper onBack={() => backOr(go, 'fno-01')} onCreateIndicator={() => go('dash-20')} initialPosition={scalperPosition} /> },
-    { id: 'fno-36', section: 'scalper', group: 'scalper', name: 'Break Even · How breakeven works (sheet)', figma: '11783:5569', badge: 'new', note: 'Two versions (setting “Breakeven sheet”, floating card beside the phone): Version 2 (default) — heading “What is breakeven price?” + a description, the charges table, no info lines; Version 1 — “How breakeven works” with the two info lines, no table. Opens on the first buy and from the B/E chip’s ⓘ (and Settings → Breakeven line ⓘ). The example card plays once (then stops on the finished chart; a tap replays it) a 9.3 s explainer copied from the designer’s recording: on a white chart the buy at ₹100; the chart zooms in 2× and the orange charges zone fills one band per charge from the F&O options rate card, in ₹ on the ₹100 buy (top down: STT ₹0.15, transaction ₹0.07, stamp duty, SEBI, then brokerage ₹0.02 last at the bottom with a smaller tag; they come in top down — no GST band: it’s charged on the charges; heights by cost), then zooms back out to one thin zone, the tags sliding down under it and stacking into one “Order charges ≈₹0.26” tag (GST included); the dashed B/E line at ₹100.30 draws along its top, an LTP bubble rides the price line up through B/E (a ringed marker pulses) to “Sold at ₹102”, the green Net Profit zone fills, and it stops there. “I understand” is locked until the chart has played once (9.3 s), a loader line filling along its top edge, then turns primary (Figma’s button variants). Reduced motion: the finished chart, button ready. Under the example, the same trade as a calculation table (a card on the secondary surface, no heading, compact L3 key-value rows, one line each, no lines inside): Bought at ₹100.00 · Order charges (incl. GST) ≈₹0.26 — tap the row to open the breakdown (closed by default: STT, transaction, brokerage, stamp duty, SEBI, GST 18%) — and Breakeven price ₹100.30 in bold (L3 total row). Labels are L3’s 12 styles (the recording’s are ~11). The zoomed-in charges aren’t in Figma or the recording (designer’s brief). A V2 (starts zoomed in on a blue ₹0 → ₹100 fill, zooms out true to scale, sold 12% up at ₹112) is archived in fno/archive/BreakevenExplainerV2.tsx.', render: (go) => <Scalper onBack={() => backOr(go, 'fno-01')} onCreateIndicator={() => go('dash-20')} initialPosition={scalperPosition} initialSheet="breakeven" /> },
+    { id: 'fno-35', section: 'scalper', group: 'scalper', name: 'Break Even · position + breakeven line', figma: '11756:78739', badge: 'new', note: 'Version C (Boxed chip): an open position on the option chart — TP pill (drag ⠿ to move, ✕ removes), entry row (Exit · +65 · live P&L), SL pill (+ Add Trail), and the solid warning-light breakeven line with a boxed “Breakeven ⓘ” tag on it, 8 left of the price axis (Figma’s “B/E 105.55”: spelled out, no price — designer’s call; the label still reads the price) (tap → How breakeven works). Breakeven = entry + round-trip charges per unit (data.ts breakevenPrice). Buy at Mkt on fno-05 opens a position the same way; the first buy also opens How breakeven works. Exit buttons are 24 tall to sit on the pills (Figma), not Large.', render: (go) => <Scalper onBack={() => backOr(go, 'fno-01')} onCreateIndicator={() => go('dash-20')} initialPosition={scalperPosition} /> },
+    { id: 'fno-36', section: 'scalper', group: 'scalper', name: 'Break Even · How breakeven works (sheet)', figma: '11783:5569', badge: 'new', note: 'Two versions (setting “Breakeven sheet”, floating card beside the phone): Version 2 (default) — heading “What is breakeven line?” (no description; “price” → “line”, 19 Nov), the charges table, no info lines; Version 1 — “How breakeven works” with the two info lines, no table. Opens on the first buy and from the B/E chip’s ⓘ (and Settings → Breakeven line ⓘ). The example card loops (a tap replays it): every play opens with the “Introducing Breakeven Line” intro (2.5 s), then a 9.3 s chart copied from the designer’s recording: on a white chart the buy at ₹100; the chart zooms in 2× and the orange charges zone fills one band per charge from the F&O options rate card, in ₹ on the ₹100 buy (top down: STT ₹0.15, transaction ₹0.07, stamp duty, SEBI, then brokerage ₹0.02 last at the bottom with a smaller tag; they come in top down — no GST band: it’s charged on the charges; heights by cost), then zooms back out to one thin zone, the tags sliding down under it and stacking into one “Order charges ≈₹0.26” tag (GST included); the dashed B/E line at ₹100.30 draws along its top with the chart’s “Breakeven” tag (text only, no price), an LTP bubble rides the price line up through B/E (a ringed marker pulses) to “Sold at ₹102”, the green Net Profit zone fills; it holds, then plays again from the intro. “I understand” is locked until the chart has played once (intro + chart, 11.8 s), a loader line filling along its top edge, then turns primary (Figma’s button variants). Reduced motion: the finished chart, button ready. Under the example, the same trade as a calculation table (a card on the secondary surface, no heading, compact L3 key-value rows, one line each, no lines inside): Bought at ₹100.00 · Order charges (incl. GST) ≈₹0.26 — tap the row to open the breakdown (closed by default: STT, transaction, brokerage, stamp duty, SEBI, GST 18%) — and Breakeven price ₹100.30 in bold (L3 total row). Labels are L3’s 12 styles (the recording’s are ~11). The zoomed-in charges aren’t in Figma or the recording (designer’s brief). A V2 (starts zoomed in on a blue ₹0 → ₹100 fill, zooms out true to scale, sold 12% up at ₹112) is archived in fno/archive/BreakevenExplainerV2.tsx.', render: (go) => <Scalper onBack={() => backOr(go, 'fno-01')} onCreateIndicator={() => go('dash-20')} initialPosition={scalperPosition} initialSheet="breakeven" /> },
     { id: 'fno-37', section: 'scalper', group: 'scalper', name: 'Break Even · chart settings (breakeven line)', figma: '11754:69563', badge: 'new', note: 'The chart-tools sheet on Settings: Auto TP/SL (animated mark, Applied), Chart type (Candles / Heikin Ashi / Line), Stop Loss Preference (radio), View on chart (Breakeven line ⓘ New, Buy/Sell executions, Sync Charts). Changes are a draft: Apply keeps them (unticking Breakeven line hides the B/E line and chip), Cancel or closing drops them. Figma’s rail (Bolt, Indicators, Drawings, Settings) is the live app’s six groups here.', render: (go) => <Scalper onBack={() => backOr(go, 'fno-01')} onCreateIndicator={() => go('dash-20')} initialPosition={scalperPosition} initialSheet="settings" openIndicators={false} /> },
     { id: 'fno-08', section: 'home', group: 'home', name: 'Commodities home', figma: '6754:63637', tab: true, note: 'The Commodities product tab. Gold / Silver / Crude Oil / Natural Gas shortcuts open the Lot summary (Gold Summary). The chart’s instrument selector (“Gold”) opens the contract picker. Popular commodities: Options ⇕ Futures switch; Futures Heatmap: Bullion / Energy / Metals.', render: (go) => home(go, undefined, { product: 'commodities' }) },
     { id: 'fno-09', section: 'home', group: 'home', name: 'Commodities · heatmap & Smart Futures', figma: '6754:63637', tab: true, note: 'The same long screen, scrolled to the Futures Heatmap.', render: (go) => home(go, 'heatmap', { product: 'commodities' }) },
@@ -8450,7 +8493,7 @@ export function BreakevenSheet({ onClose }: { onClose: () => void }) {
       onClose={onClose}
       header={v1
         ? <BottomSheetHeader size="sm" headingId={headingId} heading={t('breakeven.title')} />
-        : <BottomSheetHeader size="sm" headingId={headingId} heading={t('breakeven.titleV2')} description={t('breakeven.descriptionV2')} />}
+        : <BottomSheetHeader size="sm" headingId={headingId} heading={t('breakeven.titleV2')} />}
       footer={
         <ButtonGroup aria-label={t('breakeven.title')}>
           <div className={styles.loader} style={{ '--app-be-explainer': `${EXPLAINER_LENGTH}ms` } as CSSProperties}>
