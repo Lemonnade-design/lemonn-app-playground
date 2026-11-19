@@ -444,7 +444,7 @@ lower on the page is scrolled into view first). `components/MarketSwitchGuide.ts
 - 2026-11-18 — The floating Homepage version switch (V19 / V18 …, phone app mode) shows only on the Home screens (IND and US tab, every state), not on other pages.
 
 - 2026-11-19 — IND instruments order: Mutual funds · Equity F&O · IPO · Commodities (IPO and Commodities swapped), in the circles and the card.
-- 2026-11-19 — Holdings panel over the tray: 40 above the overline (from the tabs' line) and 40 under the P&L tag — equal, was 32 / 24. Optical centring: the Themes icon sits 2px right of centre (its page-and-pencil is left-heavy), Mutual funds 1.5px and Commodities 2.5px right, ETFs and Boosted ETFs 1px right; on the US card, Analyst picks 2px and Watchlist 1.5px right.
+- 2026-11-19 — Holdings panel over the tray: 40 above the overline (from the tabs' line) and 40 under the P&L tag — equal, was 32 / 24. Optical centring: the Themes icon sits 2px right of centre (its page-and-pencil is left-heavy), Mutual funds 1.5px right (Commodities is centred: its gold bars are symmetric, the 2.5px nudge was dropped the same day), ETFs and Boosted ETFs 1px right; on the US card, Analyst picks 2px and Watchlist 1.5px right.
 - 2026-11-19 — Ticker tray: its grey is surface/secondary at 50% (was 100%); the bar it turns into on scroll starts from the same grey.
 - 2026-11-19 — **One-row card sized as Figma 6660:10742.** 360 × 68: 12 above the 24 icon, 4 to the label, 12 under it, column lines 44 (it was 74 with 18 / 12). 24 from the tray to the card and 24 from the card to Top Movers (the circles keep 32 to Top Movers).
 - 2026-11-19 — **IND icons in the US style.** Mutual funds (a donut with one solid slice — a pooled fund split into holdings; it was a sprout in a pot), Equity F&O (two candles), Commodities (three stacked bars with a glint; it was a barrel with a drop) and IPO (a rocket) are two-tone art like the US set — a white → light green fill, light green → green lines, one solid part — in `assets/in/instruments/*.svg`, on both the circles and the card. Drawn here: the Figma frame (6662:8516) has no IND art. FLAG: their greens are fixed values, as the US exports' blues are.
@@ -31320,7 +31320,7 @@ export function Home({ scrollTo = 'top', market = 'in', movers, onStock, onTab, 
       { id: 'mutual-funds', label: t('f1.in.mutualFunds'), icon: art(inMutualFundsArt, msPieChartFill, 1.5) },
       { id: 'fno', label: t('f1.in.fno'), icon: art(inFnoArt, msCandlestickChartFill) },
       { id: 'ipo', label: t('f3.in.ipo'), icon: art(inIpoArt, msRocketLaunchFill) },
-      { id: 'commodities', label: t('f1.in.commodities'), icon: art(inCommoditiesArt, msOilBarrelFill, 2.5) },
+      { id: 'commodities', label: t('f1.in.commodities'), icon: art(inCommoditiesArt, msOilBarrelFill) },
     ],
     us: [
       { id: 'etfs', label: t('f1.shortcuts.etfs'), icon: art(etfsArt, msPieChartFill, 1) },

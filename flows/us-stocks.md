@@ -222,8 +222,10 @@ Every tap he wired is kept. The main path: FTUX sheet → Activate → Declarati
 - 19 Nov: A stock, ETF or bank with no logo shows one letter (its first), not two or three — app-wide (companies, market list, US banks, every Avatar / disc fallback).
 - 19 Nov: ETF tables (ETFs with the stock, fund peers): logo 24 → 32, so rows are 48 like Peers.
 - 19 Nov: Share bars (Key Holders, ETF allocation) end on the panel's 12 (last row's bottom 8 dropped). Peers: logo 24 → 32, name Label 14. Analyst Ratings card rows and footer follow the page (Description 12 names, Heading 12 figures) instead of Figma's 10. View Order History Label 14.
+- 2026-11-19 — US order pad: "Set SL" is an L3 tertiary Button at Large (48) with the quick chips' light border and 4 between the plus and the label (was an md pill chip; L3 gap: no button with border/light). The fractional-share warning is flat — Aerobar placed inline (no shadow), 16 in from the sides. The Indian order pad is the default.
+- 2026-11-19 — Asset pages' floating trade dock: the fade starts higher — 40 above the buttons (was 32), the page's colour at 90% at the buttons' top edge and solid under them — so the content has faded before it reaches Buy / Sell.
 - 2026-11-19 — Stock page: in Related ETFs and Company financials the Long / Short (statement) filters sit 8 under the section title and 16 above the table, so the title and its filters read as one header.
-- 2026-11-19 — Order pad: the Actionbar keeps its 1px border-light line from the start (`Phone topLine`), not only once the page scrolls, with 6 below the two-line title so it does not sit on the line. A tap in the dock (market note, Balance · Req.) no longer closes the keypad; only the page and header above it do. Order pad versions (flow option "Order pad", group Trade): **US** (the default) — stop loss only (Sl.tsx: a "Set SL" chip, a Stop loss sheet with MKT ⇄ LMT, trigger in points ⇄ %, Est. loss, Clear, and Remove when editing; once set an "SL ✓" card), no take profit, no trailing, no leverage card; SL isn't available on fractional shares: tapping Set SL with a qty that isn't whole shows a floating warning Aerobar for 4 s (SlFractionalToast, above the dock), and a set SL is cleared (same toast) once the qty turns fractional. **Indian** — as Indian stocks will have it: the leverage card on Market and TP + SL + trailing (Tpsl.tsx, kept as it was). Switching Market / Limit / SL keeps the keypad as it was: up stays up (no slide), closed stays closed; only the part under the amount (chips, prices, SL) drops and fades — the tabs, the amount and the dock stay put.
+- 2026-11-19 — Order pad: the Actionbar keeps its 1px border-light line from the start (`Phone topLine`), not only once the page scrolls, with 6 below the two-line title so it does not sit on the line. A tap in the dock (market note, Balance · Req.) no longer closes the keypad; only the page and header above it do. Order pad versions (flow option "Order pad", group Trade): **US** — stop loss only (Sl.tsx: a "Set SL" chip, a Stop loss sheet with MKT ⇄ LMT, trigger in points ⇄ %, Est. loss, Clear, and Remove when editing; once set an "SL ✓" card), no take profit, no trailing, no leverage card; SL isn't available on fractional shares: tapping Set SL with a qty that isn't whole shows a floating warning Aerobar for 4 s (SlFractionalToast, above the dock), and a set SL is cleared (same toast) once the qty turns fractional. **Indian** (the default since 19 Nov) — as Indian stocks will have it: the leverage card on Market and TP + SL + trailing (Tpsl.tsx, kept as it was). Switching Market / Limit / SL keeps the keypad as it was: up stays up (no slide), closed stays closed; only the part under the amount (chips, prices, SL) drops and fades — the tabs, the amount and the dock stay put.
 - 2026-11-19 — L3 moved to BottomSheet 2.4.0: the sheet's 16 top / 24 bottom spaces are the content's own padding and scroll with it, so the TP/SL sheet's local workaround is gone.
 - 2026-11-19 — TP/SL sheet: take profit and stop loss both start on Market (MKT); the LMT ⇄ MKT switch at the top of each card is discover blue; Points ⇄ Percentage and the trail unit stay primary. L3 gap: Select has no discover tone. The "Trigger at" / "Limit at" labels are Description 12. The sheet's 24 above the dock is the end of its scroll, not a fixed gap, so scrolled content runs up to the dock (L3 BottomSheet 2.4.0 does this for every sheet). Trailing sheet: the box is outlined like the leg cards, not grey, with the same Stepper. In the sheet, as on the order pad, a tap outside a price (label + price) and the keypad closes the keypad; tapping a price opens it again; it slides in and out (shared `KeypadSlide`). The sheet's heading is "TP SL & More" (was "Set TP/SL"). The order moved into the TP/SL sheet header: "Qty 0.6405" is the description (was "Applies to this order only."), the stock with its last price and change sits at the right (differs from L3: the header's right slot is meant for one icon button or a Tag).
 - 2026-11-19 — Order pad V2: a tap anywhere outside the typable areas (the amount row, a price card's label + price, the keypad) closes the keypad and the field loses its caret; tapping a field opens it again on that field. The keypad slides up from the bottom when it opens (260 ms, ease-out) and down to the bottom when it closes (200 ms, ease-in), the dock moving with it; reduced motion skips the slide. TP/SL summary card: the head row has 12 on all four sides.
@@ -22581,7 +22583,7 @@ export const usStocks: Flow = {
       floatOn: ['us-stocks-41'],
     },
     // Order pad version (19 Nov, the user's call): US · stop loss only (no take profit, no trailing, no SL on fractional
-    // shares) and no leverage card, the default; Indian · the pad as Indian stocks will have it: the leverage card on
+    // shares) and no leverage card; Indian (the default) · the pad as Indian stocks will have it: the leverage card on
     // Market and TP + SL + trailing (Tpsl.tsx, kept as it was).
     {
       id: 'padVersion',
@@ -22592,7 +22594,7 @@ export const usStocks: Flow = {
         { value: 'us', label: 'US · SL only, no leverage' },
         { value: 'india', label: 'Indian · leverage + TP/SL + trailing' },
       ],
-      default: 'us',
+      default: 'india', // Indian by default (19 Nov, the user's call)
       floatOn: ['us-stocks-33'],
     },
     // The processing screen's loader (19 Nov, from Minted): glass ring (default) or Minted's other processing animations.
@@ -25899,16 +25901,15 @@ export const ADDRESS = 'Flat 12, Green Park, Baner, Pune 411045'
    frame lays the footer over the body (data-float-dock, components/Phone.module.css), so the page's content runs on
    behind the whole dock instead of being cut at its top (19 Nov). L3 gap: no dock / fade token. */
 footer > .dock {
-  padding-top: calc(var(--l3-spacing-24) + var(--l3-spacing-08));
-  /* Three stops (19 Nov, the user's call): the page's colour at 100% at the bottom, 80% halfway, 0% at the top, so the
-     fade runs on behind the buttons too. */
-  /* The strip under the buttons (the dock's 8 bottom padding) is solid, so nothing scrolls through below them (19 Nov,
-     the user's call: content showed under Buy / Sell). */
+  /* The fade sits higher (19 Nov, the user's call: the content ran into the buttons with no separation): 40 of fade
+     above the buttons, the page's colour solid under them, 90% at their top edge, clear at the top. So the content
+     has faded out before it reaches Buy / Sell. */
+  padding-top: calc(var(--l3-spacing-32) + var(--l3-spacing-08));
   background: linear-gradient(
     to top,
     var(--page-surface, var(--l3-surface-default)) 0,
     var(--page-surface, var(--l3-surface-default)) var(--l3-spacing-08),
-    color-mix(in srgb, var(--page-surface, var(--l3-surface-default)) 80%, transparent) 50%,
+    color-mix(in srgb, var(--page-surface, var(--l3-surface-default)) 90%, transparent) calc(var(--l3-spacing-08) + var(--l3-size-48)),
     transparent 100%
   );
 }
@@ -40370,6 +40371,9 @@ export function PriceField({ label, unit, price, stepper }: PriceFieldProps) {
 
 /* "Set SL" chip: centred, like the pad's other rows. */
 .chip { display: flex; justify-content: center; }
+/* "Set SL": the quick chips' light border (19 Nov, the user's call). L3 gap: no button with border/light (tertiary is
+   border/intense, secondary border/dark). */
+.setSl.setSl { --btn-border: var(--l3-border-light); --btn-gap: var(--l3-spacing-04); } /* 4 between the plus and the label (the user's call) */
 
 /* Summary card, full width: a head row, a hairline, the target. gap 0: L3 Card's own gap. */
 .summary { align-self: stretch; gap: 0; }
@@ -40414,7 +40418,7 @@ export function PriceField({ label, unit, price, stepper }: PriceFieldProps) {
 // - US stocks get a stop loss only: no take profit and no trailing (19 Nov 2026, the user's call). Fractional shares can't
 //   have a stop loss: tapping "Set SL" on one calls `onBlocked()` instead of opening the sheet, and if the quantity turns
 //   fractional while an SL is set, the SL is cleared (chip returns) and `onBlocked()` is called once.
-// - Before it's set: a "Set SL" chip (L3 pill chip with a plus), centred under the leverage card.
+// - Before it's set: a "Set SL" button (L3 tertiary, Large, light border, with a plus), centred under the leverage card.
 // - The chip opens "Stop loss": one card — MKT ⇄ LMT, the trigger in points ⇄ percentage (Stepper), a limit (limit orders
 //   only), prices typed from the keypad — then Est. loss and Clear under it, the error under the field box. New SL: one
 //   "Save" (off till valid). Editing: "Remove" (clears the SL) + "Save". Closing without Save changes nothing.
@@ -40433,7 +40437,6 @@ import { KeyValueList, KeyValueRow } from '@l3/components/KeyValueList'
 import { PriceChange } from '@l3/components/PriceChange'
 import { Select } from '@l3/components/Select'
 import { Stack } from '@l3/components/Stack'
-import { Tabs } from '@l3/components/Tabs'
 import { Tag } from '@l3/components/Tag'
 import { msAdd, msCheckCircleFill, msEdit } from '@l3/icons/material'
 import { useSheetLayer } from '../../components/Phone'
@@ -40515,15 +40518,9 @@ export function SlControl({ order, fractional, onBlocked }: { order: TpslOrder; 
         <SlCard sl={sl} ltp={ltp} onEdit={open} />
       ) : (
         <div className={styles.chip}>
-          <Tabs
-            appearance="pill"
-            size="md"
-            behavior="filter"
-            aria-label="Stop loss"
-            items={[{ value: 'sl', label: 'Set SL', iconLeft: <Icon icon={msAdd} size={16} /> }]}
-            value=""
-            onChange={open}
-          />
+          {/* Bigger than the quick chips (19 Nov, the user's call): an L3 Button at Large (48), the app's button size,
+              with the quick chips' light border (19 Nov). L3 Tabs stop at md, so it is no longer a pill chip. */}
+          <Button variant="tertiary" size="lg" className={styles.setSl} iconLeft={<Icon icon={msAdd} size={20} />} onClick={open}>Set SL</Button>
         </div>
       )}
       <SlSheet
@@ -40735,6 +40732,8 @@ function SlSheet({ open, order, saved, onClose, onSave, onRemove }: { open: bool
   position: absolute;
   inset-inline: 0;
   bottom: 100%;
+  /* The 16 inset L3 gives a bottom-placed toast; this one is placed inline (flat, no shadow: 19 Nov, the user's call). */
+  padding: var(--l3-spacing-16);
   pointer-events: none;
 }
 
@@ -40781,7 +40780,7 @@ export function SlFractionalToast({ shown, onHide }: { shown: number; onHide: ()
       <Aerobar
         key={shown}
         floating
-        placement="bottom"
+        placement="inline" /* flat, no shadow (19 Nov, the user's call); the layer brings the 16 inset */
         type="warning"
         emphasis="secondary"
         heading="You can’t set SL for fractional shares"
@@ -41949,10 +41948,10 @@ export const useProcessingAnimation = (): ProcessingAnimation => {
 }
 
 // The order pad version (flow option "Order pad", group Trade, 19 Nov): us · stop loss only (Sl.tsx: no take profit, no
-// trailing, no SL on fractional shares) and no leverage card, the default; india · as Indian stocks will have it: the
+// trailing, no SL on fractional shares) and no leverage card; india (the default) · as Indian stocks will have it: the
 // leverage card on Market (LeverageCard) and take profit + stop loss + trailing (Tpsl.tsx).
 export type PadVersion = 'us' | 'india'
-export const usePadVersion = (): PadVersion => (useFlowOption('us-stocks', 'padVersion', 'us') === 'india' ? 'india' : 'us')
+export const usePadVersion = (): PadVersion => (useFlowOption('us-stocks', 'padVersion', 'india') === 'us' ? 'us' : 'india')
 ```
 
 ### `src/flows/us-stocks/screens/types.ts`
