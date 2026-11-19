@@ -219,6 +219,11 @@ provide, per nudge: case id, data state, the headline numbers, ratio, own last l
 - 2026-11-19 · Soft dial: the moved level edges and deeper needle apply to the **Blended** fill only (green 0–33 %, yellow 33–60 %, red 60–100 %; High risk at ~85 %); the **One colour** fill is back to 45 % / 65 % with High risk at ~75 % (2X).
 - 2026-11-19 · 4g · Blocks: no glass (gradient only); a wave travels with the fill — the block under the fill's head lifts 7 outward and settles back as it moves on, following the same eased path with its overshoot and back-swing.
 - 2026-11-19 · Meter layout **With multiple**: as Text first, with the multiple big in the dial (heading-36, "2X") above the level word — soft dial and blocks — and the fact "You are placing a bigger order right after a loss of ₹2,900" with the loss in red (content/accent-error, weight 650).
+- 2026-11-19 · With multiple: the fact reads "You’re placing a bigger order right after a loss of ₹2,900". Soft dial and Blocks: the drawing area now reaches 16 past the ring on each side and 30 above / below (viewBox −16 −24 372 240, the svg pulled back by negative margins so the dial doesn't move) — mobile Safari clips SVG at the svg's box, which cut the blurred glows off in hard edges.
+- 2026-11-19 · Size-up body text in every meter layout (Text first, Meter first, Tag first, With multiple): "You are placing a bigger order right after a loss" — no multiple, no amount (the bold 2X / ₹2,900 and the red loss are gone).
+- 2026-11-19 · Meter + body text read as one block: the dial's box now ends at the ring's base line (soft dial and blocks, svg bottom margin −40/340) and the body text sits 16 under it (Text first, Tag first, With multiple); 24 from the sub line to the meter and 24 from the body text to the dock's line, as before.
+- 2026-11-19 · Tag first: the dial shows the multiple too — "2X" above "High risk", as in With multiple (soft dial and blocks).
+- 2026-11-19 · Layout 4: 32 from the last text (the body text, or Meter first's line) to the dock's line (was L3's 24).
 
 
 ## Source — this flow
@@ -597,10 +602,11 @@ function Menu({ option, chip, host, onClose }: { option: Option; chip: HTMLEleme
   "nudge.meterRiskHeading": "Your chances of losing money are high",
   "nudge.sizeUpNow": "You are placing a bigger {ratio}X order right now after a loss of {amount}",
   "nudge.sizeUpNowPlain": "You are placing a bigger order right now after a loss of {amount}",
+  "nudge.biggerAfterLoss": "You are placing a bigger order right after a loss",
   "nudge.meterFirstSub": "A {ratio} bigger order right after a {amount} loss raises your chances of losing more today",
   "nudge.meterFirstSubPlain": "A bigger order right after a {amount} loss raises your chances of losing more today",
   "nudge.meterFirstSubOther": "{fact}. Your chances of losing money today are high",
-  "nudge.numberFact": "You are placing a bigger order right after a loss of {amount}",
+  "nudge.numberFact": "You’re placing a bigger order right after a loss of {amount}",
   "nudge.everyone": "Everyone",
   "nudge.you": "You",
   "nudge.safeZone": "Safe zone",
@@ -1188,7 +1194,18 @@ export function OrderPad({ side = 'buy', product: initialProduct = 'delivery', t
 /* 4g · Blocks (BlockDial.tsx), in the soft dial's design language. SVG drawing units. Resting styles = the end state;
    the component (Web Animations) runs the sweep, the tip's bloom colour and the level word; CSS runs the glows. */
 .dial { margin: 0; }
-.svg { display: block; width: 100%; height: auto; overflow: visible; }
+/* The drawing area reaches 16 past the ring on each side and 30 above and below, so the blurred glows are drawn inside it
+   — mobile browsers (Safari) clip SVG content at the svg's box, overflow: visible or not, which cut the glow off in a
+   hard edge (19 Nov). The svg is that much bigger and pulled back by negative margins (relative to the width, like the
+   viewBox), so the dial sits exactly where it did: viewBox 372 × 240 for the old 340 × 180 at (0, 6). */
+.svg {
+  display: block;
+  width: calc(100% * 372 / 340);
+  height: auto;
+  /* bottom: the box ends at the ring's base line (y 176), not 10 under it, so text below sits close (19 Nov) */
+  margin: calc(100% * -30 / 340) calc(100% * -16 / 340) calc(100% * -40 / 340);
+  overflow: visible;
+}
 
 /* The sweep's resting point (the component animates it). */
 .sweepStroke { fill: none; stroke: white; stroke-dasharray: 1; stroke-dashoffset: var(--sweep-rest); }
@@ -1390,7 +1407,7 @@ export function BlockDial({ ratio, level = 'danger', showRatio = false }: { rati
     <path key={`${extra ?? 'b'}${i}`} d={block(b.f0, b.f1)} fill={paint} stroke={paint} strokeWidth={ROUND} strokeLinejoin="round" className={extra} />
   return <figure ref={root} className={styles.dial} data-level={level} role="img" aria-label={label}
     style={{ '--to-deg': `${(end - 0.5) * 180}deg`, '--sweep-rest': 1 - end / END, '--bloom-in': ms(DELAY), '--word-in': ms(reach(end)) } as CSSProperties}>
-    <svg viewBox="0 6 340 180" className={styles.svg} aria-hidden>
+    <svg viewBox="-16 -24 372 240" className={styles.svg} aria-hidden>
       <defs>
         {(['safe', 'caution', 'danger'] as const).map((tone) =>
           <radialGradient key={tone} id={id(tone)} gradientUnits="userSpaceOnUse" cx={CX} cy={CY} r={RO}>
@@ -1897,15 +1914,13 @@ export function Meter({ ratio, meterStyle }: { ratio?: number; meterStyle: Meter
 .meterFact { margin: 0; font: var(--l3-text-description-14); color: var(--l3-content-secondary); }
 /* Layout 4: the heading, a step up from the sheet header's 20 (19 Nov, user). */
 .meterHeading { margin: 0; font: var(--l3-text-heading-24); color: var(--l3-content-primary); }
-/* The bold numbers in the meter-first line: the multiple and the loss, in primary. */
-.meterBold { font-weight: var(--l3-font-weight-750); color: var(--l3-content-primary); }
 /* Layout 4 · Tag first: the risk as the heading, 18. */
 .meterRiskHeading { margin: 0; font: var(--l3-text-heading-18); color: var(--l3-content-primary); }
 /* Tag first · the "Overtrading Detected" tag (19 Nov, user): 8 in from each side and 2 between the icon and the label.
    L3's Medium Tag has 2 at the sides and 6 icon → text (its label's own 4 padding); no prop for this (L3 gap). */
 .overtradingTag.overtradingTag[data-size] { --tag-padding-inline: var(--l3-spacing-08); --tag-label-padding: 0; }
-/* "With multiple": the loss in the fact, in red. */
-.meterLoss { font-weight: var(--l3-font-weight-650); color: var(--l3-content-accent-error-default); }
+/* Layout 4 (19 Nov, user): 32 from the last text to the dock's line (L3's sheet content has 24). */
+.meterSheet.meterSheet [data-sheet-content] { padding-bottom: var(--l3-spacing-32); }
 ```
 
 ### `src/flows/nudges/sheets/NudgeSheet.tsx`
@@ -2049,29 +2064,26 @@ export function NudgeSheet({ caseId, state, layout = 'bars', zoneVersion = 'risk
     </Stack>
   } else if (layout === 'gauge') {
     // 4 · Risk meter (19 Nov, user): "You are overtrading" over "Your chances of losing money today are high", the meter,
-    // then the fact under it. Size-up says what he is doing now and after what loss ("You are placing a bigger 2X order
-    // right now after a loss of ₹2,900"); every other case keeps its own fact (e.g. "3X more orders than usual today").
-    const fact = caseId === 'sizeUp' && nudge.lastLoss !== undefined
-      ? t(ratio !== undefined ? 'nudge.sizeUpNow' : 'nudge.sizeUpNowPlain', { ratio: ratio ?? 0, amount: inr(nudge.lastLoss, 0) })
-      : headline
+    // then the fact under it. Size-up, in every meter layout (19 Nov, user): "You are placing a bigger order right after a
+    // loss" — no multiple, no amount; every other case keeps its own fact (e.g. "3X more orders than usual today").
+    const fact = caseId === 'sizeUp' ? t('nudge.biggerAfterLoss') : headline
     const meter = meterStyle === 'soft'
-      ? <SoftDial key={`${caseId}-${state}-${meterLevel}-${meterBlend}-${meterLayout}`} ratio={ratio} level={meterLevel} blend={meterBlend} showRatio={meterLayout === 'number'} />
+      ? <SoftDial key={`${caseId}-${state}-${meterLevel}-${meterBlend}-${meterLayout}`} ratio={ratio} level={meterLevel} blend={meterBlend} showRatio={meterLayout === 'number' || meterLayout === 'tag'} />
       : meterStyle === 'blocks'
-        ? <BlockDial key={`${caseId}-${state}-${meterLevel}-${meterLayout}`} ratio={ratio} level={meterLevel} showRatio={meterLayout === 'number'} />
+        ? <BlockDial key={`${caseId}-${state}-${meterLevel}-${meterLayout}`} ratio={ratio} level={meterLevel} showRatio={meterLayout === 'number' || meterLayout === 'tag'} />
         : <Meter key={`${meterStyle}-${caseId}-${state}`} ratio={ratio} meterStyle={meterStyle} />
     if (meterLayout === 'number') {
-      // With multiple (19 Nov): as Text first, with the multiple big in the dial above the level word; the fact names
-      // the loss in red ("You are placing a bigger order right after a loss of ₹2,900").
-      const numberFact = caseId === 'sizeUp' && nudge.lastLoss !== undefined
-        ? withBold(copy['nudge.numberFact'], { amount: inr(nudge.lastLoss, 0) }, styles.meterLoss)
-        : headline
+      // With multiple (19 Nov): as Text first, with the multiple big in the dial above the level word; the same fact.
+      const numberFact = fact
       body = <Stack gap="24" align="center" className={styles.riskText}>
         <Stack gap="04" align="center">
           <h2 id={id} className={styles.meterHeading}>{t('nudge.meterHeading')}</h2>
           <p className={styles.meterNote}>{t('nudge.meterSub')}</p>
         </Stack>
-        {meter}
-        <p className={styles.meterFact}>{numberFact}</p>
+        <Stack gap="16" align="center">
+          {meter}
+          <p className={styles.meterFact}>{numberFact}</p>
+        </Stack>
       </Stack>
     } else if (meterLayout === 'tag') {
       // Tag first (19 Nov): a red secondary "Overtrading Detected" tag with a filled triangle exclamation (Material warning-fill)
@@ -2082,17 +2094,16 @@ export function NudgeSheet({ caseId, state, layout = 'bars', zoneVersion = 'risk
           <Tag size="md" variant="secondary" color="error" className={styles.overtradingTag} iconLeft={<Icon icon={msWarningFill} />}>{t('nudge.tag')}</Tag>
           <h2 id={id} className={styles.meterRiskHeading}>{t('nudge.meterRiskHeading')}</h2>
         </Stack>
-        {meter}
-        <p className={styles.meterFact}>{fact}</p>
+        <Stack gap="16" align="center">
+          {meter}
+          <p className={styles.meterFact}>{fact}</p>
+        </Stack>
       </Stack>
     } else if (meterLayout === 'meter') {
       // Meter first (19 Nov): the meter, then "You are overtrading" and one line under it that says what he is doing and
       // what it risks ("You are placing a bigger 2X order right now and your chances of losing money today are high").
-      // Size-up: the multiple and the loss in bold, in two lines at most (19 Nov, user) — "A **2X** bigger order right
-      // after a **₹2,900** loss raises your chances of losing more today".
-      const line = caseId === 'sizeUp' && nudge.lastLoss !== undefined
-        ? withBold(copy[ratio !== undefined ? 'nudge.meterFirstSub' : 'nudge.meterFirstSubPlain'], { ratio: ratio !== undefined ? `${ratio}X` : '', amount: inr(nudge.lastLoss, 0) }, styles.meterBold)
-        : t('nudge.meterFirstSubOther', { fact: headline })
+      // Size-up: the same fact as every layout (19 Nov, user): "You are placing a bigger order right after a loss".
+      const line = caseId === 'sizeUp' ? fact : t('nudge.meterFirstSubOther', { fact: headline })
       body = <Stack gap="24" align="center" className={styles.riskText}>
         {meter}
         <Stack gap="04" align="center">
@@ -2108,8 +2119,10 @@ export function NudgeSheet({ caseId, state, layout = 'bars', zoneVersion = 'risk
           <h2 id={id} className={styles.meterHeading}>{t('nudge.meterHeading')}</h2>
           <p className={styles.meterNote}>{t('nudge.meterSub')}</p>
         </Stack>
-        {meter}
-        <p className={styles.meterFact}>{fact}</p>
+        <Stack gap="16" align="center">
+          {meter}
+          <p className={styles.meterFact}>{fact}</p>
+        </Stack>
       </Stack>
     }
   } else if (review) {
@@ -2178,7 +2191,7 @@ export function NudgeSheet({ caseId, state, layout = 'bars', zoneVersion = 'risk
   // No bars and no consequence (e.g. giving back): the header ends the sheet, so it brings the 24 above the dock itself.
   const bare = !body
   // 5d can't be dismissed: no backdrop tap, drag or Esc — one of the buttons has to be tapped.
-  return <Sheet labelledBy={id} onClose={story ? undefined : onNotNow} className={[styles.sheet, bare && styles.bare, (layout === 'gauge' || layout === 'zone') && !header && !review && layout !== 'gauge' && styles.riskSheet, story && styles.storySheet].filter(Boolean).join(' ')} header={header} footer={footer}>{body}</Sheet>
+  return <Sheet labelledBy={id} onClose={story ? undefined : onNotNow} className={[styles.sheet, bare && styles.bare, (layout === 'gauge' || layout === 'zone') && !header && !review && layout !== 'gauge' && styles.riskSheet, story && styles.storySheet, layout === 'gauge' && styles.meterSheet].filter(Boolean).join(' ')} header={header} footer={footer}>{body}</Sheet>
 }
 
 /**
@@ -2203,14 +2216,6 @@ function StoryBar({ headingId, ratio }: { headingId: string; ratio?: number }) {
     return () => watch.disconnect()
   }, [headingId])
   return <RiskBar ratio={ratio} version="story" />
-}
-
-/** A copy string with its {placeholders} filled in bold, e.g. the multiple and the amount in the meter-first line. */
-function withBold(template: string, values: Record<string, string>, className: string): ReactNode {
-  return template.split(/(\{\w+\})/).map((part, i) => {
-    const key = /^\{(\w+)\}$/.exec(part)?.[1]
-    return key ? <strong key={i} className={className}>{values[key]}</strong> : part
-  })
 }
 
 /** Two short pulses. In the Lemonn Android app the page calls its native bridge (works without a tap, and uses the
@@ -2696,7 +2701,18 @@ export function RiskBar({ ratio, version = 'risk' }: { ratio?: number; version?:
    the component (Web Animations) runs the needle, sweep, colours and level word from green before it. CSS keeps only
    the timed fades: --travel-in / --travel-for (the needle's run) and each glow's --glow-in / --glow-for. */
 
-.svg { display: block; width: 100%; height: auto; overflow: visible; }
+/* The drawing area reaches 16 past the ring on each side and 30 above and below, so the blurred glows are drawn inside it
+   — mobile browsers (Safari) clip SVG content at the svg's box, overflow: visible or not, which cut the glow off in a
+   hard edge (19 Nov). The svg is that much bigger and pulled back by negative margins (relative to the width, like the
+   viewBox), so the dial sits exactly where it did: viewBox 372 × 240 for the old 340 × 180 at (0, 6). */
+.svg {
+  display: block;
+  width: calc(100% * 372 / 340);
+  height: auto;
+  /* bottom: the box ends at the ring's base line (y 176), not 10 under it, so text below sits close (19 Nov) */
+  margin: calc(100% * -30 / 340) calc(100% * -16 / 340) calc(100% * -40 / 340);
+  overflow: visible;
+}
 
 .dial { margin: 0; }
 /* Resting colours = the end state (red); the component animates them from green. */
@@ -2980,7 +2996,7 @@ export function SoftDial({ ratio, level = 'danger', blend = false, showRatio = f
 
   const big = { x: -80, y: -80, width: 500, height: 400 }
   return <figure ref={root} className={styles.dial} data-level={level} data-blend={blend || undefined} style={timing} role="img" aria-label={label}>
-    <svg viewBox="0 6 340 180" className={styles.svg} aria-hidden>
+    <svg viewBox="-16 -24 372 240" className={styles.svg} aria-hidden>
       <defs>
         {/* Deep at the inner edge, the level colour through the band, light at the outer edge. */}
         <radialGradient id={ids.fill} gradientUnits="userSpaceOnUse" cx={CX} cy={CY} r={RO}>
