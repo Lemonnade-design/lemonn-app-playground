@@ -510,7 +510,7 @@ const us = (symbol: string, sector: SectorId, marketCap: number, indices: IndexI
     symbol, name: c.name, price: c.price, changePct: c.change, sector, marketCap, indices,
     market: 'us',
     cap: marketCap > 200 ? 'mega' : marketCap >= 10 ? 'large' : marketCap >= 2 ? 'mid' : 'small',
-    initials: symbol.slice(0, 2),
+    initials: symbol.slice(0, 1),
     logoUrl: usLogo(symbol),
   }
 }
@@ -1890,7 +1890,7 @@ export type Company = CompanyProfile & {
 
 const both: Exchange[] = ['NSE', 'BSE']
 const company = (symbol: string, name: string, initials: string, founded: number, headquarters: string, website: string, about: string): CompanyProfile => ({
-  symbol, name, initials, exchanges: both, founded, headquarters, website, about,
+  symbol, name, initials: initials.slice(0, 1), exchanges: both, founded, headquarters, website, about,
 })
 
 /** Profiles, by NSE symbol (one line each — scripts/market-snapshot.mjs reads the symbols from here). */
@@ -17232,7 +17232,7 @@ export const indices: MarketIndex[] = [
  */
 export type Stock = { symbol: string; name: string; price: number; changePct: number; initials: string; logoUrl?: string }
 
-const stock = (symbol: string, name: string, price: number, changePct: number, initials: string, logoUrl?: string): Stock => ({ symbol, name, price, changePct, initials, logoUrl: logoUrl ?? companyLogo(symbol) })
+const stock = (symbol: string, name: string, price: number, changePct: number, initials: string, logoUrl?: string): Stock => ({ symbol, name, price, changePct, initials: initials.slice(0, 1), logoUrl: logoUrl ?? companyLogo(symbol) })
 
 export const stocks = {
   HBLENGINE: stock('HBLENGINE', 'HBL Engineering', 833.15, 17.27, 'HB'),
@@ -27228,7 +27228,7 @@ export function StockListCard({ symbol, name, logoUrl, initials, logo, tag, pric
       {...look}
       as={onOpen ? 'button' : undefined}
       className={className}
-      iconLeft={logo ?? <Avatar initials={initials ?? symbol.slice(0, 2)} src={logoUrl} size={logoSize} label={name} />}
+      iconLeft={logo ?? <Avatar initials={initials ?? symbol.slice(0, 1)} src={logoUrl} size={logoSize} label={name} />}
       labelSuffix={tag || undefined}
       labelSuffixTone="neutral"
       labelSize="14"

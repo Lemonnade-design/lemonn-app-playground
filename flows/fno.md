@@ -9436,7 +9436,7 @@ function SmartInvestCard({ invest, onOpen }: { invest: SmartInvest; onOpen: (nam
   </Stack>}>
     <Stack gap="12">
       <Stack direction="horizontal" gap="08" align="center" justify="between">
-        <Stack direction="horizontal" gap="08" align="center" className={parts.grow}><Avatar initials={invest.name.slice(0, 2)} size={40} /><Stack gap="04" className={parts.grow}><p className={[styles.title16, styles.ellipsis].join(' ')}>{invest.name}</p><p className={styles.statLabel}>{t('strategies.by', { name: invest.by })}</p></Stack></Stack>
+        <Stack direction="horizontal" gap="08" align="center" className={parts.grow}><Avatar initials={invest.name.slice(0, 1)} size={40} /><Stack gap="04" className={parts.grow}><p className={[styles.title16, styles.ellipsis].join(' ')}>{invest.name}</p><p className={styles.statLabel}>{t('strategies.by', { name: invest.by })}</p></Stack></Stack>
         <Stack gap="04" align="end"><p className={styles.title16}>{inr(invest.minDeposit, 0)}</p><p className={styles.statLabel}>{t('strategies.minDeposit')}</p></Stack>
       </Stack>
       <div className={parts.divider} />

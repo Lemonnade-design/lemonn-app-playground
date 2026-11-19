@@ -433,6 +433,7 @@ lower on the page is scrolled into view first). `components/MarketSwitchGuide.ts
   16 / 24 icon or an Avatar only — event rows are plain buttons laid out with Stack.
 
 ### Changelog
+- 19 Nov: A stock, ETF or bank with no logo shows one letter (its first), not two or three — app-wide (companies, market list, US banks, every Avatar / disc fallback).
 - 2026-11-19 — Brands You Know · View all: edge-to-edge rows split by a hairline (were cards 12 apart). Themes: 24 between the theme's overview card and its stock list (was 32).
 - 2026-11-19 — V19 index strip: once it docks under the sticky tabs it is white (was the strip's blue), turning from blue to white with its hairline over 400 ms (motion long, standard easing; none with reduced motion) instead of swapping in one frame. IN shortcuts card: 12 either side of the row line (the tiles keep 18 at the card's top and bottom); the line is a 1px border-light border, like the column lines.
 - 2026-11-19 — Stock page (Overview): the pill tabs of Shareholding Pattern (quarters) and Financials (Revenue · Profit · Networth) moved out of their grey cards to sit with the section header, between the title and the card.
@@ -24127,7 +24128,7 @@ export function UsIntroStory({ onView, onClose }: { onView: () => void; onClose:
         <span className={styles.list} data-place={at('us') ? 'out' : 'in'}>
           {IND_ROWS.map((row) => (
             <span key={row.sym} className={styles.row}>
-              <Avatar src={row.logo} initials={row.sym.slice(0, 2)} size={24} />
+              <Avatar src={row.logo} initials={row.sym.slice(0, 1)} size={24} />
               <span className={styles.sym}>{row.sym}</span>
               <span className={styles.price}>{inr(row.price)}</span>
             </span>
@@ -24136,7 +24137,7 @@ export function UsIntroStory({ onView, onClose }: { onView: () => void; onClose:
         <span className={styles.list} data-place={at('us') ? 'in' : 'next'}>
           {US_ROWS.map((row) => (
             <span key={row.sym} className={styles.row} data-picked={(row === PICKED && at('tapRow')) || undefined}>
-              <Avatar src={row.logo} initials={row.sym.slice(0, 2)} size={24} />
+              <Avatar src={row.logo} initials={row.sym.slice(0, 1)} size={24} />
               <span className={styles.sym}>{row.sym}</span>
               <span className={styles.price}>{usd(row.price)}</span>
             </span>
@@ -24145,7 +24146,7 @@ export function UsIntroStory({ onView, onClose }: { onView: () => void; onClose:
 
         {/* NVIDIA's buy bar: slides up, Buy is tapped, it says bought. */}
         <span className={styles.buy} data-open={at('sheet') || undefined}>
-          <Avatar src={PICKED.logo} initials={PICKED.sym.slice(0, 2)} size={24} />
+          <Avatar src={PICKED.logo} initials={PICKED.sym.slice(0, 1)} size={24} />
           {at('bought') ? (
             <span className={styles.bought} key={`bought-${lap}`}>
               <Icon icon={msCheck} size={16} />
@@ -24428,7 +24429,7 @@ export function LogoStack({ symbols, max = 3, size = 32, more }: { symbols: stri
   return (
     <span className={styles.stack} data-size={size} aria-hidden="true">
       {symbols.slice(0, max).map((sym) => (
-        <span key={sym} className={styles.stackLogo}><Avatar src={usLogo(sym)} initials={sym} size={size} /></span>
+        <span key={sym} className={styles.stackLogo}><Avatar src={usLogo(sym)} initials={sym.slice(0, 1)} size={size} /></span>
       ))}
       {rest > 0 && <span className={styles.stackMore}>+{rest}</span>}
     </span>
@@ -25866,7 +25867,7 @@ function MoverCard({ mover, onOpen }: { mover: MoverToday; onOpen: (sym: string)
   return (
     <Card onClick={() => onOpen(mover.sym)} surface="primary" className={styles.titan} aria-label={`${fullName} (${mover.sym}), ${usd(live.price)}, ${sign(up)}${pct.toFixed(2)}%`}>
       <span className={styles.titanHead}>
-        <Avatar src={usLogo(mover.sym)} initials={mover.sym} size={24} />
+        <Avatar src={usLogo(mover.sym)} initials={mover.sym.slice(0, 1)} size={24} />
         <span className={styles.titanNames}>
           <span className={styles.titanName}>{fullName}</span>
           <span className={styles.titanSym}>{mover.sym}</span>
@@ -25973,7 +25974,7 @@ function EtfRow({ etf, onOpen, plain = false, look }: { etf: DiscoverEtf; onOpen
       look={look}
       logoSize={plain ? 32 : 40}
       logoUrl={etf.issuer && etfLogos[`../../assets/us/etf/${etf.issuer}.svg`]}
-      initials={etf.sym.slice(0, 2)}
+      initials={etf.sym.slice(0, 1)}
       price={<Usd value={live.price} layout="inline" />}
       changePct={live.changePct}
       onOpen={() => onOpen(etf.sym)}
@@ -25987,7 +25988,7 @@ function BrandCard({ brand, onOpen }: { brand: Brand; onOpen: (sym: string) => v
   return (
     <Card onClick={() => onOpen(brand.sym)} surface="primary" className={styles.brand}>
       <span className={styles.brandStack}>
-        <Avatar src={usLogo(brand.sym)} initials={brand.sym.slice(0, 2)} size={40} label={brand.name} />
+        <Avatar src={usLogo(brand.sym)} initials={brand.sym.slice(0, 1)} size={40} label={brand.name} />
         <span className={styles.brandName}>{brand.name}</span>
         <span className={styles.brandPrice}><Usd value={live.price} layout="inline" /></span>
         <PriceChange value={live.changePct} size="sm" />
@@ -26020,7 +26021,7 @@ function PickRow({ pick, onOpen }: { pick: AnalystPick; onOpen: (sym: string) =>
       density="breathable"
       className={styles.flatRow}
       onClick={() => onOpen(pick.sym)}
-      iconLeft={<Avatar src={usLogo(pick.sym)} initials={pick.sym.slice(0, 2)} size={40} label={pick.name} />}
+      iconLeft={<Avatar src={usLogo(pick.sym)} initials={pick.sym.slice(0, 1)} size={40} label={pick.name} />}
       labelSize="14"
       label={pick.name}
       description={t('us.picks.analysts', { pct: pick.analystsPct })}
@@ -26043,7 +26044,7 @@ function PickCard({ pick, onOpen }: { pick: AnalystPick; onOpen: (sym: string) =
       aria-label={pickLabel(pick, weekPct)}
     >
       <span className={styles.titanHead}>
-        <Avatar src={usLogo(pick.sym)} initials={pick.sym} size={24} />
+        <Avatar src={usLogo(pick.sym)} initials={pick.sym.slice(0, 1)} size={24} />
         <span className={styles.titanName}>{pick.name}</span>
         <span className={styles.titanArrow}><Icon icon={msChevronRight} size={16} /></span>
       </span>
@@ -26609,7 +26610,7 @@ function TradeCard({ mover, onOpen }: { mover: Mover; onOpen: (sym: string) => v
   return (
     <Card onClick={() => onOpen(mover.sym)} surface="default" className={styles.tradeCard}>
       <span className={styles.tradeHead}>
-        <Avatar src={usLogo(mover.sym)} initials={mover.sym.slice(0, 2)} size={24} />
+        <Avatar src={usLogo(mover.sym)} initials={mover.sym.slice(0, 1)} size={24} />
         <span className={styles.tradeName}>
           <span>{mover.name}</span>
           <span>{mover.sym}</span>
@@ -26668,7 +26669,7 @@ function MoverRow({ mover, onOpen }: { mover: Mover; onOpen: (sym: string) => vo
       symbol={mover.name}
       name={mover.sym}
       logoUrl={usLogo(mover.sym)}
-      initials={mover.sym.slice(0, 2)}
+      initials={mover.sym.slice(0, 1)}
       price={<Usd value={live.price} layout="inline" />}
       changePct={live.changePct}
       onOpen={() => onOpen(mover.sym)}
@@ -26713,7 +26714,7 @@ function CapCard({ mover, onOpen }: { mover: Mover; onOpen: (sym: string) => voi
   return (
     <Card onClick={() => onOpen(mover.sym)} surface="default" className={styles.capCard}>
       <span className={styles.capHead}>
-        <Avatar src={usLogo(mover.sym)} initials={mover.sym.slice(0, 2)} size={24} />
+        <Avatar src={usLogo(mover.sym)} initials={mover.sym.slice(0, 1)} size={24} />
         <Icon icon={msChevronRight} size={20} />
       </span>
       <span className={styles.capName}>{mover.name}</span>
@@ -26798,7 +26799,7 @@ function Announcements({ onOpen }: { onOpen: (sym: string) => void }) {
             <Card key={a.id} onClick={() => onOpen(a.sym)} surface="primary" className={styles.announcement}>
               <Tag color="discover" size="sm">{t('f1.announcements.tag')}</Tag>
               <span className={styles.announcementBody}>
-                <Avatar src={usLogo(a.sym)} initials={a.sym.slice(0, 2)} size={32} />
+                <Avatar src={usLogo(a.sym)} initials={a.sym.slice(0, 1)} size={32} />
                 <span className={styles.announcementText}>
                   <span>{t('f1.announcements.arm.title')}</span>
                   <span>{t('f1.announcements.arm.text')}</span>
@@ -29219,7 +29220,7 @@ function PickCard({ pick, onOpen }: { pick: AnalystPick; onOpen: (sym: string) =
     >
       <Inset padding="12">
         <Stack direction="horizontal" align="center" gap="12">
-          <Avatar src={usLogo(pick.sym)} initials={pick.sym.slice(0, 2)} size={40} />
+          <Avatar src={usLogo(pick.sym)} initials={pick.sym.slice(0, 1)} size={40} />
           <span className={styles.name}>
             <span className={styles.title}>{pick.name}</span>
             <span className={styles.sub}>{t('picksPage.ltp')} <Usd value={live.price} layout="inline" /></span>
@@ -29253,7 +29254,7 @@ function ClosedRow({ pick, onOpen }: { pick: ClosedPick; onOpen: (sym: string) =
       variant="card"
       raised={false}
       onClick={() => onOpen(pick.sym)}
-      iconLeft={<Avatar src={usLogo(pick.sym)} initials={pick.sym.slice(0, 2)} size={40} label={pick.name} />}
+      iconLeft={<Avatar src={usLogo(pick.sym)} initials={pick.sym.slice(0, 1)} size={40} label={pick.name} />}
       labelSize="16"
       label={pick.name}
       description={<><Usd value={pick.entry} layout="inline" /> → <Usd value={pick.exit} layout="inline" /></>}
@@ -31893,7 +31894,7 @@ export type Company = CompanyProfile & {
 
 const both: Exchange[] = ['NSE', 'BSE']
 const company = (symbol: string, name: string, initials: string, founded: number, headquarters: string, website: string, about: string): CompanyProfile => ({
-  symbol, name, initials, exchanges: both, founded, headquarters, website, about,
+  symbol, name, initials: initials.slice(0, 1), exchanges: both, founded, headquarters, website, about,
 })
 
 /** Profiles, by NSE symbol (one line each — scripts/market-snapshot.mjs reads the symbols from here). */
@@ -47260,7 +47261,7 @@ export const indices: MarketIndex[] = [
  */
 export type Stock = { symbol: string; name: string; price: number; changePct: number; initials: string; logoUrl?: string }
 
-const stock = (symbol: string, name: string, price: number, changePct: number, initials: string, logoUrl?: string): Stock => ({ symbol, name, price, changePct, initials, logoUrl: logoUrl ?? companyLogo(symbol) })
+const stock = (symbol: string, name: string, price: number, changePct: number, initials: string, logoUrl?: string): Stock => ({ symbol, name, price, changePct, initials: initials.slice(0, 1), logoUrl: logoUrl ?? companyLogo(symbol) })
 
 export const stocks = {
   HBLENGINE: stock('HBLENGINE', 'HBL Engineering', 833.15, 17.27, 'HB'),
@@ -58383,7 +58384,7 @@ export function StockListCard({ symbol, name, logoUrl, initials, logo, tag, pric
       {...look}
       as={onOpen ? 'button' : undefined}
       className={className}
-      iconLeft={logo ?? <Avatar initials={initials ?? symbol.slice(0, 2)} src={logoUrl} size={logoSize} label={name} />}
+      iconLeft={logo ?? <Avatar initials={initials ?? symbol.slice(0, 1)} src={logoUrl} size={logoSize} label={name} />}
       labelSuffix={tag || undefined}
       labelSuffixTone="neutral"
       labelSize="14"

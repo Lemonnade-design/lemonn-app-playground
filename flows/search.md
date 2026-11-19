@@ -2141,7 +2141,7 @@ export type Company = CompanyProfile & {
 
 const both: Exchange[] = ['NSE', 'BSE']
 const company = (symbol: string, name: string, initials: string, founded: number, headquarters: string, website: string, about: string): CompanyProfile => ({
-  symbol, name, initials, exchanges: both, founded, headquarters, website, about,
+  symbol, name, initials: initials.slice(0, 1), exchanges: both, founded, headquarters, website, about,
 })
 
 /** Profiles, by NSE symbol (one line each — scripts/market-snapshot.mjs reads the symbols from here). */
@@ -17483,7 +17483,7 @@ export const indices: MarketIndex[] = [
  */
 export type Stock = { symbol: string; name: string; price: number; changePct: number; initials: string; logoUrl?: string }
 
-const stock = (symbol: string, name: string, price: number, changePct: number, initials: string, logoUrl?: string): Stock => ({ symbol, name, price, changePct, initials, logoUrl: logoUrl ?? companyLogo(symbol) })
+const stock = (symbol: string, name: string, price: number, changePct: number, initials: string, logoUrl?: string): Stock => ({ symbol, name, price, changePct, initials: initials.slice(0, 1), logoUrl: logoUrl ?? companyLogo(symbol) })
 
 export const stocks = {
   HBLENGINE: stock('HBLENGINE', 'HBL Engineering', 833.15, 17.27, 'HB'),

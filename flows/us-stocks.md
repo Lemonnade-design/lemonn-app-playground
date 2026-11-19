@@ -199,6 +199,10 @@ Every tap he wired is kept. The main path: FTUX sheet → Activate → Declarati
 → Pay on bank → Money ready → Stock → Buy → Executed → Wallet → Withdraw.
 
 ### Changelog
+- 19 Nov: A stock, ETF or bank with no logo shows one letter (its first), not two or three — app-wide (companies, market list, US banks, every Avatar / disc fallback).
+- 19 Nov: ETF tables (ETFs with the stock, fund peers): logo 24 → 32, so rows are 48 like Peers.
+- 19 Nov: Share bars (Key Holders, ETF allocation) end on the panel's 12 (last row's bottom 8 dropped). Peers: logo 24 → 32, name Label 14. Analyst Ratings card rows and footer follow the page (Description 12 names, Heading 12 figures) instead of Figma's 10. View Order History Label 14.
+- 2026-11-19 — Stock page: "View Order History" is Label 14 (was 16).
 - 2026-11-19 — ShareBars rows (Key Holders, the ETF page's Allocation) use Label 14 for the name and the share, not Heading 14.
 - 2026-11-19 — Stock page: Related ETFs is one section with **Long / Short** pill sub-tabs (as Company financials) instead of "Related ETFs" + "Bet against …". A side with no funds has no tab; with one side only (AMD, Netflix …) no tabs.
 - 2026-11-19 — Key Holders uses the ETF Allocation panel (ShareBars: "4 holder types · Weight", name, short bar, share) instead of the bar-behind-the-number rows. The share column is a fixed 48 wide ("100.0%" in heading-14 measures 48), right-aligned, so every bar lines up — Allocation, Top holdings / Tracks and Key Holders. Holding rows show the short name only ("Broadcom", no "Inc" and no ticker).
@@ -451,6 +455,8 @@ Every tap he wired is kept. The main path: FTUX sheet → Activate → Declarati
 - 2026-11-19 — Order pad V2, Market: Minted's leverage card (Figma 8870:209735) — bolt tile, "Enable leverage upto 2x/3x/4x" (rolling while off), switch; on: 2x · 3x · 4x choices and an info strip. Prototype only: the dock numbers don't change.
 - 2026-11-19 — Leverage card: the first switch-on opens Minted's "Activate leverage" sheet ($100 example at 1x / 4x, liquidation risk, "Don't show this again" ticked, Confirm); the card switches on only on Confirm. It grows open / shut (0.2s), and the 2x · 3x · 4x chips are L3 secondary pill chips. Plain card and bolt (no gradients); shut, the card is only its header. The sheet's content doesn't scroll (the checkbox row is its 48 tap target tall).
 - 2026-11-19 — Order pad V2: "Req." is always an underlined link and opens the Fee Breakdown sheet over the pad with the fees on this order (brokerage 0.25%, GST 18% on it, IFSCA turnover fee 0.005% — the 0.3% Req. adds); SL still goes to its Fee Breakdown screen.
+- 2026-11-19 — Fee breakdown sheet (SL's View Charges and V2's Req.) rebuilt as the app's other breakdowns (Add money's Charges breakdown): one L3 KeyValueList — Brokerage (0.25% of the order value), GST (18% on brokerage), IFSCA turnover fee, Estimated fee as its total — the "approximate" note as the header description, and a Got it button. Differs from Figma: its separate groups, "•" sub-rows, hand-drawn dividers, notes and ✕ are gone.
+- 2026-11-19 — Order pad V2, Market: a "Set TP/SL" chip (L3 pill chip with a plus, like the +$10 chips) under the leverage card, centred. Its sheet comes later; the tap does nothing yet.
 
 
 ## Source — this flow
@@ -23097,7 +23103,7 @@ export function BankCheckScreen({ none = false, verifying = false, backdrop }: {
 }
 
 const BankLogo = ({ bank }: { bank: LinkedBank }) => (
-  <Avatar src={getCompany(bank.logoSymbol)?.logoUrl} initials={bank.bank.slice(0, 2)} shape="rounded" size={32} label={bank.bank} />
+  <Avatar src={getCompany(bank.logoSymbol)?.logoUrl} initials={bank.bank.slice(0, 1)} shape="rounded" size={32} label={bank.bank} />
 )
 
 /** A linked bank US Stocks money can't go from: its logo, greyed out, tagged "Not supported" — can't be picked. */
@@ -23608,7 +23614,7 @@ export const screens: UsScreenMap = {
   border-radius: var(--l3-radius-12);
   background: var(--l3-surface-primary);
   box-shadow: inset 0 0 0 1px var(--l3-border-light);
-  font: var(--l3-text-label-16);
+  font: var(--l3-text-label-14);
   color: var(--l3-content-primary);
   text-align: left;
   cursor: pointer;
@@ -24199,7 +24205,7 @@ export const screens: UsScreenMap = {
 
 .rateCard .ratingValue {
   width: auto;
-  font: var(--l3-text-label-12);
+  font: var(--l3-text-heading-12);
   text-align: left;
 }
 
@@ -24446,22 +24452,12 @@ export const screens: UsScreenMap = {
   stroke: var(--l3-content-accent-indicator-down-default); /* Figma #E5505F */
 }
 
-/* Analyst Ratings card as Figma 6538:85135: surface/primary with the intense border, rows and footer in Label 10
-   (labels tertiary, values primary), bars 6 tall. */
+/* Analyst Ratings card as Figma 6538:85135: surface/primary with the intense border, bars 6 tall. Its rows and footer
+   were 10 here (Figma); 19 Nov they follow the page instead — names Description 12 secondary, figures Heading 12, as
+   the stat cards (the rules above). */
 .rateCard {
   background: var(--l3-surface-primary);
   box-shadow: inset 0 0 0 1px var(--l3-border-intense);
-}
-.rateCard .ratingLabel {
-  font: var(--l3-text-description-10);
-  color: var(--l3-content-secondary);
-}
-.rateCard .ratingValue {
-  font: var(--l3-text-label-10);
-  color: var(--l3-content-primary);
-}
-.rateFoot {
-  font: var(--l3-text-description-10);
 }
 ```
 
@@ -24988,8 +24984,8 @@ export function ImgIcon({ src, w, h = w, className }: { src: string; w: number; 
 
 /* FLAG: hand-made logo disc (L3 Avatar / BrandLogo) */
 .logo {
-  width: var(--l3-size-24);
-  height: var(--l3-size-24);
+  width: var(--l3-size-32); /* 24 → 32 (19 Nov, the user's call) */
+  height: var(--l3-size-32);
   border-radius: var(--l3-radius-full);
   background: var(--l3-surface-tertiary);
   font: var(--l3-text-label-12);
@@ -25014,7 +25010,7 @@ export function ImgIcon({ src, w, h = w, className }: { src: string; w: number; 
 
 
 .cardName {
-  font: var(--l3-text-label-12);
+  font: var(--l3-text-label-14); /* 12 → 14 (19 Nov) */
   color: var(--l3-content-primary);
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -25061,7 +25057,7 @@ function CompanyLogo({ sym }: { sym: string }) {
       style={{ background: src && !fill ? plateFor(sym) : undefined }}
       aria-hidden="true"
     >
-      {src ? <img src={src} alt="" /> : sym.slice(0, 2)}
+      {src ? <img src={src} alt="" /> : sym.slice(0, 1)}
     </span>
   )
 }
@@ -26824,7 +26820,7 @@ export function RelatedEtfs({ sym }: { sym: string }) {
           >
             <span className={styles.etfTop}>
               <span className={styles.etfSym}>
-                <span className={styles.etfDisc} aria-hidden="true">{e.sym.slice(0, 2)}</span>
+                <span className={styles.etfDisc} aria-hidden="true">{e.sym.slice(0, 1)}</span>
                 <b>{e.sym}</b>
               </span>
               <LevTag long={e.side === 'long'}>{e.lev} {e.side === 'long' ? 'Long' : 'Short'}</LevTag>
@@ -30403,7 +30399,7 @@ export function HoldingCard({ holding, onOpen }: { holding: Holding; onOpen?: ()
     <Card surface="primary" className={styles.holding} onClick={onOpen} aria-label={onOpen ? t('portfolio.holding.open', { name: holding.name }) : undefined}>
       <Stack gap="12">
         <Stack direction="horizontal" align="center" gap="12">
-          <Avatar src={holding.logo} initials={holding.name.slice(0, 2)} size={40} label={holding.name} />
+          <Avatar src={holding.logo} initials={holding.name.slice(0, 1)} size={40} label={holding.name} />
           <Stack className={styles.name}>
             <span className={styles.symbol}>{holding.name}</span>
             <span className={styles.qty}>{t('portfolio.holding.qty', { qty: holding.qty })}</span>
@@ -32499,6 +32495,9 @@ export function AllocationF1({ etf }: { etf: Etf }) {
   padding: var(--l3-spacing-08) 0;
   display: flex;
 }
+/* The last row drops its bottom 8, so the panel ends on its own 12 (19 Nov, the user's call: less space at the foot). */
+.shareRow:last-child { padding-bottom: 0; }
+
 
 .shareName {
   flex: 1;
@@ -32844,7 +32843,7 @@ function EtfCard({ etf, onOpen }: { etf: Etf; onOpen: () => void }) {
         symbol={plain}
         name={`${etf.sym} · ${insideFor(etf)}`}
         logoUrl={etfLogoUrl(etf.sym)}
-        initials={etf.sym.slice(0, 2)}
+        initials={etf.sym.slice(0, 1)}
         price={<Usd value={etf.price} align="end" />}
         changePct={etf.change}
         onOpen={onOpen}
@@ -32875,10 +32874,10 @@ function FundRow({ etf, onClick }: { etf: Etf; onClick: () => void }) {
       symbol={plain}
       name={`${etf.sym} · ${insideFor(etf)}`}
       logoUrl={etfLogoUrl(etf.sym)}
-      initials={etf.sym.slice(0, 2)}
+      initials={etf.sym.slice(0, 1)}
       logo={marked ? (
         <span className={styles.diagCol} data-ring={lev === 'ring' ? etf.side : undefined} data-slice={lev === 'slice' ? '' : undefined} data-notch={lev === 'notch' ? '' : undefined}>
-          <Avatar src={etfLogoUrl(etf.sym)} initials={etf.sym.slice(0, 2)} size={40} label={etf.name} />
+          <Avatar src={etfLogoUrl(etf.sym)} initials={etf.sym.slice(0, 1)} size={40} label={etf.name} />
           {/* V1 Logo foot: "3x Long" (L3 Tag) across the logo's foot, both ends round. */}
           {lev === 'foot' && <SideTag etf={etf} filled className={styles.levBadge} />}
           {/* V2 Logo badge: a "3x ▲" pill on the logo's top-right, like a notification badge. */}
@@ -34187,7 +34186,7 @@ function FundTable({ label, rows, self, columns: views, onOpen, more, ref }: { l
             onClick={() => e !== self && onOpen(e.sym)}
           >
             <span className={tableStyles.company} role="cell">
-              <EtfDisc sym={e.sym} size={24} />
+              <EtfDisc sym={e.sym} size={32} />
               {/* The ticker: ETF names are long and read alike ("… ETF Trust"); the ticker is how funds are known. */}
               <span className={tableStyles.cardName}>{e.sym}</span>
             </span>
@@ -35283,14 +35282,14 @@ import styles from './Etf.module.css'
  */
 export function HoldingLogo({ sym, size }: { sym: string; size: 24 | 32 | 40 }) {
   const plate = logoPlate(sym)
-  return <Avatar src={logoFor(sym)} initials={sym} size={size} className={plate === 'black' ? styles.plateBlack : plate === 'white' ? styles.plateWhite : undefined} />
+  return <Avatar src={logoFor(sym)} initials={sym.slice(0, 1)} size={size} className={plate === 'black' ? styles.plateBlack : plate === 'white' ? styles.plateWhite : undefined} />
 }
 
 /** The issuer's logo on its plate; initials when the issuer has none. */
 export function EtfDisc({ sym, size = 32 }: { sym: string; size?: 24 | 32 | 40 }) {
   const logo = issuerLogo(sym)
   if (!logo) {
-    return <span className={styles.disc} data-size={size} aria-hidden="true">{sym.slice(0, size === 40 ? 4 : size === 24 ? 2 : 3)}</span>
+    return <span className={styles.disc} data-size={size} aria-hidden="true">{sym.slice(0, 1)}</span>
   }
   return (
     <span className={styles.disc} data-size={size} data-fill={logo.fill || undefined} data-plate="" style={{ background: logo.plate }} aria-hidden="true">
@@ -35608,7 +35607,7 @@ export function BankPickSheet({ open, banks, unsupported = [], selected, copy, o
             key={bank.id}
             variant="card"
             className={styles.unsupportedBank}
-            iconLeft={<Avatar src={getCompany(bank.logoSymbol)?.logoUrl} initials={bank.bank.slice(0, 2)} shape="rounded" size={32} label={bank.bank} />}
+            iconLeft={<Avatar src={getCompany(bank.logoSymbol)?.logoUrl} initials={bank.bank.slice(0, 1)} shape="rounded" size={32} label={bank.bank} />}
             label={bankLine(bank)}
             description={`${bank.type} · ${bank.branch}`}
             trailing={<Tag size="sm" disabled>{t('addMoney.notSupported')}</Tag>}
@@ -36661,7 +36660,7 @@ function orderPrice(order: UsOrder): { label: string; value?: number } {
 }
 
 function OrderLogo({ order }: { order: UsOrder }) {
-  if (order.kind === 'etf') return <Avatar src={etfLogoUrl(order.sym)} initials={order.sym} size={24} />
+  if (order.kind === 'etf') return <Avatar src={etfLogoUrl(order.sym)} initials={order.sym.slice(0, 1)} size={24} />
   return <HoldingLogo sym={order.sym} size={24} />
 }
 
@@ -36922,7 +36921,7 @@ export function OrderDetailsScreen({ backdrop, order: given }: { backdrop?: bool
   })
 
   const logo = order.kind === 'etf'
-    ? <Avatar src={etfLogoUrl(order.sym)} initials={order.sym} size={40} />
+    ? <Avatar src={etfLogoUrl(order.sym)} initials={order.sym.slice(0, 1)} size={40} />
     : <HoldingLogo sym={order.sym} size={40} />
 
   const againLabel = order.status === 'failed' ? 'Retry' : order.status === 'cancelled' || order.status === 'expired' ? 'Place again' : 'Repeat order'
@@ -37686,7 +37685,7 @@ export const qtyText = (qty: number) => qty.toLocaleString('en-US', { maximumFra
 
 /** The stock's logo (on its plate) or the ETF issuer's, in an L3 Avatar. */
 export function PositionLogo({ position, size = 40 }: { position: UsPosition; size?: 32 | 40 }) {
-  if (position.kind === 'etf') return <Avatar src={etfLogoUrl(position.sym)} initials={position.sym.slice(0, 2)} size={size} />
+  if (position.kind === 'etf') return <Avatar src={etfLogoUrl(position.sym)} initials={position.sym.slice(0, 1)} size={size} />
   return <HoldingLogo sym={position.sym} size={size} />
 }
 
@@ -38056,76 +38055,33 @@ export const screens: UsScreenMap = {
 ### `src/flows/us-stocks/screens/trade/FeeBreakdown.module.css`
 
 ```css
-/* FLAG: layout is raw display:flex + gap, not L3 Stack / Section; hand-drawn sheet grabber and hr dividers. */
-
+/* "View Order" on the SL pad (orderPads.tsx). The fee sheet itself is all L3 now. */
 .link {
   font: var(--l3-text-label-12);
   color: var(--l3-content-accent-discover-default);
-}
-
-.body {
-  gap: var(--l3-spacing-16);
-  flex-direction: column;
-  display: flex;
-}
-
-.group {
-  gap: var(--l3-spacing-04);
-  flex-direction: column;
-  display: flex;
-}
-
-.divider {
-  border: 0;
-  border-top: 1px solid var(--l3-border-light);
-  margin: 0;
-}
-
-.small {
-  font: var(--l3-text-description-12);
-  color: var(--l3-content-secondary);
-  margin: 0;
-}
-
-.small[data-narrow] {
-  max-width: 78%; /* ≈ 255px of the 328px content width at 360 */
-}
-
-.close {
-  color: var(--l3-content-primary);
-  cursor: pointer;
-  background: 0 0;
-  border: 0;
-  place-items: center;
-  margin: 0;
-  padding: 0;
-  display: inline-grid;
-}
-
-.small[data-center] {
-  text-align: center;
 }
 ```
 
 ### `src/flows/us-stocks/screens/trade/FeeBreakdown.tsx`
 
 ```tsx
-// T11 · Fee Breakdown sheet over the order pad (opened from "View Charges" on the SL order).
-// FLAG: the sheet's rows are hand-laid: <hr> dividers, "•" bullets typed into labels, small grey notes — not L3 KeyValueList groups.
-// FLAG: layout is raw display:flex + gap (FeeBreakdown.module.css), not L3 Stack / Section.
-// FLAG: the close button is a hand-made <button> (not an L3 Button) and the sheet draws its own grabber.
+// T11 · Fee Breakdown sheet over the order pad (opened from "View Charges" on the SL order, and "Req." on order pad V2).
+// Built as the app's other breakdowns (Add money's "Charges breakdown"): one L3 KeyValueList — a row per fee with what it
+// is under its name, the estimated total at the foot — the "approximate" note as the header's description, and Got it.
+// Differs from Figma (the user's call, 19 Nov: use the breakdown component): Figma's separate Brokerage / Charges / Taxes
+// groups with "•" sub-rows, hand-drawn dividers, notes and a ✕ are now that one list.
 import { BottomSheet, BottomSheetHeader } from '@l3/components/BottomSheet'
-import { Icon } from '@l3/components/Icon'
+import { Button } from '@l3/components/Button'
+import { ButtonGroup } from '@l3/components/ButtonGroup'
 import { KeyValueList, KeyValueRow } from '@l3/components/KeyValueList'
 import { useSheetLayer } from '../../components/Phone'
 import { useUsNav } from '../../nav'
 import { Usd } from '../../../../shared/money'
-import { closeIcon } from '../money/icons'
+import { TwoLineLabel } from '../money/components/TwoLineLabel'
 import { useSheetClose } from '../money/useSheetClose'
 import { OrderPad } from './OrderPad'
 import { tradeIds } from './ids'
 import { orderPads } from './orderPads'
-import styles from './FeeBreakdown.module.css'
 
 const FEES = { total: 1.13, brokerage: 0.94, charges: 0.02, taxes: 0.17 }
 
@@ -38146,7 +38102,7 @@ export function FeeBreakdownScreen({ backdrop }: { backdrop?: boolean }) {
 
 /** Fee Breakdown: fixed Figma amounts (the SL screen), or the fees on `orderUsd` (order pad V2's "Req." link). */
 export function FeeBreakdownSheet({ onClose, orderUsd }: { onClose: () => void; orderUsd?: number }) {
-  const FEES_SHOWN = orderUsd === undefined ? FEES : feesFor(orderUsd)
+  const fees = orderUsd === undefined ? FEES : feesFor(orderUsd)
   const layer = useSheetLayer()
   const { open, close } = useSheetClose(onClose)
   return (
@@ -38157,41 +38113,22 @@ export function FeeBreakdownSheet({ onClose, orderUsd }: { onClose: () => void; 
       aria-labelledby="fee-title"
       header={
         <BottomSheetHeader
-          size="sm"
-          heading="Fee Breakdown"
+          heading="Fee breakdown"
           headingId="fee-title"
-          trailing={
-            <button type="button" className={styles.close} aria-label="Close" onClick={close}>
-              <Icon icon={closeIcon} size={24} />
-            </button>
-          }
+          description="Approximate — the final fee may vary slightly at the time of execution."
         />
       }
+      footer={
+        <ButtonGroup aria-label="Fee breakdown">
+          <Button variant="primary" size="lg" fullWidth onClick={close}>Got it</Button>
+        </ButtonGroup>
+      }
     >
-      <div className={styles.body}>
-        <KeyValueList aria-label="Estimated fee">
-          <KeyValueRow total label="Estimated Fee" value={<Usd value={FEES_SHOWN.total} align="end" layout="stack" />} />
-        </KeyValueList>
-        <hr className={styles.divider} />
-        <div className={styles.group} data-gap="4">
-          <KeyValueList aria-label="Brokerage">
-            <KeyValueRow label="Brokerage" value={<Usd value={FEES_SHOWN.brokerage} align="end" layout="stack" />} />
-          </KeyValueList>
-          <p className={styles.small} data-narrow>Note: Brokerage is 0.25% of the order value. GST at 18% is charged on it.</p>
-        </div>
-        <hr className={styles.divider} />
-        <KeyValueList size="sm" aria-label="Charges">
-          <KeyValueRow size="md" label="Charges" value={<Usd value={FEES_SHOWN.charges} align="end" layout="stack" />} />
-          <KeyValueRow label="• IFSCA turnover fee" value={<Usd value={FEES_SHOWN.charges} align="end" layout="stack" />} />
-        </KeyValueList>
-        <hr className={styles.divider} />
-        <KeyValueList size="sm" aria-label="Taxes">
-          <KeyValueRow size="md" label="Taxes" value={<Usd value={FEES_SHOWN.taxes} align="end" layout="stack" />} />
-          <KeyValueRow label="• GST on brokerage" value={<Usd value={FEES_SHOWN.taxes} align="end" layout="stack" />} />
-        </KeyValueList>
-        <hr className={styles.divider} />
-        <p className={styles.small} data-center>Note: The amounts mentioned above are approximate values and may vary slightly at the time of execution.</p>
-      </div>
+      <KeyValueList aria-label="Fee breakdown" total={{ label: 'Estimated fee', value: <Usd value={fees.total} layout="inline" /> }}>
+        <KeyValueRow label={<TwoLineLabel top="Brokerage" sub="(0.25% of the order value)" />} value={<Usd value={fees.brokerage} layout="inline" />} />
+        <KeyValueRow label={<TwoLineLabel top="GST" sub="(18% on brokerage)" />} value={<Usd value={fees.taxes} layout="inline" />} />
+        <KeyValueRow label="IFSCA turnover fee" value={<Usd value={fees.charges} layout="inline" />} />
+      </KeyValueList>
     </BottomSheet>
   )
 }
@@ -38883,6 +38820,9 @@ function OrderPadV1({ config, backdrop, sheet }: OrderPadProps) {
 
 /* Merged price card: the line between two prices, inset by the card's padding (12, like the text). 1px hairline. */
 .priceDivider { margin: 0; border: 0; height: 1px; background: var(--l3-border-light); }
+
+/* "Set TP/SL" chip: centred, like the pad's other rows (the user's call). */
+.tpsl { display: flex; justify-content: center; }
 ```
 
 ### `src/flows/us-stocks/screens/trade/OrderPadV2.tsx`
@@ -38906,6 +38846,8 @@ import { Actionbar } from '@l3/components/Actionbar'
 import { Avatar } from '@l3/components/Avatar'
 import { Button } from '@l3/components/Button'
 import { Card } from '@l3/components/Card'
+import { Icon } from '@l3/components/Icon'
+import { msAdd } from '@l3/icons/material'
 import { PriceChange } from '@l3/components/PriceChange'
 import { Select } from '@l3/components/Select'
 import { Stack } from '@l3/components/Stack'
@@ -39053,7 +38995,7 @@ export function OrderPadV2({ config, backdrop, sheet }: { config: OrderPadConfig
         // L3 gap: Actionbar has no centred "logo + symbol over price" title.
         <span className={styles.contract}>
           <span className={styles.contractName}>
-            <Avatar src={logo} initials={config.stock.symbol} size={24} className={styles.logo16} />
+            <Avatar src={logo} initials={config.stock.symbol.slice(0, 1)} size={24} className={styles.logo16} />
             {config.stock.symbol}
           </span>
           <span className={styles.contractPrice}>
@@ -39254,6 +39196,21 @@ export function OrderPadV2({ config, backdrop, sheet }: { config: OrderPadConfig
           {derived.error && <p className={styles.error}>{forCurrentStock(derived.error)}</p>}
           {/* Market pad only: Minted's leverage card (Enable leverage upto 2x / 3x / 4x). */}
           {config.type === 'market' && <LeverageCard />}
+          {/* Market pad only (19 Nov, the user's call): a "Set TP/SL" chip under the leverage card — an L3 pill chip with a
+              plus, the same chip as the +$10 ones, centred. FLAG: the tap opens nothing yet; its sheet's content comes later. */}
+          {config.type === 'market' && (
+            <div className={styles.tpsl}>
+              <Tabs
+                appearance="pill"
+                size="sm"
+                behavior="filter"
+                aria-label="Take profit and stop loss"
+                items={[{ value: 'tpsl', label: 'Set TP/SL', iconLeft: <Icon icon={msAdd} size={16} /> }]}
+                value=""
+                onChange={() => {}}
+              />
+            </div>
+          )}
           {/* Price cards (flow option "Price cards"): one card holding every price, a line between (merged, the default),
               or a card per price (separate, the earlier design, kept for A/B). */}
           {priceCards === 'merged' && (config.prices ?? []).length > 1 ? (
@@ -42895,7 +42852,7 @@ export type Company = CompanyProfile & {
 
 const both: Exchange[] = ['NSE', 'BSE']
 const company = (symbol: string, name: string, initials: string, founded: number, headquarters: string, website: string, about: string): CompanyProfile => ({
-  symbol, name, initials, exchanges: both, founded, headquarters, website, about,
+  symbol, name, initials: initials.slice(0, 1), exchanges: both, founded, headquarters, website, about,
 })
 
 /** Profiles, by NSE symbol (one line each — scripts/market-snapshot.mjs reads the symbols from here). */
@@ -67094,11 +67051,11 @@ import idfcFirstLogo from './assets/idfcfirstb.png'
  * catalogue; IDFC FIRST isn't in it, so its logo is kept here (assets/). `ifsc` is the bank's IFSC prefix.
  */
 export const SUPPORTED_BANKS = [
-  { symbol: 'ICICIBANK', ifsc: 'ICIC', name: 'ICICI Bank', short: 'ICICI', initials: 'IB' },
-  { symbol: 'HDFCBANK', ifsc: 'HDFC', name: 'HDFC Bank', short: 'HDFC', initials: 'HB' },
-  { symbol: 'KOTAKBANK', ifsc: 'KKBK', name: 'Kotak Mahindra Bank', short: 'Kotak', initials: 'KB' },
-  { symbol: 'IDFCFIRSTB', ifsc: 'IDFB', name: 'IDFC FIRST Bank', short: 'IDFC FIRST', initials: 'IF' },
-  { symbol: 'AXISBANK', ifsc: 'UTIB', name: 'Axis Bank', short: 'Axis', initials: 'AX' },
+  { symbol: 'ICICIBANK', ifsc: 'ICIC', name: 'ICICI Bank', short: 'ICICI', initials: 'I' },
+  { symbol: 'HDFCBANK', ifsc: 'HDFC', name: 'HDFC Bank', short: 'HDFC', initials: 'H' },
+  { symbol: 'KOTAKBANK', ifsc: 'KKBK', name: 'Kotak Mahindra Bank', short: 'Kotak', initials: 'K' },
+  { symbol: 'IDFCFIRSTB', ifsc: 'IDFB', name: 'IDFC FIRST Bank', short: 'IDFC FIRST', initials: 'I' },
+  { symbol: 'AXISBANK', ifsc: 'UTIB', name: 'Axis Bank', short: 'Axis', initials: 'A' },
 ] as const
 
 export const bankLogoUrl = (symbol: string) => (symbol === 'IDFCFIRSTB' ? idfcFirstLogo : getCompany(symbol)?.logoUrl)
@@ -68084,7 +68041,7 @@ export function BankRow({ bank, copy, note, onChange, onAdd }: {
   return (
     <ListCell
       as="button"
-      iconLeft={<Avatar src={bankLogo(bank)} initials={bank.bank.slice(0, 2)} shape="rounded" size={32} label={bank.bank} />}
+      iconLeft={<Avatar src={bankLogo(bank)} initials={bank.bank.slice(0, 1)} shape="rounded" size={32} label={bank.bank} />}
       label={copy.method}
       description={note ? `${bankLine(bank)} · ${note}` : bankLine(bank)}
       iconRight={<Icon icon={msChevronRight} />}
@@ -68138,7 +68095,7 @@ export function BankOptions({ banks, selected, name, onPick, variant = 'card' }:
           as="label"
           variant={variant}
           selected={bank.id === selected}
-          iconLeft={<Avatar src={bankLogo(bank)} initials={bank.bank.slice(0, 2)} shape="rounded" size={32} label={bank.bank} />}
+          iconLeft={<Avatar src={bankLogo(bank)} initials={bank.bank.slice(0, 1)} shape="rounded" size={32} label={bank.bank} />}
           label={bankLine(bank)}
           description={`${bank.type} · ${bank.branch}`}
           trailing={<Radio name={name} checked={bank.id === selected} onChange={() => onPick(bank.id)} />}
@@ -68786,7 +68743,7 @@ export function StockListCard({ symbol, name, logoUrl, initials, logo, tag, pric
       {...look}
       as={onOpen ? 'button' : undefined}
       className={className}
-      iconLeft={logo ?? <Avatar initials={initials ?? symbol.slice(0, 2)} src={logoUrl} size={logoSize} label={name} />}
+      iconLeft={logo ?? <Avatar initials={initials ?? symbol.slice(0, 1)} src={logoUrl} size={logoSize} label={name} />}
       labelSuffix={tag || undefined}
       labelSuffixTone="neutral"
       labelSize="14"

@@ -974,7 +974,7 @@ export type Company = CompanyProfile & {
 
 const both: Exchange[] = ['NSE', 'BSE']
 const company = (symbol: string, name: string, initials: string, founded: number, headquarters: string, website: string, about: string): CompanyProfile => ({
-  symbol, name, initials, exchanges: both, founded, headquarters, website, about,
+  symbol, name, initials: initials.slice(0, 1), exchanges: both, founded, headquarters, website, about,
 })
 
 /** Profiles, by NSE symbol (one line each — scripts/market-snapshot.mjs reads the symbols from here). */
@@ -16210,11 +16210,11 @@ import idfcFirstLogo from './assets/idfcfirstb.png'
  * catalogue; IDFC FIRST isn't in it, so its logo is kept here (assets/). `ifsc` is the bank's IFSC prefix.
  */
 export const SUPPORTED_BANKS = [
-  { symbol: 'ICICIBANK', ifsc: 'ICIC', name: 'ICICI Bank', short: 'ICICI', initials: 'IB' },
-  { symbol: 'HDFCBANK', ifsc: 'HDFC', name: 'HDFC Bank', short: 'HDFC', initials: 'HB' },
-  { symbol: 'KOTAKBANK', ifsc: 'KKBK', name: 'Kotak Mahindra Bank', short: 'Kotak', initials: 'KB' },
-  { symbol: 'IDFCFIRSTB', ifsc: 'IDFB', name: 'IDFC FIRST Bank', short: 'IDFC FIRST', initials: 'IF' },
-  { symbol: 'AXISBANK', ifsc: 'UTIB', name: 'Axis Bank', short: 'Axis', initials: 'AX' },
+  { symbol: 'ICICIBANK', ifsc: 'ICIC', name: 'ICICI Bank', short: 'ICICI', initials: 'I' },
+  { symbol: 'HDFCBANK', ifsc: 'HDFC', name: 'HDFC Bank', short: 'HDFC', initials: 'H' },
+  { symbol: 'KOTAKBANK', ifsc: 'KKBK', name: 'Kotak Mahindra Bank', short: 'Kotak', initials: 'K' },
+  { symbol: 'IDFCFIRSTB', ifsc: 'IDFB', name: 'IDFC FIRST Bank', short: 'IDFC FIRST', initials: 'I' },
+  { symbol: 'AXISBANK', ifsc: 'UTIB', name: 'Axis Bank', short: 'Axis', initials: 'A' },
 ] as const
 
 export const bankLogoUrl = (symbol: string) => (symbol === 'IDFCFIRSTB' ? idfcFirstLogo : getCompany(symbol)?.logoUrl)
@@ -16704,7 +16704,7 @@ export function BankRow({ bank, copy, note, onChange, onAdd }: {
   return (
     <ListCell
       as="button"
-      iconLeft={<Avatar src={bankLogo(bank)} initials={bank.bank.slice(0, 2)} shape="rounded" size={32} label={bank.bank} />}
+      iconLeft={<Avatar src={bankLogo(bank)} initials={bank.bank.slice(0, 1)} shape="rounded" size={32} label={bank.bank} />}
       label={copy.method}
       description={note ? `${bankLine(bank)} · ${note}` : bankLine(bank)}
       iconRight={<Icon icon={msChevronRight} />}
@@ -16758,7 +16758,7 @@ export function BankOptions({ banks, selected, name, onPick, variant = 'card' }:
           as="label"
           variant={variant}
           selected={bank.id === selected}
-          iconLeft={<Avatar src={bankLogo(bank)} initials={bank.bank.slice(0, 2)} shape="rounded" size={32} label={bank.bank} />}
+          iconLeft={<Avatar src={bankLogo(bank)} initials={bank.bank.slice(0, 1)} shape="rounded" size={32} label={bank.bank} />}
           label={bankLine(bank)}
           description={`${bank.type} · ${bank.branch}`}
           trailing={<Radio name={name} checked={bank.id === selected} onChange={() => onPick(bank.id)} />}
