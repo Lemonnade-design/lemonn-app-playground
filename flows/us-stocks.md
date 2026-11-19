@@ -222,7 +222,7 @@ Every tap he wired is kept. The main path: FTUX sheet → Activate → Declarati
 - 19 Nov: A stock, ETF or bank with no logo shows one letter (its first), not two or three — app-wide (companies, market list, US banks, every Avatar / disc fallback).
 - 19 Nov: ETF tables (ETFs with the stock, fund peers): logo 24 → 32, so rows are 48 like Peers.
 - 19 Nov: Share bars (Key Holders, ETF allocation) end on the panel's 12 (last row's bottom 8 dropped). Peers: logo 24 → 32, name Label 14. Analyst Ratings card rows and footer follow the page (Description 12 names, Heading 12 figures) instead of Figma's 10. View Order History Label 14.
-- 2026-11-19 — US order pad: "Set SL" is an L3 tertiary Button at Large (48) with the quick chips' light border and 4 between the plus and the label (was an md pill chip; L3 gap: no button with border/light). The fractional-share warning is flat — Aerobar placed inline (no shadow), 16 in from the sides. The Indian order pad is the default.
+- 2026-11-19 — US order pad: "Set SL" is an L3 tertiary Button at Medium (40; was Large, the user's call) with the quick chips' light border and 4 between the plus and the label (was an md pill chip; L3 gap: no button with border/light). The fractional-share warning is flat — Aerobar placed inline (no shadow), 16 in from the sides. The Indian order pad is the default.
 - 2026-11-19 — Asset pages' floating trade dock: the fade starts higher — 40 above the buttons (was 32), the page's colour at 90% at the buttons' top edge and solid under them — so the content has faded before it reaches Buy / Sell.
 - 2026-11-19 — Stock page: in Related ETFs and Company financials the Long / Short (statement) filters sit 8 under the section title and 16 above the table, so the title and its filters read as one header.
 - 2026-11-19 — Order pad: the Actionbar keeps its 1px border-light line from the start (`Phone topLine`), not only once the page scrolls, with 6 below the two-line title so it does not sit on the line. A tap in the dock (market note, Balance · Req.) no longer closes the keypad; only the page and header above it do. Order pad versions (flow option "Order pad", group Trade): **US** — stop loss only (Sl.tsx: a "Set SL" chip, a Stop loss sheet with MKT ⇄ LMT, trigger in points ⇄ %, Est. loss, Clear, and Remove when editing; once set an "SL ✓" card), no take profit, no trailing, no leverage card; SL isn't available on fractional shares: tapping Set SL with a qty that isn't whole shows a floating warning Aerobar for 4 s (SlFractionalToast, above the dock), and a set SL is cleared (same toast) once the qty turns fractional. **Indian** (the default since 19 Nov) — as Indian stocks will have it: the leverage card on Market and TP + SL + trailing (Tpsl.tsx, kept as it was). Switching Market / Limit / SL keeps the keypad as it was: up stays up (no slide), closed stays closed; only the part under the amount (chips, prices, SL) drops and fades — the tabs, the amount and the dock stay put.
@@ -487,6 +487,8 @@ Every tap he wired is kept. The main path: FTUX sheet → Activate → Declarati
 - 2026-11-19 — Fee breakdown sheet (SL's View Charges and V2's Req.) rebuilt as the app's other breakdowns (Add money's Charges breakdown): one L3 KeyValueList — Brokerage (0.25% of the order value), GST (18% on brokerage), IFSCA turnover fee, Estimated fee as its total — the "approximate" note as the header description, and a Got it button. Differs from Figma: its separate groups, "•" sub-rows, hand-drawn dividers, notes and ✕ are gone.
 - 2026-11-19 — Order pad V2, Market: TP/SL (from the Lemonn auto TP/SL designs, Figma 4292:34063 · 4292:33108 · 4292:35483; Tpsl.tsx). A "Set TP/SL" chip (L3 pill chip with a plus, like the +$10 chips), centred under the leverage card, opens **Set TP/SL**: a card each for Take profit and Stop loss — Switch on / off, LMT ⇄ MKT, trigger in Points ⇄ Percentage (converted at the last price) on a Stepper, a Limit Stepper (limit orders), the target, and "Trailing take profit / stop loss" (ticked: "Trail 1.0 pts" + Edit). The trailing option opens a second sheet, **Trailing take profit / stop loss**: the trail on a large Stepper typed from the keypad, "Make trailing … your default", Done. Save replaces the chip with a full-width **TP/SL ✓** card (edit button; each leg that's on with a Limit / Market tag, its target price and % from the last price); both legs off brings the chip back. Differs from Figma: per order ("Applies to this order only", not the auto setting), $ and points, "TP/SL" for "Advance options", Limit / Market tags for "Auto", a Done button on the trailing sheet, no ⓘ tooltips. Prototype only: the dock and order don't change.
 - 2026-11-19 — Set TP/SL sheet: content from the production app. The stock row (symbol, last price, day change; Qty at the right, the pad's shares) under the header. Each field (Trigger at · Limit at) shows its $ price, typed from the keypad (tap the price; the caret and keypad appear) or set by the Stepper, which shows the move in points / % ("--" while empty; "Enter price" / "Enter limit price" placeholders). Under each card: Est. profit / Est. loss on the order's qty (from the limit on LMT, the trigger on MKT), or the error in red with the field box outlined red — "Take profit must be above $…", "Stop loss must be below $…", "Limit price is required" — and Clear (empties the leg). Save is off while a leg that's on is empty or wrong. LMT ⇄ MKT and Points ⇄ Percentage selects are primary, not subtle. Not taken from production: Disclose Qty (an Indian-exchange feature; US orders have none), the "TPSL & more" title.
+- 2026-11-19 — How leverage works / Activate leverage sheet: the "Liquidation risk" note under the example table is hidden (the user's call); the table stays.
+- 2026-11-19 — US order pad: "Set SL" loses its border (a tertiary Button at Medium with no outline) and gets a decorative separator above it — a border/light hairline, full strength in the middle, fading to 0% at both ends — so it no longer reads as another chip under the quick chips. L3 gap: no fading Divider.
 
 
 ## Source — this flow
@@ -38388,7 +38390,6 @@ export function LeverageCard() {
 /* The liquidation warning's line in content/secondary (19 Nov, the user's call): L3 Aerobar's soft paragraph is
    secondary at 60%, which reads as tertiary. FLAG: L3 gap — Aerobar has no option for a full-strength paragraph; set
    through its --ab-paragraph variable. */
-.risk { --ab-paragraph: var(--l3-content-secondary); }
 ```
 
 ### `src/flows/us-stocks/screens/trade/LeverageSheet.tsx`
@@ -38401,7 +38402,6 @@ export function LeverageCard() {
 // FLAG: copy hard-coded like the rest of the pad (no copy.ts in this flow yet).
 // FLAG: the example table is hand-laid (LeverageSheet.module.css) — L3 has no table.
 import { useId, useState } from 'react'
-import { Aerobar } from '@l3/components/Aerobar'
 import { BottomSheet, BottomSheetHeader } from '@l3/components/BottomSheet'
 import { Button } from '@l3/components/Button'
 import { ButtonGroup } from '@l3/components/ButtonGroup'
@@ -38479,15 +38479,6 @@ export function LeverageSheet({ open, onClose, onConfirm, mode = 'activate' }: {
             </Grid>
           ))}
         </div>
-        <Aerobar
-          className={styles.risk}
-          floating
-          placement="inline"
-          type="danger"
-          emphasis="secondary"
-          heading="Liquidation risk"
-          paragraph="At 3x, a 33% price drop closes your position and you lose your $100."
-        />
         {!explain && <label className={styles.dontShow}>
           <Checkbox checked={dontShow} onChange={(e) => setDontShow(e.target.checked)} />
           Don’t show this again
@@ -40369,11 +40360,17 @@ export function PriceField({ label, unit, price, stepper }: PriceFieldProps) {
 ```css
 /* Stop loss on the order pad (Sl.tsx). Same look as Tpsl.module.css, one card only. */
 
-/* "Set SL" chip: centred, like the pad's other rows. */
-.chip { display: flex; justify-content: center; }
-/* "Set SL": the quick chips' light border (19 Nov, the user's call). L3 gap: no button with border/light (tertiary is
-   border/intense, secondary border/dark). */
-.setSl.setSl { --btn-border: var(--l3-border-light); --btn-gap: var(--l3-spacing-04); } /* 4 between the plus and the label (the user's call) */
+/* "Set SL": centred, like the pad's other rows, under a decorative separator — a border/light hairline at full
+   strength in the middle, fading to 0% at the left and right (19 Nov, the user's call). L3 gap: no fading Divider. */
+.chip {
+  display: flex;
+  align-self: stretch; /* the line spans the pad; the button stays centred */
+  justify-content: center;
+  padding-top: var(--l3-spacing-08);
+  background: linear-gradient(to right, transparent, var(--l3-border-light) 50%, transparent) top / 100% 1px no-repeat;
+}
+/* The tertiary Button without its border, so it isn't one more chip (the user's call); 4 between the plus and the label. */
+.setSl.setSl { --btn-border: transparent; --btn-gap: var(--l3-spacing-04); }
 
 /* Summary card, full width: a head row, a hairline, the target. gap 0: L3 Card's own gap. */
 .summary { align-self: stretch; gap: 0; }
@@ -40518,9 +40515,9 @@ export function SlControl({ order, fractional, onBlocked }: { order: TpslOrder; 
         <SlCard sl={sl} ltp={ltp} onEdit={open} />
       ) : (
         <div className={styles.chip}>
-          {/* Bigger than the quick chips (19 Nov, the user's call): an L3 Button at Large (48), the app's button size,
-              with the quick chips' light border (19 Nov). L3 Tabs stop at md, so it is no longer a pill chip. */}
-          <Button variant="tertiary" size="lg" className={styles.setSl} iconLeft={<Icon icon={msAdd} size={20} />} onClick={open}>Set SL</Button>
+          {/* A borderless tertiary Button at Medium under a decorative hairline that fades out at both ends, so it doesn't
+              read as one more chip under the quick chips (19 Nov, the user's call). */}
+          <Button variant="tertiary" size="md" className={styles.setSl} iconLeft={<Icon icon={msAdd} size={20} />} onClick={open}>Set SL</Button>
         </div>
       )}
       <SlSheet
