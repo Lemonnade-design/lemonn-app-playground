@@ -314,6 +314,9 @@ sample signals in `data.ts` (`zingSignals`, `SignalFilter`, `matchesFilter`).
      and Silver surface/secondary; default, user's pick 20 Nov) or Grey (all surface/secondary). Its tag is the name in grey, like NIFTY.
   (The grouped-list version was removed, 20 Nov. Setting values stay v1, v2, v3, v5, v6, v7.)
   Chips not picked read in text secondary (all versions).
+  The setting is a dropdown (desktop panel and phone settings); on a phone (app mode) a floating V1 … V6 bubble on the
+  signals sheet screens (fno-39, 45, 46, 47) steps to the next version in one tap. It starts on the chart, above the
+  sheet (`quickSwitch.spot`), and can be dragged.
  · fno-40 … 44 the filter on each group (41: NIFTY 50 + SENSEX picked; 44: plus a
   strategy) · fno-45 / 46 Your filter saved (with / without the tip) · fno-47 the plain All Signals look.
 
@@ -538,6 +541,7 @@ The source uses old D2 controls alongside L3; their code equivalents are L3 comp
 
 ### Changelog
 
+- 2026-11-20 — Zing signals: Commodity signals is a dropdown; a floating V1 … V6 bubble on the signals sheet screens (phone). Preview: a quick switch can set its starting spot (`quickSwitch.spot`).
 - 2026-11-20 — Zing signals: signal cards get a smooth drop shadow (L3 elevation low + soft).
 - 2026-11-20 — Zing signals: strategy names in text primary; grey tags (market, win rate) in text secondary; Commodity picture's tag grey.
 - 2026-11-20 — Zing signals: grouped list removed; Logo on avatar's tag is the name alone; no icon on the Commodities tab; Commodity picture puts the logo on a circle (colour per commodity, or grey — new setting).
@@ -7191,6 +7195,8 @@ import { markMove } from '../../shared/prototype'
  * ScalpPro (home cards, Expiry calendar …) always opens the Scalper as a new page, in from the right — even from screens
  * listed after it, which app order alone would read as back. Its back returns to that page (`backOr`).
  */
+/** The Zing signals sheet screens whose list the "Commodity signals" version changes (not the filter screens). */
+const SIGNALS_SHEET_SCREENS = ['fno-39', 'fno-45', 'fno-46', 'fno-47']
 const openScalper = (go: Go) => { markMove('fno-05', 'forward'); go('fno-05') }
 /** Back to wherever the asset page was opened from (option chain, Gold Summary, Search…); `fallback` when opened directly. */
 const backOr = (go: Go, fallback: string) => { if (window.history.length > 1) window.history.back(); else go(fallback) }
@@ -7207,9 +7213,32 @@ export const fno: Flow = {
     // The breakeven sheet (fno-36): Version 2 (default) = What is breakeven line? + the charges table,
     // no info lines; Version 1 = the sheet as it first shipped (How breakeven works, two info lines, no table).
     // Zing signals (fno-39 … 47): how a commodity (MCX) signal stands apart from index and stock signals — 20 Nov review.
-    { id: 'commodityTag', group: 'Zing signals', label: 'Commodity signals', values: [{ value: 'v1', label: '1 · Grey tag (today)' }, { value: 'v2', label: '2 · MCX tag' }, { value: 'v3', label: '3 · Logo on avatar' }, { value: 'v5', label: '4 · Segment tabs' }, { value: 'v6', label: '5 · Logo tag, no tabs' }, { value: 'v7', label: '6 · Commodity picture' }], default: 'v5', floatOn: ['fno-39', 'fno-45', 'fno-46', 'fno-47'] },
+    // A dropdown in the settings (desktop and phone); on a phone (app mode) a floating V1 … V6 bubble on the signals
+    // sheet screens flips it in one tap (20 Nov, the user's call).
+    {
+      id: 'commodityTag',
+      group: 'Zing signals',
+      label: 'Commodity signals',
+      picker: 'dropdown',
+      values: [{ value: 'v1', label: '1 · Grey tag (today)' }, { value: 'v2', label: '2 · MCX tag' }, { value: 'v3', label: '3 · Logo on avatar' }, { value: 'v5', label: '4 · Segment tabs' }, { value: 'v6', label: '5 · Logo tag, no tabs' }, { value: 'v7', label: '6 · Commodity picture' }],
+      default: 'v5',
+      floatOn: SIGNALS_SHEET_SCREENS,
+      quickSwitch: {
+        on: SIGNALS_SHEET_SCREENS,
+        // On the chart, above the sheet (the default spot lands on the sheet's tabs).
+        spot: { side: 'left', y: 0.3 },
+        values: [
+          { value: 'v1', label: 'Commodity signals 1 · Grey tag', short: 'V1' },
+          { value: 'v2', label: 'Commodity signals 2 · MCX tag', short: 'V2' },
+          { value: 'v3', label: 'Commodity signals 3 · Logo on avatar', short: 'V3' },
+          { value: 'v5', label: 'Commodity signals 4 · Segment tabs', short: 'V4' },
+          { value: 'v6', label: 'Commodity signals 5 · Logo tag, no tabs', short: 'V5' },
+          { value: 'v7', label: 'Commodity signals 6 · Commodity picture', short: 'V6' },
+        ],
+      },
+    },
     // Commodity picture (version 6): the logo's circle — a colour per commodity (Gold zing light, Natural Gas error light, Crude Oil / Silver grey) or all grey.
-    { id: 'commodityPicBg', group: 'Zing signals', label: 'Commodity picture background', showIf: { commodityTag: ['v7'] }, values: [{ value: 'colour', label: 'Colour per commodity' }, { value: 'grey', label: 'Grey' }], default: 'colour', floatOn: ['fno-39', 'fno-45', 'fno-46', 'fno-47'] },
+    { id: 'commodityPicBg', group: 'Zing signals', label: 'Commodity picture background', showIf: { commodityTag: ['v7'] }, picker: 'dropdown', values: [{ value: 'colour', label: 'Colour per commodity' }, { value: 'grey', label: 'Grey' }], default: 'colour', floatOn: SIGNALS_SHEET_SCREENS },
     { id: 'breakevenSheet', group: 'Scalper', label: 'Breakeven sheet', values: [{ value: 'v1', label: 'Version 1' }, { value: 'v2', label: 'Version 2' }], default: 'v2', floatOn: ['fno-36'] },
     // Expiring This Week (Commodities, fno-08): Version 1 = the sideways card rail; Version 2 = a short calendar (the
     // calendar's first 3 entries on their days, View all → fno-38); Version 3 = that calendar in one card.
