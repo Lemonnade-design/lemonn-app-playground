@@ -115,6 +115,96 @@
       "figmaUrl": "https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=11754-69563"
     },
     {
+      "id": "fno-39",
+      "name": "Zing signals · All signals",
+      "figma": "6900:23855",
+      "note": "From the Active chip at the tool row’s right end (Zing). Figma: file 9r61YQp7QQZAQovDyz8hLF (Enrich signal filter), old Lemonn design system, rebuilt in L3. Top row: filter button | All Signals (4) · Win rate ≥ 50% · Commodity · Nifty · Sensex (L3 pill tabs, Small; counts are worked out from the signals). Active signals (n) with Total P&L, then a card per signal: avatar, strategy, market + win rate tags (or a P&L tag), View; under a line Buy Call 23950 • RR • the rule. A chip with no signals shows the L3 empty state. Filter → fno-40.",
+      "goesTo": [
+        "dash-20"
+      ],
+      "figmaUrl": "https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=6900-23855"
+    },
+    {
+      "id": "fno-40",
+      "name": "Zing signals · Filter · Indices",
+      "figma": "6900:26203",
+      "note": "The filter takes the signals sheet over in place, in the Scalper’s Settings sheet look: L3 Side nav Indices · Win rate · Call/Put · Strategies, the white panel with its Heading/16 title row and Clear All, card rows with a checkbox (Indices, Strategies) or radio (Win rate, Call/Put; the chosen one tinted blue), the picks as pills over Cancel / Apply (primary). Cancel or a scrim tap brings the signals back; Apply saves them as Your filter (→ fno-45).",
+      "goesTo": [
+        "dash-20"
+      ],
+      "figmaUrl": "https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=6900-26203"
+    },
+    {
+      "id": "fno-41",
+      "name": "Zing signals · Filter · Indices picked",
+      "figma": "6900:29666",
+      "note": "NIFTY 50 and SENSEX ticked (All Indices unticks itself; untick both and it’s back). The side tab shows how many it picked (Figma: a red 1 — L3 Side nav’s corner flag, in blue). The picks sit as chips over Cancel / Apply; ✕ takes one off.",
+      "goesTo": [
+        "dash-20"
+      ],
+      "figmaUrl": "https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=6900-29666"
+    },
+    {
+      "id": "fno-42",
+      "name": "Zing signals · Filter · Win rate",
+      "figma": "6900:27042",
+      "note": "Win rate: All · ≥ 50% · ≥ 30% (pick one).",
+      "goesTo": [
+        "dash-20"
+      ],
+      "figmaUrl": "https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=6900-27042"
+    },
+    {
+      "id": "fno-43",
+      "name": "Zing signals · Filter · Call/Put",
+      "figma": "6900:27889",
+      "note": "Call/Put: All · Call · Put (pick one).",
+      "goesTo": [
+        "dash-20"
+      ],
+      "figmaUrl": "https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=6900-27889"
+    },
+    {
+      "id": "fno-44",
+      "name": "Zing signals · Filter · Strategies",
+      "figma": "6900:28736",
+      "note": "Strategies: one row per Zing strategy with its picture (L3 Avatar 24), pick several. A long name is cut at 140 in its chip (Figma dev note).",
+      "goesTo": [
+        "dash-20"
+      ],
+      "figmaUrl": "https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=6900-28736"
+    },
+    {
+      "id": "fno-45",
+      "name": "Zing signals · Your filter saved (tip)",
+      "figma": "6900:30528",
+      "note": "Right after Apply: Your filter (n) comes in first, selected, with ✕ to remove it; the filter button gets a red dot; a blue tooltip “Filter applied & saved for quick access” with ✕ points at it once (Figma’s colour on the L3 tooltip). Figma keeps All Signals selected; here the saved filter is, so the list shows what it picked.",
+      "goesTo": [
+        "dash-20"
+      ],
+      "figmaUrl": "https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=6900-30528"
+    },
+    {
+      "id": "fno-46",
+      "name": "Zing signals · Your filter saved",
+      "figma": "6900:24637",
+      "note": "The same without the tip: next time the sheet opens, Your filter is one tap away.",
+      "goesTo": [
+        "dash-20"
+      ],
+      "figmaUrl": "https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=6900-24637"
+    },
+    {
+      "id": "fno-47",
+      "name": "Zing signals · All Signals (plain)",
+      "figma": "6900:25420",
+      "note": "Figma’s plain look: an “All Signals” header and every signal. Figma’s ← back is left out: L3 gives the first sheet over a screen no back button.",
+      "goesTo": [
+        "dash-20"
+      ],
+      "figmaUrl": "https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=6900-25420"
+    },
+    {
       "id": "fno-08",
       "name": "Commodities home",
       "figma": "6754:63637",
@@ -374,6 +464,10 @@
     "src/flows/fno/assets/option-chain.svg",
     "src/flows/fno/assets/referral.svg",
     "src/flows/fno/assets/scalppro.svg",
+    "src/flows/fno/assets/signals/booming.png",
+    "src/flows/fno/assets/signals/lemon.png",
+    "src/flows/fno/assets/signals/neeraj.png",
+    "src/flows/fno/assets/signals/zing-mark.svg",
     "src/flows/fno/assets/smart-invest.svg",
     "src/flows/fno/assets/strategies.svg",
     "src/flows/fno/assets/trade-calls.svg",
@@ -457,6 +551,8 @@
     "src/flows/fno/sheets/HomeSheets.tsx",
     "src/flows/fno/sheets/IlliquidSheet.tsx",
     "src/flows/fno/sheets/IndicatorDetailsSheet.tsx",
+    "src/flows/fno/sheets/SignalsSheet.module.css",
+    "src/flows/fno/sheets/SignalsSheet.tsx",
     "src/flows/fno/strategies/components/Strategies.module.css",
     "src/flows/fno/strategies/components/StrategiesFeed.tsx",
     "src/flows/fno/strategies/data.ts"
