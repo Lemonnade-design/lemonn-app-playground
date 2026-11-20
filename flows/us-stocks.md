@@ -199,6 +199,10 @@ Every tap he wired is kept. The main path: FTUX sheet → Activate → Declarati
 → Pay on bank → Money ready → Stock → Buy → Executed → Wallet → Withdraw.
 
 ### Changelog
+- 20 Nov 2026 — US pad, Stop loss on fractional shares: every tap on the card shakes the red "Stop loss isn’t available on fractional shares" line (side to side, 4 each way, 400 ms), so a repeat tap isn't lost; the first tap waits for the line to open, then shakes. No motion with reduced motion on. L3 gap: no shake / error-attention motion.
+- 20 Nov 2026 — Phone (app mode): a floating "IN" / "US" button on every order pad screen (Buy / Sell, every type and state) flips the flow option "Order pad" between the Indian and the US pad; one tap each way. It's the preview's generic quick switch (`quickSwitch` on the option, `preview/AppMode.tsx`): draggable, starts on the left opposite the settings button, not shown on other screens. On a laptop the option already floats beside the phone (`floatOn`).
+- 20 Nov 2026 — TP/SL sheet B: the first time it opens, Take profit is on and Stop loss off (both were off); the US pad's one leg, the stop loss, still opens on. Once saved, the sheet opens as saved.
+- 20 Nov 2026 — Order pad V2, buy: the quick chips stay in both modes, so the layout doesn't change when the amount ⇄ shares switch flips. Shares show +1 · +5 · +10 · +20 (added to the shares typed; also on the pads that start in shares, T02 and BRK.B's whole shares). An amount on a pad with no amount chips of its own (T02 switched to amount) shows +$10 · +$50 · +$100 · Max. Sell pads keep 25% · 50% · Max.
 - 20 Nov 2026 — One TP/SL design for both pads (Tpsl.tsx, `TpslFeatures`): the US-only pad now uses the same PadCard and sheet as the Indian pad, with its own content and features (`TPSL_US`): "Stop loss" as the card title and sheet heading, the stop-loss leg only, no trailing, and none on fractional shares (the red "Stop loss isn’t available on fractional shares" line; a set SL clears when the quantity turns fractional). The US-only `Sl.tsx` is gone. Trailing SL starts off. The trail follows the trigger's Points ⇄ Percentage switch (sheet B: no unit of its own; converted at the last price in 0.5 steps when the unit changes). Sheet A still has its own trailing sheet (unit switch + the "Make trailing … your default" checkbox).
 - 19 Nov 2026 — Order processing (V2, both loader variants): no progress bar; the result's hairline keeps its place, hidden until done. The running ring, its glow, ripple and drop are discover blue (L3 content/accent/discover); the done badge and burst stay success green.
 - 19 Nov 2026 — Asset pages' floating dock: the strip under Buy / Sell (its 8 bottom padding) is solid page colour, so page content no longer shows through below the buttons while scrolling; the fade above and behind the buttons is unchanged.
@@ -22562,6 +22566,9 @@ import { registry } from './registry'
 import { allScreens } from './screens'
 import { orderPads } from './screens/trade/orderPads'
 
+/** The preview screens that are order pads (Buy / Sell, every type and state): where the pad switch floats. */
+const ORDER_PAD_SCREEN_IDS = registry.filter((s) => s.figma in orderPads).map((s) => s.id)
+
 /**
  * US Stocks — happy flow, imported from the teammate's prototype (US-Stocks-Happy-Flow.html, 2026-10-30) on branch
  * jojo. Kept as he built it so we can review it against the system: everything that isn't L3 / app-standard is marked
@@ -22608,6 +22615,14 @@ export const usStocks: Flow = {
       ],
       default: 'india', // Indian by default (19 Nov, the user's call)
       floatOn: ['us-stocks-33'],
+      // Phone (app mode): a floating "IN" / "US" button on every order pad screen flips the pad (20 Nov, the user's call).
+      quickSwitch: {
+        on: ORDER_PAD_SCREEN_IDS,
+        values: [
+          { value: 'india', label: 'Indian pad', short: 'IN' },
+          { value: 'us', label: 'US pad', short: 'US' },
+        ],
+      },
     },
     // The TP/SL sheet, an A/B test (19 Nov, the user's call: "keep this version intact for AB testing"): B · A's layout, each
     // leg one pad-style price card, no box inside a box (TpslSheetB); A · a card per leg with a box inside (TpslSheet).
@@ -39302,7 +39317,7 @@ import { asset } from '../../asset'
 import { useUsNav } from '../../nav'
 import { Usd, formatInr, useUsd, useUsdInrRate } from '../../../../shared/money'
 import { al, forCurrentStock } from './format'
-import type { Derived, OrderPadConfig, OrderType, PadMode } from './types'
+import type { Derived, OrderPadConfig, OrderType, PadChip, PadMode } from './types'
 import { usePadVersion, usePriceCards } from './version'
 import { LeverageCard } from './LeverageCard'
 import { TPSL_INDIA, TPSL_US, TpslControl } from './Tpsl'
@@ -39310,6 +39325,11 @@ import { FeeBreakdownSheet } from './FeeBreakdown'
 import { CHARGE_FACTOR } from './orderPads'
 import { PriceField, PriceFieldBox } from './PriceField'
 import styles from './OrderPadV2.module.css'
+
+/** Buy, shares mode: +1 / +5 / +10 / +20 shares (the amount's +$10 … row, in shares). */
+const SHARE_CHIPS: PadChip[] = [1, 5, 10, 20].map((n) => ({ label: `+${n}`, apply: (value: number) => value + n }))
+/** Buy, amount mode on a pad that starts in shares: +$10, +$50, +$100. */
+const addUsdChip = (n: number): PadChip => ({ label: (fmt) => `+${fmt(n, { decimals: 0 })}`, apply: (value) => value + n })
 
 const ORDER_TYPES: { value: OrderType; label: string }[] = [
   { value: 'market', label: 'Market' },
@@ -39390,6 +39410,17 @@ export function OrderPadV2({ config, backdrop, sheet }: { config: OrderPadConfig
   // (19 Nov, the user's call) — and goes to Add money (M01). Whole again under the balance: back to Buy.
   const balance = config.side === 'buy' ? Number(config.avail.replace(/[^\d.]/g, '')) : NaN
   const short = config.side === 'buy' && orderUsd * CHARGE_FACTOR > balance
+  // Quick chips for the mode on screen. A buy pad keeps a row of 4 in both modes so the layout doesn't jump when the
+  // amount ⇄ shares switch flips (20 Nov, the user's call): shares get +1 / +5 / +10 / +20; an amount the pad has no
+  // chips for gets +$10 / +$50 / +$100 / Max (Max = what the balance buys after charges). The pad's own chips win.
+  const chips: PadChip[] | undefined =
+    mode === config.mode && config.chips
+      ? config.chips
+      : config.side !== 'buy'
+        ? undefined
+        : mode === 'shares'
+          ? SHARE_CHIPS
+          : [...[10, 50, 100].map(addUsdChip), { label: 'Max', apply: () => balance / CHARGE_FACTOR }]
   const ctaInr = orderUsd > 0 && !short ? formatInr(orderUsd * rate, { decimals: 0 }) : undefined
   const ctaLabel = short ? 'Add money' : config.cta.label
   const ctaDisabled = short ? false : typeof config.cta.disabled === 'function' ? config.cta.disabled(derived) : config.cta.disabled
@@ -39663,16 +39694,16 @@ export function OrderPadV2({ config, backdrop, sheet }: { config: OrderPadConfig
           {/* The part that changes with the order type (chips, prices, SL): it dissolves — drops + fades out, rises + fades
               in (19 Nov, the user's call: only this part moves; the tabs, the amount and the dock stay put). */}
           <Stack gap="16" align="center" className={styles.fields} ref={fields}>
-          {config.chips && mode === config.mode && (
+          {chips && (
             <Tabs
               appearance="pill"
               size="md"
               behavior="filter"
-              aria-label={mode === 'amount' ? 'Add amount' : 'Shares to sell'}
-              items={config.chips.map((chip, i) => ({ value: String(i), label: typeof chip.label === 'function' ? chip.label(usd) : chip.label }))}
+              aria-label={mode === 'amount' ? 'Add amount' : config.side === 'sell' ? 'Shares to sell' : 'Add shares'}
+              items={chips.map((chip, i) => ({ value: String(i), label: typeof chip.label === 'function' ? chip.label(usd) : chip.label }))}
               value=""
               onChange={(label) => {
-                const chip = config.chips?.[Number(label)]
+                const chip = chips[Number(label)]
                 if (chip) applyChip(chip.apply)
               }}
             />
@@ -40463,6 +40494,20 @@ export function PriceField({ label, unit, price, stepper }: PriceFieldProps) {
 /* The control: the pad card + the "not on fractional shares" line under it (US). The line's 8 rides in its collapse. */
 .control { align-self: stretch; }
 .blocked { padding-top: var(--l3-spacing-08); }
+/* A tap on the card while blocked shakes the line (side to side, 4 each way, settling; L3's long duration). The first
+   time it waits for the line to finish opening (medium). L3 gap: no shake / error-attention motion. */
+.blocked[data-shake] { animation: shake var(--l3-motion-duration-long) var(--l3-motion-easing-standard); }
+.blocked[data-shake='after-open'] { animation-delay: var(--l3-motion-duration-medium); }
+@keyframes shake {
+  15% { transform: translateX(calc(-1 * var(--l3-spacing-04))); }
+  35% { transform: translateX(var(--l3-spacing-04)); }
+  55% { transform: translateX(calc(-1 * var(--l3-spacing-04))); }
+  75% { transform: translateX(calc(var(--l3-spacing-04) / 2)); }
+  90% { transform: translateX(calc(-1 * var(--l3-spacing-04) / 2)); }
+}
+@media (prefers-reduced-motion: reduce) { .blocked[data-shake] { animation: none; } }
+/* The red line's collapse clips only top and bottom, so the shake's side swing isn't cut off. */
+.collapseInner:has(> .blocked) { overflow: visible clip; }
 
 /* A leg card in the sheet. */
 .leg { gap: 0; }
@@ -40732,8 +40777,14 @@ export function TpslControl({ order, features = TPSL_INDIA, fractional = false }
   // place of the sheet, until the quantity is whole again.
   const noFractions = features.wholeShares && fractional
   const [blocked, setBlocked] = useState(false)
+  // Every tap on the card while blocked shakes the red line, so a repeat tap isn't lost (20 Nov, the user's call). The
+  // count is the line's key: a new key replays the shake. The first tap waits for the line to open, then shakes.
+  const [shake, setShake] = useState({ count: 0, afterOpen: false })
   const open = () => {
-    if (noFractions) return setBlocked(true)
+    if (noFractions) {
+      setShake((s) => ({ count: s.count + 1, afterOpen: !(blocked && noFractions) }))
+      return setBlocked(true)
+    }
     setRound((n) => n + 1)
     setSheetOpen(true)
   }
@@ -40765,7 +40816,12 @@ export function TpslControl({ order, features = TPSL_INDIA, fractional = false }
       {/* The red line opens and closes (0fr ⇄ 1fr), never pops in (19 Nov, the user's call: changes animate). */}
       <div className={styles.collapse} data-open={(blocked && noFractions) || undefined}>
         <div className={styles.collapseInner}>
-          <p className={`${styles.error} ${styles.blocked}`} role="alert">{blocked && noFractions ? `${features.title} isn’t available on fractional shares` : ''}</p>
+          <p
+            key={shake.count}
+            className={`${styles.error} ${styles.blocked}`}
+            role="alert"
+            data-shake={shake.count > 0 ? (shake.afterOpen ? 'after-open' : '') : undefined}
+          >{blocked && noFractions ? `${features.title} isn’t available on fractional shares` : ''}</p>
         </div>
       </div>
       <Sheet
@@ -41232,11 +41288,12 @@ export function TpslSheetB({ open, order, features, start, onClose, onSave }: { 
   const layer = useSheetLayer()
   const usd = useUsd()
   const { ltp, entry } = order
-  // The first time, both legs open switched off (the user's call; A opens with both on). Turning one on brings A's start
-  // values. A single leg (US: the stop loss) opens on: the card's Switch already said yes. Once saved, the sheet opens as saved.
+  // The first time, the first leg the market offers opens on and the rest off (20 Nov, the user's call; A opens with both
+  // on): Indian pad — Take profit on, Stop loss off; US pad — its one leg, the stop loss, on (the card's Switch already
+  // said yes). Turning a leg on brings A's start values. Once saved, the sheet opens as saved.
   const [draft, setDraft] = useState<Tpsl>(() => {
-    const single = features.legs.length === 1
-    const first = { tp: { ...start.tp, on: single }, sl: { ...start.sl, on: single } }
+    const opensOn = features.legs[0]
+    const first = { tp: { ...start.tp, on: opensOn === 'tp' }, sl: { ...start.sl, on: opensOn === 'sl' } }
     return fitTo(start === TPSL_START ? first : start, features)
   })
   const [typing, setTyping] = useState<Typing | null>(null)
