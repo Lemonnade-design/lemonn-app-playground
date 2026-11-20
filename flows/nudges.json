@@ -114,12 +114,15 @@
     "src/flows/nudges/screens/OrderPad.tsx",
     "src/flows/nudges/sheets/BlockDial.module.css",
     "src/flows/nudges/sheets/BlockDial.tsx",
+    "src/flows/nudges/sheets/GaugeMeter.module.css",
+    "src/flows/nudges/sheets/GaugeMeter.tsx",
     "src/flows/nudges/sheets/GuardrailSheets.module.css",
     "src/flows/nudges/sheets/GuardrailSheets.tsx",
     "src/flows/nudges/sheets/NudgeSheet.module.css",
     "src/flows/nudges/sheets/NudgeSheet.tsx",
     "src/flows/nudges/sheets/SoftDial.module.css",
-    "src/flows/nudges/sheets/SoftDial.tsx"
+    "src/flows/nudges/sheets/SoftDial.tsx",
+    "src/flows/nudges/sheets/gaugeArt.ts"
   ],
   "shared": [
     "src/shared/copy.ts",

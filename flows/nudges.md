@@ -77,7 +77,7 @@ blocks, the body text 16 under the meter, 32 from the last text to the dock's li
 | Slot | Content |
 |---|---|
 | Heading | "You are overtrading" (`heading-24`) over "Your chances of losing money today are high" (`label-14`, secondary) |
-| Meter | 4f Soft dial or 4g Blocks (below); in the middle the level word — Safe · Caution · High risk — and, on Tag first and With multiple, the multiple above it ("2X", `heading-36`) |
+| Meter | 4f Soft dial or 4g Blocks (below); in the middle the level word — Safe · Caution · High risk — only (no multiple in any layout since 20 Nov) |
 | Body text | Size-up: "You are placing a bigger order right after a loss"; every other case its own fact ("3X more orders than usual today"; state C: the raw fact, "14 orders today"). `description-14`, secondary |
 | Dock | `ButtonGroup` vertical: `primary` = the case's guardrail · `secondary` "Not now, place order" (on Positions: "Not now"). Setting "Buttons → Both guardrails": primary · secondary (other guardrail) · ghost Not now |
 
@@ -85,10 +85,10 @@ blocks, the body text 16 under the meter, 32 from the last text to the dock's li
 
 | Setting | Values |
 |---|---|
-| Meter | **4f · Soft dial** (default) · 4g · Blocks |
+| Meter | **4f · Soft dial** (default) · 4g · Blocks · 4h · Speedometer · 0–100 · 4i · Speedometer · Low–High (4h / 4i have their own layout; Meter layout doesn't apply) |
 | Risk level | **High risk** (default) · Caution · Safe — where the reading stops, with that level's colours, glow, grains and word |
-| Meter layout | **Text first** (default: heading, sub line, meter, body text) · Meter first (meter, "You are overtrading", body text; other cases add "Your chances of losing money today are high" to their fact) · Tag first (a red secondary L3 Tag "Overtrading Detected" with a filled warning icon — 8 padding, 2 icon → text, an L3 gap — then "Your chances of losing money are high" (`heading-18`), the meter with the multiple, body text) · With multiple (as Text first, with the multiple in the dial) |
-| Meter fill (Soft dial only) | **One colour** (default: the whole ring turns green → yellow → red as the needle moves; levels 0–45 / 45–65 / 65–100 %, high risk lands at ~75 % for 2X) · Blended (each part keeps the colour it was filled with, melting into the next over a soft band; levels 0–33 / 33–60 / 60–100 %, high risk at ~85 %) |
+| Meter layout | **Text first** (default: heading, sub line, meter, body text) · Meter first (meter, "You are overtrading", body text; other cases add "Your chances of losing money today are high" to their fact) · Tag first (a red secondary L3 Tag "Overtrading Detected" with a filled warning icon — 8 padding, 2 icon → text, an L3 gap — then "Your chances of losing money are high" (`heading-18`), the meter, body text) · With multiple (now the same as Text first: the dial's multiple was removed, 20 Nov) |
+| Meter fill (Soft dial only) | **One colour** (default: the whole ring turns green → yellow → red as the needle moves; levels 0–45 / 45–65 / 65–100 %, high risk lands at ~75 % for 2X) · Blended (each part keeps the colour it was filled with, melting into the next over a soft band; levels 0–33 / 33–60 / 60–100 %, high risk at ~85 %) · Blended · 3 blocks (20 Nov: the blended ring cut by a 6 gap at each colour change — three blocks, each in its own colour) |
 
 **4f · Soft dial** (`sheets/SoftDial.tsx`, from the user's reference): a thick ring filled from the left with a radial
 gradient (deep inside, light outside), sparse white grains (brightest in a soft wedge behind the needle; the ones on
@@ -97,6 +97,18 @@ highlight, fine rim), a faint tint on the rest, a blurred glow behind each level
 the tip; the lower ends fade into the sheet. Before the needle moves the ring is plain grey. Motion (Web Animations,
 one path for needle, fill, grains, colours and word): ease-in-out a little past the reading, back, forward a touch,
 settle (≈ 2.7 s); colours blend in oklab; the word swaps Safe → Caution → High risk (out, then in).
+
+**4h / 4i · Speedometer** (`sheets/GaugeMeter.tsx`, Figma LM → F&O Playground 6917:62779, 20 Nov): the Figma
+speedometer illustration (`sheets/gaugeArt.ts`, its exported paths and colours — a brand illustration, not tokens): six
+colour segments green → red with a thin pastel rim, a black ring with ticks, a dark face and a white needle; its scale
+in Heading/12 — 4h 0 · 30 · 50 · 80 · 100, 4i Low · Medium · High — placed as in Figma. Its own layout: a pink wave (the
+level's light tint, blurred 11.3) across the top of the sheet, the dial, 16, the risk Tag (md, secondary, loss / warning
+/ profit, warning icon), 16, "Your chances of losing money is high" (Heading/20; medium / low for the other levels; Figma said "Your portfolio is at high risk", changed 20 Nov), 8, the fact (Description/14, secondary — Figma had Label/12, changed 20 Nov; size-up:
+"You are placing a bigger order right after loss"); 24 from the sheet's top and 24 to the dock's line. Where the needle
+stops: high risk 78 (as drawn in Figma), medium 50, low 15. Motion, once on open: the segments light up left → right
+(0.26 s each, 70 ms apart) with their labels, then the needle swings up from 0 with the soft dial's run (eased, a little
+past the reading, back a touch, settle; 2 s after 0.32 s) and the segment it lands on brightens once. Reduced motion:
+the end state. Dark: the illustration as it is; the wave and text follow the theme.
 
 **4g · Blocks** (`sheets/BlockDial.tsx`, from the user's reference): 13 thick rounded blocks with gaps, grey at rest; a
 fast eased fill (1.8 s, the same run with overshoot and bounce) lights them in their level's colour with a gradient (no
@@ -211,6 +223,10 @@ provide, per nudge: case id, data state, the headline numbers, ratio, own last l
 - 2026-11-19 · Tag first: the dial shows the multiple too — "2X" above "High risk", as in With multiple (soft dial and blocks).
 - 2026-11-19 · Layout 4: 32 from the last text (the body text, or Meter first's line) to the dock's line (was L3's 24).
 - 2026-11-19 · Cut down to the risk meter: Layouts 1 and 5 (5a–5g), meters 4a–4e and their settings removed (Layout, Layout 1 header, Layout 5 versions, the app-mode quick switches); kept 4f Soft dial and 4g Blocks with Risk level, Meter layout and Meter fill. The dials' drawing area now reaches 70 above the dial (was 30), so the blurred glow isn't cut off on mobile; text drawn above the glow.
+- 2026-11-20 · The dial's multiple ("2X") is removed from every version (Text first, Meter first, Tag first, With multiple; soft dial and blocks): the disc shows only the level word. With multiple now looks the same as Text first.
+- 2026-11-20 · Meters **4h · Speedometer · 0–100** and **4i · Speedometer · Low–High** from Figma (6917:62779), with their own layout and motion (segments light up, the needle swings up and settles). Meter fill **Blended · 3 blocks**: the blended soft dial cut into three blocks where the colour changes, each block in its own colour.
+- 2026-11-20 · 4h / 4i speedometer heading: "Your chances of losing money is high" (was "Your portfolio is at high risk"); medium / low for the other levels.
+- 2026-11-20 · 4h / 4i speedometer: the fact under the heading in L3 Description/14 (was Label/12).
 
 
 ## Source — this flow
@@ -410,7 +426,7 @@ function Pill({ host }: { host: HTMLElement }) {
     </button>
     <Pick option={meterOption} menu={menu} setMenu={setMenu} short={(_, label) => label.split(' · ')[0]} />
     <Pick option={meterLevelOption} menu={menu} setMenu={setMenu} short={(_, label) => label} />
-    <Pick option={meterLayoutOption} menu={menu} setMenu={setMenu} short={(_, label) => label} />
+    {!meter.startsWith('gauge') && <Pick option={meterLayoutOption} menu={menu} setMenu={setMenu} short={(_, label) => label} />}
     {meter === 'soft' && <Pick option={meterFillOption} menu={menu} setMenu={setMenu} short={(_, label) => label} />}
     <Pick option={caseOption} menu={menu} setMenu={setMenu} short={(_, label) => label} wide />
     <Pick option={stateOption} menu={menu} setMenu={setMenu} short={(v) => t('switcher.state', { state: v })} />
@@ -562,6 +578,16 @@ function Menu({ option, chip, host, onClose }: { option: Option; chip: HTMLEleme
   "option.actionsTwo": "Both guardrails",
   "option.actionsOne": "One guardrail",
   "nudge.tag": "Overtrading Detected",
+  "gauge.low": "Low",
+  "gauge.medium": "Medium",
+  "gauge.high": "High",
+  "gauge.tag.danger": "High Risk",
+  "gauge.tag.caution": "Medium Risk",
+  "gauge.tag.safe": "Low Risk",
+  "gauge.heading.danger": "Your chances of losing money is high",
+  "gauge.heading.caution": "Your chances of losing money is medium",
+  "gauge.heading.safe": "Your chances of losing money is low",
+  "gauge.sizeUp": "You are placing a bigger order right after loss",
   "nudge.lastLoss": "Last time you did this, you lost {amount}",
   "nudge.others": "{count} in 10 traders who did this lost more by the end of the day",
   "nudge.othersOtherDays": "{count} in 10 traders who did this lost more than on other days",
@@ -709,6 +735,8 @@ function Menu({ option, chip, host, onClose }: { option: Option; chip: HTMLEleme
   "option.meterLevels": "4e · Levels",
   "option.meterSoft": "4f · Soft dial",
   "option.meterBlocks": "4g · Blocks",
+  "option.meterGauge": "4h · Speedometer · 0–100",
+  "option.meterGaugeWords": "4i · Speedometer · Low–High",
   "option.meterLevel": "Risk level",
   "option.levelDanger": "High risk",
   "option.levelCaution": "Caution",
@@ -721,6 +749,7 @@ function Menu({ option, chip, host, onClose }: { option: Option; chip: HTMLEleme
   "option.meterFill": "Meter fill",
   "option.meterFillWhole": "One colour",
   "option.meterFillBlend": "Blended",
+  "option.meterFillSplit": "Blended · 3 blocks",
   "option.layoutZone": "5 · Risk bar",
   "option.badge": "Layout 1 header",
   "option.badgeChip": "Chip (✋ in the tag)",
@@ -894,9 +923,9 @@ const onOff = [{ value: 'off', label: t('option.everyBuyOff') }, { value: 'on', 
 // Size-up after a loss is the default and heads the list.
 export const caseOption = { id: 'case', group: 'Nudge', label: t('option.case'), picker: 'dropdown' as const, values: [...nudgeCases].sort((a, b) => Number(b.id === 'sizeUp') - Number(a.id === 'sizeUp')).map((c) => ({ value: c.id, label: t(`case.${c.id}.name` as Key) })), default: 'sizeUp' }
 export const stateOption = { id: 'state', group: 'Nudge', label: t('option.state'), picker: 'dropdown' as const, values: [{ value: 'A', label: t('option.stateA') }, { value: 'B', label: t('option.stateB') }, { value: 'C', label: t('option.stateC') }], default: 'A' }
-/** The meter (19 Nov, cut down to the two in use): 4f Soft dial (default) or 4g Blocks. A stored older style falls back
- *  to the default (activeMeter). */
-export const meterOption = { id: 'meter', group: 'Nudge', label: t('option.meter'), picker: 'dropdown' as const, values: [{ value: 'soft', label: t('option.meterSoft') }, { value: 'blocks', label: t('option.meterBlocks') }], default: 'soft' }
+/** The meter (19 Nov, cut down to the two in use): 4f Soft dial (default) or 4g Blocks; 20 Nov: 4h / 4i the Figma
+ *  speedometer (0–100 or Low–High scale, its own layout). A stored older style falls back to the default (activeMeter). */
+export const meterOption = { id: 'meter', group: 'Nudge', label: t('option.meter'), picker: 'dropdown' as const, values: [{ value: 'soft', label: t('option.meterSoft') }, { value: 'blocks', label: t('option.meterBlocks') }, { value: 'gauge', label: t('option.meterGauge') }, { value: 'gaugeWords', label: t('option.meterGaugeWords') }], default: 'soft' }
 export const activeMeter = (value: string) => meterOption.values.some((v) => v.value === value) ? value : meterOption.default
 
 /** Where the reading stops (19 Nov) — the meter's three versions. */
@@ -905,8 +934,9 @@ export const meterLevelOption = { id: 'meterLevel', group: 'Nudge', label: t('op
 /** Where the text sits around the meter (19 Nov): Text first · Meter first · Tag first · With multiple. */
 export const meterLayoutOption = { id: 'meterLayout', group: 'Nudge', label: t('option.meterLayout'), picker: 'dropdown' as const, values: [{ value: 'text', label: t('option.meterLayoutText') }, { value: 'meter', label: t('option.meterLayoutMeter') }, { value: 'tag', label: t('option.meterLayoutTag') }, { value: 'number', label: t('option.meterLayoutNumber') }], default: 'text' }
 /** Soft dial only (19 Nov): the whole ring changes colour as the needle moves, or each part keeps the colour
- *  it was filled with, blended (green → yellow → red). */
-export const meterFillOption = { id: 'meterFill', group: 'Nudge', label: t('option.meterFill'), picker: 'dropdown' as const, values: [{ value: 'whole', label: t('option.meterFillWhole') }, { value: 'blend', label: t('option.meterFillBlend') }], default: 'whole' }
+ *  it was filled with, blended (green → yellow → red); or (20 Nov) blended and cut into three blocks where the colour
+ *  changes. */
+export const meterFillOption = { id: 'meterFill', group: 'Nudge', label: t('option.meterFill'), picker: 'dropdown' as const, values: [{ value: 'whole', label: t('option.meterFillWhole') }, { value: 'blend', label: t('option.meterFillBlend') }, { value: 'split', label: t('option.meterFillSplit') }], default: 'whole' }
 
 export const nudgeOptions = [
   caseOption,
@@ -1034,7 +1064,9 @@ export function OrderPad({ side = 'buy', product: initialProduct = 'delivery', t
   const meterStyle = activeMeter(useFlowOption('nudges', 'meter', 'soft')) as MeterStyle
   const meterLevel = useFlowOption('nudges', 'meterLevel', 'danger') as RiskLevel
   const meterLayout = useFlowOption('nudges', 'meterLayout', 'text') as MeterLayout
-  const meterBlend = useFlowOption('nudges', 'meterFill', 'whole') === 'blend'
+  const meterFill = useFlowOption('nudges', 'meterFill', 'whole')
+  const meterBlend = meterFill === 'blend' || meterFill === 'split'
+  const meterSplit = meterFill === 'split'
   const everyBuy = useFlowOption('nudges', 'everyBuy', 'on') === 'on'
   const vibrate = useFlowOption('nudges', 'vibrate', 'on') === 'on'
   // A screen with a fixed case (03–09) shows it until the case or data state is changed in the settings; from then on
@@ -1070,7 +1102,7 @@ export function OrderPad({ side = 'buy', product: initialProduct = 'delivery', t
   const submit = () => { if (fired && (!nudged || everyBuy)) { setNudged(true); setModal({ kind: 'nudge' }) } else place() }
 
   const sheet = modal?.kind === 'nudge' && fired
-    ? <NudgeSheet caseId={fired.caseId} state={fired.state} meterStyle={meterStyle} meterLevel={meterLevel} meterLayout={meterLayout} meterBlend={meterBlend} vibrate={vibrate} actions={actions} onGuardrail={(g) => setModal({ kind: g })} onNotNow={place} />
+    ? <NudgeSheet caseId={fired.caseId} state={fired.state} meterStyle={meterStyle} meterLevel={meterLevel} meterLayout={meterLayout} meterBlend={meterBlend} meterSplit={meterSplit} vibrate={vibrate} actions={actions} onGuardrail={(g) => setModal({ kind: g })} onNotNow={place} />
     : modal?.kind === 'pnl'
       ? <LossLimitSheet initial={limit ?? defaultLimit} onClose={() => setModal(null)} onSave={(amount) => { setLimit(amount); setModal(null); setToast(t('pnl.saved', { amount: inr(amount, 0) })) }} />
       : modal?.kind === 'tpsl'
@@ -1406,6 +1438,153 @@ export function BlockDial({ ratio, level = 'danger', showRatio = false }: { rati
 }
 ```
 
+### `src/flows/nudges/sheets/GaugeMeter.module.css`
+
+```css
+/* 4h / 4i · the speedometer (GaugeMeter.tsx), from Figma LM → F&O Playground 6917:62779 (20 Nov). The dial's colours
+   are Figma's illustration; the labels and the wave are L3 tokens. */
+
+/* Above the wave (which is positioned too, and comes first). */
+.gauge { position: relative; display: block; overflow: visible; }
+
+/* The scale: L3/Heading/12 in content/primary. */
+.label { font: var(--l3-text-heading-12); fill: var(--l3-content-primary); }
+
+/* The parts that move turn / scale in the dial's own drawing units (origin = the needle's hub). */
+.part, .needle { transform-box: view-box; }
+
+/* The wave behind the top of the sheet: the level's light tint, blurred. It never takes a tap. */
+.wave {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: var(--l3-size-96);
+  overflow: visible;
+  filter: blur(var(--app-gauge-wave-blur));
+  pointer-events: none;
+}
+.wave[data-level='danger'] { fill: var(--l3-surface-accent-indicator-down-light); }
+.wave[data-level='caution'] { fill: var(--l3-surface-accent-warning-light); }
+.wave[data-level='safe'] { fill: var(--l3-surface-accent-indicator-up-light); }
+```
+
+### `src/flows/nudges/sheets/GaugeMeter.tsx`
+
+```tsx
+import { useEffect, useId, useRef, type CSSProperties } from 'react'
+import { t } from '../copy'
+import { GAUGE_H, GAUGE_W, NEEDLE_DRAWN_AT, NEEDLE_PIVOT, face, needle, ring, segments } from './gaugeArt'
+import { needleKeys, RUN_EASE, easeTimeAt, RUN } from './SoftDial'
+import type { RiskLevel } from './SoftDial'
+import styles from './GaugeMeter.module.css'
+
+/** 4h (0 · 30 · 50 · 80 · 100) and 4i (Low · Medium · High): the speedometer from Figma (LM → F&O Playground
+ *  6917:62779, 20 Nov). */
+export type GaugeScale = 'numbers' | 'words'
+
+/**
+ * The scale around the dial, as Figma lays it out: each label's centre (x) and top (y) in the 103-tall group, and
+ * where the dial sits in it. Figma geometry, in drawing units (1 = 1 px at 1×).
+ */
+const SCALES = {
+  numbers: {
+    width: 213.83, dialX: 36.78,
+    labels: [{ text: '0', x: 14, y: 79 }, { text: '30', x: 35.92, y: 32 }, { text: '50', x: 106.71, y: 0 }, { text: '80', x: 178.92, y: 32 }, { text: '100', x: 202.83, y: 78 }],
+  },
+  words: {
+    width: 214.66, dialX: 34.62,
+    labels: [{ key: 'gauge.low', x: 12, y: 78 }, { key: 'gauge.medium', x: 105.04, y: 0 }, { key: 'gauge.high', x: 200.66, y: 78 }],
+  },
+} as const
+const DIAL_Y = 24.38
+const HEIGHT = DIAL_Y + GAUGE_H // 103
+
+/** Where the needle stops, as a fraction of the scale: high risk where Figma draws it (78), medium straight up, low on
+ *  the green. */
+export const GAUGE_AT: Record<RiskLevel, number> = { danger: NEEDLE_DRAWN_AT / 100, caution: 0.5, safe: 0.15 }
+/** The needle as drawn, turned to fraction f of the scale (0 = pointing left, 1 = right). */
+const turn = (f: number) => `rotate(${(f - NEEDLE_DRAWN_AT / 100) * 180}deg)`
+
+/** Motion (once, on open): the six colour segments light up left → right with their scale labels, then the needle
+ *  swings up from 0 with the soft dial's run (ease in-out a little past the reading, back a touch, settle). */
+const SEGMENT_IN = 260
+const SEGMENT_STAGGER = 70
+const NEEDLE_DELAY = 320
+const NEEDLE_TRAVEL = 2000
+
+export function GaugeMeter({ scale, level = 'danger' }: { scale: GaugeScale; level?: RiskLevel }) {
+  const root = useRef<SVGSVGElement>(null)
+  const uid = useId()
+  const s = SCALES[scale]
+  const now = GAUGE_AT[level]
+  const label = t(level === 'safe' ? 'nudge.meterLabelSafe' : level === 'caution' ? 'nudge.meterLabelCaution' : 'nudge.meterLabel')
+
+  useEffect(() => {
+    const el = root.current
+    if (!el || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const running: Animation[] = []
+    el.querySelectorAll<SVGGElement>('[data-segment]').forEach((n) => {
+      const i = Number(n.dataset.segment)
+      running.push(n.animate([{ opacity: 0, transform: 'scale(0.92)' }, { opacity: 1, transform: 'none' }],
+        { duration: SEGMENT_IN, delay: i * SEGMENT_STAGGER, easing: 'cubic-bezier(0.2, 0, 0, 1)', fill: 'backwards' }))
+    })
+    // A label comes in with the segment under it (by where it sits along the dial).
+    el.querySelectorAll<SVGTextElement>('[data-label]').forEach((n) => {
+      const at = Number(n.dataset.label)
+      running.push(n.animate([{ opacity: 0 }, { opacity: 1 }], { duration: SEGMENT_IN, delay: at * 5 * SEGMENT_STAGGER, easing: 'ease-out', fill: 'backwards' }))
+    })
+    const pointer = el.querySelector<SVGGElement>('[data-needle]')
+    if (pointer) running.push(pointer.animate(
+      needleKeys(now).map((k) => ({ offset: k.at, easing: k.easing, transform: turn(k.f) })),
+      { duration: NEEDLE_TRAVEL, delay: NEEDLE_DELAY, fill: 'backwards' }))
+    // The segment the needle lands on gives a small pulse as it arrives.
+    const landing = el.querySelector<SVGGElement>(`[data-segment="${Math.min(5, Math.floor(now * 6))}"] [data-band]`)
+    const arrive = NEEDLE_DELAY + NEEDLE_TRAVEL * RUN * easeTimeAt(1 - 0.02, RUN_EASE)
+    if (landing) running.push(landing.animate([{ filter: 'brightness(1)' }, { filter: 'brightness(1.25)' }, { filter: 'brightness(1)' }],
+      { duration: 500, delay: arrive, easing: 'ease-in-out' }))
+    return () => running.forEach((a) => a.cancel())
+  }, [now, scale])
+
+  return (
+    <svg ref={root} className={styles.gauge} width={s.width} height={HEIGHT} viewBox={`0 0 ${s.width} ${HEIGHT}`} role="img" aria-label={label} data-gauge={uid}>
+      {s.labels.map((l) => (
+        <text key={l.x} x={l.x} y={l.y + 8} className={styles.label} textAnchor="middle" dominantBaseline="central" data-label={l.x / s.width}>
+          {'text' in l ? l.text : t(l.key)}
+        </text>
+      ))}
+      <svg x={s.dialX} y={DIAL_Y} width={GAUGE_W} height={GAUGE_H} viewBox={`0 0 ${GAUGE_W} ${GAUGE_H}`} overflow="visible">
+        {segments.map((seg, i) => (
+          <g key={i} data-segment={i} style={{ transformOrigin: `${NEEDLE_PIVOT.x}px ${NEEDLE_PIVOT.y}px` }} className={styles.part}>
+            <path d={seg.rim.d} fill={seg.rim.fill} />
+            <path d={seg.band.d} fill={seg.band.fill} data-band />
+          </g>
+        ))}
+        <path d={ring.d} fill={ring.fill} />
+        <path d={face.d} fill={face.fill} />
+        <g data-needle className={styles.needle} style={{ transformOrigin: `${NEEDLE_PIVOT.x}px ${NEEDLE_PIVOT.y}px`, transform: turn(now) } as CSSProperties}>
+          <path d={needle.d} fill={needle.fill} />
+        </g>
+      </svg>
+    </svg>
+  )
+}
+
+/**
+ * The soft pink wave behind the top of the sheet (Figma "Ellipse 1 / 2": the level's light tint, blurred 11.3), drawn
+ * in the 360-wide frame it was designed in and stretched to the sheet's width. 4h and 4i place it a little apart.
+ */
+const WAVE = { numbers: { x: -20, y: -43 }, words: { x: -17, y: -56 } } as const
+export function GaugeWave({ scale, level = 'danger' }: { scale: GaugeScale; level?: RiskLevel }) {
+  const w = WAVE[scale]
+  return (
+    <svg className={styles.wave} data-level={level} viewBox="0 0 360 96" preserveAspectRatio="none" overflow="visible" aria-hidden="true">
+      <path transform={`translate(${w.x - 22.6} ${w.y - 22.6})`} d="M415.6 89.1133C415.6 125.848 411.184 132.915 214.684 113.447C106.16 113.447 22.6 209.162 22.6 89.1133C22.6 52.379 110.576 22.6 219.1 22.6C327.624 22.6 415.6 52.379 415.6 89.1133Z" />
+    </svg>
+  )
+}
+```
+
 ### `src/flows/nudges/sheets/GuardrailSheets.module.css`
 
 ```css
@@ -1505,6 +1684,17 @@ export function TpslSheet({ onSave, onClose }: { onSave: (tpsl: { targetPct: num
 /* Tag first · the "Overtrading Detected" tag (19 Nov, user): 8 in from each side and 2 between the icon and the label.
    L3's Medium Tag has 2 at the sides and 6 icon → text (its label's own 4 padding); no prop for this (L3 gap). */
 .overtradingTag.overtradingTag[data-size] { --tag-padding-inline: var(--l3-spacing-08); --tag-label-padding: 0; }
+
+/* 4h / 4i · the speedometer layout (Figma 6917:62779): 24 from the sheet's top and 24 from the fact to the dock's line
+   (Figma: the header's 24 top and 8 bottom + the sheet's 16 top space). The wave is drawn from the content's top. */
+.gaugeSheet.gaugeSheet [data-sheet-content] {
+  position: relative;
+  padding-top: var(--l3-spacing-24);
+  padding-bottom: var(--l3-spacing-24);
+}
+.gaugeHeading { margin: 0; font: var(--l3-text-heading-20); color: var(--l3-content-primary); }
+/* The fact: L3/Description/14 (20 Nov, user; Figma had Label/12). */
+.gaugeSub { margin: 0; font: var(--l3-text-description-14); color: var(--l3-content-secondary); }
 ```
 
 ### `src/flows/nudges/sheets/NudgeSheet.tsx`
@@ -1524,9 +1714,10 @@ import { caseById, type DataState, type Guardrail, type NudgeCaseId } from '../d
 import styles from './NudgeSheet.module.css'
 import { SoftDial, type RiskLevel } from './SoftDial'
 import { BlockDial } from './BlockDial'
+import { GaugeMeter, GaugeWave } from './GaugeMeter'
 
-/** The meter (prototype setting "Meter"): 4f Soft dial (default) or 4g Blocks. */
-export type MeterStyle = 'soft' | 'blocks'
+/** The meter (prototype setting "Meter"): 4f Soft dial (default), 4g Blocks, 4h / 4i the speedometer (0–100 / Low–High). */
+export type MeterStyle = 'soft' | 'blocks' | 'gauge' | 'gaugeWords'
 /** Where the text sits around the meter (prototype setting "Meter layout"). */
 export type MeterLayout = 'text' | 'meter' | 'tag' | 'number'
 
@@ -1541,6 +1732,8 @@ export type NudgeSheetProps = {
   meterLayout?: MeterLayout
   /** Soft dial only: the blended green → yellow → red fill (default: one colour for the whole ring). */
   meterBlend?: boolean
+  /** Soft dial, blended only: the ring cut into three blocks where the colour changes. */
+  meterSplit?: boolean
   /** Buzz the phone once when the sheet opens (two short pulses: "stop, look"). */
   vibrate?: boolean
   /** 'one' (default): the case's guardrail (primary) + Not now (secondary) · 'two': both guardrails + Not now (ghost). */
@@ -1562,11 +1755,11 @@ type Key = Parameters<typeof t>[0]
  * - Meter first: the meter, then "You are overtrading" and the fact.
  * - Tag first: a red "Overtrading Detected" tag (filled warning icon), "Your chances of losing money are high"
  *   (heading-18), the meter with the multiple in it, the fact.
- * - With multiple: as Text first, with the multiple ("2X") big in the dial above the level word.
+ * - With multiple: as Text first (since 20 Nov no version shows the multiple in the dial, so the two now match).
  * The fact: size-up says "You are placing a bigger order right after a loss"; every other case its own fact
  * ("3X more orders than usual today"). Motion plays once on open; none with reduced motion.
  */
-export function NudgeSheet({ caseId, state, meterStyle = 'soft', meterLevel = 'danger', meterLayout = 'text', meterBlend = false, vibrate = true, actions = 'one', onGuardrail, onNotNow }: NudgeSheetProps) {
+export function NudgeSheet({ caseId, state, meterStyle = 'soft', meterLevel = 'danger', meterLayout = 'text', meterBlend = false, meterSplit = false, vibrate = true, actions = 'one', onGuardrail, onNotNow }: NudgeSheetProps) {
   const id = useId()
   // On open only (switching case or version keeps the sheet open, so it doesn't buzz again).
   useEffect(() => { if (vibrate) buzz() }, []) // eslint-disable-line react-hooks/exhaustive-deps
@@ -1589,14 +1782,35 @@ export function NudgeSheet({ caseId, state, meterStyle = 'soft', meterLevel = 'd
     <Button size="lg" variant={actions === 'two' ? 'ghost' : 'secondary'} onClick={onNotNow}>{notNow}</Button>
   </ButtonGroup>
 
-  const showRatio = meterLayout === 'number' || meterLayout === 'tag'
+  // No multiple ("2X") in the dial in any layout (20 Nov): the disc shows the level word only.
   const meter = meterStyle === 'blocks'
-    ? <BlockDial key={`${caseId}-${state}-${meterLevel}-${meterLayout}`} ratio={ratio} level={meterLevel} showRatio={showRatio} />
-    : <SoftDial key={`${caseId}-${state}-${meterLevel}-${meterBlend}-${meterLayout}`} ratio={ratio} level={meterLevel} blend={meterBlend} showRatio={showRatio} />
+    ? <BlockDial key={`${caseId}-${state}-${meterLevel}-${meterLayout}`} ratio={ratio} level={meterLevel} />
+    : <SoftDial key={`${caseId}-${state}-${meterLevel}-${meterBlend}-${meterSplit}-${meterLayout}`} ratio={ratio} level={meterLevel} blend={meterBlend} split={meterSplit} />
   const meterAndFact = <Stack gap="16" align="center">
     {meter}
     <p className={styles.meterFact}>{fact}</p>
   </Stack>
+
+  // 4h / 4i · the speedometer (Figma 6917:62779, 20 Nov) has its own layout, whatever the Meter layout setting: the pink
+  // wave at the top, the dial with its scale, 16, the risk tag, 16, "Your chances of losing money is high" (heading-20), 8, the
+  // fact (label-12). 24 from the top of the sheet, 24 from the fact to the dock's line.
+  if (meterStyle === 'gauge' || meterStyle === 'gaugeWords') {
+    const scale = meterStyle === 'gauge' ? 'numbers' : 'words'
+    const tagColor = meterLevel === 'danger' ? 'loss' : meterLevel === 'caution' ? 'warning' : 'profit'
+    return <Sheet labelledBy={id} onClose={onNotNow} className={`${styles.sheet} ${styles.gaugeSheet}`} footer={footer}>
+      <GaugeWave scale={scale} level={meterLevel} />
+      <Stack gap="16" align="center" className={styles.riskText}>
+        <GaugeMeter key={`${caseId}-${state}-${meterLevel}-${scale}`} scale={scale} level={meterLevel} />
+        <Stack gap="16" align="center">
+          <Tag size="md" variant="secondary" color={tagColor} iconLeft={meterLevel === 'safe' ? undefined : <Icon icon={msWarningFill} />}>{t(`gauge.tag.${meterLevel}`)}</Tag>
+          <Stack gap="08" align="center">
+            <h2 id={id} className={styles.gaugeHeading}>{t(`gauge.heading.${meterLevel}`)}</h2>
+            <p className={styles.gaugeSub}>{caseId === 'sizeUp' ? t('gauge.sizeUp') : headline}</p>
+          </Stack>
+        </Stack>
+      </Stack>
+    </Sheet>
+  }
 
   let body
   if (meterLayout === 'meter') {
@@ -1618,7 +1832,7 @@ export function NudgeSheet({ caseId, state, meterStyle = 'soft', meterLevel = 'd
       {meterAndFact}
     </Stack>
   } else {
-    // Text first and With multiple (the multiple shows in the dial).
+    // Text first and With multiple (the same since the dial's multiple was removed, 20 Nov).
     body = <Stack gap="24" align="center" className={styles.riskText}>
       <Stack gap="04" align="center">
         <h2 id={id} className={styles.meterHeading}>{t('nudge.meterHeading')}</h2>
@@ -1833,12 +2047,13 @@ const dangerAt = (ratio: number | undefined, blend: boolean) => blend
  */
 const BLEND = 0.07 // half-width of the soft band at each level edge, as a fraction of the scale
 const SLICES = 90
-function blendColour(f: number) {
+function blendColour(f: number, split = false) {
   const g = 'var(--l3-surface-accent-success-default)'
   const y = 'var(--l3-surface-accent-warning-default)'
   const r = 'var(--l3-surface-accent-error-default)'
   const mix = (a: string, b: string, t: number) => `color-mix(in oklab, ${a} ${Math.round((1 - t) * 100)}%, ${b})`
   const ease = (t: number) => t * t * (3 - 2 * t) // smoothstep, so each band starts and ends softly
+  if (split) return f < SAFE_END ? g : f < CAUTION_END ? y : r // three blocks: each its own colour, cut at the edges
   if (f <= SAFE_END - BLEND) return g
   if (f < SAFE_END + BLEND) return mix(g, y, ease((f - (SAFE_END - BLEND)) / (2 * BLEND)))
   if (f <= CAUTION_END - BLEND) return y
@@ -1846,9 +2061,12 @@ function blendColour(f: number) {
   return r
 }
 
-export function SoftDial({ ratio, level = 'danger', blend = false, showRatio = false }: { ratio?: number; level?: RiskLevel; blend?: boolean; showRatio?: boolean }) {
+/** "Blended · 3 blocks" (20 Nov, user): the gap cut across the ring at each colour change, in drawing units. */
+const CUT = 6
+
+export function SoftDial({ ratio, level = 'danger', blend = false, split = false, showRatio = false }: { ratio?: number; level?: RiskLevel; blend?: boolean; split?: boolean; showRatio?: boolean }) {
   const uid = useId().replace(/[^a-zA-Z0-9]/g, '')
-  const ids = { fill: `sd-fill-${uid}`, sweep: `sd-sweep-${uid}`, fade: `sd-fade-${uid}`, fadeMask: `sd-fademask-${uid}`, dots: `sd-dots-${uid}`, trail: `sd-trail-${uid}`, trailBlur: `sd-trailblur-${uid}`, blur: `sd-blur-${uid}`, glass: `sd-glass-${uid}`, shadow: `sd-shadow-${uid}`, shade: `sd-shade-${uid}` }
+  const ids = { fill: `sd-fill-${uid}`, sweep: `sd-sweep-${uid}`, fade: `sd-fade-${uid}`, fadeMask: `sd-fademask-${uid}`, dots: `sd-dots-${uid}`, trail: `sd-trail-${uid}`, trailBlur: `sd-trailblur-${uid}`, blur: `sd-blur-${uid}`, glass: `sd-glass-${uid}`, shadow: `sd-shadow-${uid}`, shade: `sd-shade-${uid}`, cut: `sd-cut-${uid}` }
   const root = useRef<HTMLElement>(null)
   const number = showRatio && ratio !== undefined
   const edges = EDGES[blend ? 'blend' : 'whole']
@@ -1990,6 +2208,15 @@ export function SoftDial({ ratio, level = 'danger', blend = false, showRatio = f
           </g>
         </mask>
         <filter id={ids.shadow} filterUnits="userSpaceOnUse" {...big}><feGaussianBlur stdDeviation="1.5" /></filter>
+        {/* 3 blocks: everything but the gaps — a straight cut across the band at each colour change. */}
+        {split && <mask id={ids.cut} maskUnits="userSpaceOnUse" {...big}>
+          <rect {...big} fill="white" />
+          {[edges.safe, edges.caution].map((f) => {
+            const [x1, y1] = point(f, RI - 4)
+            const [x2, y2] = point(f, RO + 4)
+            return <line key={f} x1={x1} y1={y1} x2={x2} y2={y2} stroke="black" strokeWidth={CUT} />
+          })}
+        </mask>}
       </defs>
 
       <g mask={`url(#${ids.fadeMask})`}>
@@ -2004,16 +2231,16 @@ export function SoftDial({ ratio, level = 'danger', blend = false, showRatio = f
         })}
 
         {/* The unfilled rest: a faint tint of the current colour. */}
-        <path d={sector(0, 1)} className={styles.rest} data-paint="light" />
+        <path d={sector(0, 1)} className={styles.rest} data-paint="light" mask={split ? `url(#${ids.cut})` : undefined} />
 
         {/* The fill, its glass and grains, revealed by the sweep. */}
-        <g mask={`url(#${ids.sweep})`}>
+        <g mask={split ? `url(#${ids.cut})` : undefined}><g mask={`url(#${ids.sweep})`}>
           {blend
             ? <>
               {Array.from({ length: SLICES }, (_, i) => {
                 const from = (i / SLICES) * END
                 const to = Math.min(END, ((i + 1) / SLICES) * END + 0.003) // a hair of overlap: no seams between slices
-                return <path key={i} d={sector(from, to)} style={{ fill: blendColour((from + to) / 2) }} />
+                return <path key={i} d={sector(from, to)} style={{ fill: blendColour((from + to) / 2, split) }} />
               })}
               <path d={sector(0, END)} fill={`url(#${ids.shade})`} />
             </>
@@ -2028,7 +2255,7 @@ export function SoftDial({ ratio, level = 'danger', blend = false, showRatio = f
           <g mask={`url(#${ids.trail})`}>
             <path d={sector(0, END)} fill={`url(#${ids.dots})`} className={styles.dots} />
           </g>
-        </g>
+        </g></g>
 
 
 
@@ -2060,6 +2287,31 @@ export function SoftDial({ ratio, level = 'danger', blend = false, showRatio = f
     </svg>
   </figure>
 }
+```
+
+### `src/flows/nudges/sheets/gaugeArt.ts`
+
+```ts
+// GENERATED from the Figma speedometer (LM → F&O Playground 6916:62677 "_x2014_ÎÓÈ_x5F_3", 20 Nov): its paths and
+// fills exactly as exported, in a 141.435 × 78.6169 box. A brand illustration (like L3's selected nav icons): its
+// colours are Figma's own, not tokens. Split so the parts can move: the six segments left → right (thin rim + thick
+// band), the black ring, the dark face and the white needle (pivot = the hub's centre).
+export const GAUGE_W = 141.435
+export const GAUGE_H = 78.6169
+export const NEEDLE_PIVOT = { x: 70.7165, y: 68.9279 }
+/** The needle as drawn points 39° above the right horizontal: 78.3 on a 0–100 scale. */
+export const NEEDLE_DRAWN_AT = 78.3
+export const segments: { rim: { d: string; fill: string }; band: { d: string; fill: string } }[] = [
+  { rim: { d: 'M9.47328 35.2943L10.6659 35.9811C4.76477 46.1627 1.38627 57.9803 1.38627 70.5896H0C0 57.7234 3.43846 45.6646 9.45391 35.2841L9.47328 35.2943Z', fill: '#97FF64' }, band: { d: 'M22.211 69.0994C22.2156 68.9521 22.2221 68.8057 22.2276 68.6584C22.2415 68.2956 22.2599 67.9347 22.2821 67.5748C22.2913 67.4265 22.2996 67.2774 22.3106 67.1292C22.342 66.6799 22.3789 66.2315 22.4232 65.785C22.4269 65.7454 22.4296 65.7058 22.4333 65.6672C22.4822 65.1792 22.5412 64.694 22.6049 64.2097C22.6215 64.0809 22.6408 63.952 22.6593 63.8231C22.7109 63.4576 22.7653 63.093 22.8253 62.7302C22.8474 62.5931 22.8696 62.4559 22.8936 62.3196C22.9673 61.8924 23.0457 61.468 23.1306 61.0454C23.1407 60.9957 23.149 60.946 23.1592 60.8963C23.257 60.4157 23.363 59.9379 23.4746 59.4628C23.4986 59.3616 23.5244 59.2612 23.5484 59.1599C23.6397 58.7825 23.7356 58.4068 23.8362 58.0321C23.8685 57.9134 23.8998 57.7937 23.933 57.6749C24.0474 57.2606 24.1673 56.8472 24.2927 56.4375C24.3075 56.3897 24.3213 56.3409 24.3361 56.293C24.4818 55.8207 24.6349 55.3521 24.7954 54.8853C24.8185 54.8181 24.8424 54.7518 24.8664 54.6846C25.0029 54.2915 25.145 53.902 25.2916 53.5135C25.3294 53.4132 25.3673 53.3137 25.406 53.2143C25.5609 52.8111 25.7214 52.4096 25.8874 52.0119C25.9059 51.9677 25.9234 51.9235 25.9419 51.8793C26.1346 51.419 26.3348 50.9624 26.5423 50.5094C26.5571 50.4781 26.5718 50.4468 26.5866 50.4146C26.7729 50.0086 26.9657 49.6062 27.163 49.2067C27.2045 49.1229 27.246 49.04 27.2875 48.9562C27.4812 48.5705 27.6786 48.1875 27.8815 47.8073C27.9055 47.7631 27.9286 47.718 27.9526 47.6728C28.1905 47.2309 28.4349 46.7936 28.6858 46.36L10.6671 35.9805C4.76602 46.1611 1.3866 57.9806 1.3866 70.5881H22.1861C22.1861 70.09 22.1963 69.5947 22.211 69.0994Z', fill: '#7BDB44' } },
+  { rim: { d: 'M35.3587 9.45586L36.0468 10.6463C25.5248 16.7226 16.7534 25.4781 10.666 35.981L9.47347 35.2942L9.4541 35.2831C15.6605 24.5648 24.6099 15.6316 35.3477 9.43652L35.3587 9.45586Z', fill: '#E2FF64' }, band: { d: 'M28.6829 46.3626C28.9283 45.9391 29.1819 45.5202 29.4402 45.1049C29.4854 45.0322 29.5315 44.9595 29.5767 44.8867C29.8229 44.4945 30.0738 44.106 30.3311 43.7212C30.3477 43.6963 30.3643 43.6715 30.3809 43.6466C30.6659 43.2231 30.9565 42.8042 31.2544 42.3899C31.2784 42.3568 31.3033 42.3236 31.3272 42.2896C31.5929 41.9222 31.8631 41.5595 32.1389 41.1995C32.1906 41.1323 32.2422 41.0651 32.2939 40.9979C32.9035 40.2107 33.5362 39.442 34.192 38.6935C34.2354 38.6447 34.2787 38.5959 34.3221 38.5471C34.6117 38.2193 34.9059 37.8962 35.2038 37.5767C35.2573 37.5196 35.3108 37.4616 35.3643 37.4045C36.0459 36.6818 36.7487 35.9803 37.4728 35.2999C37.5299 35.2465 37.5871 35.194 37.6443 35.1406C37.9653 34.8423 38.2899 34.5487 38.6183 34.2586C38.6672 34.2154 38.7151 34.1721 38.764 34.1298C39.5139 33.4742 40.284 32.8427 41.0735 32.2341C41.14 32.1826 41.2073 32.131 41.2746 32.0804C41.6352 31.8051 41.9996 31.5344 42.3676 31.2693C42.4008 31.2453 42.4331 31.2214 42.4663 31.1975C42.8813 30.9001 43.301 30.6091 43.7262 30.3247C43.7511 30.3081 43.776 30.2924 43.8 30.2759C44.1855 30.019 44.5756 29.7677 44.9695 29.5219C45.0423 29.4767 45.1143 29.4307 45.1871 29.3865C45.604 29.1287 46.0237 28.8755 46.448 28.6307L36.0478 10.6465C25.5267 16.7228 16.7544 25.4792 10.667 35.9812L28.6829 46.3626Z', fill: '#A6DA45' } },
+  { rim: { d: 'M70.7164 0V1.38375C58.0842 1.38375 46.2451 4.75521 36.045 10.6465L35.357 9.4561L35.3459 9.43676C45.7461 3.43314 57.8268 0 70.7164 0Z', fill: '#FFFF6B' }, band: { d: 'M47.7632 27.8969C47.8075 27.873 47.8527 27.8499 47.8969 27.8269C48.2779 27.6235 48.6625 27.4264 49.0489 27.2331C49.1319 27.1917 49.215 27.1502 49.2989 27.1097C49.7001 26.9127 50.1032 26.7203 50.5099 26.5334C50.5413 26.5187 50.5726 26.5039 50.604 26.4901C51.0578 26.2839 51.5153 26.0841 51.9764 25.8908C52.0207 25.8724 52.065 25.8549 52.1083 25.8374C52.5077 25.6717 52.9098 25.5115 53.3138 25.3568C53.4134 25.3191 53.513 25.2813 53.6126 25.2436C54.0019 25.0972 54.3929 24.9554 54.7868 24.8191C54.8532 24.7961 54.9196 24.7722 54.9869 24.7492C55.4536 24.5899 55.924 24.4361 56.3972 24.2907C56.4451 24.2759 56.4931 24.2621 56.541 24.2483C56.9524 24.1231 57.3656 24.0034 57.7816 23.8893C57.9006 23.8561 58.0195 23.8248 58.1385 23.7926C58.5139 23.6922 58.8902 23.5965 59.2684 23.5053C59.3689 23.4805 59.4694 23.4556 59.5709 23.4317C60.0468 23.3203 60.5255 23.2144 61.007 23.1168C61.0568 23.1067 61.1066 23.0984 61.1564 23.0883C61.5797 23.0036 62.0059 22.9253 62.4329 22.8517C62.5694 22.8277 62.7068 22.8056 62.8443 22.7836C63.2077 22.7246 63.5729 22.6694 63.9391 22.6178C64.0682 22.5994 64.1973 22.581 64.3265 22.5635C64.8107 22.5 65.2977 22.442 65.7865 22.3923C65.8262 22.3886 65.8658 22.3858 65.9046 22.3821C66.3519 22.338 66.8011 22.3011 67.2512 22.2698C67.3997 22.2597 67.5482 22.2505 67.6976 22.2413C68.0582 22.2192 68.4207 22.2008 68.7832 22.187C68.9298 22.1814 69.0774 22.175 69.225 22.1704C69.7203 22.1557 70.2165 22.1455 70.7155 22.1455V1.38281C58.085 1.38281 46.2441 4.75611 36.045 10.6465L46.4461 28.6288C46.8824 28.3775 47.3205 28.1344 47.7632 27.8969Z', fill: '#EAEA4E' } },
+  { rim: { d: 'M106.088 9.43676L106.076 9.4561L105.388 10.6465C95.1883 4.75613 83.3465 1.38375 70.717 1.38375V0C83.6075 0 95.6873 3.43314 106.088 9.43676Z', fill: '#FFD073' }, band: { d: 'M72.2075 22.1686C72.3551 22.1732 72.5017 22.1797 72.6493 22.1852C73.0127 22.199 73.3743 22.2174 73.7349 22.2395C73.8834 22.2487 74.0328 22.257 74.1813 22.268C74.6314 22.2993 75.0806 22.3371 75.5279 22.3804C75.5676 22.384 75.6072 22.3868 75.646 22.3905C76.1348 22.4393 76.6209 22.4982 77.106 22.5617C77.2352 22.5783 77.3643 22.5976 77.4934 22.616C77.8596 22.6676 78.2248 22.7219 78.5882 22.7818C78.7256 22.8039 78.8631 22.826 78.9996 22.8499C79.4275 22.9235 79.8546 23.0018 80.2789 23.0865C80.3277 23.0966 80.3766 23.1049 80.4246 23.1141C80.906 23.2117 81.3847 23.3176 81.8616 23.429C81.963 23.4529 82.0636 23.4787 82.165 23.5026C82.5432 23.5938 82.9195 23.6895 83.2949 23.7899C83.4139 23.8221 83.5338 23.8534 83.6527 23.8866C84.0678 24.0007 84.4819 24.1204 84.8924 24.2456C84.9403 24.2603 84.9892 24.2742 85.0372 24.2889C85.5103 24.4343 85.9798 24.5881 86.4474 24.7474C86.5147 24.7704 86.5811 24.7943 86.6485 24.8183C87.0423 24.9545 87.4325 25.0963 87.8217 25.2427C87.9213 25.2804 88.0218 25.3182 88.1214 25.3569C88.5263 25.5124 88.9285 25.6717 89.3279 25.8374C89.3712 25.8558 89.4155 25.8724 89.4588 25.8908C89.92 26.0842 90.3784 26.284 90.8322 26.4902C90.8635 26.504 90.894 26.5187 90.9244 26.5335C91.3312 26.7194 91.7351 26.9128 92.1364 27.1098C92.2203 27.1512 92.3033 27.1926 92.3863 27.2341C92.7728 27.4274 93.1565 27.6244 93.5374 27.827C93.5817 27.8509 93.6269 27.8739 93.672 27.8979C94.1148 28.1354 94.5529 28.3794 94.9873 28.6298L105.388 10.6475C95.1893 4.75709 83.3484 1.38379 70.7179 1.38379V22.1456C71.216 22.1437 71.7122 22.1539 72.2075 22.1686Z', fill: '#FFAA00' } },
+  { rim: { d: 'M131.981 35.2804L131.959 35.2942L130.767 35.981C124.679 25.4781 115.908 16.7226 105.389 10.6463L106.077 9.45586L106.088 9.43652C116.826 15.6289 125.775 24.562 131.981 35.2804Z', fill: '#FF935E' }, band: { d: 'M94.9863 28.6287C95.4106 28.8736 95.8303 29.1268 96.2462 29.3846C96.3191 29.4297 96.392 29.4757 96.4648 29.5208C96.8577 29.7666 97.247 30.0171 97.6325 30.2739C97.6574 30.2905 97.6823 30.3071 97.7072 30.3236C98.1315 30.6081 98.5521 30.8991 98.9671 31.1955C99.0003 31.2194 99.0326 31.2434 99.0658 31.2673C99.4338 31.5325 99.7981 31.8031 100.159 32.0784C100.226 32.13 100.293 32.1815 100.361 32.2331C101.15 32.8416 101.92 33.4732 102.669 34.1287C102.718 34.1711 102.766 34.2143 102.815 34.2576C103.143 34.5467 103.468 34.8413 103.788 35.1387C103.845 35.1921 103.903 35.2455 103.961 35.2989C104.685 35.9783 105.387 36.6808 106.069 37.4035C106.123 37.4606 106.176 37.5186 106.23 37.5757C106.528 37.8951 106.823 38.2192 107.112 38.547C107.156 38.5958 107.199 38.6436 107.241 38.6924C107.897 39.4409 108.531 40.2097 109.14 40.9969C109.192 41.0641 109.244 41.1313 109.295 41.1985C109.571 41.5585 109.842 41.9221 110.108 42.2895C110.132 42.3226 110.156 42.3548 110.18 42.388C110.478 42.8023 110.769 43.2212 111.053 43.6456C111.07 43.6704 111.087 43.6953 111.103 43.7202C111.361 44.105 111.611 44.4935 111.858 44.8857C111.904 44.9585 111.949 45.0312 111.994 45.1039C112.252 45.5191 112.506 45.938 112.751 46.3615L130.766 35.9793C124.679 25.4773 115.907 16.7209 105.386 10.6445L94.9863 28.6287Z', fill: '#DF632D' } },
+  { rim: { d: 'M141.435 70.5894H140.049C140.049 57.9801 136.669 46.1625 130.767 35.9809L131.959 35.2941L131.981 35.2803C137.997 45.6644 141.435 57.7195 141.435 70.5894Z', fill: '#FF6E6E' }, band: { d: 'M112.752 46.3628C113.003 46.7964 113.247 47.2338 113.485 47.6757C113.509 47.7199 113.532 47.765 113.556 47.8101C113.759 48.1903 113.958 48.5733 114.15 48.9591C114.192 49.0419 114.233 49.1257 114.275 49.2086C114.472 49.6091 114.665 50.0114 114.852 50.4183C114.866 50.4496 114.881 50.48 114.896 50.5104C115.103 50.9633 115.303 51.4209 115.496 51.8812C115.515 51.9245 115.531 51.9687 115.55 52.012C115.716 52.4106 115.876 52.812 116.031 53.2162C116.07 53.3156 116.108 53.4151 116.145 53.5154C116.291 53.903 116.432 54.2934 116.57 54.6865C116.593 54.7537 116.618 54.82 116.641 54.8872C116.8 55.3531 116.954 55.8226 117.1 56.2949C117.115 56.3428 117.129 56.3916 117.143 56.4394C117.269 56.85 117.388 57.2625 117.503 57.6768C117.536 57.7956 117.568 57.9143 117.6 58.034C117.701 58.4078 117.796 58.7834 117.888 59.1618C117.913 59.2631 117.938 59.3634 117.962 59.4647C118.073 59.9398 118.179 60.4176 118.277 60.8991C118.287 60.9479 118.295 60.9967 118.305 61.0446C118.389 61.4681 118.468 61.8943 118.542 62.3215C118.566 62.4578 118.588 62.595 118.61 62.7321C118.669 63.0949 118.724 63.4595 118.776 63.825C118.794 63.9539 118.813 64.0827 118.83 64.2116C118.894 64.695 118.952 65.1811 119.002 65.669C119.006 65.7086 119.008 65.7482 119.012 65.7869C119.056 66.2334 119.093 66.6818 119.125 67.1311C119.135 67.2793 119.144 67.4275 119.153 67.5767C119.175 67.9366 119.194 68.2985 119.208 68.6603C119.213 68.8067 119.22 68.954 119.224 69.1013C119.239 69.5957 119.249 70.091 119.249 70.5891H140.049C140.049 57.9815 136.669 46.1621 130.768 35.9814L112.752 46.3628Z', fill: '#D83123' } },
+]
+export const ring = { d: 'M119.224 69.0989C119.219 68.9516 119.213 68.8053 119.207 68.6579C119.193 68.2961 119.175 67.9343 119.153 67.5743C119.144 67.4261 119.135 67.277 119.124 67.1287C119.093 66.6794 119.056 66.2311 119.012 65.7846C119.008 65.745 119.005 65.7054 119.002 65.6667C118.953 65.1788 118.894 64.6936 118.83 64.2093C118.813 64.0804 118.794 63.9515 118.776 63.8226C118.724 63.4571 118.67 63.0926 118.61 62.7298C118.587 62.5926 118.565 62.4555 118.541 62.3192C118.468 61.892 118.389 61.4657 118.304 61.0422C118.294 60.9935 118.286 60.9447 118.277 60.8968C118.179 60.4162 118.073 59.9384 117.961 59.4624C117.937 59.3611 117.911 59.2608 117.887 59.1595C117.796 58.782 117.7 58.4064 117.6 58.0317C117.567 57.9129 117.536 57.7932 117.503 57.6745C117.388 57.2602 117.269 56.8468 117.143 56.4371C117.128 56.3892 117.115 56.3404 117.1 56.2926C116.954 55.8203 116.801 55.3516 116.64 54.8849C116.617 54.8177 116.593 54.7514 116.569 54.6842C116.433 54.291 116.291 53.9016 116.144 53.5131C116.106 53.4137 116.069 53.3133 116.031 53.2139C115.875 52.8097 115.715 52.4083 115.549 52.0097C115.531 51.9664 115.514 51.9222 115.496 51.8789C115.302 51.4186 115.102 50.961 114.895 50.5081C114.882 50.4768 114.867 50.4464 114.852 50.416C114.666 50.01 114.472 49.6067 114.275 49.2062C114.233 49.1225 114.192 49.0396 114.15 48.9567C113.956 48.571 113.759 48.188 113.556 47.8078C113.532 47.7636 113.509 47.7185 113.485 47.6733C113.247 47.2314 113.003 46.7941 112.752 46.3605C112.507 45.937 112.253 45.5181 111.995 45.1029C111.949 45.0301 111.903 44.9574 111.858 44.8847C111.612 44.4925 111.361 44.1039 111.104 43.7191C111.087 43.6943 111.07 43.6694 111.054 43.6445C110.769 43.221 110.477 42.8012 110.18 42.3869C110.156 42.3538 110.132 42.3215 110.108 42.2884C109.843 41.9211 109.572 41.5574 109.296 41.1974C109.244 41.1302 109.193 41.063 109.141 40.9958C108.531 40.2077 107.899 39.439 107.242 38.6914C107.199 38.6426 107.156 38.5947 107.113 38.5459C106.823 38.2182 106.529 37.8941 106.23 37.5746C106.177 37.5175 106.123 37.4595 106.07 37.4025C105.388 36.6797 104.685 35.9782 103.961 35.2978C103.904 35.2444 103.846 35.191 103.789 35.1376C103.469 34.8393 103.144 34.5457 102.816 34.2566C102.767 34.2133 102.719 34.17 102.67 34.1277C101.92 33.4731 101.15 32.8406 100.361 32.232C100.294 32.1805 100.227 32.1289 100.159 32.0774C99.7986 31.8021 99.4343 31.5314 99.0663 31.2663C99.0331 31.2423 99.0008 31.2184 98.9676 31.1945C98.5526 30.8971 98.1329 30.6062 97.7077 30.3226C97.6828 30.306 97.6579 30.2894 97.633 30.2729C97.2475 30.016 96.8583 29.7656 96.4654 29.5198C96.3925 29.4737 96.3196 29.4286 96.2468 29.3835C95.8308 29.1257 95.4111 28.8725 94.9868 28.6277C94.5524 28.3772 94.1143 28.1333 93.6716 27.8957C93.6273 27.8718 93.5821 27.8488 93.5369 27.8248C93.156 27.6223 92.7723 27.4244 92.3859 27.2319C92.3029 27.1905 92.2189 27.1491 92.1359 27.1076C91.7347 26.9106 91.3307 26.7182 90.924 26.5313C90.8926 26.5175 90.8622 26.5028 90.8317 26.488C90.3779 26.2809 89.9196 26.0811 89.4584 25.8887C89.415 25.8703 89.3708 25.8537 89.3274 25.8353C88.928 25.6696 88.5259 25.5094 88.121 25.3547C88.0214 25.316 87.9218 25.2783 87.8212 25.2405C87.4329 25.0942 87.0419 24.9533 86.648 24.8161C86.5807 24.7931 86.5143 24.7682 86.447 24.7452C85.9803 24.586 85.5099 24.4322 85.0367 24.2867C84.9888 24.272 84.9399 24.2582 84.8919 24.2435C84.4806 24.1183 84.0673 23.9995 83.6523 23.8844C83.5333 23.8513 83.4143 23.82 83.2944 23.7877C82.92 23.6874 82.5437 23.5916 82.1646 23.5005C82.0631 23.4756 81.9626 23.4508 81.8611 23.4268C81.3852 23.3154 80.9065 23.2096 80.4241 23.112C80.3752 23.1019 80.3264 23.0936 80.2784 23.0844C79.8541 22.9997 79.4271 22.9214 78.9991 22.8478C78.8626 22.8247 78.7252 22.8017 78.5878 22.7796C78.2244 22.7207 77.8591 22.6655 77.493 22.6139C77.3638 22.5955 77.2347 22.5771 77.1056 22.5596C76.6214 22.4961 76.1344 22.4381 75.6455 22.3883C75.6059 22.3847 75.5662 22.3819 75.5275 22.3782C75.0801 22.334 74.631 22.2972 74.1809 22.2659C74.0324 22.2558 73.8839 22.2466 73.7344 22.2374C73.3738 22.2153 73.0113 22.1968 72.6489 22.183C72.5022 22.1775 72.3546 22.1711 72.2071 22.1665C71.7118 22.1517 71.2156 22.1416 70.7166 22.1416C70.2176 22.1416 69.7214 22.1517 69.2261 22.1665C69.0785 22.1711 68.9319 22.1775 68.7843 22.183C68.4218 22.1968 68.0593 22.2153 67.6987 22.2374C67.5502 22.2466 67.4008 22.2548 67.2523 22.2659C66.8022 22.2972 66.353 22.334 65.9057 22.3782C65.866 22.3819 65.8264 22.3847 65.7876 22.3883C65.2988 22.4381 64.8127 22.4961 64.3276 22.5596C64.1984 22.5762 64.0693 22.5955 63.9402 22.6139C63.574 22.6655 63.2088 22.7198 62.8454 22.7796C62.708 22.8017 62.5705 22.8238 62.434 22.8478C62.0061 22.9214 61.5809 22.9997 61.1575 23.0844C61.1077 23.0945 61.0579 23.1028 61.0081 23.1129C60.5266 23.2105 60.048 23.3164 59.572 23.4278C59.4706 23.4517 59.37 23.4775 59.2695 23.5014C58.8913 23.5926 58.5141 23.6883 58.1396 23.7887C58.0207 23.8209 57.9017 23.8522 57.7827 23.8853C57.3667 23.9995 56.9535 24.1192 56.5422 24.2444C56.4942 24.2591 56.4462 24.272 56.3983 24.2867C55.9251 24.4322 55.4547 24.586 54.988 24.7452C54.9207 24.7682 54.8552 24.7922 54.7879 24.8152C54.3941 24.9515 54.003 25.0932 53.6138 25.2396C53.5142 25.2774 53.4145 25.3151 53.3149 25.3529C52.91 25.5085 52.5079 25.6677 52.1094 25.8335C52.0652 25.8519 52.0209 25.8694 51.9775 25.8869C51.5164 26.0802 51.0589 26.28 50.6051 26.4862C50.5738 26.5 50.5424 26.5157 50.511 26.5295C50.1043 26.7154 49.7003 26.9079 49.3 27.1058C49.217 27.1472 49.1331 27.1877 49.0501 27.2292C48.6627 27.4225 48.279 27.6205 47.8981 27.823C47.8538 27.8469 47.8086 27.869 47.7643 27.893C47.3216 28.1305 46.8835 28.3745 46.4491 28.6249C46.0239 28.8698 45.6051 29.123 45.1883 29.3808C45.1154 29.4259 45.0425 29.471 44.9706 29.5161C44.5777 29.7619 44.1875 30.0132 43.8011 30.2701C43.7762 30.2867 43.7513 30.3023 43.7273 30.3189C43.3021 30.6034 42.8824 30.8943 42.4674 31.1917C42.4342 31.2156 42.4019 31.2396 42.3687 31.2635C41.9997 31.5287 41.6364 31.7993 41.2757 32.0746C41.2084 32.1262 41.1411 32.1768 41.0746 32.2284C40.2851 32.8369 39.515 33.4685 38.7651 34.124C38.7162 34.1663 38.6683 34.2096 38.6194 34.2529C38.291 34.5429 37.9664 34.8366 37.6454 35.1349C37.5882 35.1883 37.531 35.2408 37.4739 35.2942C36.7498 35.9745 36.0461 36.6761 35.3654 37.3988C35.3119 37.4559 35.2584 37.5139 35.2049 37.5709C34.907 37.8904 34.6128 38.2145 34.3232 38.5413C34.2798 38.5901 34.2365 38.6389 34.1931 38.6877C33.5373 39.4353 32.9046 40.204 32.295 40.9921C32.2433 41.0593 32.1917 41.1265 32.14 41.1937C31.8652 41.5537 31.594 41.9165 31.3284 42.2838C31.3044 42.3169 31.2795 42.3501 31.2555 42.3842C30.9576 42.7985 30.667 43.2173 30.382 43.6409C30.3654 43.6657 30.3488 43.6906 30.3322 43.7154C30.0749 44.1003 29.824 44.4888 29.5778 44.881C29.5317 44.9537 29.4865 45.0264 29.4413 45.0992C29.183 45.5144 28.9294 45.9333 28.684 46.3568C28.4332 46.7904 28.1887 47.2277 27.9508 47.6697C27.9268 47.7139 27.9037 47.759 27.8798 47.8041C27.6768 48.1843 27.4785 48.5673 27.2858 48.9531C27.2443 49.0359 27.2028 49.1197 27.1613 49.2035C26.9639 49.603 26.7711 50.0054 26.5848 50.4114C26.57 50.4427 26.5553 50.474 26.5405 50.5062C26.3339 50.9592 26.1338 51.4158 25.9401 51.8762C25.9216 51.9203 25.9041 51.9645 25.8857 52.0087C25.7196 52.4065 25.5601 52.8079 25.4042 53.2111C25.3655 53.3105 25.3277 53.4109 25.2898 53.5103C25.1432 53.8979 25.0021 54.2883 24.8646 54.6814C24.8416 54.7486 24.8167 54.8149 24.7936 54.8821C24.6341 55.348 24.48 55.8175 24.3343 56.2898C24.3195 56.3377 24.3057 56.3865 24.291 56.4343C24.1655 56.844 24.0465 57.2574 23.9312 57.6717C23.898 57.7905 23.8667 57.9092 23.8344 58.0289C23.7339 58.4027 23.6379 58.7793 23.5466 59.1567C23.5217 59.258 23.4968 59.3584 23.4728 59.4596C23.3612 59.9347 23.2552 60.4125 23.1574 60.8931C23.1473 60.9428 23.139 60.9925 23.1288 61.0422C23.044 61.4648 22.9656 61.8902 22.8918 62.3164C22.8678 62.4527 22.8457 62.5899 22.8235 62.7271C22.7645 63.0898 22.7092 63.4544 22.6575 63.8199C22.6391 63.9488 22.6206 64.0777 22.6031 64.2066C22.5394 64.6899 22.4813 65.176 22.4315 65.664C22.4278 65.7035 22.4251 65.7431 22.4214 65.7818C22.3771 66.2283 22.3402 66.6767 22.3089 67.126C22.2987 67.2742 22.2895 67.4224 22.2803 67.5716C22.2581 67.9315 22.2397 68.2934 22.2259 68.6552C22.2203 68.8016 22.2139 68.9489 22.2093 69.0962C22.1945 69.5906 22.1843 70.0859 22.1843 70.584H29.1175C29.1175 63.0189 31.1448 55.928 34.6856 49.8194C38.3381 43.5184 43.6018 38.2642 49.9143 34.6184C56.034 31.084 63.1378 29.0604 70.7166 29.0604C78.2954 29.0604 85.3992 31.084 91.5189 34.6184C97.8313 38.2642 103.095 43.5184 106.748 49.8194C110.288 55.928 112.316 63.0189 112.316 70.584H119.249C119.249 70.0896 119.239 69.5933 119.224 69.0989Z', fill: 'black' }
+export const face = { d: 'M106.747 49.8245C103.095 43.5235 97.831 38.2693 91.5185 34.6235C85.3989 31.089 78.2951 29.0654 70.7162 29.0654C63.1374 29.0654 56.0336 31.089 49.9139 34.6235C43.6015 38.2693 38.3377 43.5235 34.6853 49.8245C31.1445 55.9331 29.1172 63.024 29.1172 70.589H70.7153H112.315C112.315 63.024 110.288 55.9331 106.747 49.8245Z', fill: '#212121' }
+export const needle = { d: 'M111.117 36.1662L74.1669 59.8714C73.0943 59.4644 71.9321 59.2389 70.7165 59.2389C65.3559 59.2389 61.0099 63.577 61.0099 68.9279C61.0099 74.2788 65.3559 78.6169 70.7165 78.6169C76.0771 78.6169 80.4231 74.2788 80.4231 68.9279C80.4231 68.2494 80.3521 67.5865 80.2193 66.9466L111.134 36.1865C111.146 36.1754 111.131 36.1579 111.117 36.1662Z', fill: 'white' }
 ```
 
 ## Source — shared app parts it uses
