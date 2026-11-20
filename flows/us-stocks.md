@@ -42673,8 +42673,6 @@ export type UsScreenMap = Record<string, ComponentType<{ backdrop?: boolean }>>
 
 .hero {
   /* FLAG: hand-made balance card (not L3 Card); raw display:flex/grid + gap/padding instead of L3 Stack/Section/Inset/Grid */
-  --metal: linear-gradient(var(--l3-content-primary) 35%, var(--l3-content-secondary));
-  --metal-dim: linear-gradient(var(--l3-content-secondary) 35%, var(--l3-content-tertiary));
   --edge: var(--l3-border-light);
   gap:var(--l3-spacing-08);
   margin:0 var(--l3-spacing-16);
@@ -42710,12 +42708,10 @@ export type UsScreenMap = Record<string, ComponentType<{ backdrop?: boolean }>>
   display:flex;
 }
 
+/* The amount is flat colour — no gradient (18 Nov): sign and whole digits content/primary, decimals content/secondary. */
 .sign {
   height:var(--line);
-  background:var(--metal);
-  color:transparent;
-  -webkit-background-clip: text;
-  background-clip:text;
+  color:var(--l3-content-primary);
   display:inline-block;
   overflow:hidden;
 }
@@ -42761,15 +42757,13 @@ export type UsScreenMap = Record<string, ComponentType<{ backdrop?: boolean }>>
 
 .face {
   height:var(--line);
-  background:var(--metal);
-  color:transparent;
-  -webkit-background-clip: text;
-  background-clip:text;
+  color:var(--l3-content-primary);
   display:block;
 }
 
+/* The decimals (.40) are content/secondary. Same card on the INR and USD wallets. */
 .slot[data-dim] .face {
-  background-image:var(--metal-dim);
+  color:var(--l3-content-secondary);
 }
 
 .slot[data-dim] {
@@ -42875,11 +42869,6 @@ export type UsScreenMap = Record<string, ComponentType<{ backdrop?: boolean }>>
   border-radius:var(--l3-radius-full);
 }
 
-.hero:not([data-look=dashed]) {
-  --metal: linear-gradient(var(--l3-content-primary) 55%, var(--l3-content-secondary));
-  --metal-dim: linear-gradient(var(--l3-content-secondary), var(--l3-content-tertiary));
-}
-
 .hero:not([data-look=dashed]) .sign {
   height:auto;
   margin:var(--l3-spacing-06) var(--l3-spacing-02) 0 0;
@@ -42899,7 +42888,6 @@ export type UsScreenMap = Record<string, ComponentType<{ backdrop?: boolean }>>
 }
 
 .hero[data-look=dashed] {
-  --metal-dim: linear-gradient(var(--l3-content-secondary) 35%, var(--l3-content-tertiary));
   padding:var(--l3-spacing-28) var(--l3-spacing-16);
   border-radius:var(--l3-radius-16);
   text-align:center;
@@ -42926,10 +42914,7 @@ export type UsScreenMap = Record<string, ComponentType<{ backdrop?: boolean }>>
 }
 
 .unit .swap {
-  background:var(--metal-dim);
-  color:transparent;
-  -webkit-background-clip: text;
-  background-clip:text;
+  color:var(--l3-content-secondary);
 }
 
 .unit[data-unit=Cr] {

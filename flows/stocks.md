@@ -443,8 +443,15 @@ lower on the page is scrolled into view first). `components/MarketSwitchGuide.ts
 - 2026-11-19 — Product row (V19 only, every state; V17 and V18 keep it in the hero): out of the hero. IN tab: the products (Equity F&O, Commodity, Mutual Funds, Smart Invest) joined the shortcuts in one card (`components/InAllShortcuts.tsx`), two rows of four: products with icons (navbar F&O and Mutual Fund glyphs, the commodities glyph, Material autorenew for Smart Invest) over Trade Ideas · IPO · Watchlist · Referral, a hairline between the rows inset 12 from the card's sides. US tab: the row (Boosted ETFs, Themes, Fractional) is hidden, so the hero is just the holdings (money on the way: the transfer card only).
 - 2026-11-18 — The floating Homepage version switch (V19 / V18 …, phone app mode) shows only on the Home screens (IND and US tab, every state), not on other pages.
 
+- 2026-11-20 — **One ticker from the hero to the top.** Scrolling up, the holdings card's running capsule now opens out into the bar under the IN / US tabs and keeps running, in step — it is no longer swapped for the static index strip (the crossfade between the two read as a jump). The capsule widens to the screen edges and grows from 32 to 40 high with the scroll; the labels never fade.
+- 2026-11-19 — **Ticker capsule: slower, and yours to scroll.** It runs at 16 px a second (was about 30). A finger or the pointer on it stops it; drag it sideways — thumb, mouse or trackpad — to scroll through the indices either way, tap an index to open it; it runs on again 1.4 s after you let go. It is now a real sideways scroller moved by script (three copies of the row, wrapped by one row), not a CSS animation.
+- 2026-11-19 — IND instruments: Mutual funds · F&O · Commodities · IPO — IPO last (the user's call, after two swaps), and "Equity F&O" is just "F&O" here (copy `f3.in.fno`), in the circles and the card.
+- 2026-11-19 — Ticker capsule: each index shows its level too — name, level in whole points with no currency symbol, change (NIFTY 50 25,514 −0.18%).
+- 2026-11-19 — **The capsule is a running ticker.** Every index of the market (not only the first three) glides leftwards inside the capsule on a loop, 4 s per index, fading over the last 16 at each end; a pointer or finger on it holds it. The capsule now spans the card's width (20 from the screen's edges). Reduced motion: no movement, the row scrolls by hand. All capsules are locked to the clock, so the hero's and the copy that carries it to the sticky bar stay in step. FLAG: hand-made marquee, L3 has no ticker.
+- 2026-11-19 — **Ticker back inside the holdings card** (the user's call, Figma 6673:8574): the capsule with the three indices' changes is the hero's last row again (`TICKER_LOOK = 'pill'`), in place of the grey tray under the hero (kept in code as 'tray'). 32 from the tabs to the overline, 24 from the P&L tag to the capsule, 16 under it; 24 from the hero to the shortcuts (circles or card).
+- 2026-11-19 — US circles, two icons redrawn in the set's style (not from Figma): **Themes** is a stack of three layers — a solid sheet over an outlined one and a line — for sectors gathered into one set (three shapes and a hexagon cluster were tried and dropped: too close to Fractional) (was the page-and-pencil, which is Watchlist's art; its 2px nudge is gone). **Fractional** is a share split in four with one piece solid and lifted out — a part of a share (was the gift, which is Referral's art; a dollar coin with a slice was tried and dropped).
 - 2026-11-19 — IND instruments order: Mutual funds · Equity F&O · IPO · Commodities (IPO and Commodities swapped), in the circles and the card.
-- 2026-11-19 — Holdings panel over the tray: 40 above the overline (from the tabs' line) and 40 under the P&L tag — equal, was 32 / 24. Optical centring: the Themes icon sits 2px right of centre (its page-and-pencil is left-heavy), Mutual funds 1.5px right (Commodities is centred: its gold bars are symmetric, the 2.5px nudge was dropped the same day), ETFs and Boosted ETFs 1px right; on the US card, Analyst picks 2px and Watchlist 1.5px right.
+- 2026-11-19 — Holdings panel over the tray: 40 above the overline (from the tabs' line) and 40 under the P&L tag — equal, was 32 / 24. Optical centring: the Themes icon sits 2px right of centre (its page-and-pencil is left-heavy), Mutual funds 1.5px right, Commodities 0.5px right and 1px up (its bars sit low in the box under the glint), ETFs and Boosted ETFs 1px right; on the US card, Analyst picks 2px and Watchlist 1.5px right.
 - 2026-11-19 — Ticker tray: its grey is surface/secondary at 50% (was 100%); the bar it turns into on scroll starts from the same grey.
 - 2026-11-19 — **One-row card sized as Figma 6660:10742.** 360 × 68: 12 above the 24 icon, 4 to the label, 12 under it, column lines 44 (it was 74 with 18 / 12). 24 from the tray to the card and 24 from the card to Top Movers (the circles keep 32 to Top Movers).
 - 2026-11-19 — **IND icons in the US style.** Mutual funds (a donut with one solid slice — a pooled fund split into holdings; it was a sprout in a pot), Equity F&O (two candles), Commodities (three stacked bars with a glint; it was a barrel with a drop) and IPO (a rocket) are two-tone art like the US set — a white → light green fill, light green → green lines, one solid part — in `assets/in/instruments/*.svg`, on both the circles and the card. Drawn here: the Figma frame (6662:8516) has no IND art. FLAG: their greens are fixed values, as the US exports' blues are.
@@ -20328,27 +20335,18 @@ h��ha�E�  @����=O������S��m���㡦8�
 
 ```tsx
 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g clip-path="url(#clip0_fractional)">
-<path d="M19.6367 19.2183V11.5045H3.70117V19.2183C3.70117 20.0524 4.37735 20.7285 5.21144 20.7285H18.1264C18.9606 20.7285 19.6367 20.0524 19.6367 19.2183Z" fill="url(#paint0_linear_fractional)"/>
-<path d="M20.7287 8.33155V9.99405C20.7287 10.8282 20.0525 11.5043 19.2184 11.5043H4.11574C3.28165 11.5043 2.60547 10.8282 2.60547 9.99405V8.33155C2.60547 7.49744 3.28165 6.82128 4.11574 6.82128H19.2184C20.0525 6.82128 20.7287 7.49744 20.7287 8.33155Z" fill="url(#paint1_linear_fractional)"/>
-<path d="M15.3553 1.94436C16.3833 1.94436 17.1793 2.24853 17.6957 2.82088C18.2065 3.3871 18.3516 4.11359 18.2936 4.7711C18.2504 5.25794 18.0949 5.74122 17.8589 6.16072H19.2186C20.4176 6.16072 21.3898 7.13286 21.3898 8.33188V9.99407C21.3897 10.8003 20.9489 11.5017 20.2964 11.8761V19.2186C20.2962 20.4175 19.3241 21.3888 18.1253 21.3888H5.21083C4.01197 21.3888 3.03989 20.4176 3.03967 19.2186V11.8772C2.38654 11.5029 1.94539 10.8007 1.94531 9.99407V8.33188C1.94531 7.13287 2.9175 6.16075 4.11647 6.16072H5.47719C5.24114 5.74124 5.08563 5.25799 5.04255 4.7711C4.98443 4.11358 5.1286 3.38711 5.63928 2.82088C6.15571 2.24837 6.95169 1.94442 7.97976 1.94436C9.39551 1.94436 10.4909 2.88145 11.1906 3.85226C11.3669 4.09697 11.5267 4.35595 11.6675 4.61933C11.8082 4.35593 11.9681 4.097 12.1445 3.85226C12.8441 2.88142 13.9395 1.94451 15.3553 1.94436ZM4.36116 19.2186C4.36138 19.6877 4.74179 20.0673 5.21083 20.0673H11.0057V12.1652H4.36116V19.2186ZM12.3272 20.0673H18.1253C18.5943 20.0673 18.9747 19.6877 18.9749 19.2186V12.1652H12.3272V20.0673ZM4.11647 7.48221C3.64732 7.48224 3.2668 7.86272 3.2668 8.33188V9.99407C3.26691 10.4631 3.6474 10.8437 4.11647 10.8437H19.2186C19.6877 10.8437 20.0682 10.4632 20.0683 9.99407V8.33188C20.0683 7.86269 19.6878 7.48221 19.2186 7.48221H4.11647ZM15.3553 3.26584C14.5579 3.266 13.8087 3.80469 13.2172 4.62553C12.8418 5.14656 12.5858 5.70595 12.448 6.16072H15.921C16.0742 6.16072 16.3074 6.05967 16.5456 5.75498C16.7765 5.45973 16.9418 5.05361 16.9773 4.65444C17.0122 4.25832 16.917 3.93078 16.715 3.70668C16.5186 3.48883 16.1275 3.26584 15.3553 3.26584ZM7.97976 3.26584C7.20779 3.26591 6.81756 3.48886 6.6211 3.70668C6.41889 3.93089 6.3238 4.25902 6.35886 4.65547C6.39427 5.05432 6.5588 5.45989 6.78938 5.75498C7.02743 6.05941 7.2608 6.16055 7.41399 6.16072H10.888C10.7502 5.70594 10.4943 5.14654 10.1189 4.62553C9.52733 3.80457 8.77733 3.26584 7.97976 3.26584Z" fill="url(#paint2_linear_fractional)"/>
-</g>
+<rect x="3" y="5.6" width="15.4" height="15.4" rx="3" fill="url(#fill_fractional)" stroke="url(#line_fractional)" stroke-width="1.4" stroke-linejoin="round"/>
+<path d="M10.7 5.6V21M3 13.3H18.4" stroke="url(#line_fractional)" stroke-width="1.4" stroke-linecap="round"/>
+<rect x="12.3" y="2.3" width="9.4" height="9.4" rx="2.6" fill="url(#line_fractional)" stroke="white" stroke-width="1.4"/>
 <defs>
-<linearGradient id="paint0_linear_fractional" x1="6.03483" y1="12.8553" x2="11.6906" y2="22.6264" gradientUnits="userSpaceOnUse">
+<linearGradient id="fill_fractional" x1="5" y1="7.5" x2="16.5" y2="19" gradientUnits="userSpaceOnUse">
 <stop stop-color="white"/>
 <stop offset="1" stop-color="#CCDEFF"/>
 </linearGradient>
-<linearGradient id="paint1_linear_fractional" x1="5.25949" y1="7.50708" x2="6.86373" y2="13.7154" gradientUnits="userSpaceOnUse">
+<linearGradient id="line_fractional" x1="4.8" y1="4.8" x2="18.5" y2="18.5" gradientUnits="userSpaceOnUse">
 <stop stop-color="#81ABF6"/>
 <stop offset="1" stop-color="#2360D9"/>
 </linearGradient>
-<linearGradient id="paint2_linear_fractional" x1="4.79282" y1="4.79187" x2="18.5423" y2="18.5413" gradientUnits="userSpaceOnUse">
-<stop stop-color="#81ABF6"/>
-<stop offset="1" stop-color="#2360D9"/>
-</linearGradient>
-<clipPath id="clip0_fractional">
-<rect width="19.4444" height="19.4444" fill="white" transform="translate(1.94531 1.94444)"/>
-</clipPath>
 </defs>
 </svg>
 ```
@@ -20357,27 +20355,18 @@ h��ha�E�  @����=O������S��m���㡦8�
 
 ```tsx
 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g clip-path="url(#clip0_themes)">
-<path fill-rule="evenodd" clip-rule="evenodd" d="M17.9713 8.7477C17.4023 8.79992 16.8666 9.04974 16.4596 9.45757L9.87329 16.0579C9.49793 16.434 9.25494 16.9219 9.18082 17.4482L8.76042 20.433C8.74434 20.5471 8.73644 20.6612 8.73642 20.7749H3.95798C3.58632 20.7749 3.22989 20.6272 2.96709 20.3645C2.70428 20.1017 2.55664 19.7452 2.55664 19.3736V3.95883C2.55664 3.58718 2.70428 3.23074 2.96709 2.96794C3.22989 2.70514 3.58632 2.5575 3.95798 2.5575H13.0666L17.9713 7.46219V8.7477Z" fill="url(#paint0_linear_themes)"/>
-<path d="M20.7766 13.7691L14.1762 20.3693L11.1914 20.7757L11.6118 17.7909L18.1981 11.1906L20.7766 13.7691Z" fill="url(#paint1_linear_themes)"/>
-<path d="M18.1959 10.5774C18.3585 10.5773 18.5148 10.6416 18.6298 10.7566L21.2077 13.3353C21.3227 13.4503 21.3878 13.6067 21.3878 13.7693C21.3877 13.9318 21.3226 14.0874 21.2077 14.2023L14.6075 20.8025C14.5126 20.8973 14.3896 20.9588 14.2568 20.9768L11.2719 21.3831C11.0817 21.4089 10.89 21.3438 10.7546 21.2078C10.6194 21.0717 10.5555 20.8803 10.5821 20.6905L11.0027 17.7055L11.0247 17.6088C11.054 17.5145 11.1057 17.4283 11.1761 17.3578L17.762 10.7575C17.8768 10.6423 18.0332 10.5775 18.1959 10.5774ZM13.0661 1.9444C13.2286 1.94441 13.3851 2.00869 13.5 2.12353L18.4047 7.02823C18.5196 7.14319 18.5839 7.29959 18.5839 7.46217V8.16244C18.5838 8.501 18.3093 8.7755 17.9708 8.77552C17.6324 8.7753 17.3577 8.50088 17.3577 8.16244V7.71603L12.8122 3.17057H3.95792C3.74886 3.17057 3.54822 3.25361 3.4004 3.40143C3.25257 3.54926 3.16953 3.7499 3.16953 3.95896V19.3733C3.16954 19.5823 3.25266 19.783 3.4004 19.9308C3.54828 20.0786 3.74894 20.1617 3.95792 20.1617H8.1614C8.49993 20.1617 8.7744 20.4363 8.77448 20.7748C8.77446 21.1133 8.49996 21.3879 8.1614 21.3879H3.95792C3.42361 21.3879 2.91117 21.1754 2.53345 20.7977C2.15569 20.42 1.94337 19.9074 1.94336 19.3733V3.95896C1.94336 3.42469 2.15568 2.91227 2.53345 2.53449C2.91123 2.15672 3.42365 1.9444 3.95792 1.9444H13.0661ZM12.1886 18.0782L11.9089 20.0582L13.8851 19.79L19.9068 13.7683L18.1959 12.0575L12.1886 18.0782ZM8.71413 11.156C8.91089 10.8806 9.29407 10.8166 9.56957 11.0133C9.8451 11.2101 9.90909 11.5932 9.71231 11.8687L7.42664 15.0683C7.3219 15.2148 7.15789 15.3082 6.97833 15.3231C6.79893 15.3378 6.62192 15.2731 6.49457 15.1459L5.12278 13.7741C4.8837 13.5347 4.88365 13.1465 5.12278 12.9072C5.36221 12.6677 5.75126 12.6677 5.99069 12.9072L6.84996 13.7665L8.71413 11.156ZM8.71413 5.46198C8.91089 5.18651 9.29407 5.1226 9.56957 5.31925C9.8451 5.51605 9.90909 5.89917 9.71231 6.17469L7.42664 9.37424C7.3219 9.52082 7.15789 9.61418 6.97833 9.62905C6.79893 9.64383 6.62192 9.57903 6.49457 9.45183L5.12278 8.08005C4.8837 7.84067 4.88365 7.45245 5.12278 7.2131C5.36221 6.97368 5.75126 6.97369 5.99069 7.2131L6.84996 8.07238L8.71413 5.46198Z" fill="url(#paint2_linear_themes)"/>
-</g>
+<path d="M3.6 15.9L12 20.5L20.4 15.9" stroke="url(#line_themes)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M3.6 11.9L12 16.5L20.4 11.9L12 7.3L3.6 11.9Z" fill="url(#fill_themes)" stroke="url(#line_themes)" stroke-width="1.4" stroke-linejoin="round"/>
+<path d="M3.6 7.9L12 12.5L20.4 7.9L12 3.3L3.6 7.9Z" fill="url(#line_themes)" stroke="white" stroke-width="1.2" stroke-linejoin="round"/>
 <defs>
-<linearGradient id="paint0_linear_themes" x1="4.81402" y1="5.22531" x2="17.5181" y2="15.9749" gradientUnits="userSpaceOnUse">
+<linearGradient id="fill_themes" x1="5" y1="6" x2="17" y2="19" gradientUnits="userSpaceOnUse">
 <stop stop-color="white"/>
 <stop offset="1" stop-color="#CCDEFF"/>
 </linearGradient>
-<linearGradient id="paint1_linear_themes" x1="12.5951" y1="12.5943" x2="19.3729" y2="19.3721" gradientUnits="userSpaceOnUse">
+<linearGradient id="line_themes" x1="4.8" y1="4.8" x2="18.5" y2="18.5" gradientUnits="userSpaceOnUse">
 <stop stop-color="#81ABF6"/>
 <stop offset="1" stop-color="#2360D9"/>
 </linearGradient>
-<linearGradient id="paint2_linear_themes" x1="4.79087" y1="4.79187" x2="18.5401" y2="18.5413" gradientUnits="userSpaceOnUse">
-<stop stop-color="#81ABF6"/>
-<stop offset="1" stop-color="#2360D9"/>
-</linearGradient>
-<clipPath id="clip0_themes">
-<rect width="19.4444" height="19.4444" fill="white" transform="translate(1.94336 1.94445)"/>
-</clipPath>
 </defs>
 </svg>
 ```
@@ -20810,6 +20799,12 @@ export function Watchlists({ lists = watchlists, onOpen, onViewAll }: { lists?: 
 
 .hero:has([data-hero-ticker='tray']) .actions {
   padding-block: var(--l3-spacing-12);
+}
+
+/* The capsule in the hero (Home ticker 'pill'): 4 under the hero, so with the feed's 20 the shortcuts — circles or card —
+   sit 24 below it, as they do under the tray. */
+.hero:has([data-hero-ticker='pill']) {
+  margin-bottom: var(--l3-spacing-04);
 }
 ```
 
@@ -21457,19 +21452,57 @@ export function HeroButtons({ buy, add }: HeroButtonsProps) {
 /* V3: one outlined capsule, centred in the hero — surface/primary on the hero's glow, 12 between an index and the
    hairline beside it. FLAG: hand-made capsule (L3 has no chip row that isn't a tab or a filter). */
 .indexPill {
-  display: flex;
-  align-items: center;
-  gap: var(--l3-spacing-12);
-  align-self: center;
-  width: fit-content;
-  max-width: 100%;
-  margin-inline: auto;
-  padding: var(--l3-spacing-08) var(--l3-spacing-12);
+  align-self: stretch;
+  margin-inline: var(--l3-spacing-04); /* 20 from the screen's edges with the hero's 16 */
+  padding-block: var(--l3-spacing-08);
   border-radius: var(--l3-radius-full);
   background: var(--l3-surface-primary);
   box-shadow: inset 0 0 0 1px var(--l3-border-light); /* 1px outline */
-  overflow-x: auto; /* three indices fit at 392; on a narrower phone the capsule scrolls sideways */
+  overflow: hidden;
+}
+
+/* The running ticker: a sideways scroller (no scrollbar) whose track holds the row three times; Overview.tsx IndexPill
+   moves the scroll along and wraps it by one row, and a finger or pointer can drag it. The indices fade out over the
+   capsule's last 16 at each end; the capsule's own surface and outline stay whole.
+   FLAG: hand-made marquee — L3 has no ticker. */
+.indexPillView {
+  overflow-x: auto;
+  overscroll-behavior-x: contain; /* a drag at the row's end doesn't pull the page or swipe the tab */
   scrollbar-width: none;
+  cursor: grab;
+  mask-image: linear-gradient(to right, transparent, #000 var(--l3-spacing-16), #000 calc(100% - var(--l3-spacing-16)), transparent);
+}
+
+.indexPillView::-webkit-scrollbar {
+  display: none;
+}
+
+.indexPillView:active {
+  cursor: grabbing;
+}
+
+.indexPillTrack {
+  display: flex;
+  width: max-content;
+}
+
+.indexPillRow {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: var(--l3-spacing-12);
+  padding-inline-end: var(--l3-spacing-12);
+}
+
+/* Reduced motion: nothing runs — one row, scrolled by hand. */
+@media (prefers-reduced-motion: reduce) {
+  .indexPillView {
+    mask-image: none;
+  }
+
+  .indexPillRow[data-copy] {
+    display: none;
+  }
 }
 
 /* ---- Shortcuts V3: instruments (icon circles) + feature chips (Figma 6631:16280, components/Instruments.tsx) ---- */
@@ -23479,6 +23512,7 @@ export function MarketSwitch({ value, onChange, appearance, look = {}, compact =
 ### `src/flows/stocks/components/Overview.tsx`
 
 ```tsx
+import { useEffect, useRef } from 'react'
 import { Card } from '@l3/components/Card'
 import { Icon } from '@l3/components/Icon'
 import { PriceChange } from '@l3/components/PriceChange'
@@ -23531,24 +23565,143 @@ const SHORT_INDEX: Record<string, string> = { 'DOW JONES': 'DOW', 'NIFTY BANK': 
  * The indices as one outlined capsule (Home "Ticker" V3, Figma 6616:13661): name + today's change for the first three,
  * a hairline between them — no index level, so the holdings stay the only big number in the hero. Each opens its chart.
  */
+/** The capsule's ticker speed, px a second (slowed 19 Nov, the user's call: was about 30). */
+const MARQUEE_SPEED = 16
+
+/** How long after the finger or pointer lets go the ticker starts running again (a flick's glide finishes first). */
+const MARQUEE_RESUME_MS = 1400
+
+/**
+ * Where each ticker is in its loop (px into one row), shared by every capsule showing the same indices — the hero's and
+ * the copy that carries it to the sticky bar — so they are always in step. `holds`: how many of them a finger or pointer
+ * is on (the ticker waits while there is one).
+ */
+const marquees = new Map<string, { pos: number; holds: number; at: number }>()
+
+/**
+ * The index capsule in the hero: a running ticker. The indices glide leftwards on a loop, slowly. Put a finger or the
+ * pointer on it and it stops: drag it sideways (thumb, mouse or trackpad) to scroll through the indices by hand, tap an
+ * index to open it; it runs on again a moment after you let go.
+ * Built as a sideways scroller holding the row three times: the script moves its scroll position along and wraps it by
+ * one row, so there is no seam, and a real scroller gives touch its native drag and glide.
+ * FLAG: hand-made marquee — L3 has no ticker.
+ */
 export function IndexPill({ onIndex, items = indices, label = t('indices.label') }: { onIndex?: (id: string) => void; items?: MarketIndex[]; label?: string }) {
   const at = useLiveTick()
-  return (
-    <div className={styles.indexPill} role="region" aria-label={label}>
-      {items.slice(0, 3).map((item, i) => {
+  const view = useRef<HTMLDivElement>(null)
+  const key = items.map((item) => item.id).join('|')
+  useEffect(() => {
+    const el = view.current
+    if (!el || matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const state = marquees.get(key) ?? { pos: 0, holds: 0, at: performance.now() }
+    marquees.set(key, state)
+    const rowWidth = () => (el.firstElementChild?.firstElementChild as HTMLElement | null)?.offsetWidth ?? 0
+    let held = false
+    let resume = 0
+    let frame = 0
+    const hold = () => {
+      clearTimeout(resume)
+      if (!held) { held = true; state.holds += 1 }
+    }
+    const release = () => {
+      clearTimeout(resume)
+      resume = window.setTimeout(() => { if (held) { held = false; state.holds = Math.max(0, state.holds - 1) } }, MARQUEE_RESUME_MS)
+    }
+    // Each frame: move the shared position on (once a frame, whichever capsule gets there first), then show it. The
+    // capsule a hand is on shows where the hand has put it instead.
+    const step = (now: number) => {
+      const row = rowWidth()
+      if (row) {
+        if (state.holds) state.at = now
+        else if (now > state.at) { state.pos = (state.pos + ((now - state.at) / 1000) * MARQUEE_SPEED) % row; state.at = now }
+        if (!held) el.scrollLeft = row + state.pos // the middle copy: room to drag either way
+      }
+      frame = requestAnimationFrame(step)
+    }
+    frame = requestAnimationFrame(step)
+    // A hand moved it: keep the scroll inside the middle copy (wrap by one row) and take its place as the ticker's.
+    const onScroll = () => {
+      const row = rowWidth()
+      if (!held || !row) return
+      let x = el.scrollLeft
+      if (x < row * 0.5) x += row
+      else if (x >= row * 2) x -= row
+      if (x !== el.scrollLeft) el.scrollLeft = x
+      state.pos = (((x - row) % row) + row) % row
+    }
+    // Mouse: press and drag to scroll (touch and trackpads scroll it natively). A drag is not a tap.
+    let drag: { x: number; left: number; moved: boolean } | null = null
+    const scale = () => el.getBoundingClientRect().width / el.offsetWidth || 1 // the preview draws the phone scaled
+    const onDown = (e: PointerEvent) => {
+      hold()
+      if (e.pointerType === 'mouse' && e.button === 0) drag = { x: e.clientX, left: el.scrollLeft, moved: false }
+    }
+    const onMove = (e: PointerEvent) => {
+      if (!drag) return
+      const dx = (e.clientX - drag.x) / scale()
+      if (Math.abs(dx) > 4) drag.moved = true
+      if (drag.moved) el.scrollLeft = drag.left - dx
+    }
+    const onUp = () => {
+      if (drag?.moved) el.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation() }, { capture: true, once: true })
+      drag = null
+      if (!el.matches(':hover')) release()
+    }
+    el.addEventListener('scroll', onScroll, { passive: true })
+    el.addEventListener('pointerdown', onDown)
+    el.addEventListener('pointerenter', hold)
+    el.addEventListener('pointerleave', release)
+    el.addEventListener('touchstart', hold, { passive: true })
+    el.addEventListener('touchend', release, { passive: true })
+    el.addEventListener('touchcancel', release, { passive: true })
+    el.addEventListener('wheel', hold, { passive: true })
+    window.addEventListener('pointermove', onMove)
+    window.addEventListener('pointerup', onUp)
+    return () => {
+      cancelAnimationFrame(frame)
+      clearTimeout(resume)
+      if (held) state.holds = Math.max(0, state.holds - 1)
+      el.removeEventListener('scroll', onScroll)
+      el.removeEventListener('pointerdown', onDown)
+      el.removeEventListener('pointerenter', hold)
+      el.removeEventListener('pointerleave', release)
+      el.removeEventListener('touchstart', hold)
+      el.removeEventListener('touchend', release)
+      el.removeEventListener('touchcancel', release)
+      el.removeEventListener('wheel', hold)
+      window.removeEventListener('pointermove', onMove)
+      window.removeEventListener('pointerup', onUp)
+    }
+  }, [key])
+  const row = (copy: boolean) => (
+    <div className={styles.indexPillRow} aria-hidden={copy || undefined} data-copy={copy || undefined}>
+      {items.map((item) => {
         const live = liveQuote(item.id, item.value, item.changePct, at)
         return (
           <Stack key={item.id} direction="horizontal" align="center" gap="12" className={styles.indexItem}>
-            {i > 0 && <span className={styles.divider} aria-hidden="true" />}
             <Card variant="flat" padding="none" onClick={() => onIndex?.(item.id)}>
               <span className={styles.index}>
                 <span className={styles.indexName}>{SHORT_INDEX[item.name] ?? item.name}</span>
+                {/* The index's level, whole points, no currency symbol (the user's call, 19 Nov: "NIFTY 50 25,514 −0.18%"). */}
+                <span className={styles.indexValue}>{Math.round(live.price).toLocaleString('en-IN')}</span>
                 <PriceChange value={live.changePct} size="sm" />
               </span>
             </Card>
+            <span className={styles.divider} aria-hidden="true" />
           </Stack>
         )
       })}
+    </div>
+  )
+  return (
+    <div className={styles.indexPill} role="region" aria-label={label}>
+      <div ref={view} className={styles.indexPillView}>
+        <div className={styles.indexPillTrack}>
+          {row(true)}
+          {row(false)}
+          {row(true)}
+        </div>
+      </div>
     </div>
   )
 }
@@ -29295,6 +29448,7 @@ export function useLiveHeatmap(symbols: string[] = heatSymbols): HeatValue[] {
   "f3.instruments.label": "Instruments",
   "f3.features.label": "More features",
   "f3.in.ipo": "IPO",
+  "f3.in.fno": "F&O",
   "f3.us.boosted": "Boosted ETFs",
   "f3.us.themes": "Themes",
   "f3.us.fractional": "Fractional",
@@ -30456,6 +30610,20 @@ export function Glossary({ kind, onBack }: { kind: keyof typeof TERMS; onBack: (
   left: 0;
 }
 
+/* The capsule: one running ticker all the way. Its labels never fade or swap; the capsule opens out with the shape —
+   from 20 in from each edge to edge to edge, from 32 high to the bar's 40 (8 → 12 above and below the labels). */
+.stuckTicker[data-look='pill'] .stuckGhost {
+  right: calc(var(--l3-spacing-16) * (1 - var(--p)));
+  left: calc(var(--l3-spacing-16) * (1 - var(--p)));
+  opacity: 1;
+}
+
+.stuckTicker[data-look='pill'] .stuckGhost > * {
+  margin-inline: calc(var(--l3-spacing-04) * (1 - var(--p)));
+  padding-block: calc(var(--l3-spacing-08) + var(--l3-spacing-04) * var(--p));
+  border-radius: 0;
+}
+
 /* Its capsule's surface and outline are the growing shape's. */
 .stuckGhost > * {
   background: none;
@@ -30894,9 +31062,10 @@ const TRAY_PAD = 12
 /** The feature chips under the instruments: built (components/Instruments FeatureChips) but off the Home until their place is decided. */
 const FEATURE_CHIPS_ON_HOME = false
 
-/** Where the index ticker sits. The "Ticker" setting is archived (19 Nov): the tray under the hero is the only one shown;
- *  set 'top' (above the tabs), 'line' (the hero's last row) or 'pill' (a capsule in the hero) here to see the others. */
-const TICKER_LOOK = 'tray' as 'top' | 'line' | 'pill' | 'tray'
+/** Where the index ticker sits. The "Ticker" setting is archived (19 Nov). Back inside the card (the user's call, 19 Nov,
+ *  Figma 6673:8574): 'pill', one capsule in the hero with the indices' changes. Set 'tray' (a grey tray under the hero),
+ *  'line' (the hero's last row) or 'top' (above the tabs) here to see the others. */
+const TICKER_LOOK = 'pill' as 'top' | 'line' | 'pill' | 'tray'
 
 /** The US risk disclosure is agreed to once per session (sessionStorage: a new session shows it again). */
 const RISK_AGREED_KEY = 'us-risk-agreed'
@@ -31313,19 +31482,19 @@ export function Home({ scrollTo = 'top', market = 'in', movers, onStock, onTab, 
   const glyph = (icon: string) => <Icon icon={icon} size={24} />
   // The two versions' icons are two-tone art, not system icons: US the Figma frame's own (6662:8516); IND drawn here in the
   // same style in the market's green (assets/in/instruments — the frame has no IND art).
-  // `nudge`: px to the right, for art whose weight sits left of its box (optical centring; FLAG: raw px).
-  const art = (src: string, fallback: string, nudge = 0) => (instrumentLook === 'mini' || shortcutsLook === 'v2' ? <img src={src} alt="" width={24} height={24} style={nudge ? { translate: `${nudge}px 0` } : undefined} /> : glyph(fallback))
+  // `nudge` / `nudgeY`: px to the right / down (negative: up), for art whose weight sits left of its box (optical centring; FLAG: raw px).
+  const art = (src: string, fallback: string, nudge = 0, nudgeY = 0) => (instrumentLook === 'mini' || shortcutsLook === 'v2' ? <img src={src} alt="" width={24} height={24} style={nudge || nudgeY ? { translate: `${nudge}px ${nudgeY}px` } : undefined} /> : glyph(fallback))
   const instruments: Record<Market, Instrument[]> = {
     in: [
       { id: 'mutual-funds', label: t('f1.in.mutualFunds'), icon: art(inMutualFundsArt, msPieChartFill, 1.5) },
-      { id: 'fno', label: t('f1.in.fno'), icon: art(inFnoArt, msCandlestickChartFill) },
+      { id: 'fno', label: t('f3.in.fno'), icon: art(inFnoArt, msCandlestickChartFill) },
+      { id: 'commodities', label: t('f1.in.commodities'), icon: art(inCommoditiesArt, msOilBarrelFill, 0.5, -1) },
       { id: 'ipo', label: t('f3.in.ipo'), icon: art(inIpoArt, msRocketLaunchFill) },
-      { id: 'commodities', label: t('f1.in.commodities'), icon: art(inCommoditiesArt, msOilBarrelFill) },
     ],
     us: [
       { id: 'etfs', label: t('f1.shortcuts.etfs'), icon: art(etfsArt, msPieChartFill, 1) },
       { id: 'boosted-etfs', label: t('f3.us.boosted'), icon: art(boostedEtfsArt, msBoltFill, 1), isNew: true },
-      { id: 'themes', label: t('f3.us.themes'), icon: art(themesArt, msInterestsFill, 2) },
+      { id: 'themes', label: t('f3.us.themes'), icon: art(themesArt, msInterestsFill) },
       { id: 'fractional', label: t('f3.us.fractional'), icon: art(fractionalArt, msDonutSmallFill) },
     ],
   }
@@ -31468,9 +31637,12 @@ export function Home({ scrollTo = 'top', market = 'in', movers, onStock, onTab, 
           {tickerInHero && (
             <div ref={stuckBar} className={styles.stuckTicker} data-stuck={tickerStuck || undefined} data-look={tickerLook} inert={!tickerStuck || undefined} aria-hidden={!tickerStuck || undefined}>
               <span className={styles.stuckShape} aria-hidden="true" />
-              {tickerLook !== 'tray' && <div className={styles.stuckGhost} aria-hidden="true">{tickerOf(tab)}</div>}
+              {/* The capsule (20 Nov, the user's call): the hero's own running ticker carries on into the bar — one ticker,
+                  never swapped for the static strip, still running, in step with the hero's (they share one position). */}
+              {tickerLook === 'pill' && <div className={styles.stuckGhost}>{tickerOf(tab)}</div>}
+              {tickerLook === 'line' && <div className={styles.stuckGhost} aria-hidden="true">{tickerOf(tab)}</div>}
               {/* The tray keeps its own strip all the way (same spacing, same place): only the surface changes. */}
-              <div className={styles.stuckStrip}>{tickerLook === 'tray' ? tickerOf(tab) : indexStrip}</div>
+              {tickerLook !== 'pill' && <div className={styles.stuckStrip}>{tickerLook === 'tray' ? tickerOf(tab) : indexStrip}</div>}
             </div>
           )}
           {/* V19: the docked copy of the strip, hanging under the tabs (Home.module.css, .dockedTicker). */}
