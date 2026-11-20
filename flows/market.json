@@ -167,6 +167,7 @@
     "src/shared/data/openStock.ts",
     "src/shared/data/us-market-snapshot.json",
     "src/shared/data/usStocks.ts",
+    "src/shared/data/user.ts",
     "src/shared/money.module.css",
     "src/shared/money.tsx",
     "src/shared/prototype.ts",
@@ -174,6 +175,8 @@
     "src/shared/ui/CenteredTabs.tsx",
     "src/shared/ui/Flag.module.css",
     "src/shared/ui/Flag.tsx",
+    "src/shared/ui/FloatingNav.module.css",
+    "src/shared/ui/FloatingNav.tsx",
     "src/shared/ui/MainNav.module.css",
     "src/shared/ui/MainNav.tsx",
     "src/shared/ui/Screen.module.css",
@@ -184,6 +187,7 @@
     "src/shared/ui/StockListCard.tsx",
     "src/shared/ui/TopBarAction.module.css",
     "src/shared/ui/TopBarAction.tsx",
-    "src/shared/ui/useSwipeBetween.ts"
+    "src/shared/ui/useSwipeBetween.ts",
+    "src/shared/userStatus.ts"
   ]
 }

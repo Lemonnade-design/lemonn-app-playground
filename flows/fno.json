@@ -564,6 +564,8 @@
     "src/shared/prototype.ts",
     "src/shared/ui/Diwali.module.css",
     "src/shared/ui/Diwali.tsx",
+    "src/shared/ui/FloatingNav.module.css",
+    "src/shared/ui/FloatingNav.tsx",
     "src/shared/ui/IlliquidSheet.module.css",
     "src/shared/ui/IlliquidSheet.tsx",
     "src/shared/ui/Rail.module.css",
@@ -585,6 +587,7 @@
     "src/shared/ui/dash/assets/leaf-front.svg",
     "src/shared/ui/dash/assets/orb-fill.svg",
     "src/shared/ui/dash/assets/orb-ring.svg",
-    "src/shared/ui/useSwipeBetween.ts"
+    "src/shared/ui/useSwipeBetween.ts",
+    "src/shared/userStatus.ts"
   ]
 }

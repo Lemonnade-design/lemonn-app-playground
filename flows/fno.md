@@ -297,7 +297,7 @@ sample signals in `data.ts` (`zingSignals`, `SignalFilter`, `matchesFilter`).
   saved for quick access" (✕) once. Applying nothing removes it. Cancel (or a scrim tap) drops the changes. ✕ on Your
   filter removes it and goes back to All Signals.
 - **Commodity signals** (setting "Commodity signals", 20 Nov review): users couldn't tell an MCX signal from an index
-  one (the commodity's name sits in the same grey tag as NIFTY) and skipped the Commodity chip. Six versions, all on
+  one (the commodity's name sits in the same grey tag as NIFTY) and skipped the Commodity chip. Seven versions, all on
   the same sample feed (index, commodity and F&O stock signals mixed, newest first; commodity logos from
   `commodities/assets`, as on the Commodities home):
   1. Grey tag (today) — "GOLD" in the grey tag, like NIFTY.
@@ -312,9 +312,12 @@ sample signals in `data.ts` (`zingSignals`, `SignalFilter`, `matchesFilter`).
   6. Commodity picture — as 5, but a commodity signal's picture is the commodity's logo (20) on a 32 L3 Avatar circle;
      setting "Commodity picture background": Colour per commodity (Gold zing light, Natural Gas error light, Crude Oil
      and Silver surface/secondary; default, user's pick 20 Nov) or Grey (all surface/secondary). Its tag is the name in grey, like NIFTY.
-  (The grouped-list version was removed, 20 Nov. Setting values stay v1, v2, v3, v5, v6, v7.)
+  7. Header with tabs — as 4, but "Active signals (n)" and the Total P&L tag sit in the sheet's header (L3 sheet header:
+     heading, the tag on the right), the segment tabs and chips under it — the contract picker's header · tabs · chips.
+     The list starts with the cards.
+  (The grouped-list version was removed, 20 Nov. Setting values stay v1, v2, v3, v5, v6, v7, v8.)
   Chips not picked read in text secondary (all versions).
-  The setting is a dropdown (desktop panel and phone settings); on a phone (app mode) a floating V1 … V6 bubble on the
+  The setting is a dropdown (desktop panel and phone settings); on a phone (app mode) a floating V1 … V7 bubble on the
   signals sheet screens (fno-39, 45, 46, 47) steps to the next version in one tap. It starts on the chart, above the
   sheet (`quickSwitch.spot`), and can be dragged.
  · fno-40 … 44 the filter on each group (41: NIFTY 50 + SENSEX picked; 44: plus a
@@ -541,6 +544,7 @@ The source uses old D2 controls alongside L3; their code equivalents are L3 comp
 
 ### Changelog
 
+- 2026-11-20 — Zing signals: version 7, Header with tabs (Active signals + Total P&L in the sheet header, tabs and chips under it).
 - 2026-11-20 — Zing signals: Commodity signals is a dropdown; a floating V1 … V6 bubble on the signals sheet screens (phone). Preview: a quick switch can set its starting spot (`quickSwitch.spot`).
 - 2026-11-20 — Zing signals: signal cards get a smooth drop shadow (L3 elevation low + soft).
 - 2026-11-20 — Zing signals: strategy names in text primary; grey tags (market, win rate) in text secondary; Commodity picture's tag grey.
@@ -5286,6 +5290,7 @@ export function Watchlists({ lists, onAdd, onOpen }: { lists: Watchlist[]; onAdd
 ```tsx
 import { BottomNavbar } from '@l3/components/BottomNavbar'
 import { NavIcon } from '@l3/components/BottomNavbar/NavIcon'
+import { FloatingNav } from '../../../shared/ui/FloatingNav'
 import { t } from '../copy'
 
 export function FnoNav({ onHome, onDestination, onChain, onScalper }: { onHome: () => void; onDestination: (label: string) => void; onChain: () => void; onScalper: () => void }) {
@@ -5295,7 +5300,7 @@ export function FnoNav({ onHome, onDestination, onChain, onScalper }: { onHome: 
     { value: 'positions', label: t('nav.positions'), name: 'fnoPositions' },
     { value: 'scalper', label: t('nav.scalper'), name: 'fnoScalper' },
   ] as const
-  return <BottomNavbar aria-label="F&O" home={{ label: t('nav.home'), onClick: onHome }} value="fno" onChange={(v) => { const item = items.find((i) => i.value === v); if (v === 'scalper') onScalper(); else if (v === 'chain') onChain(); else if (item && v !== 'fno') onDestination(item.label) }} items={items.map(({ value, label, name }) => ({ value, label, icon: <NavIcon name={name} />, selectedIcon: <NavIcon name={name} selected /> }))} />
+  return <FloatingNav><BottomNavbar aria-label="F&O" home={{ label: t('nav.home'), onClick: onHome }} value="fno" onChange={(v) => { const item = items.find((i) => i.value === v); if (v === 'scalper') onScalper(); else if (v === 'chain') onChain(); else if (item && v !== 'fno') onDestination(item.label) }} items={items.map(({ value, label, name }) => ({ value, label, icon: <NavIcon name={name} />, selectedIcon: <NavIcon name={name} selected /> }))} /></FloatingNav>
 }
 ```
 
@@ -7220,7 +7225,7 @@ export const fno: Flow = {
       group: 'Zing signals',
       label: 'Commodity signals',
       picker: 'dropdown',
-      values: [{ value: 'v1', label: '1 · Grey tag (today)' }, { value: 'v2', label: '2 · MCX tag' }, { value: 'v3', label: '3 · Logo on avatar' }, { value: 'v5', label: '4 · Segment tabs' }, { value: 'v6', label: '5 · Logo tag, no tabs' }, { value: 'v7', label: '6 · Commodity picture' }],
+      values: [{ value: 'v1', label: '1 · Grey tag (today)' }, { value: 'v2', label: '2 · MCX tag' }, { value: 'v3', label: '3 · Logo on avatar' }, { value: 'v5', label: '4 · Segment tabs' }, { value: 'v6', label: '5 · Logo tag, no tabs' }, { value: 'v7', label: '6 · Commodity picture' }, { value: 'v8', label: '7 · Header with tabs' }],
       default: 'v5',
       floatOn: SIGNALS_SHEET_SCREENS,
       quickSwitch: {
@@ -7234,6 +7239,7 @@ export const fno: Flow = {
           { value: 'v5', label: 'Commodity signals 4 · Segment tabs', short: 'V4' },
           { value: 'v6', label: 'Commodity signals 5 · Logo tag, no tabs', short: 'V5' },
           { value: 'v7', label: 'Commodity signals 6 · Commodity picture', short: 'V6' },
+          { value: 'v8', label: 'Commodity signals 7 · Header with tabs', short: 'V7' },
         ],
       },
     },
@@ -9954,7 +9960,11 @@ export function IndicatorDetailsSheet({ name, onChart, onToggle, onOpenInDash, o
 /* v5: 16 above the segment tabs, 16 from their text down to the line and the selected bar (user, 20 Nov; L3's 40 tall
    underline tab puts 10 either side); no line under the chips. */
 .segmented { padding-top: var(--l3-spacing-16); }
-.segmented.segmented .segments [role='tab'] { height: auto; padding-top: 0; padding-bottom: var(--l3-spacing-16); }
+.segmented.segmented .segments [role='tab'],
+.headerTabs.headerTabs .segments [role='tab'] { height: auto; padding-top: 0; padding-bottom: var(--l3-spacing-16); }
+/* v8: the tabs and chips in the sheet header's bottom slot (as the contract picker's), no line under the chips — the
+   header draws its own. */
+.headerTabs .chipBar { box-shadow: none; }
 .segments { box-shadow: inset 0 -1px 0 var(--l3-border-light); /* 1px: Figma stroke weight has no variable */ }
 .segmented .chipBar { box-shadow: none; }
 /*
@@ -10041,8 +10051,11 @@ const commodityLogos: Record<SignalCommodity, string> = { gold: goldLogo, silver
  * - v6 Logo tag, no tabs: today's header (filter | chips, a line under it), the amber logo + name tag.
  * - v7 Commodity picture: as v6, but a commodity signal's picture is the commodity's logo on a circle (setting
  *   "Commodity picture background": a colour per commodity, or grey), and its tag is the name alone.
+ * - v8 Header with tabs: as v5, but "Active signals (n)" and the Total P&L sit in the sheet's header (L3 sheet header:
+ *   heading, the tag on the right), the segment tabs and chips under it — like the contract picker's header · tabs ·
+ *   chips. The list starts with the cards.
  */
-export type CommodityVersion = 'v1' | 'v2' | 'v3' | 'v5' | 'v6' | 'v7'
+export type CommodityVersion = 'v1' | 'v2' | 'v3' | 'v5' | 'v6' | 'v7' | 'v8'
 const marketLabel = (market: SignalMarket) => t(`signals.market.${market}`)
 const quick: Record<Exclude<SignalsChip, 'yours'>, (s: ZingSignal) => boolean> = {
   all: () => true,
@@ -10104,13 +10117,15 @@ export function SignalsSheet({ initial = {}, onClose }: { initial?: SignalsSheet
   const version = useFlowOption('fno', 'commodityTag', 'v5') as CommodityVersion
   /** v5: the segment tab (All · Index · Stocks · Commodities). */
   const [segment, setSegment] = useState<'all' | SignalSegment>('all')
-  const inSegment = (s: ZingSignal) => version !== 'v5' || segment === 'all' || segmentOf(s) === segment
+  // v5 and v8 have the segment tabs.
+  const segmented = version === 'v5' || version === 'v8'
+  const inSegment = (s: ZingSignal) => !segmented || segment === 'all' || segmentOf(s) === segment
   const inChip = (c: SignalsChip) => zingSignals.filter((s) => (c === 'yours' ? saved !== null && matchesFilter(s, saved) : quick[c](s)))
   const shown = inChip(chip).filter(inSegment)
   const count = (c: SignalsChip) => inChip(c).filter(inSegment).length
 
   // v5: the chips follow the segment tab; every other version keeps today's row.
-  const segmentChips: Exclude<SignalsChip, 'yours' | 'all'>[] = version !== 'v5' ? ['win50', 'commodity', 'nifty', 'sensex']
+  const segmentChips: Exclude<SignalsChip, 'yours' | 'all'>[] = !segmented ? ['win50', 'commodity', 'nifty', 'sensex']
     : segment === 'index' ? ['nifty', 'sensex', 'banknifty']
     : segment === 'stocks' ? ['win50', 'win25']
     : segment === 'commodity' ? ['gold', 'silver', 'crude', 'gas']
@@ -10138,28 +10153,23 @@ export function SignalsSheet({ initial = {}, onClose }: { initial?: SignalsSheet
     ...segmentChips.map((c) => chipItem(c)),
   ]
 
-  // The plain "All Signals" look (Figma's last frame): a heading over every signal.
-  const plain = Boolean(initial.plain) && !saved
-  const header = plain ? (
-    <BottomSheetHeader heading={t('signals.allTitle')} />
-  ) : (
-    <div className={version === 'v5' ? styles.segmented : undefined}>
-    {version === 'v5' && (
-      <Tabs
-        aria-label={t('signals.segments')}
-        appearance="underline"
-        size="md"
-        value={segment}
-        onChange={pickSegment}
-        className={styles.segments}
-        items={[
-          { value: 'all', label: t('signals.segment.all') },
-          { value: 'index', label: t('signals.segment.index') },
-          { value: 'stocks', label: t('signals.segment.stocks') },
-          { value: 'commodity', label: t('signals.segment.commodity') },
-        ]}
-      />
-    )}
+  const segmentTabs = (
+    <Tabs
+      aria-label={t('signals.segments')}
+      appearance="underline"
+      size="md"
+      value={segment}
+      onChange={pickSegment}
+      className={styles.segments}
+      items={[
+        { value: 'all', label: t('signals.segment.all') },
+        { value: 'index', label: t('signals.segment.index') },
+        { value: 'stocks', label: t('signals.segment.stocks') },
+        { value: 'commodity', label: t('signals.segment.commodity') },
+      ]}
+    />
+  )
+  const chipBar = (
     <div className={styles.chipBar}>
       <Badge dot={Boolean(saved)} color="error" label={t('signals.filterOn')}>
         <Button variant="tertiary" size="sm" iconLeft={<Icon icon={msFilterAltFill} />} aria-label={t('signals.filter')} onClick={openFilter} className={styles.filterButton} />
@@ -10173,6 +10183,25 @@ export function SignalsSheet({ initial = {}, onClose }: { initial?: SignalsSheet
         <span className={styles.tipTarget} />
       </Tooltip>
     </div>
+  )
+  const totalTag = (
+    <Tag size="md" variant="tertiary" color="profit">
+      <span className={styles.totalLabel}>{t('signals.totalPnl')}</span> {t('signals.plus', { amount: formatInr(signalsTotalPnl, 0) })}
+    </Tag>
+  )
+  const activeTitle = t('signals.active', { count: shown.length })
+
+  // The plain "All Signals" look (Figma's last frame): a heading over every signal.
+  const plain = Boolean(initial.plain) && !saved
+  const header = plain ? (
+    <BottomSheetHeader heading={t('signals.allTitle')} />
+  ) : version === 'v8' ? (
+    // v8: header · tabs · chips, like the contract picker — "Active signals (n)" with the Total P&L on the right.
+    <BottomSheetHeader heading={activeTitle} trailing={totalTag} bottom={<div className={styles.headerTabs}>{segmentTabs}{chipBar}</div>} className={styles.signalsHeader} />
+  ) : (
+    <div className={version === 'v5' ? styles.segmented : undefined}>
+      {version === 'v5' && segmentTabs}
+      {chipBar}
     </div>
   )
 
@@ -10193,12 +10222,12 @@ export function SignalsSheet({ initial = {}, onClose }: { initial?: SignalsSheet
           <Stack gap="16">{zingSignals.map((s) => <SignalCard key={s.id} signal={s} version={version} />)}</Stack>
         ) : (
           <Stack gap="16">
-            <Stack direction="horizontal" align="center" justify="between" gap="12">
-              <h2 className={styles.heading}>{t('signals.active', { count: shown.length })}</h2>
-              <Tag size="md" variant="tertiary" color="profit">
-                <span className={styles.totalLabel}>{t('signals.totalPnl')}</span> {t('signals.plus', { amount: formatInr(signalsTotalPnl, 0) })}
-              </Tag>
-            </Stack>
+            {version !== 'v8' && (
+              <Stack direction="horizontal" align="center" justify="between" gap="12">
+                <h2 className={styles.heading}>{activeTitle}</h2>
+                {totalTag}
+              </Stack>
+            )}
             {shown.length ? (
               <Stack gap="16">{shown.map((s) => <SignalCard key={s.id} signal={s} version={version} />)}</Stack>
             ) : (
@@ -11449,6 +11478,153 @@ function Sparkler() {
 }
 ```
 
+### `src/shared/ui/FloatingNav.module.css`
+
+```css
+/*
+ * Bottom navbar V2 — floating (FloatingNav.tsx), after the Minted app's live prototype (Home, 20 Nov). Its numbers in
+ * Minted's 360 × 800 frame: pill 16 / 14 in, 56 tall, radius 28; fade 136 tall, clear → 35% at 44 → 70% at 92 → 90% at
+ * 140 → 95%, backdrop blur 14; glow 50 × 40, blur 25, 35 above the pill's top. Every value here is an --l3-* token.
+ * L3 gap: Bottom Navbar has no floating version, so this frame restyles it (fill, line, shadow, row height).
+ */
+
+/* V1 (docked): the navbar as it is — the wrapper only marks it (data-bottom-nav) and adds no box of its own. */
+.docked { display: contents; }
+
+/* Takes no height in the page: what it holds hangs from the page's bottom edge over the body. */
+.frame {
+  position: relative;
+  z-index: 1; /* above the body that scrolls under it — stacking order isn't a design token */
+  height: 0;
+}
+
+/* The fade under the pill: the page's colour (surface/default), clear at the top, 95% at the bottom, and a soft blur
+   that comes in with it (masked, so its top edge doesn't show). It never takes a tap. */
+.fade {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: calc(var(--l3-size-128) + var(--l3-size-08)); /* 136 */
+  pointer-events: none;
+  background: linear-gradient(
+    color-mix(in srgb, var(--l3-surface-default) 0%, transparent),
+    color-mix(in srgb, var(--l3-surface-default) 35%, transparent) 32%,
+    color-mix(in srgb, var(--l3-surface-default) 70%, transparent) 68%,
+    color-mix(in srgb, var(--l3-surface-default) 95%, transparent)
+  );
+  -webkit-backdrop-filter: blur(var(--l3-spacing-14));
+  backdrop-filter: blur(var(--l3-spacing-14));
+  -webkit-mask-image: linear-gradient(transparent, #000 40%); /* mask colours are alpha only, not design colours */
+  mask-image: linear-gradient(transparent, #000 40%);
+}
+
+/* The pill: surface/primary, a light edge, Minted's soft double shadow (elevation medium + low), the glow clipped in. */
+.pill {
+  position: absolute;
+  right: var(--l3-spacing-16);
+  bottom: var(--l3-spacing-14);
+  left: var(--l3-spacing-16);
+  overflow: hidden;
+  border-radius: var(--l3-radius-full);
+  background: var(--l3-surface-primary);
+  box-shadow:
+    inset 0 0 0 1px var(--l3-border-light), /* 1px: Figma stroke weight has no variable */
+    var(--l3-shadow-elevation-medium),
+    var(--l3-shadow-elevation-low);
+}
+
+/* The chosen tab's glow: the accent of the selected option (L3's success green), blurred, half above the pill. */
+.glow {
+  position: absolute;
+  top: calc(-1 * var(--l3-spacing-36));
+  left: calc(var(--glow-x) * 100% - var(--l3-size-24));
+  width: var(--l3-size-48);
+  height: var(--l3-size-40);
+  border-radius: var(--l3-radius-full);
+  background: var(--l3-surface-accent-success-default);
+  opacity: 0.6;
+  filter: blur(var(--l3-spacing-24));
+  pointer-events: none;
+  transition: left var(--l3-motion-duration-medium) var(--l3-motion-easing-standard);
+}
+
+/* L3 Bottom Navbar inside the pill: no fill, line or shadow of its own, no safe-area pad; 56 rows, 8 above the icon. */
+.pill > nav,
+.pill > [role='navigation'],
+.pill > :not(.glow) {
+  position: relative;
+  background: transparent;
+  box-shadow: none;
+  padding-bottom: 0;
+}
+.pill :is(button, a)[class] {
+  min-height: var(--l3-size-56);
+  padding-block: var(--l3-spacing-08);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glow { transition: none; }
+}
+```
+
+### `src/shared/ui/FloatingNav.tsx`
+
+```tsx
+import { useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
+import { useFlowOption } from '../prototype'
+import { USER_STATUS } from '../userStatus'
+import styles from './FloatingNav.module.css'
+
+/** App setting "Bottom navbar" (A/B, 20 Nov): V1 docked (L3 Bottom Navbar, today) · V2 floating (after the Minted app). */
+export const BOTTOM_NAV_OPTION = 'bottomNav'
+export const useFloatingNav = () => useFlowOption(USER_STATUS, BOTTOM_NAV_OPTION, 'v1') === 'v2'
+
+/**
+ * Wraps a bottom navbar (an L3 <BottomNavbar>: the main nav, the F&O and Mutual Fund sub-navs). V1 passes it through.
+ * V2 — the Minted app's floating nav, measured from its live prototype: a pill 56 tall, radius full, 16 in from each
+ * side and 14 up from the bottom, on the surface with a light edge and a soft double shadow; a blurred accent glow
+ * behind the chosen tab (clipped by the pill); and under it a fade layer — the page's own colour from clear to 95%
+ * over 136, with a 14 backdrop blur — so the page dissolves into the nav as it scrolls under it. The frame takes no
+ * height of its own: the screen's body runs on behind it and keeps its last content clear of the pill (Screen /
+ * Phone CSS, [data-floating-nav]).
+ */
+export function FloatingNav({ children }: { children: ReactNode }) {
+  const floating = useFloatingNav()
+  const pill = useRef<HTMLDivElement>(null)
+  const [glowX, setGlowX] = useState<number | null>(null)
+
+  // The glow sits behind the chosen tab: wherever L3 puts it (sub-navs have a Home option first).
+  useLayoutEffect(() => {
+    if (!floating || !pill.current) return
+    const place = () => {
+      const chosen = pill.current?.querySelector<HTMLElement>('[data-selected]')
+      if (!chosen || !pill.current) return setGlowX(null)
+      const a = pill.current.getBoundingClientRect()
+      const b = chosen.getBoundingClientRect()
+      setGlowX((b.left + b.width / 2 - a.left) / (a.width || 1))
+    }
+    place()
+    const watch = new MutationObserver(place)
+    watch.observe(pill.current, { subtree: true, attributes: true, attributeFilter: ['data-selected'] })
+    return () => watch.disconnect()
+  })
+
+  // data-bottom-nav: the preview's V1 / V2 bubble shows only on screens that have a bottom navbar. V1's wrapper says
+  // data-surface="primary" so the OS navigation bar still takes the navbar's colour (it looks for the page's last part).
+  if (!floating) return <div className={styles.docked} data-bottom-nav="" data-surface="primary">{children}</div>
+  return (
+    <div className={styles.frame} data-floating-nav="" data-bottom-nav="">
+      <div className={styles.fade} aria-hidden="true" />
+      <div ref={pill} className={styles.pill}>
+        {glowX !== null && <span className={styles.glow} style={{ '--glow-x': glowX } as CSSProperties} aria-hidden="true" />}
+        {children}
+      </div>
+    </div>
+  )
+}
+```
+
 ### `src/shared/ui/IlliquidSheet.module.css`
 
 ```css
@@ -11645,6 +11821,12 @@ export function Rail({ children, label, visible, rows = 1, snap = 'start', class
   overflow-x: hidden; /* a screen never scrolls sideways — only rails inside it do */
   overflow-y: auto;
   padding-bottom: var(--app-body-end);
+}
+
+/* Bottom navbar V2 (floating, shared/ui/FloatingNav): the body runs on behind the pill; its end clears the pill
+   (14 up + 56 tall) plus the usual 24. */
+.page:has(> [data-floating-nav]) .body {
+  padding-bottom: calc(var(--app-body-end) + var(--l3-spacing-14) + var(--l3-size-56));
 }
 
 /* The body owns the page's end spacing: whatever comes last adds none of its own (no 24 + 24). */
@@ -12656,5 +12838,153 @@ export function useSwipeBetween({ canGo, onSwitch, page, area, slides, fades }: 
     /** Switch by tap (tabs, market button): the same switch as a swipe, towards `direction`. */
     go: (direction: 1 | -1, commit: () => void) => leave(direction, commit),
   }
+}
+```
+
+### `src/shared/userStatus.ts`
+
+```ts
+// Where the user is in the app — the prototype's app-level settings ("User status" in the preview panel, the phone's
+// settings sheet and a floating card beside the phone). Every screen that depends on it reads it here, so they all stay
+// in sync: pick "User account state: Active · money on the way" once and the Home's US tab, a US stock page and the wallet all
+// show that state. Picking never moves on by itself; taps in the prototype don't change it.
+// In a real app these come from the user's account (KYC status, US Stocks activation, wallet, holdings).
+import type { FlowOption } from '../flows/types'
+import { setFlowOption, useFlowOption } from './prototype'
+import { linkedBanks, otherBank, type LinkedBank } from './data/user'
+
+/** The settings' owner in the preview (as a flow id: where the picks are remembered). */
+export const USER_STATUS = 'app'
+
+export type KycStatus = 'done' | 'pending'
+export type UsActivation = 'kyc' | 'off' | 'review' | 'support' | 'failed' | 'active'
+export type UsWallet = 'empty' | 'onTheWay' | 'funded'
+export type UsHoldings = 'none' | 'some'
+export type BankLinks = 'none' | 'one' | 'two' | 'three' | 'sbi'
+
+/**
+ * Screens that change with the user status: the settings float beside the phone on these (desktop preview). The Home,
+ * its US tab screens (each one sets the status to its own state on arrival, then follows a pick), a US stock page and
+ * the wallet's US tab.
+ */
+/** The add-money screens and the wallet: the bank row and its sheet change with the user's linked banks. */
+const BANK_SCREENS = ['deposit-01', 'deposit-06', 'deposit-07', 'deposit-08', 'deposit-09', 'us-stocks-21', 'us-stocks-22', 'us-stocks-23', 'us-stocks-24', 'us-stocks-53', 'us-stocks-54', 'us-stocks-95']
+
+const STATUS_SCREENS = ['stocks-01', 'stocks-09', 'stocks-10', 'stocks-13', 'stocks-14', 'stocks-15', 'stocks-16', 'stocks-17', 'stocks-19', 'stocks-20', 'stocks-21', 'us-stocks-13', 'us-stocks-54']
+
+/** The app-level user status settings. */
+export const userStatusOptions: FlowOption[] = [
+  {
+    // One list for the whole way in, in order — one row of states (18 Nov, the user's call; was three settings: US
+    // Stocks activation, then USD wallet and US holdings under "Active"): not active while the Lemonn KYC is pending
+    // (US Stocks can't be activated until it's done), not active, the activation steps, then active with $0, money on
+    // the way, money in the wallet, US holdings. The values are the UsJourney steps.
+    id: 'account',
+    group: 'User status',
+    label: 'User account state',
+    picker: 'dropdown',
+    values: [
+      { value: 'kyc', label: 'Not active · KYC pending' },
+      { value: 'activate', label: 'Not active' },
+      { value: 'review', label: 'Under review' },
+      { value: 'support', label: 'Under review · contact support' },
+      { value: 'failed', label: 'Activation failed' },
+      { value: 'activated', label: 'Active · $0' },
+      { value: 'onTheWay', label: 'Active · money on the way' },
+      { value: 'ready', label: 'Active · has money' },
+      { value: 'holding', label: 'Active · US holdings' },
+    ],
+    // The prototype opens on a user who's all set: activated, money in the wallet, holding US stocks.
+    default: 'holding',
+    floatOn: STATUS_SCREENS,
+  },
+  {
+    // Bank accounts linked to Lemonn (KYC adds the first). None = the add-money screens ask for one first.
+    id: 'banks',
+    group: 'User status',
+    label: 'Bank accounts',
+    picker: 'dropdown', // a dropdown like User account state (18 Nov: five choices didn't fit a segmented row)
+    // Three / SBI only: with an account at a bank US Stocks money can't go from (State Bank of India).
+    values: [{ value: 'none', label: 'None' }, { value: 'one', label: 'One' }, { value: 'two', label: 'Two' }, { value: 'three', label: 'Three (+ SBI)' }, { value: 'sbi', label: 'SBI only' }],
+    default: 'three',
+    floatOn: BANK_SCREENS,
+  },
+]
+
+const option = (id: string) => userStatusOptions.find((o) => o.id === id)!
+const useStatus = (id: string) => useFlowOption(USER_STATUS, id, option(id).default)
+
+export type UserStatus = { kyc: KycStatus; us: UsActivation; usWallet: UsWallet; usHoldings: UsHoldings; banks: BankLinks }
+
+/** The user status as picked (settings under one that's off keep their last pick). KYC comes from the activation list. */
+export function useUserStatus(): UserStatus {
+  return { ...statusOf(useStatus('account') as UsJourney), banks: useStatus('banks') as BankLinks }
+}
+
+/** One account state as the activation, wallet and holdings it means. */
+function statusOf(step: UsJourney): Omit<UserStatus, 'banks'> {
+  const us: UsActivation = step === 'activate' ? 'off' : ['kyc', 'review', 'support', 'failed'].includes(step) ? (step as UsActivation) : 'active'
+  return {
+    kyc: us === 'kyc' ? 'pending' : 'done',
+    us,
+    usWallet: step === 'activated' ? 'empty' : step === 'onTheWay' ? 'onTheWay' : 'funded',
+    usHoldings: step === 'holding' ? 'some' : 'none',
+  }
+}
+
+/**
+ * The bank accounts the user has linked, as picked in "User status → Bank accounts" (primary first). Money in the USD
+ * wallet (on the way or landed) came from a bank, so then "None" counts as one — as in the real app, a user with money
+ * moving always has a bank.
+ */
+export function useLinkedBanks(): LinkedBank[] {
+  const picked = useStatus('banks') as BankLinks
+  const { us, usWallet } = statusOf(useStatus('account') as UsJourney)
+  const moneyMoved = us === 'active' && usWallet !== 'empty'
+  const banks = picked === 'none' && moneyMoved ? 'one' : picked
+  const linked = { none: [], one: linkedBanks.slice(0, 1), two: linkedBanks, three: [...linkedBanks, otherBank], sbi: [{ ...otherBank, primary: true }] }[banks]
+  return addedBank ? [...linked, addedBank] : linked
+}
+
+// A bank account added in the prototype ("Add bank account" → verified). Kept in memory, so a reload starts without it.
+let addedBank: LinkedBank | undefined
+let addBankOpener: string | undefined
+let addBankForUsStocks = false
+
+/**
+ * An add-money screen (₹ or US) or the US Stocks activation opens "Add bank account": remember which, so the verified
+ * account comes back to it. `usStocks`: the account is for US Stocks, so it must be at a bank that can send money abroad.
+ */
+export const startAddBank = (fromScreen?: string, { usStocks = false }: { usStocks?: boolean } = {}) => { addBankOpener = fromScreen; addBankForUsStocks = usStocks }
+/** "Add bank account" was opened from US Stocks: only the supported banks can be added. */
+export const addBankForUs = () => addBankForUsStocks
+/** The add-money screen that opened "Add bank account" (undefined when it was opened straight from the screen list). */
+export const addBankReturnScreen = () => addBankOpener
+/** The ₹1 check passed: the account joins the linked banks, and the add-money screens pick it. */
+export const linkBank = (bank: LinkedBank) => { addedBank = bank }
+/** The account added in this session, if any. */
+export const newlyLinkedBank = () => addedBank
+
+/**
+ * Where the user is with US Stocks, as one step: KYC pending → 'kyc'; not activated → 'activate'; under review /
+ * contact support / failed; activated → $0 'activated', 'onTheWay', or with money 'ready' / 'holding'.
+ * (The Stocks flow's UsState uses the same names.)
+ */
+export type UsJourney = 'kyc' | 'activate' | 'review' | 'support' | 'failed' | 'activated' | 'onTheWay' | 'ready' | 'holding'
+
+export function usJourney({ kyc, us, usWallet, usHoldings }: UserStatus): UsJourney {
+  if (kyc === 'pending' || us === 'kyc') return 'kyc'
+  if (us === 'off') return 'activate'
+  if (us !== 'active') return us
+  if (usWallet === 'empty') return 'activated'
+  if (usWallet === 'onTheWay') return 'onTheWay'
+  return usHoldings === 'some' ? 'holding' : 'ready'
+}
+
+export const useUsJourney = () => usJourney(useUserStatus())
+
+/** Sets the user status to one US Stocks step (a US tab screen showing its own state sets it on arrival). */
+export function setUsJourney(step: UsJourney) {
+  setFlowOption(USER_STATUS, 'account', option('account').default, step)
 }
 ```

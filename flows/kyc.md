@@ -1717,6 +1717,12 @@ export function Intro({ title, description, art, align = 'start', children }: {
   padding-bottom: var(--app-body-end);
 }
 
+/* Bottom navbar V2 (floating, shared/ui/FloatingNav): the body runs on behind the pill; its end clears the pill
+   (14 up + 56 tall) plus the usual 24. */
+.page:has(> [data-floating-nav]) .body {
+  padding-bottom: calc(var(--app-body-end) + var(--l3-spacing-14) + var(--l3-size-56));
+}
+
 /* The body owns the page's end spacing: whatever comes last adds none of its own (no 24 + 24). */
 .body > :last-child {
   padding-bottom: 0;

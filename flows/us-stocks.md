@@ -22254,6 +22254,12 @@ export function InlineSvg({ src, w, h = w, className }: { src: string; w?: numbe
 .page:has(> .footer [data-float-dock]) > .body {
   padding-bottom: calc(var(--app-body-end) + var(--l3-spacing-08) + var(--l3-size-control-lg) + var(--l3-spacing-08));
 }
+
+/* Bottom navbar V2 (floating, shared/ui/FloatingNav) in the footer: the footer takes no height, the body runs on behind
+   the pill and its end clears it (14 up + 56 tall) plus the usual 24. */
+.page:has(> .footer [data-floating-nav]) > .body {
+  padding-bottom: calc(var(--app-body-end) + var(--l3-spacing-14) + var(--l3-size-56));
+}
 ```
 
 ### `src/flows/us-stocks/components/Phone.tsx`
@@ -28226,6 +28232,7 @@ import { Card } from '@l3/components/Card'
 import { Icon } from '@l3/components/Icon'
 import { Tabs } from '@l3/components/Tabs'
 import { Tag } from '@l3/components/Tag'
+import { FloatingNav } from '../../../../shared/ui/FloatingNav'
 import { InlineSvg } from '../../components/InlineSvg'
 import { Phone } from '../../components/Phone'
 import { usePreview } from '../../../../shared/prototype'
@@ -28317,6 +28324,7 @@ export function MutualFundHomeScreen() {
       }
       gesture="none"
       footer={
+        <FloatingNav>
           <BottomNavbar
             aria-label="Mutual funds"
             // Home = the app's Stocks tab, as it was left (the navbar is the app's parent)
@@ -28329,6 +28337,7 @@ export function MutualFundHomeScreen() {
               { value: 'sips', label: 'SIPs', icon: <NavIcon name="mfSips" /> },
             ]}
           />
+        </FloatingNav>
       }
     >
       <div className={styles.raised}>
@@ -70682,6 +70691,153 @@ export const Flag = ({ code }: { code: FlagCode }) => (
 )
 ```
 
+### `src/shared/ui/FloatingNav.module.css`
+
+```css
+/*
+ * Bottom navbar V2 — floating (FloatingNav.tsx), after the Minted app's live prototype (Home, 20 Nov). Its numbers in
+ * Minted's 360 × 800 frame: pill 16 / 14 in, 56 tall, radius 28; fade 136 tall, clear → 35% at 44 → 70% at 92 → 90% at
+ * 140 → 95%, backdrop blur 14; glow 50 × 40, blur 25, 35 above the pill's top. Every value here is an --l3-* token.
+ * L3 gap: Bottom Navbar has no floating version, so this frame restyles it (fill, line, shadow, row height).
+ */
+
+/* V1 (docked): the navbar as it is — the wrapper only marks it (data-bottom-nav) and adds no box of its own. */
+.docked { display: contents; }
+
+/* Takes no height in the page: what it holds hangs from the page's bottom edge over the body. */
+.frame {
+  position: relative;
+  z-index: 1; /* above the body that scrolls under it — stacking order isn't a design token */
+  height: 0;
+}
+
+/* The fade under the pill: the page's colour (surface/default), clear at the top, 95% at the bottom, and a soft blur
+   that comes in with it (masked, so its top edge doesn't show). It never takes a tap. */
+.fade {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: calc(var(--l3-size-128) + var(--l3-size-08)); /* 136 */
+  pointer-events: none;
+  background: linear-gradient(
+    color-mix(in srgb, var(--l3-surface-default) 0%, transparent),
+    color-mix(in srgb, var(--l3-surface-default) 35%, transparent) 32%,
+    color-mix(in srgb, var(--l3-surface-default) 70%, transparent) 68%,
+    color-mix(in srgb, var(--l3-surface-default) 95%, transparent)
+  );
+  -webkit-backdrop-filter: blur(var(--l3-spacing-14));
+  backdrop-filter: blur(var(--l3-spacing-14));
+  -webkit-mask-image: linear-gradient(transparent, #000 40%); /* mask colours are alpha only, not design colours */
+  mask-image: linear-gradient(transparent, #000 40%);
+}
+
+/* The pill: surface/primary, a light edge, Minted's soft double shadow (elevation medium + low), the glow clipped in. */
+.pill {
+  position: absolute;
+  right: var(--l3-spacing-16);
+  bottom: var(--l3-spacing-14);
+  left: var(--l3-spacing-16);
+  overflow: hidden;
+  border-radius: var(--l3-radius-full);
+  background: var(--l3-surface-primary);
+  box-shadow:
+    inset 0 0 0 1px var(--l3-border-light), /* 1px: Figma stroke weight has no variable */
+    var(--l3-shadow-elevation-medium),
+    var(--l3-shadow-elevation-low);
+}
+
+/* The chosen tab's glow: the accent of the selected option (L3's success green), blurred, half above the pill. */
+.glow {
+  position: absolute;
+  top: calc(-1 * var(--l3-spacing-36));
+  left: calc(var(--glow-x) * 100% - var(--l3-size-24));
+  width: var(--l3-size-48);
+  height: var(--l3-size-40);
+  border-radius: var(--l3-radius-full);
+  background: var(--l3-surface-accent-success-default);
+  opacity: 0.6;
+  filter: blur(var(--l3-spacing-24));
+  pointer-events: none;
+  transition: left var(--l3-motion-duration-medium) var(--l3-motion-easing-standard);
+}
+
+/* L3 Bottom Navbar inside the pill: no fill, line or shadow of its own, no safe-area pad; 56 rows, 8 above the icon. */
+.pill > nav,
+.pill > [role='navigation'],
+.pill > :not(.glow) {
+  position: relative;
+  background: transparent;
+  box-shadow: none;
+  padding-bottom: 0;
+}
+.pill :is(button, a)[class] {
+  min-height: var(--l3-size-56);
+  padding-block: var(--l3-spacing-08);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glow { transition: none; }
+}
+```
+
+### `src/shared/ui/FloatingNav.tsx`
+
+```tsx
+import { useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
+import { useFlowOption } from '../prototype'
+import { USER_STATUS } from '../userStatus'
+import styles from './FloatingNav.module.css'
+
+/** App setting "Bottom navbar" (A/B, 20 Nov): V1 docked (L3 Bottom Navbar, today) · V2 floating (after the Minted app). */
+export const BOTTOM_NAV_OPTION = 'bottomNav'
+export const useFloatingNav = () => useFlowOption(USER_STATUS, BOTTOM_NAV_OPTION, 'v1') === 'v2'
+
+/**
+ * Wraps a bottom navbar (an L3 <BottomNavbar>: the main nav, the F&O and Mutual Fund sub-navs). V1 passes it through.
+ * V2 — the Minted app's floating nav, measured from its live prototype: a pill 56 tall, radius full, 16 in from each
+ * side and 14 up from the bottom, on the surface with a light edge and a soft double shadow; a blurred accent glow
+ * behind the chosen tab (clipped by the pill); and under it a fade layer — the page's own colour from clear to 95%
+ * over 136, with a 14 backdrop blur — so the page dissolves into the nav as it scrolls under it. The frame takes no
+ * height of its own: the screen's body runs on behind it and keeps its last content clear of the pill (Screen /
+ * Phone CSS, [data-floating-nav]).
+ */
+export function FloatingNav({ children }: { children: ReactNode }) {
+  const floating = useFloatingNav()
+  const pill = useRef<HTMLDivElement>(null)
+  const [glowX, setGlowX] = useState<number | null>(null)
+
+  // The glow sits behind the chosen tab: wherever L3 puts it (sub-navs have a Home option first).
+  useLayoutEffect(() => {
+    if (!floating || !pill.current) return
+    const place = () => {
+      const chosen = pill.current?.querySelector<HTMLElement>('[data-selected]')
+      if (!chosen || !pill.current) return setGlowX(null)
+      const a = pill.current.getBoundingClientRect()
+      const b = chosen.getBoundingClientRect()
+      setGlowX((b.left + b.width / 2 - a.left) / (a.width || 1))
+    }
+    place()
+    const watch = new MutationObserver(place)
+    watch.observe(pill.current, { subtree: true, attributes: true, attributeFilter: ['data-selected'] })
+    return () => watch.disconnect()
+  })
+
+  // data-bottom-nav: the preview's V1 / V2 bubble shows only on screens that have a bottom navbar. V1's wrapper says
+  // data-surface="primary" so the OS navigation bar still takes the navbar's colour (it looks for the page's last part).
+  if (!floating) return <div className={styles.docked} data-bottom-nav="" data-surface="primary">{children}</div>
+  return (
+    <div className={styles.frame} data-floating-nav="" data-bottom-nav="">
+      <div className={styles.fade} aria-hidden="true" />
+      <div ref={pill} className={styles.pill}>
+        {glowX !== null && <span className={styles.glow} style={{ '--glow-x': glowX } as CSSProperties} aria-hidden="true" />}
+        {children}
+      </div>
+    </div>
+  )
+}
+```
+
 ### `src/shared/ui/Keyboard.module.css`
 
 ```css
@@ -70852,6 +71008,7 @@ export function KeypadSlide({ open, children }: { open: boolean; children: React
 ```tsx
 import { BottomNavbar } from '@l3/components/BottomNavbar'
 import { NavIcon } from '@l3/components/BottomNavbar/NavIcon'
+import { FloatingNav } from './FloatingNav'
 import styles from './MainNav.module.css'
 
 export type Section = 'stocks' | 'market' | 'portfolio' | 'mutualFund' | 'fno'
@@ -70864,16 +71021,19 @@ const items: { value: Section; label: string }[] = [
   { value: 'fno', label: 'F&O' },
 ]
 
-/** The Lemonn app's main bottom navbar (L3: Bottom Navbar). Every L1 screen uses this — never a lookalike. */
+/** The Lemonn app's main bottom navbar (L3: Bottom Navbar). Every L1 screen uses this — never a lookalike. Setting
+ * "Bottom navbar" V2 floats it (FloatingNav). */
 export function MainNav({ value, onChange }: { value: Section; onChange?: (value: Section) => void }) {
   return (
-    <BottomNavbar
-      aria-label="Main"
-      className={styles.nav}
-      value={value}
-      onChange={(v) => onChange?.(v as Section)}
-      items={items.map((i) => ({ ...i, icon: <NavIcon name={i.value} />, selectedIcon: <NavIcon name={i.value} selected /> }))}
-    />
+    <FloatingNav>
+      <BottomNavbar
+        aria-label="Main"
+        className={styles.nav}
+        value={value}
+        onChange={(v) => onChange?.(v as Section)}
+        items={items.map((i) => ({ ...i, icon: <NavIcon name={i.value} />, selectedIcon: <NavIcon name={i.value} selected /> }))}
+      />
+    </FloatingNav>
   )
 }
 
