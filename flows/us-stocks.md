@@ -200,6 +200,7 @@ Every tap he wired is kept. The main path: FTUX sheet → Activate → Declarati
 
 ### Changelog
 - 20 Nov 2026 — Order pad V2, Indian pad (flow option "Order pad" = india): the pad is now an Indian stock's — RELIANCE from the company catalogue, its price live from the market snapshot — and everything on it is in ₹ (`padMoney.tsx` sets the pad's currency for the header price, the amount, chips, Balance · Req., the limit / trigger prices, the TP/SL, fee and leverage sheets). Each US state maps over (`indianPad.ts`): $ ×100 (+₹1,000 · +₹5,000 · +₹10,000 · Max, balance ₹52,040), shares ×10 and whole (Indian stocks trade in whole shares); the empty-wallet, short and sell-more-than-held states keep their errors in ₹. No "≈ ₹" on the Buy button (it's ₹ already). The US pad stays NVDA in $. After Buy, the result screens are still the US ones ($).
+- 20 Nov 2026 — Indian pad: V3 is the default validity switch (was V2); V1 and V2 stay for the A/B test.
 - 20 Nov 2026 — Indian pad, validity switch V3 (third value of "Validity switch"; the bubble now cycles V1 → V2 → V3): the Amount / Shares switch moves above the number, and the validity sits on its right after a short hairline divider ("Amount ⇕ | Day ⇕", both subtle Selects, centred); Market / Limit / SL stays alone and centred. Each switch hugs its label; when one changes size (Day → Instant, Amount → Shares) the row re-centres and every part slides to its new place (250 ms, standard easing; a FLIP in OrderPadV2, no jump; none with reduced motion). Intraday (no validity) shows only Amount ⇕ there. In V3 the Market / Limit / SL pills hug their labels (`Tabs width="hug"`), not equal widths.
 - 20 Nov 2026 — Indian pad, validity switch V2: the validity pill has no fill and no border, like the see-through Market / Limit / SL pills in the track. L3 gap: the action pill has no see-through version; the pad borrows the pill group's see-through look (OrderPadV2.module.css `.validityPill`).
 - 20 Nov 2026 — Indian pad, validity switch V2: the validity is an L3 action pill (`Tab appearance="pill" emphasis="tertiary" action`, the ↕ icon on the right), like Market / Limit / SL, at one fixed width (as wide as the "Instant ↕" pill), its label and icon centred together, so the track doesn't wobble when it cycles or the order type changes. V1 keeps the Select. L3 gap: an action pill has no aria-selected, so `emphasis="tertiary"` doesn't give it the tertiary (track-grey) fill; it shows white with a light border, unlike the see-through pills beside it.
@@ -22650,7 +22651,7 @@ export const usStocks: Flow = {
         { value: 'v2', label: 'V2 · in the order type track' },
         { value: 'v3', label: 'V3 · above the amount, with Amount / Shares' },
       ],
-      default: 'v2',
+      default: 'v3',
       floatOn: ORDER_PAD_SCREEN_IDS,
       // Phone (app mode): a floating "V1" / "V2" / "V3" bubble on every order pad screen flips it, for the A/B test (20 Nov, the
       // user's call). It sits under the "IN" / "US" pad bubble.
@@ -42643,13 +42644,13 @@ export type TpslSheetVersion = 'a' | 'b'
 export const useTpslSheet = (): TpslSheetVersion => (useFlowOption('us-stocks', 'tpslSheet', 'b') === 'a' ? 'a' : 'b')
 
 // The Indian pad's validity switch (flow option "Validity switch", group Trade, 20 Nov — an A/B test, the user's call):
-// v2 · inside the Market / Limit / SL track after a short divider (the default); v1 · alone at the row's right edge;
-// v3 · above the amount, right of the Amount / Shares switch (which moves up there too).
+// v2 · inside the Market / Limit / SL track after a short divider; v1 · alone at the row's right edge;
+// v3 · above the amount, right of the Amount / Shares switch (which moves up there too) — the default (20 Nov, the user's call).
 export type ValidityPlace = 'v1' | 'v2' | 'v3'
 const VALIDITY_PLACES: ValidityPlace[] = ['v1', 'v2', 'v3']
 export const useValidityPlace = (): ValidityPlace => {
-  const value = useFlowOption('us-stocks', 'validityPlace', 'v2') as ValidityPlace
-  return VALIDITY_PLACES.includes(value) ? value : 'v2'
+  const value = useFlowOption('us-stocks', 'validityPlace', 'v3') as ValidityPlace
+  return VALIDITY_PLACES.includes(value) ? value : 'v3'
 }
 ```
 
