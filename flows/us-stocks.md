@@ -200,6 +200,9 @@ Every tap he wired is kept. The main path: FTUX sheet → Activate → Declarati
 
 ### Changelog
 - 20 Nov 2026 — Order pad V2, Indian pad (flow option "Order pad" = india): the pad is now an Indian stock's — RELIANCE from the company catalogue, its price live from the market snapshot — and everything on it is in ₹ (`padMoney.tsx` sets the pad's currency for the header price, the amount, chips, Balance · Req., the limit / trigger prices, the TP/SL, fee and leverage sheets). Each US state maps over (`indianPad.ts`): $ ×100 (+₹1,000 · +₹5,000 · +₹10,000 · Max, balance ₹52,040), shares ×10 and whole (Indian stocks trade in whole shares); the empty-wallet, short and sell-more-than-held states keep their errors in ₹. No "≈ ₹" on the Buy button (it's ₹ already). The US pad stays NVDA in $. After Buy, the result screens are still the US ones ($).
+- 20 Nov 2026 — Indian pad, validity switch V3 (third value of "Validity switch"; the bubble now cycles V1 → V2 → V3): the Amount / Shares switch moves above the number, and the validity sits on its right after a short hairline divider ("Amount ⇕ | Day ⇕", both subtle Selects, centred); Market / Limit / SL stays alone and centred. Each switch hugs its label; when one changes size (Day → Instant, Amount → Shares) the row re-centres and every part slides to its new place (250 ms, standard easing; a FLIP in OrderPadV2, no jump; none with reduced motion). Intraday (no validity) shows only Amount ⇕ there. In V3 the Market / Limit / SL pills hug their labels (`Tabs width="hug"`), not equal widths.
+- 20 Nov 2026 — Indian pad, validity switch V2: the validity pill has no fill and no border, like the see-through Market / Limit / SL pills in the track. L3 gap: the action pill has no see-through version; the pad borrows the pill group's see-through look (OrderPadV2.module.css `.validityPill`).
+- 20 Nov 2026 — Indian pad, validity switch V2: the validity is an L3 action pill (`Tab appearance="pill" emphasis="tertiary" action`, the ↕ icon on the right), like Market / Limit / SL, at one fixed width (as wide as the "Instant ↕" pill), its label and icon centred together, so the track doesn't wobble when it cycles or the order type changes. V1 keeps the Select. L3 gap: an action pill has no aria-selected, so `emphasis="tertiary"` doesn't give it the tertiary (track-grey) fill; it shows white with a light border, unlike the see-through pills beside it.
 - 20 Nov 2026 — Indian pad, validity switch A/B (flow option "Validity switch"): V2 (default) · the validity sits inside the Market / Limit / SL grey track, after a short hairline divider, and the whole track is centred; V1 · alone at the row's right edge, the pills centred. L3 gap: a pill group can't hold a trailing control, so the pad adds the track fill around the Tabs (OrderPadV2.module.css `.typeTrack`). Phone (app mode): a floating "V2" / "V1" bubble on every order pad screen flips it (the preview's quick switch, under the "IN" / "US" bubble).
 - 20 Nov 2026 — Indian pad, Limit orders: the validity is Day / Instant / Year (Year by default; production's). Tapping the swap cycles Day → Instant → Year → Day, no sheet. Market keeps Day ⇄ Instant, SL Day ⇄ Year, each its own choice. Notes start "Valid for 1 year ·" / "Day order ·" / "Instant order ·".
 - 20 Nov 2026 — TP/SL card, set: the edit (pencil) icon is 20, up from 16 (a Medium ghost button; Small draws its icon at 16 whatever the Icon's size).
@@ -22643,18 +22646,20 @@ export const usStocks: Flow = {
       label: 'Validity switch',
       picker: 'dropdown',
       values: [
-        { value: 'v2', label: 'V2 · in the order type track' },
         { value: 'v1', label: 'V1 · at the right edge' },
+        { value: 'v2', label: 'V2 · in the order type track' },
+        { value: 'v3', label: 'V3 · above the amount, with Amount / Shares' },
       ],
       default: 'v2',
       floatOn: ORDER_PAD_SCREEN_IDS,
-      // Phone (app mode): a floating "V2" / "V1" bubble on every order pad screen flips it, for the A/B test (20 Nov, the
+      // Phone (app mode): a floating "V1" / "V2" / "V3" bubble on every order pad screen flips it, for the A/B test (20 Nov, the
       // user's call). It sits under the "IN" / "US" pad bubble.
       quickSwitch: {
         on: ORDER_PAD_SCREEN_IDS,
         values: [
-          { value: 'v2', label: 'Validity V2 · in the track', short: 'V2' },
           { value: 'v1', label: 'Validity V1 · at the right edge', short: 'V1' },
+          { value: 'v2', label: 'Validity V2 · in the track', short: 'V2' },
+          { value: 'v3', label: 'Validity V3 · above the amount', short: 'V3' },
         ],
       },
     },
@@ -39320,6 +39325,8 @@ function OrderPadV1({ config, backdrop, sheet }: OrderPadProps) {
 /* Indian pad's Day / Year switch: at the row's right edge, out of the flow, so Market / Limit / SL stays centred. */
 .validity { position: absolute; inset-inline-end: 0; top: 50%; transform: translateY(-50%); }
 .orderTypes.orderTypes { display: inline-grid; grid-auto-flow: column; grid-auto-columns: 1fr; width: fit-content; }
+/* V3: each pill as wide as its label. */
+.orderTypes.orderTypes[data-width='hug'] { grid-auto-columns: auto; }
 .ctaInr { font: var(--l3-text-heading-14); white-space: pre; } /* 2 smaller than the label (Heading/16), same weight */
 
 /* "Req." opens the fee sheet: secondary text, underlined like a link (L3 gap: no link-style Button). */
@@ -39337,10 +39344,22 @@ function OrderPadV1({ config, backdrop, sheet }: OrderPadProps) {
 .typeTrack {
   border-radius: var(--l3-radius-full);
   background: var(--l3-surface-secondary);
-  padding-inline-end: var(--l3-spacing-12);
+  padding-inline-end: var(--l3-spacing-04);
 }
 .trackDivider { width: 1px; height: var(--l3-spacing-16); background: var(--l3-border-intense); } /* 1px hairline */
-.trackValidity { margin-inline-start: var(--l3-spacing-08); }
+/* V2's validity pill: in a slot as wide as the "Instant ⇕" pill (a hidden copy shares the cell); the real pill stretches
+   to it, its label and icon centred together, so the track keeps one width while the label cycles. */
+.validitySlot { display: inline-grid; }
+.validitySlot > * { grid-area: 1 / 1; }
+.validitySizer { visibility: hidden; }
+/* No fill, no border (20 Nov, the user's call): the validity reads like the see-through Market / Limit / SL pills in the
+   track, not a white button. L3 gap: the action pill has no see-through version — a pill group's unselected pills
+   are see-through (Tabs.module.css), this borrows that look. */
+.validitySlot > .validityPill[data-action] { --tab-surface: transparent; --tab-border: transparent; }
+
+/* Validity switch V3 (20 Nov, the user's call): both switches above the amount — Amount ⇕ | Day ⇕ — each hugging its label;
+   OrderPadV2 slides them when a label changes size. */
+.switchRow { max-width: 100%; }
 ```
 
 ### `src/flows/us-stocks/screens/trade/OrderPadV2.tsx`
@@ -39370,7 +39389,9 @@ import { Button } from '@l3/components/Button'
 import { PriceChange } from '@l3/components/PriceChange'
 import { Select } from '@l3/components/Select'
 import { Stack } from '@l3/components/Stack'
-import { Tabs } from '@l3/components/Tabs'
+import { Icon } from '@l3/components/Icon'
+import { Tab, Tabs } from '@l3/components/Tabs'
+import { lmSwitchArrowVertical } from '@l3/icons/lemonnade'
 import { Keyboard, KeypadSlide, keypadFieldProps, typeKey } from '../../../../shared/ui/Keyboard'
 import { Phone } from '../../components/Phone'
 import { currentStock, logoFor } from '../../data'
@@ -39690,7 +39711,7 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
       const target = e.target as HTMLElement
       const screen = bodyRef.current?.closest('section')
       if (!screen?.contains(target)) return
-      if (!keypadRef.current || target.closest(`input, .${styles.amountRow}, [data-price-field], footer, .${styles.typeRow}, .${styles.validity}`)) return
+      if (!keypadRef.current || target.closest(`input, .${styles.amountRow}, [data-price-field], footer, .${styles.typeRow}, .${styles.validity}, .${styles.switchRow}`)) return
       showKeypad(false)
       activeRef.current?.blur()
     }
@@ -39721,6 +39742,28 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
     const giveUp = setTimeout(() => setTabValue(config.type), 1000)
     return () => { cancelAnimationFrame(frame); clearTimeout(giveUp) }
   }, [tabValue, config.type])
+  // V3's switch row hugs its labels, so a label that changes size (Day → Instant, Amount → Shares) moves the row's other
+  // parts: each one slides from where it was to its new place (a FLIP; 20 Nov, the user's call: animated, never a jump).
+  const switchRowRef = useRef<HTMLDivElement>(null)
+  const switchLefts = useRef<number[]>([])
+  useLayoutEffect(() => {
+    const row = switchRowRef.current
+    if (!row) { switchLefts.current = []; return }
+    const items = [...row.children] as HTMLElement[]
+    // A slide still running: where each part shows now (its old place + the running offset) is where it starts from.
+    const shown = items.map((el) => el.getBoundingClientRect().left)
+    items.forEach((el) => el.getAnimations().forEach((run) => run.cancel()))
+    const lefts = items.map((el) => el.getBoundingClientRect().left)
+    const before = switchLefts.current
+    switchLefts.current = lefts
+    if (before.length !== lefts.length || matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    items.forEach((el, i) => {
+      const from = before[i] + (shown[i] - lefts[i]) - lefts[i]
+      if (Math.abs(from) < 0.5) return
+      el.animate([{ translate: `${from}px 0` }, { translate: '0 0' }], { duration: 250, easing: 'cubic-bezier(0.2, 0, 0, 1)' })
+    })
+  }, [mode, validityLabel, validityPlace])
+
   // Order type switch = a dissolve: the old fields drop a little and fade out (leaveTo), then this type's fields rise
   // into place and fade in (here, once, when they first attach: a callback ref, the phone mounts its body later).
   const slid = useRef(false)
@@ -39792,7 +39835,8 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
       appearance="pill-group"
       size="md"
       behavior="toggle"
-      width="fill"
+      // V3: each pill hugs its label (20 Nov, the user's call); V1 / V2 keep equal pills.
+      width={validityPlace === 'v3' ? 'hug' : 'fill'}
       className={styles.orderTypes}
       aria-label="Order type"
       items={ORDER_TYPES}
@@ -39824,14 +39868,22 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
             <Stack direction="horizontal" align="center" gap="04" className={styles.typeTrack}>
               {orderTypeTabs}
               <span className={styles.trackDivider} aria-hidden />
-              <Select size="sm" className={styles.trackValidity} icon="swap" onClick={onValidity} aria-label={`Validity ${validityLabel}. Switch to ${validityNext}`}>
-                {validityLabel}
-              </Select>
+              {/* An L3 action pill (a plain button that looks like an unselected pill), in a fixed-width slot as wide as
+                  the "Instant ⇕" pill (a hidden copy shares the cell): the pill keeps one width as it cycles, its label
+                  and icon centred together (20 Nov, the user's call). */}
+              <span className={styles.validitySlot}>
+                <span className={styles.validitySizer} inert aria-hidden>
+                  <Tab appearance="pill" emphasis="tertiary" action raised="none" iconRight={<Icon icon={lmSwitchArrowVertical} size={16} />}>Instant</Tab>
+                </span>
+                <Tab appearance="pill" emphasis="tertiary" action raised="none" className={styles.validityPill} iconRight={<Icon icon={lmSwitchArrowVertical} size={16} />} onClick={onValidity} aria-label={`Validity ${validityLabel}. Switch to ${validityNext}`}>
+                  {validityLabel}
+                </Tab>
+              </span>
             </Stack>
           ) : (
             <>
               {orderTypeTabs}
-              {validity && (
+              {validity && validityPlace === 'v1' && (
                 <Select size="sm" className={styles.validity} icon="swap" onClick={onValidity} aria-label={`Validity ${validityLabel}. Switch to ${validityNext}`}>
                   {validityLabel}
                 </Select>
@@ -39842,6 +39894,23 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
         <Stack gap="16" align="center" className={styles.fields}>
           {/* The amount is the same on every order type: it stays put while the part under it dissolves. */}
           <Stack gap="08" align="center">
+            {/* V3: Amount / Shares and the validity sit together above the amount, each hugging its label (20 Nov, the user's
+                call); when a label changes size the row re-centres with a slide (switchRowRef). */}
+            {validityPlace === 'v3' && (config.toggle || validity) && (
+              <Stack direction="horizontal" align="center" gap="12" className={styles.switchRow} ref={switchRowRef}>
+                {config.toggle && (
+                  <Select size="sm" subtle icon="swap" onClick={switchMode} aria-label={switchLabel}>
+                    {unitLabel}
+                  </Select>
+                )}
+                {config.toggle && validity && <span className={styles.trackDivider} aria-hidden />}
+                {validity && (
+                  <Select size="sm" subtle icon="swap" onClick={onValidity} aria-label={`Validity ${validityLabel}. Switch to ${validityNext}`}>
+                    {validityLabel}
+                  </Select>
+                )}
+              </Stack>
+            )}
             <label className={styles.amountRow} data-error={fieldError || undefined}>
               {mode === 'amount' && <span className={styles.prefix}>{symbol}</span>}
               <input
@@ -39860,7 +39929,7 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
               />
               {keypad && active === 'amount' && <span className={styles.caret} aria-hidden="true" />}
             </label>
-            {config.toggle && (
+            {config.toggle && validityPlace !== 'v3' && (
               <Select size="sm" subtle icon="swap" onClick={switchMode} aria-label={switchLabel}>
                 {unitLabel}
               </Select>
@@ -42574,9 +42643,14 @@ export type TpslSheetVersion = 'a' | 'b'
 export const useTpslSheet = (): TpslSheetVersion => (useFlowOption('us-stocks', 'tpslSheet', 'b') === 'a' ? 'a' : 'b')
 
 // The Indian pad's validity switch (flow option "Validity switch", group Trade, 20 Nov — an A/B test, the user's call):
-// v2 · inside the Market / Limit / SL track after a short divider (the default); v1 · alone at the row's right edge.
-export type ValidityPlace = 'v1' | 'v2'
-export const useValidityPlace = (): ValidityPlace => (useFlowOption('us-stocks', 'validityPlace', 'v2') === 'v1' ? 'v1' : 'v2')
+// v2 · inside the Market / Limit / SL track after a short divider (the default); v1 · alone at the row's right edge;
+// v3 · above the amount, right of the Amount / Shares switch (which moves up there too).
+export type ValidityPlace = 'v1' | 'v2' | 'v3'
+const VALIDITY_PLACES: ValidityPlace[] = ['v1', 'v2', 'v3']
+export const useValidityPlace = (): ValidityPlace => {
+  const value = useFlowOption('us-stocks', 'validityPlace', 'v2') as ValidityPlace
+  return VALIDITY_PLACES.includes(value) ? value : 'v2'
+}
 ```
 
 ### `src/flows/us-stocks/screens/types.ts`
