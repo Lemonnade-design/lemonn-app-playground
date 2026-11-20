@@ -2262,6 +2262,8 @@ export function useSystemKeyboard() {
   overflow: clip; /* clip, not hidden: a sheet taking focus while it slides in can't scroll the screen */
   background: var(--l3-surface-default);
   color: var(--l3-content-primary);
+  /* A size container: a sheet can be a share of the phone screen's height (cqh), in the mockup and on a phone alike. */
+  container: app-screen / size;
   /* An app, not a page: swiping and long-pressing never select text (fields still do — see below). */
   user-select: none;
   -webkit-user-select: none;

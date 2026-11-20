@@ -278,7 +278,7 @@ From the Active chip at the right end of the Scalper's tool row (Zing). Figma: "
 `9r61YQp7QQZAQovDyz8hLF` (drawn in the old Lemonn design system), rebuilt in L3, light and dark. `sheets/SignalsSheet.tsx`;
 sample signals in `data.ts` (`zingSignals`, `SignalFilter`, `matchesFilter`).
 
-- **Signals sheet.** 512 tall whatever the number of signals (under 60% of the screen; the list scrolls inside). In the header's place a chip row: the filter button (Tertiary Small, a red dot once a filter is
+- **Signals sheet.** 75% of the phone screen's height whatever the number of signals (the list scrolls inside). In the header's place a chip row: the filter button (Tertiary Small, a red dot once a filter is
   saved) | L3 pill tabs (Small): Your filter (n) ✕ once saved · All Signals (n) · 🔥 Win rate ≥ 50% (n) · Commodity ·
   Nifty · Sensex. Counts are worked out from the signals. Body: "Active signals (n)" (Heading/14) with a Total P&L tag,
   then one L3 Card per signal: Avatar 32, strategy (Heading/12, secondary), tags (market · Win rate n% in green, or a
@@ -305,7 +305,7 @@ sample signals in `data.ts` (`zingSignals`, `SignalFilter`, `matchesFilter`).
   3. Logo on avatar — the commodity's logo on the strategy picture's corner, and an amber tag with the name.
   4. Segment tabs (default, user's pick 20 Nov) — All · Index · Stocks · Commodities as L3 underline tabs (no icons),
      16 below the sheet's top edge and 16 from their text to the line, over the chips (no line under the chips). The
-     chips follow the tab: All — Win rate ≥ 50%; Index — Nifty · Sensex · Bank Nifty; Stocks — Win rate ≥ 50% · ≥ 25%;
+     chips follow the tab: All — Win rate ≥ 50% · Nifty · Sensex · F&O Stocks · Commodities; Index — Nifty · Sensex · Bank Nifty; Stocks — Win rate ≥ 50% · ≥ 25%;
      Commodities — Gold · Silver · Crude Oil · Natural Gas (with their logos). Changing tab goes back to All Signals
      (Your filter stays). Commodity cards: an amber tag with the logo and name.
   5. Logo tag, no tabs — today's header (filter | chips, the line under it), the amber logo + name tag.
@@ -314,7 +314,7 @@ sample signals in `data.ts` (`zingSignals`, `SignalFilter`, `matchesFilter`).
      and Silver surface/secondary; default, user's pick 20 Nov) or Grey (all surface/secondary). Its tag is the name in grey, like NIFTY.
   7. Header with tabs — as 4, but "Active signals (n)" and the Total P&L tag sit in the sheet's header (L3 sheet header:
      heading, the tag on the right), the segment tabs and chips under it — the contract picker's header · tabs · chips.
-     The list starts with the cards.
+     The list starts with the cards and scrolls behind the header: no line under it, a shadow once scrolled.
   (The grouped-list version was removed, 20 Nov. Setting values stay v1, v2, v3, v5, v6, v7, v8.)
   Chips not picked read in text secondary (all versions).
   The setting is a dropdown (desktop panel and phone settings); on a phone (app mode) a floating V1 … V7 bubble on the
@@ -544,6 +544,8 @@ The source uses old D2 controls alongside L3; their code equivalents are L3 comp
 
 ### Changelog
 
+- 2026-11-20 — Zing signals: the sheet is 75% of the screen's height (Screen is a size container, cqh).
+- 2026-11-20 — Zing signals: under the tabs' All, more chips (Nifty, Sensex, F&O Stocks, Commodities); version 7's header has no line and a shadow once the list scrolls.
 - 2026-11-20 — Zing signals: version 7, Header with tabs (Active signals + Total P&L in the sheet header, tabs and chips under it).
 - 2026-11-20 — Zing signals: Commodity signals is a dropdown; a floating V1 … V6 bubble on the signals sheet screens (phone). Preview: a quick switch can set its starting spot (`quickSwitch.spot`).
 - 2026-11-20 — Zing signals: signal cards get a smooth drop shadow (L3 elevation low + soft).
@@ -7230,8 +7232,8 @@ export const fno: Flow = {
       floatOn: SIGNALS_SHEET_SCREENS,
       quickSwitch: {
         on: SIGNALS_SHEET_SCREENS,
-        // On the chart, above the sheet (the default spot lands on the sheet's tabs).
-        spot: { side: 'left', y: 0.3 },
+        // On the chart, above the sheet (it's 75% of the screen; the default spot lands on its tabs).
+        spot: { side: 'left', y: 0.14 },
         values: [
           { value: 'v1', label: 'Commodity signals 1 · Grey tag', short: 'V1' },
           { value: 'v2', label: 'Commodity signals 2 · MCX tag', short: 'V2' },
@@ -9789,9 +9791,9 @@ export function IndicatorDetailsSheet({ name, onChart, onToggle, onOpenInDash, o
  * file 9r61YQp7QQZAQovDyz8hLF) in L3 tokens.
  */
 
-/* One height however many signals there are: 512, under 60% of the 872 screen (user, 20 Nov — Figma's 605 was too
-   tall); the list scrolls inside it. */
-.sheet.sheet { height: calc(var(--l3-size-128) * 4); }
+/* One height however many signals there are: 75% of the phone screen (user, 20 Nov; the screen is a size container —
+   Screen.module.css); the list scrolls inside it. */
+.sheet.sheet { height: 75cqh; }
 
 /* The chip row in the sheet header's place: the filter button | the chips (they scroll sideways), a line under it. */
 .chipBar {
@@ -9965,6 +9967,15 @@ export function IndicatorDetailsSheet({ name, onChart, onToggle, onOpenInDash, o
 /* v8: the tabs and chips in the sheet header's bottom slot (as the contract picker's), no line under the chips — the
    header draws its own. */
 .headerTabs .chipBar { box-shadow: none; }
+/* v8: no line under the header; the list scrolls behind it, and once it has, the header lifts with a shadow over it
+   (elevation medium). */
+.signalsHeader.signalsHeader.signalsHeader {
+  position: relative;
+  z-index: 1; /* over the list that scrolls under it — stacking order isn't a design token */
+  box-shadow: none;
+  transition: box-shadow var(--l3-motion-duration-short) var(--l3-motion-easing-standard);
+}
+.signalsHeader.signalsHeader.signalsHeader.headerScrolled { box-shadow: var(--l3-shadow-elevation-medium); }
 .segments { box-shadow: inset 0 -1px 0 var(--l3-border-light); /* 1px: Figma stroke weight has no variable */ }
 .segmented .chipBar { box-shadow: none; }
 /*
@@ -9982,7 +9993,7 @@ export function IndicatorDetailsSheet({ name, onChart, onToggle, onOpenInDash, o
 ### `src/flows/fno/sheets/SignalsSheet.tsx`
 
 ```tsx
-import { useState, type MouseEvent, type ReactNode } from 'react'
+import { useEffect, useState, type MouseEvent, type ReactNode } from 'react'
 import { Avatar } from '@l3/components/Avatar'
 import { Badge } from '@l3/components/Badge'
 import { BottomSheetHeader } from '@l3/components/BottomSheet'
@@ -10016,7 +10027,7 @@ import styles from './SignalsSheet.module.css'
 import tools from './ChartToolsSheet.module.css'
 
 /** The quick chips under the sheet's top edge. `yours` appears once a filter has been applied (and saved). */
-export type SignalsChip = 'yours' | 'all' | 'win50' | 'win25' | 'commodity' | 'nifty' | 'sensex' | 'banknifty' | SignalCommodity
+export type SignalsChip = 'yours' | 'all' | 'win50' | 'win25' | 'commodity' | 'nifty' | 'sensex' | 'banknifty' | 'stocks' | SignalCommodity
 /** The filter sheet's groups (its side nav). */
 export type FilterSection = 'indices' | 'winRate' | 'direction' | 'strategies'
 
@@ -10045,7 +10056,8 @@ const commodityLogos: Record<SignalCommodity, string> = { gold: goldLogo, silver
  * - v1 Grey tag (today): the commodity's name in the same grey tag as NIFTY.
  * - v2 MCX tag: the name in an amber tag that says where it trades ("MCX · GOLD").
  * - v3 Logo on avatar: the commodity's logo on the strategy picture's corner + an amber tag with its name.
- * - v5 Segment tabs (default): All · Index · Stocks · Commodities tabs over the chips; the chips follow the tab (Index:
+ * - v5 Segment tabs (default): All · Index · Stocks · Commodities tabs over the chips; the chips follow the tab (All: Win
+ *   rate ≥ 50% · Nifty · Sensex · F&O Stocks · Commodities; Index:
  *   Nifty · Sensex · Bank Nifty; Stocks: Win rate ≥ 50% · ≥ 25%; Commodities: Gold · Silver · Crude Oil · Natural Gas);
  *   commodity cards with an amber tag with the commodity's logo and name.
  * - v6 Logo tag, no tabs: today's header (filter | chips, a line under it), the amber logo + name tag.
@@ -10053,7 +10065,7 @@ const commodityLogos: Record<SignalCommodity, string> = { gold: goldLogo, silver
  *   "Commodity picture background": a colour per commodity, or grey), and its tag is the name alone.
  * - v8 Header with tabs: as v5, but "Active signals (n)" and the Total P&L sit in the sheet's header (L3 sheet header:
  *   heading, the tag on the right), the segment tabs and chips under it — like the contract picker's header · tabs ·
- *   chips. The list starts with the cards.
+ *   chips. The list starts with the cards and scrolls behind the header: no line under it, a shadow once scrolled.
  */
 export type CommodityVersion = 'v1' | 'v2' | 'v3' | 'v5' | 'v6' | 'v7' | 'v8'
 const marketLabel = (market: SignalMarket) => t(`signals.market.${market}`)
@@ -10065,6 +10077,7 @@ const quick: Record<Exclude<SignalsChip, 'yours'>, (s: ZingSignal) => boolean> =
   nifty: (s) => s.market === 'nifty',
   sensex: (s) => s.market === 'sensex',
   banknifty: (s) => s.market === 'banknifty',
+  stocks: (s) => s.market === 'stocks',
   gold: (s) => s.commodity === 'gold',
   silver: (s) => s.commodity === 'silver',
   crude: (s) => s.commodity === 'crude',
@@ -10129,11 +10142,13 @@ export function SignalsSheet({ initial = {}, onClose }: { initial?: SignalsSheet
     : segment === 'index' ? ['nifty', 'sensex', 'banknifty']
     : segment === 'stocks' ? ['win50', 'win25']
     : segment === 'commodity' ? ['gold', 'silver', 'crude', 'gas']
-    : ['win50']
+    : ['win50', 'nifty', 'sensex', 'stocks', 'commodity']
   const chipItem = (c: Exclude<SignalsChip, 'yours' | 'all'>): { value: SignalsChip; label: string; iconLeft?: ReactNode } => {
     if (c === 'win50' || c === 'win25') return { value: c, label: t(`signals.${c}`, { count: count(c) }), iconLeft: <Icon icon={msLocalFireDepartmentFill} className={styles.fire} /> }
     if (c === 'gold' || c === 'silver' || c === 'crude' || c === 'gas') return { value: c, label: t(`signals.commodity.${c}`), iconLeft: <img src={commodityLogos[c]} alt="" className={styles.chipLogo} /> }
-    if (c === 'commodity') return { value: c, label: t('signals.market.commodity') }
+    // Under the tabs' All: "Commodities", like the tab; today's row (no tabs) keeps Figma's "Commodity".
+    if (c === 'commodity') return { value: c, label: t(segmented ? 'signals.segment.commodity' : 'signals.market.commodity') }
+    if (c === 'stocks') return { value: c, label: t('signals.market.stocks') }
     return { value: c, label: t(`signals.${c}`) }
   }
   const pickSegment = (g: 'all' | SignalSegment) => {
@@ -10190,6 +10205,17 @@ export function SignalsSheet({ initial = {}, onClose }: { initial?: SignalsSheet
     </Tag>
   )
   const activeTitle = t('signals.active', { count: shown.length })
+  // v8: the header gets a shadow once the list has scrolled under it (the sheet's content slot is the scroller).
+  const [list, setList] = useState<HTMLElement | null>(null)
+  const [scrolled, setScrolled] = useState(false)
+  useEffect(() => {
+    const scroller = list?.closest<HTMLElement>('[data-sheet-content]')
+    if (!scroller) return
+    const update = () => setScrolled(scroller.scrollTop > 0)
+    update()
+    scroller.addEventListener('scroll', update, { passive: true })
+    return () => scroller.removeEventListener('scroll', update)
+  }, [list])
 
   // The plain "All Signals" look (Figma's last frame): a heading over every signal.
   const plain = Boolean(initial.plain) && !saved
@@ -10197,7 +10223,7 @@ export function SignalsSheet({ initial = {}, onClose }: { initial?: SignalsSheet
     <BottomSheetHeader heading={t('signals.allTitle')} />
   ) : version === 'v8' ? (
     // v8: header · tabs · chips, like the contract picker — "Active signals (n)" with the Total P&L on the right.
-    <BottomSheetHeader heading={activeTitle} trailing={totalTag} bottom={<div className={styles.headerTabs}>{segmentTabs}{chipBar}</div>} className={styles.signalsHeader} />
+    <BottomSheetHeader heading={activeTitle} trailing={totalTag} bottom={<div className={styles.headerTabs}>{segmentTabs}{chipBar}</div>} className={`${styles.signalsHeader} ${scrolled ? styles.headerScrolled : ''}`} />
   ) : (
     <div className={version === 'v5' ? styles.segmented : undefined}>
       {version === 'v5' && segmentTabs}
@@ -10217,7 +10243,7 @@ export function SignalsSheet({ initial = {}, onClose }: { initial?: SignalsSheet
 
   return (
     <Sheet label={t('signals.title')} onClose={onClose} header={header} className={styles.sheet}>
-      <div className={styles.body}>
+      <div ref={setList} className={styles.body}>
         {plain ? (
           <Stack gap="16">{zingSignals.map((s) => <SignalCard key={s.id} signal={s} version={version} />)}</Stack>
         ) : (
@@ -11778,6 +11804,8 @@ export function Rail({ children, label, visible, rows = 1, snap = 'start', class
   overflow: clip; /* clip, not hidden: a sheet taking focus while it slides in can't scroll the screen */
   background: var(--l3-surface-default);
   color: var(--l3-content-primary);
+  /* A size container: a sheet can be a share of the phone screen's height (cqh), in the mockup and on a phone alike. */
+  container: app-screen / size;
   /* An app, not a page: swiping and long-pressing never select text (fields still do — see below). */
   user-select: none;
   -webkit-user-select: none;
