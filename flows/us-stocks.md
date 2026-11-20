@@ -199,6 +199,11 @@ Every tap he wired is kept. The main path: FTUX sheet → Activate → Declarati
 → Pay on bank → Money ready → Stock → Buy → Executed → Wallet → Withdraw.
 
 ### Changelog
+- 20 Nov 2026 — Order pad V2, Indian pad (flow option "Order pad" = india): the pad is now an Indian stock's — RELIANCE from the company catalogue, its price live from the market snapshot — and everything on it is in ₹ (`padMoney.tsx` sets the pad's currency for the header price, the amount, chips, Balance · Req., the limit / trigger prices, the TP/SL, fee and leverage sheets). Each US state maps over (`indianPad.ts`): $ ×100 (+₹1,000 · +₹5,000 · +₹10,000 · Max, balance ₹52,040), shares ×10 and whole (Indian stocks trade in whole shares); the empty-wallet, short and sell-more-than-held states keep their errors in ₹. No "≈ ₹" on the Buy button (it's ₹ already). The US pad stays NVDA in $. After Buy, the result screens are still the US ones ($).
+- 20 Nov 2026 — Indian pad: Market / Limit / SL stays centred on Delivery and MTF too; the Day ⇄ Year validity sits at the row's right edge, out of the flow (it pushed the pills left).
+- 20 Nov 2026 — TP/SL card (both pads, off and on): the tile icon is the candle with its TP and SL lines from the Figma "Auto TP/SL" icon (node 4292:35082), which L3 already has as `lmAutoTpSl` (`@l3/icons/lemonnade`); it was the generic Material "adjust" icon.
+- 20 Nov 2026 — Indian pad, the production pad's controls in the V2 layout: NSE ⇄ BSE switch at the header's top right (BSE a touch off NSE's price); Delivery / Intraday / MTF underline tabs in the Actionbar's bottom slot (no MTF on BSE; on MTF, switching to BSE falls back to Delivery), their underline merged with the bar's line (no bar padding under them); Day ⇄ Year validity at the right of Market / Limit / SL on Delivery and MTF (Year by default; Limit / SL notes start "Valid for 1 year ·" / "Day order ·", Intraday's "Intraday ·"); SL's second price switches Limit ⇄ Market, at Market a fixed "At market" with no Stepper (PriceField `fixed`) and the note "Order will be triggered at ₹…"; Intraday shows "Margin (5x)" = a fifth of the order in place of Req. and the note "5x margin on this stock · squared off at 3:20 PM if still open"; MTF needs a quarter of the order; the leverage card ("Boost returns") only on Delivery Market. Product, exchange, validity and SL-at-market stay put across the Market / Limit / SL screens. FLAG: prototype numbers (5x / 4x for every stock).
+- 20 Nov 2026 — Order pad V2: Buy / Sell is disabled while nothing is entered (the amount or the shares empty or 0), in both modes; it comes back as soon as a value is typed or a chip tapped. Add money (an empty or short wallet) stays live.
 - 20 Nov 2026 — US pad, Stop loss on fractional shares: every tap on the card shakes the red "Stop loss isn’t available on fractional shares" line (side to side, 4 each way, 400 ms), so a repeat tap isn't lost; the first tap waits for the line to open, then shakes. No motion with reduced motion on. L3 gap: no shake / error-attention motion.
 - 20 Nov 2026 — Phone (app mode): a floating "IN" / "US" button on every order pad screen (Buy / Sell, every type and state) flips the flow option "Order pad" between the Indian and the US pad; one tap each way. It's the preview's generic quick switch (`quickSwitch` on the option, `preview/AppMode.tsx`): draggable, starts on the left opposite the settings button, not shown on other screens. On a laptop the option already floats beside the phone (`floatOn`).
 - 20 Nov 2026 — TP/SL sheet B: the first time it opens, Take profit is on and Stop loss off (both were off); the US pad's one leg, the stop loss, still opens on. Once saved, the sheet opens as saved.
@@ -38192,7 +38197,7 @@ import { ButtonGroup } from '@l3/components/ButtonGroup'
 import { KeyValueList, KeyValueRow } from '@l3/components/KeyValueList'
 import { useSheetLayer } from '../../components/Phone'
 import { useUsNav } from '../../nav'
-import { Usd } from '../../../../shared/money'
+import { PadAmount, usePadCurrency } from './padMoney'
 import { TwoLineLabel } from '../money/components/TwoLineLabel'
 import { useSheetClose } from '../money/useSheetClose'
 import { OrderPad } from './OrderPad'
@@ -38219,6 +38224,8 @@ export function FeeBreakdownScreen({ backdrop }: { backdrop?: boolean }) {
 /** Fee Breakdown: fixed Figma amounts (the SL screen), or the fees on `orderUsd` (order pad V2's "Req." link). */
 export function FeeBreakdownSheet({ onClose, orderUsd }: { onClose: () => void; orderUsd?: number }) {
   const fees = orderUsd === undefined ? FEES : feesFor(orderUsd)
+  // On the Indian pad (₹, padMoney.tsx) the last fee is the exchange's, not IFSCA's.
+  const exchangeFee = usePadCurrency() === 'inr' ? 'Exchange transaction fee' : 'IFSCA turnover fee'
   const layer = useSheetLayer()
   const { open, close } = useSheetClose(onClose)
   return (
@@ -38240,10 +38247,10 @@ export function FeeBreakdownSheet({ onClose, orderUsd }: { onClose: () => void; 
         </ButtonGroup>
       }
     >
-      <KeyValueList aria-label="Fee breakdown" total={{ label: 'Estimated fee', value: <Usd value={fees.total} layout="inline" /> }}>
-        <KeyValueRow label={<TwoLineLabel top="Brokerage" sub="(0.25% of the order value)" />} value={<Usd value={fees.brokerage} layout="inline" />} />
-        <KeyValueRow label={<TwoLineLabel top="GST" sub="(18% on brokerage)" />} value={<Usd value={fees.taxes} layout="inline" />} />
-        <KeyValueRow label="IFSCA turnover fee" value={<Usd value={fees.charges} layout="inline" />} />
+      <KeyValueList aria-label="Fee breakdown" total={{ label: 'Estimated fee', value: <PadAmount value={fees.total} /> }}>
+        <KeyValueRow label={<TwoLineLabel top="Brokerage" sub="(0.25% of the order value)" />} value={<PadAmount value={fees.brokerage} />} />
+        <KeyValueRow label={<TwoLineLabel top="GST" sub="(18% on brokerage)" />} value={<PadAmount value={fees.taxes} />} />
+        <KeyValueRow label={exchangeFee} value={<PadAmount value={fees.charges} />} />
       </KeyValueList>
     </BottomSheet>
   )
@@ -38422,7 +38429,7 @@ import { Checkbox } from '@l3/components/Checkbox'
 import { Grid } from '@l3/components/Grid'
 import { Stack } from '@l3/components/Stack'
 import { useSheetLayer } from '../../components/Phone'
-import { Usd } from '../../../../shared/money'
+import { PadAmount, usePadCurrency, usePadMoney } from './padMoney'
 import styles from './LeverageSheet.module.css'
 
 const SKIP_KEY = 'us-stocks.leverage-sheet-seen'
@@ -38447,6 +38454,9 @@ const EXAMPLE = [
  */
 export function LeverageSheet({ open, onClose, onConfirm, mode = 'activate' }: { open: boolean; onClose: () => void; onConfirm: () => void; mode?: 'activate' | 'explain' }) {
   const explain = mode === 'explain'
+  // The example's investment: $100 on the US pad, ₹10,000 on the Indian pad (padMoney.tsx); a 1% move scales with it.
+  const invest = usePadCurrency() === 'inr' ? 10000 : 100
+  const money = usePadMoney()
   const layer = useSheetLayer()
   const headingId = useId()
   const [dontShow, setDontShow] = useState(true)
@@ -38476,7 +38486,7 @@ export function LeverageSheet({ open, onClose, onConfirm, mode = 'activate' }: {
       }
     >
       <Stack gap="16">
-        <div className={styles.table} role="table" aria-label="Example with $100">
+        <div className={styles.table} role="table" aria-label={`Example with ${money(invest, { decimals: 0 })}`}>
           <Grid columns={4} gap="00" className={`${styles.row} ${styles.head}`} role="row">
             <span role="columnheader">Investment</span>
             <span role="columnheader">Leverage</span>
@@ -38485,10 +38495,10 @@ export function LeverageSheet({ open, onClose, onConfirm, mode = 'activate' }: {
           </Grid>
           {EXAMPLE.map(({ leverage, move }) => (
             <Grid key={leverage} columns={4} gap="00" className={styles.row} role="row">
-              <span role="cell"><Usd value={100} decimals={0} /></span>
+              <span role="cell"><PadAmount value={invest} decimals={0} /></span>
               <span role="cell">{leverage}x</span>
-              <span role="cell" className={styles.up}><Usd value={move} decimals={0} sign /></span>
-              <span role="cell" className={styles.down}><Usd value={-move} decimals={0} /></span>
+              <span role="cell" className={styles.up}><PadAmount value={(move * invest) / 100} decimals={0} sign /></span>
+              <span role="cell" className={styles.down}><PadAmount value={(-move * invest) / 100} decimals={0} /></span>
             </Grid>
           ))}
         </div>
@@ -39275,6 +39285,10 @@ function OrderPadV1({ config, backdrop, sheet }: OrderPadProps) {
 
 /* Order type: the pill group hugs its pills, and the three pills are equal (each as wide as the widest, "Market").
    L3 gap: a pill group is either hug (pills as wide as their labels) or fill (full width) — no equal-width hug. */
+/* Market / Limit / SL, centred. */
+.typeRow { position: relative; align-self: stretch; }
+/* Indian pad's Day / Year switch: at the row's right edge, out of the flow, so Market / Limit / SL stays centred. */
+.validity { position: absolute; inset-inline-end: 0; top: 50%; transform: translateY(-50%); }
 .orderTypes.orderTypes { display: inline-grid; grid-auto-flow: column; grid-auto-columns: 1fr; width: fit-content; }
 .ctaInr { font: var(--l3-text-heading-14); white-space: pre; } /* 2 smaller than the label (Heading/16), same weight */
 
@@ -39284,6 +39298,8 @@ function OrderPadV1({ config, backdrop, sheet }: OrderPadProps) {
 
 /* 6 under the two-line title, so it doesn't sit on the bar's line (the user's call). */
 .bar.bar { padding-bottom: var(--l3-spacing-06); }
+/* Indian pad: the product tabs sit at the bar's foot, so their underline and the bar's line are one (20 Nov, the user's call). */
+.bar.barTabs { padding-bottom: 0; }
 ```
 
 ### `src/flows/us-stocks/screens/trade/OrderPadV2.tsx`
@@ -39302,6 +39318,10 @@ function OrderPadV1({ config, backdrop, sheet }: OrderPadProps) {
 // FLAG: the big amount is a raw <input> (L3 has no large amount field); it is focused, typed from the shared Keyboard.
 // The keypad has "." (shared Keyboard `decimal`): $ amounts take 2 decimals, shares 4, whole-share stocks none. The first key replaces the prefilled value.
 // FLAG: duplicates the app's Indian order pad (src/flows/stocks) for US stocks.
+// Flow option "Order pad" = india (20 Nov, the user's call): the same screens as an Indian stock's pad — RELIANCE, in ₹
+// (indianPad.ts) — with the production Indian pad's controls in this layout: NSE / BSE in the header, Delivery / Intraday
+// / MTF tabs under it (no MTF on BSE), Day / Year validity at the right of Market / Limit / SL (not on Intraday), SL's second
+// price Limit ⇄ Market ("At market"), Intraday's "Margin (5x)" in place of Req.
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode, type SyntheticEvent } from 'react'
 import { Actionbar } from '@l3/components/Actionbar'
 import { Avatar } from '@l3/components/Avatar'
@@ -39315,7 +39335,8 @@ import { Phone } from '../../components/Phone'
 import { currentStock, logoFor } from '../../data'
 import { asset } from '../../asset'
 import { useUsNav } from '../../nav'
-import { Usd, formatInr, useUsd, useUsdInrRate } from '../../../../shared/money'
+import { formatInr, useUsdInrRate } from '../../../../shared/money'
+import { getCompany, useMarketSnapshot } from '../../../../shared/data/companies'
 import { al, forCurrentStock } from './format'
 import type { Derived, OrderPadConfig, OrderType, PadChip, PadMode } from './types'
 import { usePadVersion, usePriceCards } from './version'
@@ -39324,12 +39345,14 @@ import { TPSL_INDIA, TPSL_US, TpslControl } from './Tpsl'
 import { FeeBreakdownSheet } from './FeeBreakdown'
 import { CHARGE_FACTOR } from './orderPads'
 import { PriceField, PriceFieldBox } from './PriceField'
+import { PadAmount, PadCurrencyProvider, usePadMoney, usePadSymbol } from './padMoney'
+import { PRODUCT_LABELS, indianPadFor, productsOn, requiredFor, setIndianPad, useIndianPad, validityPrefix, type Product } from './indianPad'
 import styles from './OrderPadV2.module.css'
 
 /** Buy, shares mode: +1 / +5 / +10 / +20 shares (the amount's +$10 … row, in shares). */
 const SHARE_CHIPS: PadChip[] = [1, 5, 10, 20].map((n) => ({ label: `+${n}`, apply: (value: number) => value + n }))
 /** Buy, amount mode on a pad that starts in shares: +$10, +$50, +$100. */
-const addUsdChip = (n: number): PadChip => ({ label: (fmt) => `+${fmt(n, { decimals: 0 })}`, apply: (value) => value + n })
+const addAmountChip = (n: number): PadChip => ({ label: (fmt) => `+${fmt(n, { decimals: 0 })}`, apply: (value) => value + n })
 
 const ORDER_TYPES: { value: OrderType; label: string }[] = [
   { value: 'market', label: 'Market' },
@@ -39360,14 +39383,39 @@ function useStockLogo(symbol: string) {
   return logoFor(symbol)
 }
 
-export function OrderPadV2({ config, backdrop, sheet }: { config: OrderPadConfig; backdrop?: boolean; sheet?: ReactNode }) {
+type PadProps = { config: OrderPadConfig; backdrop?: boolean; sheet?: ReactNode }
+
+/** The pad for the flow option "Order pad": US (the config as it is, in $) or Indian (the same state as RELIANCE, in ₹).
+ *  Switching remounts the pad. */
+export function OrderPadV2(props: PadProps) {
+  const padVersion = usePadVersion()
+  // The Indian pad reads RELIANCE's price from the market snapshot and its settings (exchange, product …) from a store.
+  useMarketSnapshot()
+  useIndianPad()
+  const config = padVersion === 'india' ? indianPadFor(props.config) : props.config
+  return (
+    <PadCurrencyProvider value={config.currency ?? 'usd'}>
+      <OrderPadV2Body key={padVersion} {...props} config={config} />
+    </PadCurrencyProvider>
+  )
+}
+
+function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
   const { go, back } = useUsNav()
-  const usd = useUsd()
-  // The order pad always shows what the order is worth in ₹ ("≈ ₹8,812" in the line under the amount), whatever the
-  // app's ₹ setting: you pay in from an Indian bank, so the ₹ figure is part of deciding the order.
+  const money = usePadMoney()
+  const symbol = usePadSymbol()
+  const india = config.currency === 'inr'
+  const indian = useIndianPad()
+  // The US pad always shows what the order is worth in ₹ (in the Buy button), whatever the app's ₹ setting: you pay in
+  // from an Indian bank, so the ₹ figure is part of deciding the order. The Indian pad is in ₹ already.
   const rate = useUsdInrRate()
-  const inr = (n: number) => (n > 0 ? `≈ ${formatInr(n * rate, { decimals: 0 })}` : undefined)
-  const logo = useStockLogo(config.stock.symbol)
+  const inr = (n: number) => (!india && n > 0 ? `≈ ${formatInr(n * rate, { decimals: 0 })}` : undefined)
+  const usLogo = useStockLogo(config.stock.symbol)
+  const logo = (india && getCompany(config.stock.symbol)?.logoUrl) || usLogo
+  // Indian pad: SL's second price at market (no limit price).
+  const slAtMarket = india && config.type === 'sl' && indian.slAtMarket
+  // Indian pad: Day / Year validity (Delivery and MTF; Intraday orders end with the day).
+  const validity = india && indian.product !== 'intraday'
   const priceCards = usePriceCards()
   // The unit the field is showing; `value` is always kept in the config's own unit (config.mode).
   const [mode, setMode] = useState<PadMode>(config.mode)
@@ -39397,19 +39445,23 @@ export function OrderPadV2({ config, backdrop, sheet }: { config: OrderPadConfig
 
   const prices = pcts.map((pct) => al(config.stock.price, pct))
   // The price one share costs: market price, or the last price field (limit / SL limit).
-  const unitPrice = config.type === 'market' ? config.stock.price : (prices[prices.length - 1] ?? config.stock.price)
-  const shown = (m: PadMode) => (m === config.mode ? value : Number(m === 'shares' ? (value / unitPrice).toFixed(4) : (value * unitPrice).toFixed(2)))
+  const unitPrice = config.type === 'market' ? config.stock.price : slAtMarket ? prices[0] : (prices[prices.length - 1] ?? config.stock.price)
+  // Indian stocks trade in whole shares: an amount shown as shares rounds down.
+  const toShares = (amount: number) => (india ? Math.floor(amount / unitPrice) : Number((amount / unitPrice).toFixed(4)))
+  const shown = (m: PadMode) => (m === config.mode ? value : m === 'shares' ? toShares(value) : Number((value * unitPrice).toFixed(2)))
   const current = shown(mode)
   const setShown = (next: number) => setValue(mode === config.mode ? next : config.mode === 'amount' ? next * unitPrice : next / unitPrice)
 
   const tpslOrder = { symbol: config.stock.symbol, ltp: config.stock.price, change: config.stock.change, qty: config.mode === 'shares' ? value : unitPrice ? value / unitPrice : 0, entry: unitPrice }
-  const derived: Derived = config.derive(value, prices, mode, { usd, inr: (n) => inr(n) })
-  // What the order is worth in $ (the field is kept in the config's unit), for the ₹ on the Buy / Sell button.
-  const orderUsd = config.mode === 'amount' ? value : value * unitPrice
+  const derived: Derived = config.derive(value, prices, mode, { usd: money, inr: (n) => inr(n) })
+  // What the order is worth in the pad's currency (the field is kept in the config's unit), for the ₹ on the Buy / Sell button.
+  const orderValue = config.mode === 'amount' ? value : value * unitPrice
+  // What the order takes from the balance: the order + charges (Indian Intraday / MTF: the margin on it).
+  const required = (order: number) => (india ? requiredFor(order, indian.product) : order * CHARGE_FACTOR)
   // Buying for more than the balance (the order + charges, = Req.): the button becomes "Add money" — no amount on it
   // (19 Nov, the user's call) — and goes to Add money (M01). Whole again under the balance: back to Buy.
   const balance = config.side === 'buy' ? Number(config.avail.replace(/[^\d.]/g, '')) : NaN
-  const short = config.side === 'buy' && orderUsd * CHARGE_FACTOR > balance
+  const short = config.side === 'buy' && required(orderValue) > balance
   // Quick chips for the mode on screen. A buy pad keeps a row of 4 in both modes so the layout doesn't jump when the
   // amount ⇄ shares switch flips (20 Nov, the user's call): shares get +1 / +5 / +10 / +20; an amount the pad has no
   // chips for gets +$10 / +$50 / +$100 / Max (Max = what the balance buys after charges). The pad's own chips win.
@@ -39420,10 +39472,15 @@ export function OrderPadV2({ config, backdrop, sheet }: { config: OrderPadConfig
         ? undefined
         : mode === 'shares'
           ? SHARE_CHIPS
-          : [...[10, 50, 100].map(addUsdChip), { label: 'Max', apply: () => balance / CHARGE_FACTOR }]
-  const ctaInr = orderUsd > 0 && !short ? formatInr(orderUsd * rate, { decimals: 0 }) : undefined
+          : [...(india ? [1000, 5000, 10000] : [10, 50, 100]).map(addAmountChip), { label: 'Max', apply: () => balance / required(1) }]
+  const ctaInr = !india && orderValue > 0 && !short ? formatInr(orderValue * rate, { decimals: 0 }) : undefined
   const ctaLabel = short ? 'Add money' : config.cta.label
-  const ctaDisabled = short ? false : typeof config.cta.disabled === 'function' ? config.cta.disabled(derived) : config.cta.disabled
+  // Nothing entered (amount or shares at 0): Buy / Sell is disabled until there is (20 Nov, the user's call). Only the
+  // button that places the order: Add money (an empty wallet) stays live.
+  const placesOrder = config.cta.label === 'Buy' || config.cta.label === 'Sell'
+  const ctaDisabled = short
+    ? false
+    : (placesOrder && !(value > 0)) || (typeof config.cta.disabled === 'function' ? config.cta.disabled(derived) : config.cta.disabled)
   const goTo = (key: keyof NonNullable<OrderPadConfig['to']>) => (config.to?.[key] ? () => go(config.to![key]!) : undefined)
   const onCta = short ? () => go(ADD_MONEY) : goTo('cta')
   // "Req." is always a link (19 Nov, the user's call): a pad with its own target goes there (SL → the Fee Breakdown
@@ -39438,8 +39495,8 @@ export function OrderPadV2({ config, backdrop, sheet }: { config: OrderPadConfig
     setMode(next)
     setFresh(true)
   }
-  // Whole-share stocks (BRK.B) take no decimals; $ amounts up to 2, shares up to 4.
-  const decimals = mode === 'shares' ? ((config.min ?? 0) >= 1 && mode === config.mode ? 0 : 4) : 2
+  // Whole-share stocks (BRK.B, every Indian stock) take no decimals; amounts up to 2, shares up to 4.
+  const decimals = mode === 'shares' ? (india || ((config.min ?? 0) >= 1 && mode === config.mode) ? 0 : 4) : 2
   // The prefilled value is "selected": the first key replaces it, as when tapping into a filled amount.
   const [fresh, setFresh] = useState(true)
   // One key into a text with up to `places` decimals; undefined = the key is ignored.
@@ -39488,7 +39545,7 @@ export function OrderPadV2({ config, backdrop, sheet }: { config: OrderPadConfig
     })
   }
   const applyChip = (apply: (current: number) => number) => {
-    const next = Number(apply(current).toFixed(mode === 'amount' ? 2 : 4))
+    const next = mode === 'shares' && india ? Math.floor(apply(current)) : Number(apply(current).toFixed(mode === 'amount' ? 2 : 4))
     setShown(next)
     setAmountText(textOf(next))
     setFresh(true)
@@ -39498,7 +39555,7 @@ export function OrderPadV2({ config, backdrop, sheet }: { config: OrderPadConfig
   const header = (
     <Actionbar
       headingLevel={1}
-      className={styles.bar}
+      className={[styles.bar, india && styles.barTabs].filter(Boolean).join(' ')}
       onBack={() => back(config.back)}
       title={
         // Spans, not Stack: the title sits inside the Actionbar's <h1>, where L3's block-level Stack isn't valid.
@@ -39509,27 +39566,51 @@ export function OrderPadV2({ config, backdrop, sheet }: { config: OrderPadConfig
             {config.stock.symbol}
           </span>
           <span className={styles.contractPrice}>
-            <Usd value={config.stock.price} layout="inline" />
+            <PadAmount value={config.stock.price} />
             <PriceChange value={config.stock.change} unit="percent" size="sm" />
           </span>
         </span>
       }
-      // An empty slot as wide as the back button on the right, so the title sits at the screen's centre.
-      actions={<span className={styles.backBalance} aria-hidden="true" />}
+      // US: an empty slot as wide as the back button on the right, so the title sits at the screen's centre.
+      // Indian pad: the exchange switch (NSE ⇄ BSE), as the production pad's top right.
+      actions={
+        india ? (
+          <Select size="sm" icon="swap" onClick={() => setIndianPad({ exchange: indian.exchange === 'NSE' ? 'BSE' : 'NSE' })} aria-label={`Exchange ${indian.exchange}. Switch to ${indian.exchange === 'NSE' ? 'BSE' : 'NSE'}`}>
+            {indian.exchange}
+          </Select>
+        ) : (
+          <span className={styles.backBalance} aria-hidden="true" />
+        )
+      }
+      // Indian pad: Delivery / Intraday / MTF (no MTF on BSE), sticky under the header.
+      bottom={
+        india ? (
+          <Tabs
+            appearance="underline"
+            behavior="tabs"
+            width="fill"
+            aria-label="Product"
+            items={productsOn(indian.exchange).map((product) => ({ value: product, label: PRODUCT_LABELS[product] }))}
+            value={indian.product}
+            onChange={(product) => setIndianPad({ product: product as Product })}
+          />
+        ) : undefined
+      }
     />
   )
 
   const reqLabel = onReq
-    ? <Button variant="ghost" size="sm" onClick={onReq} className={styles.reqLink}>{config.reqLabel}</Button>
-    : <span className={styles.muted}>{config.reqLabel}</span>
-  // Day is the only validity for US orders: Limit / SL notes say so.
-  const note = derived.note ? `${config.type === 'market' ? '' : 'Day order · '}${forCurrentStock(derived.note)}` : undefined
+    ? <Button variant="ghost" size="sm" onClick={onReq} className={styles.reqLink}>{derived.reqLabel ?? config.reqLabel}</Button>
+    : <span className={styles.muted}>{derived.reqLabel ?? config.reqLabel}</span>
+  // Day is the only validity for US orders: Limit / SL notes say so. The Indian pad's say the validity picked.
+  const notePrefix = config.type === 'market' ? '' : india ? validityPrefix(indian) : 'Day order · '
+  const note = derived.note ? `${notePrefix}${forCurrentStock(derived.note)}` : undefined
   const footer = (
     <div className={styles.dock}>
       {note && <p className={styles.note}>{note}</p>}
       <Stack gap="12" className={styles.dockBody}>
         <Stack direction="horizontal" justify="between" align="center" className={styles.funds}>
-          <span><span className={styles.muted}>{config.availLabel === 'Avail.' ? 'Balance:' : config.availLabel}</span> <strong><Usd text={config.avail} layout="inline" /></strong></span>
+          <span><span className={styles.muted}>{config.availLabel === 'Avail.' ? 'Balance:' : config.availLabel}</span> <strong><PadAmount text={config.avail} /></strong></span>
           <Stack direction="horizontal" gap="04" align="center">{reqLabel}{derived.req && <strong>{derived.req}</strong>}</Stack>
         </Stack>
         <Button variant={config.side === 'buy' ? 'brand' : 'sell'} size="lg" fullWidth disabled={ctaDisabled} onClick={onCta}>
@@ -39553,7 +39634,7 @@ export function OrderPadV2({ config, backdrop, sheet }: { config: OrderPadConfig
       const target = e.target as HTMLElement
       const screen = bodyRef.current?.closest('section')
       if (!screen?.contains(target)) return
-      if (!keypadRef.current || target.closest(`input, .${styles.amountRow}, [data-price-field], footer, .${styles.orderTypes}`)) return
+      if (!keypadRef.current || target.closest(`input, .${styles.amountRow}, [data-price-field], footer, .${styles.typeRow}, .${styles.validity}`)) return
       showKeypad(false)
       activeRef.current?.blur()
     }
@@ -39608,10 +39689,21 @@ export function OrderPadV2({ config, backdrop, sheet }: { config: OrderPadConfig
   }
 
   // One price row (PriceField, use 1): the label + typed price (the tap target for typing) and its % Stepper.
-  const priceRow = (price: NonNullable<OrderPadConfig['prices']>[number], i: number) => (
+  // Indian pad, SL: the second price's label is its switch, Limit ⇄ Market; at Market it reads "At market".
+  const slSwitch = india && config.type === 'sl'
+  const slUnit = {
+    label: slAtMarket ? 'Market' : 'Limit',
+    onSwitch: () => setIndianPad({ slAtMarket: !indian.slAtMarket }),
+    'aria-label': `${slAtMarket ? 'Market' : 'Limit'} price. Switch to ${slAtMarket ? 'a limit price' : 'market'}`,
+  }
+  const priceRow = (price: NonNullable<OrderPadConfig['prices']>[number], i: number) =>
+    slSwitch && i === 1 && slAtMarket ? (
+      <PriceField key={price.label} label="" unit={slUnit} fixed="At market" />
+    ) : (
     <PriceField
       key={price.label}
-      label={price.label}
+      label={slSwitch && i === 1 ? '' : price.label}
+      unit={slSwitch && i === 1 ? slUnit : undefined}
       price={{
         text: active === i && priceDraft !== null ? priceDraft : prices[i].toFixed(2),
         typing: keypad && active === i,
@@ -39632,7 +39724,7 @@ export function OrderPadV2({ config, backdrop, sheet }: { config: OrderPadConfig
         format: (pct) => `${pct.toFixed(1)}%`,
       }}
     />
-  )
+    )
 
   const fieldError = typeof config.fieldError === 'function' ? config.fieldError(derived) : config.fieldError
   const unitLabel = mode === 'amount' ? 'Amount' : 'Shares'
@@ -39648,6 +39740,7 @@ export function OrderPadV2({ config, backdrop, sheet }: { config: OrderPadConfig
         ref={bodyRef}
       >
         {/* FLAG: the order type switch is L3 Tabs (pill-group, toggle) but its choice also goes to another screen of the same page group. */}
+        <Stack direction="horizontal" justify="center" align="center" gap="12" className={styles.typeRow}>
         <Tabs
           appearance="pill-group"
           size="md"
@@ -39664,11 +39757,19 @@ export function OrderPadV2({ config, backdrop, sheet }: { config: OrderPadConfig
             leaveTo(target)
           }}
         />
+          {/* Indian pad, Delivery / MTF: how long the order stays (production: Day / Year, Year by default). At the row's
+              right, out of the flow, so Market / Limit / SL stays centred (20 Nov, the user's call). */}
+          {validity && (
+            <Select size="sm" icon="swap" className={styles.validity} onClick={() => setIndianPad({ validity: indian.validity === 'day' ? 'year' : 'day' })} aria-label={`Validity ${indian.validity === 'day' ? 'Day' : 'Year'}. Switch to ${indian.validity === 'day' ? 'Year' : 'Day'}`}>
+              {indian.validity === 'day' ? 'Day' : 'Year'}
+            </Select>
+          )}
+        </Stack>
         <Stack gap="16" align="center" className={styles.fields}>
           {/* The amount is the same on every order type: it stays put while the part under it dissolves. */}
           <Stack gap="08" align="center">
             <label className={styles.amountRow} data-error={fieldError || undefined}>
-              {mode === 'amount' && <span className={styles.prefix}>$</span>}
+              {mode === 'amount' && <span className={styles.prefix}>{symbol}</span>}
               <input
                 className={styles.amount}
                 {...keypadFieldProps()}
@@ -39677,7 +39778,7 @@ export function OrderPadV2({ config, backdrop, sheet }: { config: OrderPadConfig
                 onPointerDown={pick('amount')}
                 onBlur={keepFocus}
                 autoComplete="off"
-                aria-label={mode === 'amount' ? 'Amount in dollars' : 'Number of shares'}
+                aria-label={mode === 'amount' ? (india ? 'Amount in rupees' : 'Amount in dollars') : 'Number of shares'}
                 placeholder="0"
                 value={amountText}
                 size={Math.max(amountText.length, 1)}
@@ -39700,7 +39801,7 @@ export function OrderPadV2({ config, backdrop, sheet }: { config: OrderPadConfig
               size="md"
               behavior="filter"
               aria-label={mode === 'amount' ? 'Add amount' : config.side === 'sell' ? 'Shares to sell' : 'Add shares'}
-              items={chips.map((chip, i) => ({ value: String(i), label: typeof chip.label === 'function' ? chip.label(usd) : chip.label }))}
+              items={chips.map((chip, i) => ({ value: String(i), label: typeof chip.label === 'function' ? chip.label(money) : chip.label }))}
               value=""
               onChange={(label) => {
                 const chip = chips[Number(label)]
@@ -39710,8 +39811,8 @@ export function OrderPadV2({ config, backdrop, sheet }: { config: OrderPadConfig
           )}
           {/* No helper line under the amount: the order's ₹ value is in the Buy / Sell button. Only an error shows here. */}
           {derived.error && <p className={styles.error}>{forCurrentStock(derived.error)}</p>}
-          {/* Market pad, Indian order pad only (flow option "Order pad"): Minted's leverage card (Enable leverage upto 2x / 3x / 4x). */}
-          {padVersion === 'india' && config.type === 'market' && <LeverageCard />}
+          {/* Indian pad, Delivery Market only (production: "Boost returns by 4X"): Minted's leverage card (Enable leverage upto 2x / 3x / 4x). */}
+          {india && indian.product === 'delivery' && config.type === 'market' && <LeverageCard />}
           {/* Price cards (flow option "Price cards"): one card holding every price, a line between (merged, the default),
               or a card per price (separate, the earlier design, kept for A/B). */}
           {priceCards === 'merged' ? (
@@ -39731,7 +39832,7 @@ export function OrderPadV2({ config, backdrop, sheet }: { config: OrderPadConfig
           </Stack>
       </Stack>
       {sheet}
-      {feesOpen && <FeeBreakdownSheet orderUsd={orderUsd} onClose={() => setFeesOpen(false)} />}
+      {feesOpen && <FeeBreakdownSheet orderUsd={orderValue} onClose={() => setFeesOpen(false)} />}
     </Phone>
   )
 }
@@ -40375,6 +40476,8 @@ export const padCard = { head: styles.head, title: styles.title }
 //     empty ("Enter price" placeholder, the caret at its start, "--" in the Stepper); the box red with an error.
 //  3. Trailing TP / SL sheet (Tpsl TrailSheet): no typed price — a hint ("Trailing TP will move in") over a Medium unit
 //     switch; the Stepper is the value.
+//  4. Indian order pad, SL's second price (20 Nov): its unit switch is the label (Limit ⇄ Market); at Market the row
+//     shows a fixed "At market", with no typed price and no Stepper (`fixed`).
 //
 // Anatomy: PriceFieldBox (an L3 Card, padding none) holds one or more PriceField rows. Every row is 12 padded all round
 // and the box puts a 1px hairline between rows. The left part of a row (label + price, to the box's edges) is the tap
@@ -40386,6 +40489,7 @@ import { Select } from '@l3/components/Select'
 import { Stack } from '@l3/components/Stack'
 import { Stepper, type StepperProps } from '@l3/components/Stepper'
 import { keypadFieldProps } from '../../../../shared/ui/Keyboard'
+import { usePadSymbol } from './padMoney'
 import styles from './PriceField.module.css'
 
 /** The box round one or more PriceField rows. `error`: the border turns red (the message goes under the box).
@@ -40422,11 +40526,29 @@ export type PriceFieldProps = {
   /** Omit for a stepper-only row (use 3): the unit switch then sits under the label, at Medium. */
   price?: PriceFieldPrice
   /** The L3 Small Stepper at the right (its ± buttons are white on the grey pill). */
-  stepper: Omit<StepperProps, 'size'>
+  stepper?: Omit<StepperProps, 'size'>
+  /** A value that can't be typed ("At market", use 4): shown in place of the price; no Stepper. */
+  fixed?: string
 }
 
-export function PriceField({ label, unit, price, stepper }: PriceFieldProps) {
-  const stepperEl = <Stepper {...stepper} size="sm" className={[styles.stepper, stepper.className].filter(Boolean).join(' ')} />
+export function PriceField({ label, unit, price, stepper, fixed }: PriceFieldProps) {
+  // $ on the US pad, ₹ on the Indian pad (padMoney.tsx).
+  const symbol = usePadSymbol()
+  const stepperEl = stepper && <Stepper {...stepper} size="sm" className={[styles.stepper, stepper.className].filter(Boolean).join(' ')} />
+  const labelEl = (
+    <Stack direction="horizontal" align="center" gap="04">
+      {label && <span className={styles.label}>{label}</span>}
+      {unit && <Select size="sm" icon="swap" onClick={unit.onSwitch} aria-label={unit['aria-label']}>{unit.label}</Select>}
+    </Stack>
+  )
+  if (fixed !== undefined) {
+    return (
+      <Stack gap="04" className={styles.row}>
+        {labelEl}
+        <span className={styles.value}>{fixed}</span>
+      </Stack>
+    )
+  }
   if (!price) {
     return (
       <Stack direction="horizontal" justify="between" align="center" gap="12" className={styles.row}>
@@ -40452,13 +40574,10 @@ export function PriceField({ label, unit, price, stepper }: PriceFieldProps) {
           price.onPick(input)
         }}
       >
-        <Stack direction="horizontal" align="center" gap="04">
-          <span className={styles.label}>{label}</span>
-          {unit && <Select size="sm" icon="swap" onClick={unit.onSwitch} aria-label={unit['aria-label']}>{unit.label}</Select>}
-        </Stack>
+        {labelEl}
         {/* FLAG: a raw input (L3 has no inline price field), typed from the shared app Keyboard. */}
         <label className={styles.value} data-empty={empty || undefined}>
-          {!empty && <span>$</span>}
+          {!empty && <span>{symbol}</span>}
           {price.typing && empty && <span className={styles.caret} data-start aria-hidden="true" />}
           <input
             className={styles.input}
@@ -40620,9 +40739,10 @@ import { Select } from '@l3/components/Select'
 import { Stack } from '@l3/components/Stack'
 import { Switch } from '@l3/components/Switch'
 import { Tag } from '@l3/components/Tag'
-import { msAdjust, msCheckCircleFill, msEdit } from '@l3/icons/material'
+import { msCheckCircleFill, msEdit } from '@l3/icons/material'
+import { lmAutoTpSl } from '@l3/icons/lemonnade'
 import { useSheetLayer } from '../../components/Phone'
-import { Usd, useUsd } from '../../../../shared/money'
+import { PadAmount, usePadMoney } from './padMoney'
 import { Keyboard, KeypadSlide, typeKey } from '../../../../shared/ui/Keyboard'
 import { PadCard, PadCardTile, padCard } from './PadCard'
 import { PriceField, PriceFieldBox } from './PriceField'
@@ -40807,7 +40927,7 @@ export function TpslControl({ order, features = TPSL_INDIA, fractional = false }
         // Switch; the whole row is the tap target. Turning it on opens the sheet; closing it without Save leaves it off.
         <PadCard>
           <label className={padCard.head}>
-            <PadCardTile icon={msAdjust} tone="discover" />
+            <PadCardTile icon={lmAutoTpSl} tone="discover" />
             <span className={padCard.title}>{features.title}</span>
             <Switch size="sm" checked={sheetOpen} onChange={open} aria-label={features.title} />
           </label>
@@ -40846,7 +40966,7 @@ function TpslCard({ tpsl, ltp, title, onEdit }: { tpsl: Tpsl; ltp: number; title
     // The same pad card as when it's off (PadCard): the tile, the name ✓, and an edit button in the Switch's place.
     <PadCard aria-label={title}>
       <div className={padCard.head} onClick={onEdit}>
-        <PadCardTile icon={msAdjust} tone="discover" />
+        <PadCardTile icon={lmAutoTpSl} tone="discover" />
         <span className={padCard.title}>
           {title}
           <Icon icon={msCheckCircleFill} size={16} className={styles.ok} />
@@ -40871,7 +40991,7 @@ function TpslCard({ tpsl, ltp, title, onEdit }: { tpsl: Tpsl; ltp: number; title
                   }
                   value={
                     <span className={styles.legValue}>
-                      <Usd value={price} layout="inline" />
+                      <PadAmount value={price} />
                       <PriceChange value={(price / ltp - 1) * 100} unit="percent" size="sm" />
                     </span>
                   }
@@ -40891,7 +41011,7 @@ type Typing = { side: Side; field: Field; text: string | null; fresh: boolean }
  *  typed from the keypad or stepped), est. profit / loss, Clear, errors; Save once every leg that's on is valid. */
 function TpslSheet({ open, order, features, start, onClose, onSave }: { open: boolean; order: TpslOrder; features: TpslFeatures; start: Tpsl; onClose: () => void; onSave: (tpsl: Tpsl) => void }) {
   const layer = useSheetLayer()
-  const usd = useUsd()
+  const usd = usePadMoney()
   const { ltp, entry } = order
   const [draft, setDraft] = useState<Tpsl>(() => fitTo(start, features))
   const [trailing, setTrailing] = useState<Side | null>(null)
@@ -40952,7 +41072,7 @@ function TpslSheet({ open, order, features, start, onClose, onSave }: { open: bo
               <Stack gap="04" align="end">
                 <span className={styles.stockName}>{order.symbol}</span>
                 <span className={styles.legValue}>
-                  <Usd value={ltp} layout="inline" className={styles.stockPrice} />
+                  <PadAmount value={ltp} className={styles.stockPrice} />
                   <PriceChange value={order.change} unit="percent" size="sm" />
                 </span>
               </Stack>
@@ -41097,7 +41217,7 @@ function LegCard({ side, leg, ltp, entry, qty, error, typing, trailing, onPick, 
             <p className={styles.target}>
               {side === 'tp' ? 'Est. profit' : 'Est. loss'}{' '}
               <span className={side === 'tp' ? styles.up : styles.down}>
-                {est === null || error ? '--' : <Usd value={est} sign layout="inline" />}
+                {est === null || error ? '--' : <PadAmount value={est} sign />}
               </span>
             </p>
             {hasValue && (
@@ -41275,7 +41395,7 @@ import { Stack } from '@l3/components/Stack'
 import { Stepper } from '@l3/components/Stepper'
 import { Switch } from '@l3/components/Switch'
 import { useSheetLayer } from '../../components/Phone'
-import { Usd, useUsd } from '../../../../shared/money'
+import { PadAmount, usePadMoney } from './padMoney'
 import { Keyboard, KeypadSlide, typeKey } from '../../../../shared/ui/Keyboard'
 import { PriceField, PriceFieldBox } from './PriceField'
 import { FIELD_LABEL, NAME, TPSL_START, closeAt, fitTo, trailIn, type TpslFeatures, fmt, fmtQty, legError, moveOf, priceOf, switchUnit, type Field, type Side, type Tpsl, type TpslLeg, type TpslOrder } from './Tpsl'
@@ -41286,7 +41406,7 @@ type Typing = { side: Side; field: Field; text: string | null; fresh: boolean }
 
 export function TpslSheetB({ open, order, features, start, onClose, onSave }: { open: boolean; order: TpslOrder; features: TpslFeatures; start: Tpsl; onClose: () => void; onSave: (tpsl: Tpsl) => void }) {
   const layer = useSheetLayer()
-  const usd = useUsd()
+  const usd = usePadMoney()
   const { ltp, entry } = order
   // The first time, the first leg the market offers opens on and the rest off (20 Nov, the user's call; A opens with both
   // on): Indian pad — Take profit on, Stop loss off; US pad — its one leg, the stop loss, on (the card's Switch already
@@ -41350,7 +41470,7 @@ export function TpslSheetB({ open, order, features, start, onClose, onSave }: { 
               <Stack gap="04" align="end">
                 <span className={styles.stockName}>{order.symbol}</span>
                 <span className={styles.inline}>
-                  <Usd value={ltp} layout="inline" className={styles.stockName} />
+                  <PadAmount value={ltp} className={styles.stockName} />
                   <PriceChange value={order.change} unit="percent" size="sm" />
                 </span>
               </Stack>
@@ -41507,7 +41627,7 @@ function Leg({ side, leg, ltp, entry, qty, error, typing, trailing, onPick, onCh
             ) : (
               <p key="est" className={`${styles.est} ${styles.fadeIn}`}>
                 {side === 'tp' ? 'Est. profit' : 'Est. loss'}{' '}
-                <span className={side === 'tp' ? styles.up : styles.down}>{est === null ? '--' : <Usd value={est} sign layout="inline" />}</span>
+                <span className={side === 'tp' ? styles.up : styles.down}>{est === null ? '--' : <PadAmount value={est} sign />}</span>
               </p>
             )}
             {hasValue && (
@@ -41707,6 +41827,170 @@ export const screens: UsScreenMap = {
   [ids.H06]: resultScreen(ids.H06), // Sell order executed
   [ids.H07]: resultScreen(ids.H07), // Sell order rejected
 }
+```
+
+### `src/flows/us-stocks/screens/trade/indianPad.ts`
+
+```ts
+// The Indian order pad (flow option "Order pad" = india; 20 Nov, the user's call): the pad screens as an Indian stock's
+// pad — RELIANCE from the app's company catalogue, in ₹ — with what the production Lemonn Indian pad has (Pixel
+// screenshots, 20 Nov): the NSE / BSE switch in the header, Delivery / Intraday / MTF tabs under it (no MTF on BSE),
+// a Day / Year validity on Delivery and MTF Limit / SL orders, SL's second price as a Limit or "At market", "Order will
+// be triggered at ₹…", and Intraday's margin ("Margin (5x)" in place of Req.).
+// Each US state maps over: $ ×100 ($100 → ₹10,000, the +$10 chip → +₹1,000, $520.40 → ₹52,040), shares ×10 and whole
+// (2.53 held → 25: Indian stocks trade in whole shares). The US state's own error, when it has one, says which ₹ error
+// shows (empty wallet, not enough money, more than you hold).
+// FLAG: prototype numbers — BSE is NSE + ₹0.10; Intraday margin 5x and MTF 4x (pay 25%) for every stock.
+// FLAG: copy hard-coded like the rest of the pad (no copy.ts in this flow yet).
+import { useSyncExternalStore } from 'react'
+import { getCompany } from '../../../../shared/data/companies'
+import { formatInr } from '../../../../shared/money'
+import { tradeIds as ids } from './ids'
+import { CHARGE_FACTOR, SELL_NOTE, orderPads } from './orderPads'
+import type { OrderPadConfig, PadChip, PadMoney, PadStock } from './types'
+
+// ── The pad's settings: they stay put across the Market / Limit / SL screens and the Buy / Sell pads ────────────────
+
+export type Product = 'delivery' | 'intraday' | 'mtf'
+export type Exchange = 'NSE' | 'BSE'
+export type Validity = 'day' | 'year'
+export type IndianPadState = {
+  product: Product
+  exchange: Exchange
+  /** Delivery and MTF Limit / SL orders: a day, or a year (production's default). Intraday is always a day. */
+  validity: Validity
+  /** SL's second price: false = a Limit price, true = at market (SL-M). */
+  slAtMarket: boolean
+}
+
+let state: IndianPadState = { product: 'delivery', exchange: 'NSE', validity: 'year', slAtMarket: false }
+const listeners = new Set<() => void>()
+
+export function setIndianPad(patch: Partial<IndianPadState>) {
+  state = { ...state, ...patch }
+  // BSE has no MTF: the pad falls back to Delivery.
+  if (state.exchange === 'BSE' && state.product === 'mtf') state = { ...state, product: 'delivery' }
+  listeners.forEach((listener) => listener())
+}
+
+const subscribe = (listener: () => void) => {
+  listeners.add(listener)
+  return () => { listeners.delete(listener) }
+}
+
+export const useIndianPad = () => useSyncExternalStore(subscribe, () => state)
+
+export const PRODUCT_LABELS: Record<Product, string> = { delivery: 'Delivery', intraday: 'Intraday', mtf: 'MTF' }
+export const productsOn = (exchange: Exchange): Product[] => (exchange === 'BSE' ? ['delivery', 'intraday'] : ['delivery', 'intraday', 'mtf'])
+
+/** Intraday: the broker lends 4 of every 5 — you put up a fifth of the order. */
+export const INTRADAY_MARGIN = 5
+/** MTF: you pay a quarter, Lemonn funds the rest. */
+const MTF_LEVERAGE = 4
+
+/** What you put up for an order of `order` (₹), charges included. */
+export const requiredFor = (order: number, product: Product) =>
+  (order * CHARGE_FACTOR) / (product === 'intraday' ? INTRADAY_MARGIN : product === 'mtf' ? MTF_LEVERAGE : 1)
+
+/** The text before a Limit / SL note: the order's validity. */
+export const validityPrefix = ({ product, validity }: IndianPadState) =>
+  product === 'intraday' ? 'Intraday · ' : validity === 'year' ? 'Valid for 1 year · ' : 'Day order · '
+
+// ── The stock ────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+export const INDIAN_SYMBOL = 'RELIANCE'
+const market = () => getCompany(INDIAN_SYMBOL)?.market
+
+/** RELIANCE, read live from the market snapshot; on BSE a touch off NSE's price. */
+const indianStock: PadStock = {
+  symbol: INDIAN_SYMBOL,
+  get price() {
+    const nse = market()?.price ?? 1184.5
+    return state.exchange === 'BSE' ? Number((nse + 0.1).toFixed(2)) : nse
+  },
+  get change() { return market()?.changePct ?? 0 },
+  get exchange() { return state.exchange },
+}
+
+// ── The states ──────────────────────────────────────────────────────────────────────────────────────────────────────
+
+const TO_INR = 100
+const TO_SHARES = 10
+
+const amountOf = (text: string) => Number(text.replace(/[^\d.]/g, '')) || 0
+
+/** Market notes that aren't "the market is open": closed, holiday. */
+const CLOSED_NOTES: Record<string, string> = {
+  [ids.T09]: 'NSE is closed. Your order will be placed when it opens at 9:15 AM on Monday, Nov 23, at the opening price.',
+  [ids.T10]: 'NSE is closed on Tuesday, Nov 24 for Guru Nanak Jayanti. Your order will be placed when it opens at 9:15 AM on Wednesday, Nov 25.',
+}
+
+/** Formatters for asking the US state whether it has an error at this value (its text isn't used). */
+const PLAIN: PadMoney = { usd: (n) => String(n), inr: () => undefined }
+
+function indianPad(id: string, us: OrderPadConfig): OrderPadConfig {
+  const scale = us.mode === 'amount' ? TO_INR : TO_SHARES
+  const balance = us.side === 'buy' ? amountOf(us.avail) * TO_INR : 0
+  const held = us.side === 'sell' ? Math.floor(Number(us.avail) * TO_SHARES) : 0
+  const scaleChip = (chip: PadChip): PadChip => ({
+    label: typeof chip.label === 'function' ? (fmt) => (chip.label as (f: typeof fmt) => string)((n, f) => fmt(n * TO_INR, f)) : chip.label,
+    // Shares: whole, and never more than the chip meant (25% of 25 held = 6).
+    apply: us.mode === 'amount' ? (value) => chip.apply(value / TO_INR) * TO_INR : (value) => Math.floor(chip.apply(value / TO_SHARES) * TO_SHARES),
+  })
+  const { req: _req, ...to } = us.to ?? {}
+  return {
+    ...us,
+    currency: 'inr',
+    label: us.label.replace(/\bNVDA\b|BRK\.B/g, INDIAN_SYMBOL),
+    stock: indianStock,
+    value: us.mode === 'amount' ? us.value * TO_INR : Math.max(1, Math.round(us.value * TO_SHARES)),
+    avail: us.side === 'buy' ? formatInr(balance) : String(held),
+    chips: us.chips?.map(scaleChip),
+    // The SL fee screen (T11) is in $: the pad's own Fee breakdown sheet opens instead.
+    to,
+    derive: (value, prices, mode, { usd: inr }) => {
+      const { product, exchange, slAtMarket } = state
+      const [first, second] = prices
+      const trigger = first
+      const limit = us.type === 'sl' && slAtMarket ? undefined : (second ?? first)
+      const unit = us.type === 'market' ? indianStock.price : us.type === 'sl' && slAtMarket ? trigger : prices[prices.length - 1]
+      const order = us.mode === 'amount' ? value : value * unit
+      const usDerived = us.derive(value / scale, prices, mode, PLAIN)
+      const shares = us.mode === 'shares' ? value : unit ? value / unit : 0
+
+      if (us.side === 'sell') {
+        const error = !usDerived.error ? undefined : held > 0 ? (shares > held ? `You can sell up to ${held} shares` : undefined) : usDerived.error.replace(/\bNVDA\b/g, INDIAN_SYMBOL)
+        return { req: usDerived.req === undefined ? undefined : inr(order), error, note: SELL_NOTE }
+      }
+
+      const required = requiredFor(order, product)
+      const error = !usDerived.error ? undefined : balance <= 0 ? 'Your wallet is empty. Add money to buy.' : required > balance ? 'Available amount is not enough' : undefined
+      const note =
+        us.type === 'market'
+          ? (CLOSED_NOTES[id] ?? (product === 'intraday'
+            ? `${INTRADAY_MARGIN}x margin on this stock · squared off at 3:20 PM if still open`
+            : product === 'mtf'
+              ? `MTF · you pay 25%, Lemonn funds the rest at 0.04% a day`
+              : `${exchange} is open till 3:30 PM`))
+          : us.type === 'limit'
+            ? `Buys only if ${INDIAN_SYMBOL} trades at ${inr(limit ?? unit)} or lower`
+            : limit === undefined
+              ? `Order will be triggered at ${inr(trigger)}`
+              : `Order will be triggered at ${inr(trigger)} and buys at up to ${inr(limit)}`
+      return {
+        req: inr(required),
+        reqLabel: product === 'intraday' ? `Margin (${INTRADAY_MARGIN}x)` : undefined,
+        error,
+        note,
+      }
+    },
+  }
+}
+
+const indianPads = new Map(Object.entries(orderPads).map(([id, config]) => [config, indianPad(id, config)]))
+
+/** The Indian pad for a US pad state (the same screen, as RELIANCE in ₹). */
+export const indianPadFor = (config: OrderPadConfig) => indianPads.get(config) ?? config
 ```
 
 ### `src/flows/us-stocks/screens/trade/orderPads.tsx`
@@ -42037,6 +42321,45 @@ export const orderResults: Record<string, OrderResultConfig> = {
 }
 ```
 
+### `src/flows/us-stocks/screens/trade/padMoney.tsx`
+
+```tsx
+// The order pad's currency (20 Nov, the user's call): the US pad is in $, the Indian pad (flow option "Order pad" =
+// india) is an Indian stock's pad, in ₹. Everything the pad draws — the price in the header, the amount, the chips,
+// Balance · Req., the limit / trigger prices, the TP/SL sheet, the fee and leverage sheets — formats its money through
+// here, so one switch turns the whole pad. Outside the pad (no provider) it is $, as every US Stocks screen.
+// $ amounts still go through the app's <Usd> / useUsd() (so the "₹ equivalent" setting reaches them); ₹ amounts are
+// already rupees and are written with formatInr.
+import { createContext, useContext } from 'react'
+import { Usd, formatInr, useUsd, type MoneyFormat } from '../../../../shared/money'
+
+export type PadCurrency = 'usd' | 'inr'
+
+const PadCurrencyContext = createContext<PadCurrency>('usd')
+
+/** Wrap the pad (and the sheets it opens) to set its currency. */
+export const PadCurrencyProvider = PadCurrencyContext.Provider
+
+export const usePadCurrency = () => useContext(PadCurrencyContext)
+
+/** "$" or "₹", for the prefix before a typed amount or price. */
+export const usePadSymbol = () => (usePadCurrency() === 'inr' ? '₹' : '$')
+
+/** An amount in the pad's currency as text: $188.42 (via useUsd) or ₹2,950.40. */
+export function usePadMoney(): (n: number, format?: MoneyFormat) => string {
+  const currency = usePadCurrency()
+  const usd = useUsd()
+  return currency === 'inr' ? (n, format) => formatInr(n, format) : usd
+}
+
+/** An amount in the pad's currency: <Usd> on the US pad, ₹ text on the Indian pad. `text` is a ready-made amount. */
+export function PadAmount({ value, text, className, ...format }: MoneyFormat & { value?: number; text?: string; className?: string }) {
+  const currency = usePadCurrency()
+  if (currency === 'usd') return <Usd value={value} text={text} layout="inline" className={className} {...format} />
+  return <span className={className}>{value === undefined ? text : formatInr(value, format)}</span>
+}
+```
+
 ### `src/flows/us-stocks/screens/trade/types.ts`
 
 ```ts
@@ -42059,6 +42382,8 @@ export type Derived = {
   right?: ReactNode
   /** "Req." / "Proceeds" value in the dock. */
   req?: string
+  /** Its label when it isn't the pad's `reqLabel` (Indian Intraday: "Margin (5x)"). */
+  reqLabel?: string
   error?: string
   note?: string
 }
@@ -42071,6 +42396,8 @@ export type OrderPadConfig = {
   /** Screen label (aria-label) — "NVDA" is swapped for the current stock. */
   label: string
   side: 'buy' | 'sell'
+  /** The pad's money: $ (US stock, the default) or ₹ (the Indian pad). */
+  currency?: 'usd' | 'inr'
   stock: PadStock
   type: OrderType
   /** Which unit `value` is in. */
