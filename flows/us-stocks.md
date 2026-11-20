@@ -200,6 +200,12 @@ Every tap he wired is kept. The main path: FTUX sheet → Activate → Declarati
 
 ### Changelog
 - 20 Nov 2026 — Order pad V2, Indian pad (flow option "Order pad" = india): the pad is now an Indian stock's — RELIANCE from the company catalogue, its price live from the market snapshot — and everything on it is in ₹ (`padMoney.tsx` sets the pad's currency for the header price, the amount, chips, Balance · Req., the limit / trigger prices, the TP/SL, fee and leverage sheets). Each US state maps over (`indianPad.ts`): $ ×100 (+₹1,000 · +₹5,000 · +₹10,000 · Max, balance ₹52,040), shares ×10 and whole (Indian stocks trade in whole shares); the empty-wallet, short and sell-more-than-held states keep their errors in ₹. No "≈ ₹" on the Buy button (it's ₹ already). The US pad stays NVDA in $. After Buy, the result screens are still the US ones ($).
+- 20 Nov 2026 — Indian pad, validity switch A/B (flow option "Validity switch"): V2 (default) · the validity sits inside the Market / Limit / SL grey track, after a short hairline divider, and the whole track is centred; V1 · alone at the row's right edge, the pills centred. L3 gap: a pill group can't hold a trailing control, so the pad adds the track fill around the Tabs (OrderPadV2.module.css `.typeTrack`). Phone (app mode): a floating "V2" / "V1" bubble on every order pad screen flips it (the preview's quick switch, under the "IN" / "US" bubble).
+- 20 Nov 2026 — Indian pad, Limit orders: the validity is Day / Instant / Year (Year by default; production's). Tapping the swap cycles Day → Instant → Year → Day, no sheet. Market keeps Day ⇄ Instant, SL Day ⇄ Year, each its own choice. Notes start "Valid for 1 year ·" / "Day order ·" / "Instant order ·".
+- 20 Nov 2026 — TP/SL card, set: the edit (pencil) icon is 20, up from 16 (a Medium ghost button; Small draws its icon at 16 whatever the Icon's size).
+- 20 Nov 2026 — Leverage card: the title is "Boost returns by 4x" (4x in green; production's), not "Enable leverage upto 3x". The sheet's example still compares 1x and 3x.
+- 20 Nov 2026 — Indian pad: no leverage card ("Boost returns by 4x") on BSE; it's MTF, which BSE doesn't have. NSE Delivery Market keeps it.
+- 20 Nov 2026 — Indian pad, Market orders: the validity is Day ⇄ Instant (Day by default; production's), not Day / Year, which stays on Limit / SL. Each keeps its own choice. Instant's note starts "Instant order ·".
 - 20 Nov 2026 — Indian pad: Market / Limit / SL stays centred on Delivery and MTF too; the Day ⇄ Year validity sits at the row's right edge, out of the flow (it pushed the pills left).
 - 20 Nov 2026 — TP/SL card (both pads, off and on): the tile icon is the candle with its TP and SL lines from the Figma "Auto TP/SL" icon (node 4292:35082), which L3 already has as `lmAutoTpSl` (`@l3/icons/lemonnade`); it was the generic Material "adjust" icon.
 - 20 Nov 2026 — Indian pad, the production pad's controls in the V2 layout: NSE ⇄ BSE switch at the header's top right (BSE a touch off NSE's price); Delivery / Intraday / MTF underline tabs in the Actionbar's bottom slot (no MTF on BSE; on MTF, switching to BSE falls back to Delivery), their underline merged with the bar's line (no bar padding under them); Day ⇄ Year validity at the right of Market / Limit / SL on Delivery and MTF (Year by default; Limit / SL notes start "Valid for 1 year ·" / "Day order ·", Intraday's "Intraday ·"); SL's second price switches Limit ⇄ Market, at Market a fixed "At market" with no Stepper (PriceField `fixed`) and the note "Order will be triggered at ₹…"; Intraday shows "Margin (5x)" = a fifth of the order in place of Req. and the note "5x margin on this stock · squared off at 3:20 PM if still open"; MTF needs a quarter of the order; the leverage card ("Boost returns") only on Delivery Market. Product, exchange, validity and SL-at-market stay put across the Market / Limit / SL screens. FLAG: prototype numbers (5x / 4x for every stock).
@@ -22629,6 +22635,29 @@ export const usStocks: Flow = {
         ],
       },
     },
+    // Indian pad's validity (Day / Instant / Year), an A/B test (20 Nov, the user's call): V2 · inside the Market / Limit /
+    // SL track, after a short divider; V1 · on its own at the row's right edge, the pills centred.
+    {
+      id: 'validityPlace',
+      group: 'Trade',
+      label: 'Validity switch',
+      picker: 'dropdown',
+      values: [
+        { value: 'v2', label: 'V2 · in the order type track' },
+        { value: 'v1', label: 'V1 · at the right edge' },
+      ],
+      default: 'v2',
+      floatOn: ORDER_PAD_SCREEN_IDS,
+      // Phone (app mode): a floating "V2" / "V1" bubble on every order pad screen flips it, for the A/B test (20 Nov, the
+      // user's call). It sits under the "IN" / "US" pad bubble.
+      quickSwitch: {
+        on: ORDER_PAD_SCREEN_IDS,
+        values: [
+          { value: 'v2', label: 'Validity V2 · in the track', short: 'V2' },
+          { value: 'v1', label: 'Validity V1 · at the right edge', short: 'V1' },
+        ],
+      },
+    },
     // The TP/SL sheet, an A/B test (19 Nov, the user's call: "keep this version intact for AB testing"): B · A's layout, each
     // leg one pad-style price card, no box inside a box (TpslSheetB); A · a card per leg with a box inside (TpslSheet).
     // Shows on the Indian pad.
@@ -38307,7 +38336,8 @@ export function FeeBreakdownSheet({ onClose, orderUsd }: { onClose: () => void; 
 // Chips: L3 pill chips, secondary emphasis (the user's call), not the primary pill group.
 // Prototype only: the leverage doesn't change the dock's numbers (Balance / Req. / the ₹ value).
 // FLAG: copy hard-coded like the rest of the pad (no copy.ts in this flow yet).
-// 19 Nov (the user's call): a simple toggle at a fixed 3x — no rolling number, no 2x · 3x · 4x choice.
+// 19 Nov (the user's call): a simple toggle at a fixed multiple — no rolling number, no 2x · 3x · 4x choice.
+// 20 Nov (the user's call): the title is production's "Boost returns by 4x" (4x in green), not Minted's "Enable leverage upto 3x".
 // FLAG: the grow is hand-made (LeverageCard.module.css); L3 has none. The card, its head row and the bolt tile are the
 // shared PadCard (19 Nov: the title is Label 14, as TP/SL's).
 import { useId, useState } from 'react'
@@ -38318,7 +38348,7 @@ import { PadCard, PadCardTile, padCard } from './PadCard'
 import { LeverageSheet, leverageSheetSeen } from './LeverageSheet'
 import styles from './LeverageCard.module.css'
 
-const LEVERAGE = 3
+const LEVERAGE = 4
 
 export function LeverageCard() {
   const [on, setOn] = useState(false)
@@ -38338,7 +38368,7 @@ export function LeverageCard() {
           <div className={padCard.head} onPointerDown={(e) => e.preventDefault()} onClick={toggle}>
             <PadCardTile icon={msBoltFill} tone="success" />
             <p id={titleId} className={padCard.title}>
-              Enable leverage upto <span className={styles.chosen}>{LEVERAGE}x</span>
+              Boost returns by <span className={styles.chosen}>{LEVERAGE}x</span>
             </p>
             <Switch size="sm" checked={on} onChange={toggle} onClick={(e) => e.stopPropagation()} aria-labelledby={titleId} />
           </div>
@@ -39300,6 +39330,17 @@ function OrderPadV1({ config, backdrop, sheet }: OrderPadProps) {
 .bar.bar { padding-bottom: var(--l3-spacing-06); }
 /* Indian pad: the product tabs sit at the bar's foot, so their underline and the bar's line are one (20 Nov, the user's call). */
 .bar.barTabs { padding-bottom: 0; }
+
+/* Validity switch V2: the order type's grey track runs on past Market / Limit / SL — a short divider, then the validity.
+   The Tabs keep their own track (4 padding); this one only adds the fill and the room after the validity.
+   L3 gap: a pill group can't hold a trailing control. */
+.typeTrack {
+  border-radius: var(--l3-radius-full);
+  background: var(--l3-surface-secondary);
+  padding-inline-end: var(--l3-spacing-12);
+}
+.trackDivider { width: 1px; height: var(--l3-spacing-16); background: var(--l3-border-intense); } /* 1px hairline */
+.trackValidity { margin-inline-start: var(--l3-spacing-08); }
 ```
 
 ### `src/flows/us-stocks/screens/trade/OrderPadV2.tsx`
@@ -39320,7 +39361,7 @@ function OrderPadV1({ config, backdrop, sheet }: OrderPadProps) {
 // FLAG: duplicates the app's Indian order pad (src/flows/stocks) for US stocks.
 // Flow option "Order pad" = india (20 Nov, the user's call): the same screens as an Indian stock's pad — RELIANCE, in ₹
 // (indianPad.ts) — with the production Indian pad's controls in this layout: NSE / BSE in the header, Delivery / Intraday
-// / MTF tabs under it (no MTF on BSE), Day / Year validity at the right of Market / Limit / SL (not on Intraday), SL's second
+// / MTF tabs under it (no MTF on BSE), a validity at the right of Market / Limit / SL (Market: Day / Instant; Limit: Day → Instant → Year, cycled; SL: Day / Year; not on Intraday), SL's second
 // price Limit ⇄ Market ("At market"), Intraday's "Margin (5x)" in place of Req.
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode, type SyntheticEvent } from 'react'
 import { Actionbar } from '@l3/components/Actionbar'
@@ -39339,14 +39380,14 @@ import { formatInr, useUsdInrRate } from '../../../../shared/money'
 import { getCompany, useMarketSnapshot } from '../../../../shared/data/companies'
 import { al, forCurrentStock } from './format'
 import type { Derived, OrderPadConfig, OrderType, PadChip, PadMode } from './types'
-import { usePadVersion, usePriceCards } from './version'
+import { usePadVersion, usePriceCards, useValidityPlace } from './version'
 import { LeverageCard } from './LeverageCard'
 import { TPSL_INDIA, TPSL_US, TpslControl } from './Tpsl'
 import { FeeBreakdownSheet } from './FeeBreakdown'
 import { CHARGE_FACTOR } from './orderPads'
 import { PriceField, PriceFieldBox } from './PriceField'
 import { PadAmount, PadCurrencyProvider, usePadMoney, usePadSymbol } from './padMoney'
-import { PRODUCT_LABELS, indianPadFor, productsOn, requiredFor, setIndianPad, useIndianPad, validityPrefix, type Product } from './indianPad'
+import { LIMIT_VALIDITY_LABELS, NEXT_LIMIT_VALIDITY, PRODUCT_LABELS, indianPadFor, productsOn, requiredFor, setIndianPad, useIndianPad, validityPrefix, type Product } from './indianPad'
 import styles from './OrderPadV2.module.css'
 
 /** Buy, shares mode: +1 / +5 / +10 / +20 shares (the amount's +$10 … row, in shares). */
@@ -39414,8 +39455,22 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
   const logo = (india && getCompany(config.stock.symbol)?.logoUrl) || usLogo
   // Indian pad: SL's second price at market (no limit price).
   const slAtMarket = india && config.type === 'sl' && indian.slAtMarket
-  // Indian pad: Day / Year validity (Delivery and MTF; Intraday orders end with the day).
+  // Indian pad: the validity (Delivery and MTF; Intraday orders end with the day). Market: Day ⇄ Instant (Day by
+  // default); SL: Day ⇄ Year (Year by default); Limit: Day / Instant / Year, picked in a sheet (Year by default).
   const validity = india && indian.product !== 'intraday'
+  const validityPlace = useValidityPlace()
+  const validityLabel =
+    config.type === 'market' ? (indian.marketValidity === 'instant' ? 'Instant' : 'Day')
+      : config.type === 'limit' ? LIMIT_VALIDITY_LABELS[indian.limitValidity]
+        : indian.validity === 'day' ? 'Day' : 'Year'
+  const validityNext =
+    config.type === 'market' ? (indian.marketValidity === 'instant' ? 'Day' : 'Instant')
+      : config.type === 'limit' ? LIMIT_VALIDITY_LABELS[NEXT_LIMIT_VALIDITY[indian.limitValidity]]
+        : indian.validity === 'day' ? 'Year' : 'Day'
+  const onValidity = () =>
+    setIndianPad(config.type === 'market' ? { marketValidity: indian.marketValidity === 'day' ? 'instant' : 'day' }
+      : config.type === 'limit' ? { limitValidity: NEXT_LIMIT_VALIDITY[indian.limitValidity] }
+        : { validity: indian.validity === 'day' ? 'year' : 'day' })
   const priceCards = usePriceCards()
   // The unit the field is showing; `value` is always kept in the config's own unit (config.mode).
   const [mode, setMode] = useState<PadMode>(config.mode)
@@ -39603,7 +39658,8 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
     ? <Button variant="ghost" size="sm" onClick={onReq} className={styles.reqLink}>{derived.reqLabel ?? config.reqLabel}</Button>
     : <span className={styles.muted}>{derived.reqLabel ?? config.reqLabel}</span>
   // Day is the only validity for US orders: Limit / SL notes say so. The Indian pad's say the validity picked.
-  const notePrefix = config.type === 'market' ? '' : india ? validityPrefix(indian) : 'Day order · '
+  // A Market order says nothing unless it's Instant.
+  const notePrefix = india ? validityPrefix(indian, config.type) : config.type === 'market' ? '' : 'Day order · '
   const note = derived.note ? `${notePrefix}${forCurrentStock(derived.note)}` : undefined
   const footer = (
     <div className={styles.dock}>
@@ -39730,6 +39786,26 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
   const unitLabel = mode === 'amount' ? 'Amount' : 'Shares'
   const switchLabel = `${unitLabel}. Switch to ${mode === 'amount' ? 'shares' : 'amount'}`
 
+  // FLAG: the order type switch is L3 Tabs (pill-group, toggle) but its choice also goes to another screen of the same page group.
+  const orderTypeTabs = (
+    <Tabs
+      appearance="pill-group"
+      size="md"
+      behavior="toggle"
+      width="fill"
+      className={styles.orderTypes}
+      aria-label="Order type"
+      items={ORDER_TYPES}
+      value={tabValue}
+      onChange={(type) => {
+        const target = config.to?.[type]
+        if (type === config.type || !target) return
+        keypadOnSwitch = keypadRef.current
+        leaveTo(target)
+      }}
+    />
+  )
+
   return (
     <Phone label={forCurrentStock(config.label)} header={header} footer={footer} gesture="none" topLine>
       <Stack
@@ -39739,30 +39815,28 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
         inert={backdrop || undefined}
         ref={bodyRef}
       >
-        {/* FLAG: the order type switch is L3 Tabs (pill-group, toggle) but its choice also goes to another screen of the same page group. */}
         <Stack direction="horizontal" justify="center" align="center" gap="12" className={styles.typeRow}>
-        <Tabs
-          appearance="pill-group"
-          size="md"
-          behavior="toggle"
-          width="fill"
-          className={styles.orderTypes}
-          aria-label="Order type"
-          items={ORDER_TYPES}
-          value={tabValue}
-          onChange={(type) => {
-            const target = config.to?.[type]
-            if (type === config.type || !target) return
-            keypadOnSwitch = keypadRef.current
-            leaveTo(target)
-          }}
-        />
-          {/* Indian pad, Delivery / MTF: how long the order stays (production: Day / Year, Year by default). At the row's
-              right, out of the flow, so Market / Limit / SL stays centred (20 Nov, the user's call). */}
-          {validity && (
-            <Select size="sm" icon="swap" className={styles.validity} onClick={() => setIndianPad({ validity: indian.validity === 'day' ? 'year' : 'day' })} aria-label={`Validity ${indian.validity === 'day' ? 'Day' : 'Year'}. Switch to ${indian.validity === 'day' ? 'Year' : 'Day'}`}>
-              {indian.validity === 'day' ? 'Day' : 'Year'}
-            </Select>
+          {/* Indian pad, Delivery / MTF: how long the order stays (Market Day / Instant, Limit Day / Instant / Year, SL Day /
+              Year). An A/B test (flow option "Validity switch", 20 Nov, the user's call): V2 · inside the order type's
+              track, after a short divider, the whole track centred; V1 · alone at the row's right edge, out of the flow,
+              so Market / Limit / SL stays centred. */}
+          {validity && validityPlace === 'v2' ? (
+            <Stack direction="horizontal" align="center" gap="04" className={styles.typeTrack}>
+              {orderTypeTabs}
+              <span className={styles.trackDivider} aria-hidden />
+              <Select size="sm" className={styles.trackValidity} icon="swap" onClick={onValidity} aria-label={`Validity ${validityLabel}. Switch to ${validityNext}`}>
+                {validityLabel}
+              </Select>
+            </Stack>
+          ) : (
+            <>
+              {orderTypeTabs}
+              {validity && (
+                <Select size="sm" className={styles.validity} icon="swap" onClick={onValidity} aria-label={`Validity ${validityLabel}. Switch to ${validityNext}`}>
+                  {validityLabel}
+                </Select>
+              )}
+            </>
           )}
         </Stack>
         <Stack gap="16" align="center" className={styles.fields}>
@@ -39811,8 +39885,9 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
           )}
           {/* No helper line under the amount: the order's ₹ value is in the Buy / Sell button. Only an error shows here. */}
           {derived.error && <p className={styles.error}>{forCurrentStock(derived.error)}</p>}
-          {/* Indian pad, Delivery Market only (production: "Boost returns by 4X"): Minted's leverage card (Enable leverage upto 2x / 3x / 4x). */}
-          {india && indian.product === 'delivery' && config.type === 'market' && <LeverageCard />}
+          {/* Indian pad, Delivery Market on NSE only (production: "Boost returns by 4X"; leverage is MTF, which BSE doesn't
+              have): Minted's leverage card (Enable leverage upto 2x / 3x / 4x). */}
+          {india && indian.product === 'delivery' && indian.exchange === 'NSE' && config.type === 'market' && <LeverageCard />}
           {/* Price cards (flow option "Price cards"): one card holding every price, a line between (merged, the default),
               or a card per price (separate, the earlier design, kept for A/B). */}
           {priceCards === 'merged' ? (
@@ -40971,7 +41046,7 @@ function TpslCard({ tpsl, ltp, title, onEdit }: { tpsl: Tpsl; ltp: number; title
           {title}
           <Icon icon={msCheckCircleFill} size={16} className={styles.ok} />
         </span>
-        <Button variant="ghost" size="sm" iconLeft={<Icon icon={msEdit} size={20} />} aria-label={`Edit ${title}`} onClick={(e) => { e.stopPropagation(); onEdit() }} />
+        <Button variant="ghost" size="md" iconLeft={<Icon icon={msEdit} size={20} />} aria-label={`Edit ${title}`} onClick={(e) => { e.stopPropagation(); onEdit() }} />
       </div>
       <div className={styles.summaryBody}>
         <KeyValueList size="sm" aria-label={`${title} targets`}>
@@ -41835,7 +41910,7 @@ export const screens: UsScreenMap = {
 // The Indian order pad (flow option "Order pad" = india; 20 Nov, the user's call): the pad screens as an Indian stock's
 // pad — RELIANCE from the app's company catalogue, in ₹ — with what the production Lemonn Indian pad has (Pixel
 // screenshots, 20 Nov): the NSE / BSE switch in the header, Delivery / Intraday / MTF tabs under it (no MTF on BSE),
-// a Day / Year validity on Delivery and MTF Limit / SL orders, SL's second price as a Limit or "At market", "Order will
+// a validity on Delivery and MTF orders (Market: Day / Instant; Limit: Day / Instant / Year; SL: Day / Year), SL's second price as a Limit or "At market", "Order will
 // be triggered at ₹…", and Intraday's margin ("Margin (5x)" in place of Req.).
 // Each US state maps over: $ ×100 ($100 → ₹10,000, the +$10 chip → +₹1,000, $520.40 → ₹52,040), shares ×10 and whole
 // (2.53 held → 25: Indian stocks trade in whole shares). The US state's own error, when it has one, says which ₹ error
@@ -41854,16 +41929,24 @@ import type { OrderPadConfig, PadChip, PadMoney, PadStock } from './types'
 export type Product = 'delivery' | 'intraday' | 'mtf'
 export type Exchange = 'NSE' | 'BSE'
 export type Validity = 'day' | 'year'
+/** Market orders: for the day, or Instant (IOC: fills right away, or is cancelled). */
+export type MarketValidity = 'day' | 'instant'
+/** Limit orders: Day, Instant or Year. */
+export type LimitValidity = 'day' | 'instant' | 'year'
 export type IndianPadState = {
   product: Product
   exchange: Exchange
-  /** Delivery and MTF Limit / SL orders: a day, or a year (production's default). Intraday is always a day. */
+  /** Delivery and MTF SL orders: a day, or a year (production's default). Intraday is always a day. */
   validity: Validity
+  /** Delivery and MTF Limit orders: Day, Instant or Year (production's default). */
+  limitValidity: LimitValidity
+  /** Delivery and MTF Market orders: Day (production's default) or Instant. */
+  marketValidity: MarketValidity
   /** SL's second price: false = a Limit price, true = at market (SL-M). */
   slAtMarket: boolean
 }
 
-let state: IndianPadState = { product: 'delivery', exchange: 'NSE', validity: 'year', slAtMarket: false }
+let state: IndianPadState = { product: 'delivery', exchange: 'NSE', validity: 'year', limitValidity: 'year', marketValidity: 'day', slAtMarket: false }
 const listeners = new Set<() => void>()
 
 export function setIndianPad(patch: Partial<IndianPadState>) {
@@ -41892,9 +41975,19 @@ const MTF_LEVERAGE = 4
 export const requiredFor = (order: number, product: Product) =>
   (order * CHARGE_FACTOR) / (product === 'intraday' ? INTRADAY_MARGIN : product === 'mtf' ? MTF_LEVERAGE : 1)
 
-/** The text before a Limit / SL note: the order's validity. */
-export const validityPrefix = ({ product, validity }: IndianPadState) =>
-  product === 'intraday' ? 'Intraday · ' : validity === 'year' ? 'Valid for 1 year · ' : 'Day order · '
+export const LIMIT_VALIDITY_LABELS: Record<LimitValidity, string> = { day: 'Day', instant: 'Instant', year: 'Year' }
+/** Tapping Limit's validity cycles Day → Instant → Year → Day (20 Nov, the user's call: no sheet). */
+export const NEXT_LIMIT_VALIDITY: Record<LimitValidity, LimitValidity> = { day: 'instant', instant: 'year', year: 'day' }
+
+const PREFIX: Record<LimitValidity, string> = { year: 'Valid for 1 year · ', day: 'Day order · ', instant: 'Instant order · ' }
+
+/** The text before a note: the order's validity (a Market Day order says nothing). */
+export const validityPrefix = ({ product, validity, limitValidity, marketValidity }: IndianPadState, type: 'market' | 'limit' | 'sl') =>
+  product === 'intraday'
+    ? (type === 'market' ? '' : 'Intraday · ')
+    : type === 'market'
+      ? (marketValidity === 'instant' ? PREFIX.instant : '')
+      : PREFIX[type === 'limit' ? limitValidity : validity]
 
 // ── The stock ────────────────────────────────────────────────────────────────────────────────────────────────────────
 
@@ -42479,6 +42572,11 @@ export const usePadVersion = (): PadVersion => (useFlowOption('us-stocks', 'padV
 // no boxes (TpslSheetB.tsx, the default); a · a card per leg, the earlier design (TpslSheet in Tpsl.tsx).
 export type TpslSheetVersion = 'a' | 'b'
 export const useTpslSheet = (): TpslSheetVersion => (useFlowOption('us-stocks', 'tpslSheet', 'b') === 'a' ? 'a' : 'b')
+
+// The Indian pad's validity switch (flow option "Validity switch", group Trade, 20 Nov — an A/B test, the user's call):
+// v2 · inside the Market / Limit / SL track after a short divider (the default); v1 · alone at the row's right edge.
+export type ValidityPlace = 'v1' | 'v2'
+export const useValidityPlace = (): ValidityPlace => (useFlowOption('us-stocks', 'validityPlace', 'v2') === 'v1' ? 'v1' : 'v2')
 ```
 
 ### `src/flows/us-stocks/screens/types.ts`
