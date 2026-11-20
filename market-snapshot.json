@@ -1,6 +1,6 @@
 {
  "source": "Yahoo Finance (public chart + search endpoints)",
- "fetchedAt": "2026-11-20T12:40:07.196Z",
+ "fetchedAt": "2026-11-20T18:22:43.938Z",
  "symbols": [
   "ADANIENT",
   "ADANIGREEN",
@@ -8901,8 +8901,8 @@
      "close": 410.7
     }
    ],
-   "sector": null,
-   "industry": null
+   "sector": "Financial Services",
+   "industry": "Insurance—Life"
   },
   "LT": {
    "price": 4209.1,
