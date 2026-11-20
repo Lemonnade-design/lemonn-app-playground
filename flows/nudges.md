@@ -231,6 +231,7 @@ provide, per nudge: case id, data state, the headline numbers, ratio, own last l
 - 2026-11-20 · 3 blocks · Low–High: three equal blocks (Medium now over the middle of the yellow), the scale words at 14, and the disc's word reads Low risk → Medium risk → High risk as the needle moves.
 - 2026-11-20 · 3 blocks · Low–High: no word in the dial; under it the speedometer's text — the risk Tag (High Risk), 16, "Your chances of losing money is high" (Heading/20), 8, the fact (Description/14) — and 24 to the dock's line; Meter layout doesn't apply (hidden in the switcher).
 - 2026-11-20 · 3 blocks · Low–High: the risk Tag moves into the dial's disc (where the level word was) and fades in as the needle reaches the reading; the heading and fact follow the dial; Low · Medium · High at 16.
+- 2026-11-20 · 3 blocks · Low–High: 24 from the dial to the heading (was 16).
 
 
 ## Source — this flow
@@ -1828,8 +1829,9 @@ export function NudgeSheet({ caseId, state, meterStyle = 'soft', meterLevel = 'd
   // the speedometer's 24 to the dock's line; Meter layout doesn't apply.
   if (meterWords) {
     return <Sheet labelledBy={id} onClose={onNotNow} className={`${styles.sheet} ${styles.wordsSheet}`} footer={footer}>
-      {/* The risk tag sits in the dial (where the level word was) and fades in as the needle lands. */}
-      <Stack gap="16" align="center" className={styles.riskText}>
+      {/* The risk tag sits in the dial (where the level word was) and fades in as the needle lands; 24 from the dial to
+          the heading (20 Nov, user). */}
+      <Stack gap="24" align="center" className={styles.riskText}>
         {meter}
         {headingAndFact}
       </Stack>
