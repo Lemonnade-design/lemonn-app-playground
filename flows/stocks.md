@@ -58713,10 +58713,12 @@ export const Flag = ({ code }: { code: FlagCode }) => (
 
 ```css
 /*
- * Bottom navbar V2 — floating (FloatingNav.tsx), after the Minted app's live prototype (Home, 20 Nov). Its numbers in
- * Minted's 360 × 800 frame: pill 16 / 14 in, 56 tall, radius 28; fade 136 tall, clear → 35% at 44 → 70% at 92 → 90% at
- * 140 → 95%, backdrop blur 14; glow 50 × 40, blur 25, 35 above the pill's top. Every value here is an --l3-* token.
- * L3 gap: Bottom Navbar has no floating version, so this frame restyles it (fill, line, shadow, row height).
+ * Bottom navbar V2 — floating (FloatingNav.tsx), from the Figma floating nav (LM → Stocks Playground, node 6687:10922,
+ * 20 Nov). In its 392 frame: the pill 16 / 16 in and 14 up, 56 tall (8 + 24 icon + 12 label + 12), radius full, on
+ * surface/default with a 1px border/light edge and a soft double shadow; a 50 × 40 lemon glow blurred 23.3, its top
+ * 27.87 above the pill's; behind it a blob of surface/default blurred 50. Figma values L3 has no token for are the
+ * marked --app-fnav-* local tokens (src/local-tokens.css).
+ * L3 gap: Bottom Navbar has no floating version, so this frame restyles it (fill, line, shadow, option sizes, colours).
  */
 
 /* V1 (docked): the navbar as it is — the wrapper only marks it (data-bottom-nav) and adds no box of its own. */
@@ -58729,69 +58731,84 @@ export const Flag = ({ code }: { code: FlagCode }) => (
   height: 0;
 }
 
-/* The fade under the pill: the page's colour (surface/default), clear at the top, 95% at the bottom, and a soft blur
-   that comes in with it (masked, so its top edge doesn't show). It never takes a tap. */
+/* Figma "Vector 3": the page's colour, blurred, its wavy top just above the pill; it runs off the bottom (clipped by
+   the phone). It never takes a tap. */
 .fade {
   position: absolute;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  height: calc(var(--l3-size-128) + var(--l3-size-08)); /* 136 */
+  left: var(--app-fnav-blob-left);
+  bottom: var(--app-fnav-blob-bottom);
+  width: var(--app-fnav-blob-width);
+  height: var(--app-fnav-blob-height);
+  overflow: visible;
+  fill: var(--l3-surface-default);
+  filter: blur(var(--app-fnav-blob-blur));
   pointer-events: none;
-  background: linear-gradient(
-    color-mix(in srgb, var(--l3-surface-default) 0%, transparent),
-    color-mix(in srgb, var(--l3-surface-default) 35%, transparent) 32%,
-    color-mix(in srgb, var(--l3-surface-default) 70%, transparent) 68%,
-    color-mix(in srgb, var(--l3-surface-default) 95%, transparent)
-  );
-  -webkit-backdrop-filter: blur(var(--l3-spacing-14));
-  backdrop-filter: blur(var(--l3-spacing-14));
-  -webkit-mask-image: linear-gradient(transparent, #000 40%); /* mask colours are alpha only, not design colours */
-  mask-image: linear-gradient(transparent, #000 40%);
 }
 
-/* The pill: surface/primary, a light edge, Minted's soft double shadow (elevation medium + low), the glow clipped in. */
 .pill {
   position: absolute;
   right: var(--l3-spacing-16);
   bottom: var(--l3-spacing-14);
   left: var(--l3-spacing-16);
+  box-sizing: border-box;
   overflow: hidden;
+  padding: var(--l3-spacing-08) var(--l3-spacing-12) var(--l3-spacing-12) var(--l3-spacing-16);
   border-radius: var(--l3-radius-full);
-  background: var(--l3-surface-primary);
-  box-shadow:
-    inset 0 0 0 1px var(--l3-border-light), /* 1px: Figma stroke weight has no variable */
-    var(--l3-shadow-elevation-medium),
-    var(--l3-shadow-elevation-low);
+  background: var(--l3-surface-default);
+  /* Figma's 1px stroke is inside the pill (it stays 56): an inset line, then the double shadow. */
+  box-shadow: inset 0 0 0 1px var(--l3-border-light), var(--app-fnav-shadow); /* 1px: Figma stroke weight has no variable */
 }
 
-/* The chosen tab's glow: the accent of the selected option (L3's success green), blurred, half above the pill. */
+/* The chosen tab's glow (Figma Ellipse 6871: brand lemon) from the tab's left edge, clipped by the pill. */
 .glow {
   position: absolute;
-  top: calc(-1 * var(--l3-spacing-36));
-  left: calc(var(--glow-x) * 100% - var(--l3-size-24));
-  width: var(--l3-size-48);
+  top: var(--app-fnav-glow-top);
+  left: var(--glow-x);
+  width: var(--app-fnav-glow-width);
   height: var(--l3-size-40);
   border-radius: var(--l3-radius-full);
-  background: var(--l3-surface-accent-success-default);
-  opacity: 0.6;
-  filter: blur(var(--l3-spacing-24));
+  background: var(--l3-surface-accent-brand-default);
+  filter: blur(var(--app-fnav-glow-blur));
   pointer-events: none;
   transition: left var(--l3-motion-duration-medium) var(--l3-motion-easing-standard);
 }
 
-/* L3 Bottom Navbar inside the pill: no fill, line or shadow of its own, no safe-area pad; 56 rows, 8 above the icon. */
-.pill > nav,
-.pill > [role='navigation'],
-.pill > :not(.glow) {
+/* L3 Bottom Navbar inside the pill: no fill, line, shadow or safe-area pad of its own; 4 between options. */
+.pill > nav {
   position: relative;
   background: transparent;
   box-shadow: none;
   padding-bottom: 0;
 }
+.pill > nav > ul {
+  gap: var(--l3-spacing-04);
+}
+/* Figma: "Mutual Fund" keeps its whole label (the others share what's left), so no label is cut at 360. */
+.pill > nav > ul > li {
+  min-width: max-content;
+}
+
+/* Each option: the 24 icon right on its 12 label, no padding; content/secondary, the chosen one content/primary in
+   L3 Heading/10. (Figma's unselected label is semibold 600; L3's nearest is Label/10, 650.) */
 .pill :is(button, a)[class] {
-  min-height: var(--l3-size-56);
-  padding-block: var(--l3-spacing-08);
+  gap: 0;
+  min-height: 0;
+  padding: 0;
+  color: var(--l3-content-secondary);
+  background-image: none;
+}
+.pill :is(button, a)[data-selected] {
+  color: var(--l3-content-primary);
+}
+.pill :is(button, a)[data-selected] > span:last-child {
+  font: var(--l3-text-heading-10);
+}
+
+/* The Figma icons (FloatingNavIcon): 24, masked in the option's colour. */
+.icon {
+  display: block;
+  width: var(--l3-icon-size-24);
+  height: var(--l3-icon-size-24);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -58803,22 +58820,47 @@ export const Flag = ({ code }: { code: FlagCode }) => (
 
 ```tsx
 import { useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
+import { MaskIcon } from '@l3/components/MaskIcon'
 import { useFlowOption } from '../prototype'
 import { USER_STATUS } from '../userStatus'
+import stocksIcon from './assets/floating-nav/stocks.svg'
+import marketIcon from './assets/floating-nav/market.svg'
+import marketSelectedIcon from './assets/floating-nav/market-selected.svg'
+import portfolioIcon from './assets/floating-nav/portfolio.svg'
+import mutualFundIcon from './assets/floating-nav/mutual-fund.svg'
+import fnoIcon from './assets/floating-nav/fno.svg'
+import fnoSelectedIcon from './assets/floating-nav/fno-selected.svg'
 import styles from './FloatingNav.module.css'
 
-/** App setting "Bottom navbar" (A/B, 20 Nov): V1 docked (L3 Bottom Navbar, today) · V2 floating (after the Minted app). */
+/** App setting "Bottom navbar" (A/B, 20 Nov): V1 docked (L3 Bottom Navbar, today) · V2 floating. */
 export const BOTTOM_NAV_OPTION = 'bottomNav'
 export const useFloatingNav = () => useFlowOption(USER_STATUS, BOTTOM_NAV_OPTION, 'v1') === 'v2'
 
 /**
+ * V2's main-nav icons, from the Figma floating nav (LM → Stocks Playground, node 6687:10998, 20 Nov). One colour
+ * each, masked so they take the option's colour: content/primary when chosen, content/secondary when not. Market
+ * and F&O have their own chosen shape; Portfolio's lighter part keeps its 40 / 60 share baked in.
+ */
+const floatingIcons = {
+  stocks: [stocksIcon, stocksIcon],
+  market: [marketIcon, marketSelectedIcon],
+  portfolio: [portfolioIcon, portfolioIcon],
+  mutualFund: [mutualFundIcon, mutualFundIcon],
+  fno: [fnoIcon, fnoSelectedIcon],
+} as const
+export type FloatingIconName = keyof typeof floatingIcons
+
+export function FloatingNavIcon({ name, selected = false }: { name: FloatingIconName; selected?: boolean }) {
+  return <span className={styles.icon}><MaskIcon src={floatingIcons[name][selected ? 1 : 0]} /></span>
+}
+
+/**
  * Wraps a bottom navbar (an L3 <BottomNavbar>: the main nav, the F&O and Mutual Fund sub-navs). V1 passes it through.
- * V2 — the Minted app's floating nav, measured from its live prototype: a pill 56 tall, radius full, 16 in from each
- * side and 14 up from the bottom, on the surface with a light edge and a soft double shadow; a blurred accent glow
- * behind the chosen tab (clipped by the pill); and under it a fade layer — the page's own colour from clear to 95%
- * over 136, with a 14 backdrop blur — so the page dissolves into the nav as it scrolls under it. The frame takes no
- * height of its own: the screen's body runs on behind it and keeps its last content clear of the pill (Screen /
- * Phone CSS, [data-floating-nav]).
+ * V2 is the Figma floating nav (node 6687:10922): a pill 16 in from each side and 14 up from the bottom, on
+ * surface/default with a light edge and a soft double shadow; 8 above the icons and 12 below the labels; a blurred
+ * lemon glow from the chosen tab's left edge, clipped by the pill; and behind it all a blurred blob of the page's colour
+ * whose wavy top edge rises just above the pill, so the page fades out under the nav. The frame takes no height of
+ * its own: the body runs on behind it and keeps its last content clear of the pill (Screen / Phone CSS).
  */
 export function FloatingNav({ children }: { children: ReactNode }) {
   const floating = useFloatingNav()
@@ -58833,7 +58875,7 @@ export function FloatingNav({ children }: { children: ReactNode }) {
       if (!chosen || !pill.current) return setGlowX(null)
       const a = pill.current.getBoundingClientRect()
       const b = chosen.getBoundingClientRect()
-      setGlowX((b.left + b.width / 2 - a.left) / (a.width || 1))
+      setGlowX(b.left - a.left) // Figma: the glow starts at the chosen tab's left edge
     }
     place()
     const watch = new MutationObserver(place)
@@ -58846,9 +58888,12 @@ export function FloatingNav({ children }: { children: ReactNode }) {
   if (!floating) return <div className={styles.docked} data-bottom-nav="" data-surface="primary">{children}</div>
   return (
     <div className={styles.frame} data-floating-nav="" data-bottom-nav="">
-      <div className={styles.fade} aria-hidden="true" />
+      {/* Figma "Vector 3": the blob, flipped (flat edge down), blurred 50. Its path is Figma's, in its own box. */}
+      <svg className={styles.fade} viewBox="0 0 513.5 194.255" preserveAspectRatio="none" aria-hidden="true">
+        <path transform="matrix(1 0 0 -1 -100 294.255)" d="M295 273.199C220.535 297.95 157.035 297.784 119.035 288.45L100 100H613.5C607.5 157.167 597.8 221.685 565 251.285C532.2 280.885 426.333 310.366 391.5 266.199C363.667 246.366 339.905 258.273 295 273.199Z" />
+      </svg>
       <div ref={pill} className={styles.pill}>
-        {glowX !== null && <span className={styles.glow} style={{ '--glow-x': glowX } as CSSProperties} aria-hidden="true" />}
+        {glowX !== null && <span className={styles.glow} style={{ '--glow-x': `${glowX}px` } as CSSProperties} aria-hidden="true" />}
         {children}
       </div>
     </div>
@@ -58873,7 +58918,7 @@ export function FloatingNav({ children }: { children: ReactNode }) {
 ```tsx
 import { BottomNavbar } from '@l3/components/BottomNavbar'
 import { NavIcon } from '@l3/components/BottomNavbar/NavIcon'
-import { FloatingNav } from './FloatingNav'
+import { FloatingNav, FloatingNavIcon, useFloatingNav } from './FloatingNav'
 import styles from './MainNav.module.css'
 
 export type Section = 'stocks' | 'market' | 'portfolio' | 'mutualFund' | 'fno'
@@ -58889,6 +58934,7 @@ const items: { value: Section; label: string }[] = [
 /** The Lemonn app's main bottom navbar (L3: Bottom Navbar). Every L1 screen uses this — never a lookalike. Setting
  * "Bottom navbar" V2 floats it (FloatingNav). */
 export function MainNav({ value, onChange }: { value: Section; onChange?: (value: Section) => void }) {
+  const floating = useFloatingNav() // V2 uses the floating nav's own Figma icons
   return (
     <FloatingNav>
       <BottomNavbar
@@ -58896,7 +58942,9 @@ export function MainNav({ value, onChange }: { value: Section; onChange?: (value
         className={styles.nav}
         value={value}
         onChange={(v) => onChange?.(v as Section)}
-        items={items.map((i) => ({ ...i, icon: <NavIcon name={i.value} />, selectedIcon: <NavIcon name={i.value} selected /> }))}
+        items={items.map((i) => floating
+          ? { ...i, icon: <FloatingNavIcon name={i.value} />, selectedIcon: <FloatingNavIcon name={i.value} selected /> }
+          : { ...i, icon: <NavIcon name={i.value} />, selectedIcon: <NavIcon name={i.value} selected /> })}
       />
     </FloatingNav>
   )
@@ -59721,6 +59769,91 @@ export function SearchWalletActions({ searchLabel, walletLabel, onSearch, onWall
     </Stack>
   )
 }
+```
+
+### `src/shared/ui/assets/floating-nav/fno-selected.svg`
+
+```tsx
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Options Botton Nav Icon 3">
+<g id="Vector">
+<path d="M19.9999 7.09802C19.9999 7.65031 19.5522 8.09802 18.9999 8.09802L15.7095 8.09802C15.3453 8.09802 15.0098 8.29607 14.8339 8.615L9.83879 17.6699C9.66285 17.9888 9.32742 18.1869 8.96318 18.1869H4.99989C4.44761 18.1869 3.9999 17.7392 3.9999 17.1869V17.1049C3.9999 16.5526 4.44761 16.1049 4.9999 16.1049H7.84407C8.20829 16.1049 8.54372 15.9068 8.71966 15.5879L13.7147 6.53392C13.8906 6.215 14.2261 6.01697 14.5903 6.01697H18.9999C19.5522 6.01697 19.9999 6.46469 19.9999 7.01697V7.09802ZM19.9286 16.9867C19.9286 17.539 19.4809 17.9867 18.9286 17.9867L14.9999 17.9867C14.4476 17.9867 13.9999 17.539 13.9999 16.9867V16.9047C13.9999 16.3524 14.4476 15.9047 14.9999 15.9047L18.9286 15.9047C19.4809 15.9047 19.9286 16.3524 19.9286 16.9047V16.9867Z" fill="#000" />
+<path d="M3.9999 7.09882C3.9999 7.65116 4.44771 8.0989 5.00005 8.09882L9.00005 8.09818C9.55228 8.0981 9.9999 7.65041 9.9999 7.09818V7.01697C9.9999 6.46468 9.55218 6.01697 8.99989 6.01697L4.99989 6.01697C4.44761 6.01697 3.9999 6.46469 3.9999 7.01697V7.09882Z" fill="#000" />
+</g>
+</g>
+</svg>
+```
+
+### `src/shared/ui/assets/floating-nav/fno.svg`
+
+```tsx
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Options Botton Nav Icon 2">
+<g id="Vector">
+<path d="M19.9999 7.09802C19.9999 7.65031 19.5522 8.09802 18.9999 8.09802L15.7095 8.09802C15.3453 8.09802 15.0098 8.29607 14.8339 8.615L9.83879 17.6699C9.66285 17.9888 9.32742 18.1869 8.96318 18.1869H4.99989C4.44761 18.1869 3.9999 17.7392 3.9999 17.1869V17.1049C3.9999 16.5526 4.44761 16.1049 4.9999 16.1049H7.84407C8.20829 16.1049 8.54372 15.9068 8.71966 15.5879L13.7147 6.53392C13.8906 6.215 14.2261 6.01697 14.5903 6.01697H18.9999C19.5522 6.01697 19.9999 6.46469 19.9999 7.01697V7.09802ZM19.9286 16.9867C19.9286 17.539 19.4809 17.9867 18.9286 17.9867L14.9999 17.9867C14.4476 17.9867 13.9999 17.539 13.9999 16.9867V16.9047C13.9999 16.3524 14.4476 15.9047 14.9999 15.9047L18.9286 15.9047C19.4809 15.9047 19.9286 16.3524 19.9286 16.9047V16.9867Z" fill="#000" />
+<path d="M3.9999 7.09882C3.9999 7.65116 4.44771 8.0989 5.00005 8.09882L9.00005 8.09818C9.55228 8.0981 9.9999 7.65041 9.9999 7.09818V7.01697C9.9999 6.46468 9.55218 6.01697 8.99989 6.01697L4.99989 6.01697C4.44761 6.01697 3.9999 6.46469 3.9999 7.01697V7.09882Z" fill="#000" />
+</g>
+</g>
+</svg>
+```
+
+### `src/shared/ui/assets/floating-nav/market-selected.svg`
+
+```tsx
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Frame 1000005189">
+<path id="Union" d="M7.43553 13.6133C7.98781 13.6133 8.43553 14.061 8.43553 14.6133V18.4463C8.43552 18.9986 7.98781 19.4463 7.43553 19.4463H5.12498C4.57271 19.4463 4.125 18.9986 4.12498 18.4463V14.6133C4.12498 14.061 4.5727 13.6133 5.12498 13.6133H7.43553ZM12.8027 5.74611C13.355 5.74611 13.8027 6.19383 13.8027 6.74611V18.4453C13.8027 18.9976 13.355 19.4453 12.8027 19.4453H10.4922C9.93989 19.4453 9.49217 18.9976 9.49217 18.4453V6.74611C9.49218 6.19384 9.9399 5.74612 10.4922 5.74611H12.8027ZM18.1621 11.3438C18.7144 11.3438 19.1621 11.7915 19.1621 12.3438V18.4434C19.1621 18.9956 18.7144 19.4434 18.1621 19.4434H15.8515C15.2993 19.4434 14.8516 18.9956 14.8515 18.4434V12.3438C14.8515 11.7915 15.2993 11.3438 15.8515 11.3438H18.1621Z" fill="#000" />
+</g>
+</svg>
+```
+
+### `src/shared/ui/assets/floating-nav/market.svg`
+
+```tsx
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Frame 1000005188">
+<path id="Union" d="M7.43553 13.6133C7.98781 13.6133 8.43553 14.061 8.43553 14.6133V18.4463C8.43552 18.9986 7.98781 19.4463 7.43553 19.4463H5.12498C4.57271 19.4463 4.125 18.9986 4.12498 18.4463V14.6133C4.12498 14.061 4.5727 13.6133 5.12498 13.6133H7.43553ZM12.8027 5.74611C13.355 5.74611 13.8027 6.19383 13.8027 6.74611V18.4453C13.8027 18.9976 13.355 19.4453 12.8027 19.4453H10.4922C9.93989 19.4453 9.49217 18.9976 9.49217 18.4453V6.74611C9.49218 6.19384 9.9399 5.74612 10.4922 5.74611H12.8027ZM18.1621 11.3438C18.7144 11.3438 19.1621 11.7915 19.1621 12.3438V18.4434C19.1621 18.9956 18.7144 19.4434 18.1621 19.4434H15.8515C15.2993 19.4434 14.8516 18.9956 14.8515 18.4434V12.3438C14.8515 11.7915 15.2993 11.3438 15.8515 11.3438H18.1621Z" fill="#000" />
+</g>
+</svg>
+```
+
+### `src/shared/ui/assets/floating-nav/mutual-fund.svg`
+
+```tsx
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Icon">
+<path id="Vector" d="M5.03047 12.0001C5.03047 13.6284 5.51414 15.0754 6.48148 16.341C7.44881 17.6066 8.68217 18.4167 10.1815 18.7714C10.4073 18.8359 10.5967 18.9689 10.7499 19.1705C10.903 19.372 10.9796 19.6098 10.9796 19.8839C10.9796 20.2547 10.8224 20.557 10.508 20.7907C10.1936 21.0245 9.85103 21.085 9.48022 20.9721C7.46494 20.4078 5.83256 19.2994 4.58308 17.6469C3.3336 15.9944 2.70886 14.1121 2.70886 12.0001C2.70886 9.88805 3.3336 8.00577 4.58308 6.35324C5.83256 4.7007 7.46494 3.5923 9.48022 3.02802C9.85103 2.91516 10.1936 2.97562 10.508 3.20939C10.8224 3.44317 10.9796 3.74546 10.9796 4.11627C10.9796 4.39035 10.903 4.62815 10.7499 4.82968C10.5967 5.03121 10.4073 5.16422 10.1815 5.22871C8.68217 5.5834 7.44881 6.39354 6.48148 7.65914C5.51414 8.92474 5.03047 10.3717 5.03047 12.0001Z" fill="#000" />
+<path id="Vector_2" d="M16.7106 20.0773C17.3877 19.6581 18.0084 19.1664 18.5727 18.6021C19.137 18.0379 19.6327 17.4131 20.06 16.7279C20.4872 16.0427 20.7895 15.2971 20.9668 14.4909C21.0475 14.104 20.9789 13.7574 20.7613 13.4511C20.5436 13.1447 20.2494 12.9916 19.8786 12.9916C19.6045 12.9916 19.3667 13.0682 19.1652 13.2213C18.9637 13.3745 18.8306 13.5639 18.7662 13.7896C18.5888 14.4023 18.3389 14.9666 18.0165 15.4825C17.694 15.9984 17.3152 16.474 16.8798 16.9093C16.4445 17.3446 15.9689 17.7235 15.453 18.0459C14.9371 18.3684 14.3809 18.6102 13.7844 18.7714C13.5587 18.8359 13.3692 18.9689 13.2161 19.1704C13.0629 19.372 12.9863 19.6098 12.9863 19.8839C12.9863 20.2547 13.1395 20.5489 13.4458 20.7665C13.7521 20.9842 14.0988 21.0527 14.4857 20.9721C15.2918 20.7948 16.0334 20.4965 16.7106 20.0773Z" fill="#000" />
+<path id="Vector_3" d="M20.06 7.28433C19.6327 6.60719 19.137 5.98648 18.5727 5.4222C18.0084 4.85792 17.3877 4.36216 16.7106 3.93492C16.0334 3.50768 15.2918 3.20539 14.4857 3.02804C14.0988 2.94743 13.7521 3.01595 13.4458 3.2336C13.1395 3.45125 12.9863 3.74548 12.9863 4.1163C12.9863 4.39037 13.0629 4.62818 13.2161 4.82971C13.3692 5.03124 13.5587 5.16424 13.7844 5.22873C14.3809 5.38996 14.9371 5.63582 15.453 5.96633C15.9689 6.29684 16.4445 6.67974 16.8798 7.11504C17.3152 7.55034 17.694 8.02192 18.0165 8.52977C18.3389 9.03762 18.5888 9.59787 18.7662 10.2105C18.8306 10.4362 18.9637 10.6257 19.1652 10.7788C19.3667 10.932 19.6045 11.0086 19.8786 11.0086C20.2494 11.0086 20.5436 10.8554 20.7613 10.5491C20.9789 10.2428 21.0475 9.89614 20.9668 9.5092C20.7895 8.70309 20.4872 7.96146 20.06 7.28433Z" fill="#000" />
+</g>
+</svg>
+```
+
+### `src/shared/ui/assets/floating-nav/portfolio.svg`
+
+```tsx
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Icon">
+<path id="Vector" d="M5.60779 10.9673C5.56188 11.0128 5.51552 11.0607 5.46875 11.111C5.51405 11.0628 5.56041 11.0149 5.60779 10.9673ZM12.3465 13.6011C11.353 13.2585 9.61878 12.4654 8.38278 10.8345C6.56251 10.8016 5.46875 11.111 5.46875 11.111C5.46875 11.111 6.06624 12.0923 7.31265 13.1392C8.33795 13.0754 9.51084 13.0886 10.7004 13.2736C11.2795 13.3646 11.8295 13.4764 12.3465 13.6011Z" fill-rule="evenodd" clip-rule="evenodd" fill="#000" />
+<path id="Vector_2" d="M10.8387 17.76C9.90246 17.4565 8.29496 16.7642 7.02293 15.3313C5.48275 15.4306 4.22273 15.6775 3.78125 15.774C3.78125 15.774 4.5336 16.6893 5.6854 17.4895C6.67616 17.4064 8.06389 17.3997 9.8947 17.6143C10.2136 17.6526 10.5292 17.702 10.8387 17.76Z" fill-rule="evenodd" clip-rule="evenodd" fill="#000" />
+<path id="Vector_3" d="M5.32422 19.6546C6.12798 20.5749 6.90023 21.1117 8.22407 21.6179C9.76855 22.2161 11.5179 21.986 12.3216 21.7713C11.7761 21.6565 9.68606 21.1927 7.9994 19.5387C6.4495 19.4355 5.59141 19.5868 5.32422 19.6546Z" fill-rule="evenodd" clip-rule="evenodd" fill="#000" />
+<path id="Vector_4" d="M12.5281 1.99988L12.3547 2.32198C11.8031 3.33431 11.5982 4.45401 11.7085 5.51235C11.8977 7.29159 12.9693 8.94813 14.7029 9.85309L14.8763 9.53098C15.5855 8.2579 15.7116 6.83144 15.3806 5.52769C14.9866 4.08589 14.0095 2.76679 12.5281 1.99988Z" fill="#000" fill-opacity="0.667"/>
+<path id="Vector_5" d="M20.2351 8.24279C19.715 9.17843 18.8798 9.83797 17.9184 10.1447C16.894 10.4822 15.7277 10.4055 14.7033 9.88398C15.2234 8.94834 16.0745 8.2888 17.0358 7.98204C18.0445 7.64459 19.2107 7.70595 20.2351 8.24279Z" fill="#000" fill-opacity="0.667"/>
+<path id="Vector_6" d="M8.38279 10.8345C8.92603 10.8443 9.53398 10.8846 10.1968 10.9728C14.058 11.4943 14.5308 10.2672 14.5308 10.2672C14.5308 10.2672 12.75 8.70265 9.81863 8.9634C8.08764 9.1099 6.61531 9.95616 5.6078 10.9673C5.56041 11.0149 5.51406 11.0628 5.46875 11.111C5.46875 11.111 6.56252 10.8016 8.38279 10.8345Z" fill="#000" fill-opacity="0.667"/>
+<path id="Vector_7" d="M10.6985 13.2735C9.50894 13.0885 8.33605 13.0753 7.31074 13.1391C5.70085 13.2393 4.45482 13.5292 4.07932 13.6416C4.06357 13.6416 4.04782 13.6569 4.03206 13.6723C4.0163 13.6876 4.00052 13.703 4.00052 13.7336C3.85868 14.2398 3.71807 15.053 3.78111 15.7739C4.22258 15.6775 5.4826 15.4305 7.02278 15.3313C8.17675 15.2569 9.48798 15.2654 10.73 15.4822C13.488 15.9577 15.9624 17.2001 16.7346 17.5989C16.7425 17.5989 16.7464 17.6027 16.7504 17.6066C16.7543 17.6104 16.7582 17.6142 16.7661 17.6142C16.7976 17.6142 16.8292 17.5989 16.8449 17.5529C17.0656 16.8933 17.1916 16.0804 17.2074 15.5436C17.2074 15.5282 17.2074 15.5129 17.1916 15.4975C17.1916 15.4822 17.1759 15.4669 17.1601 15.4669C16.7389 15.1978 14.9653 14.2333 12.3445 13.601C11.8275 13.4763 11.2776 13.3645 10.6985 13.2735Z" fill-rule="evenodd" clip-rule="evenodd" fill="#000" fill-opacity="0.667"/>
+<path id="Vector_8" d="M5.68528 17.4895C6.67603 17.4064 8.06377 17.3997 9.89458 17.6143C10.2134 17.6526 10.529 17.702 10.8386 17.76C13.1302 18.1888 15.0972 19.0845 15.6942 19.4089C15.7257 19.4242 15.7415 19.4395 15.7415 19.4549C15.7415 19.4702 15.7415 19.5009 15.7257 19.5316C15.4263 19.9304 14.7959 20.5132 14.197 20.8967C14.1497 20.9273 14.1025 20.9427 14.0394 20.9427C14.0079 20.9427 13.9764 20.9273 13.9449 20.912C13.4405 20.6666 11.9591 20.0837 9.9261 19.7616C9.19278 19.6447 8.55203 19.5755 7.99928 19.5387C6.44937 19.4354 5.59129 19.5867 5.3241 19.6545C4.7725 19.041 4.34705 18.1818 4.18945 17.8137C4.18945 17.783 4.18947 17.7523 4.20523 17.737C4.22098 17.7216 4.23674 17.7063 4.25249 17.7063C4.57357 17.6282 5.04706 17.543 5.68528 17.4895Z" fill-rule="evenodd" clip-rule="evenodd" fill="#000" fill-opacity="0.667"/>
+</g>
+</svg>
+```
+
+### `src/shared/ui/assets/floating-nav/stocks.svg`
+
+```tsx
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Frame">
+<path id="Vector" d="M10.45 12.62L11.82 13.99C11.9867 14.1633 12.1967 14.25 12.45 14.25C12.7033 14.25 12.9167 14.1633 13.09 13.99L16.26 10.83V12.03C16.26 12.2367 16.3333 12.41 16.48 12.55C16.6267 12.69 16.8 12.7567 17 12.75C17.2067 12.75 17.3833 12.6767 17.53 12.53C17.6767 12.3833 17.75 12.2067 17.75 12V9.15C17.75 8.89667 17.6633 8.68333 17.49 8.51C17.3167 8.33667 17.1033 8.25 16.85 8.25H13.98C13.7733 8.25 13.6 8.32333 13.46 8.47C13.32 8.61667 13.25 8.79333 13.25 9C13.25 9.21333 13.3233 9.39 13.47 9.53C13.6167 9.67 13.7933 9.74333 14 9.75H15.17L12.45 12.51L11.08 11.14C10.9067 10.96 10.6933 10.87 10.44 10.87C10.1867 10.87 9.98 10.96 9.82 11.14L6.87 14.07C6.72333 14.2167 6.65 14.3933 6.65 14.6C6.65 14.8067 6.72333 14.98 6.87 15.12C7.01667 15.2733 7.19333 15.35 7.4 15.35C7.60667 15.35 7.78 15.2733 7.92 15.12L10.44 12.61L10.45 12.62ZM5.31 20.5C4.80333 20.5 4.37667 20.3267 4.03 19.98C3.68333 19.6333 3.50667 19.2033 3.5 18.69V5.31C3.5 4.80333 3.67333 4.37667 4.02 4.03C4.36667 3.68333 4.79667 3.50667 5.31 3.5H18.69C19.1967 3.5 19.6233 3.67333 19.97 4.02C20.3167 4.36667 20.4933 4.79667 20.5 5.31V18.69C20.5 19.1967 20.3267 19.6233 19.98 19.97C19.6333 20.3167 19.2033 20.4933 18.69 20.5H5.31Z" fill="#000"/>
+</g>
+</svg>
 ```
 
 ### `src/shared/ui/copy.json`

@@ -500,6 +500,13 @@
     "src/shared/ui/StockListCard.tsx",
     "src/shared/ui/TopBarAction.module.css",
     "src/shared/ui/TopBarAction.tsx",
+    "src/shared/ui/assets/floating-nav/fno-selected.svg",
+    "src/shared/ui/assets/floating-nav/fno.svg",
+    "src/shared/ui/assets/floating-nav/market-selected.svg",
+    "src/shared/ui/assets/floating-nav/market.svg",
+    "src/shared/ui/assets/floating-nav/mutual-fund.svg",
+    "src/shared/ui/assets/floating-nav/portfolio.svg",
+    "src/shared/ui/assets/floating-nav/stocks.svg",
     "src/shared/ui/copy.json",
     "src/shared/ui/useSwipeBetween.ts",
     "src/shared/userStatus.ts"
