@@ -88,7 +88,7 @@ blocks, the body text 16 under the meter, 32 from the last text to the dock's li
 | Meter | **4f · Soft dial** (default) · 4g · Blocks · 4h · Speedometer · 0–100 · 4i · Speedometer · Low–High (4h / 4i have their own layout; Meter layout doesn't apply) |
 | Risk level | **High risk** (default) · Caution · Safe — where the reading stops, with that level's colours, glow, grains and word |
 | Meter layout | **Text first** (default: heading, sub line, meter, body text) · Meter first (meter, "You are overtrading", body text; other cases add "Your chances of losing money today are high" to their fact) · Tag first (a red secondary L3 Tag "Overtrading Detected" with a filled warning icon — 8 padding, 2 icon → text, an L3 gap — then "Your chances of losing money are high" (`heading-18`), the meter, body text) · With multiple (now the same as Text first: the dial's multiple was removed, 20 Nov) |
-| Meter fill (Soft dial only) | **One colour** (default: the whole ring turns green → yellow → red as the needle moves; levels 0–45 / 45–65 / 65–100 %, high risk lands at ~75 % for 2X) · Blended (each part keeps the colour it was filled with, melting into the next over a soft band; levels 0–33 / 33–60 / 60–100 %, high risk at ~85 %) · Blended · 3 blocks (20 Nov: the blended ring cut by a 6 gap at each colour change — three blocks, each in its own colour) · 3 blocks · Low–High (20 Nov: the 3-block dial in three equal blocks (0–⅓–⅔–1; low stops at ⅙, medium at ½), drawn at 0.84 about its base centre, with Low and High beside its ends and Medium over the top — Heading/16, content/primary — the risk Tag in the disc where the level word was, fading in as the needle reaches the reading; under the dial the speedometer's heading and fact, whatever the Meter layout) |
+| Meter fill (Soft dial only) | **One colour** (default: the whole ring turns green → yellow → red as the needle moves; levels 0–45 / 45–65 / 65–100 %, high risk lands at ~75 % for 2X) · Blended (each part keeps the colour it was filled with, melting into the next over a soft band; levels 0–33 / 33–60 / 60–100 %, high risk at ~85 %) · Blended · 3 blocks (20 Nov: the blended ring cut by a 6 gap at each colour change — three blocks, each in its own colour) · 3 blocks · Low–High (20 Nov: the 3-block dial in three equal blocks (0–⅓–⅔–1; low stops at ⅙, medium at ½), drawn at 0.84 about its base centre, with Low and High beside its ends and Medium over the top — Heading/16, content/primary — the risk Tag in the disc where the level word was, fading in as the needle reaches the reading; under the dial the speedometer's heading and fact, whatever the Meter layout) · One colour · Low–High (20 Nov: the one-colour ring with everything of 3 blocks · Low–High — equal thirds, the scale round it, the tag in the disc, the heading and fact under it) |
 
 **4f · Soft dial** (`sheets/SoftDial.tsx`, from the user's reference): a thick ring filled from the left with a radial
 gradient (deep inside, light outside), sparse white grains (brightest in a soft wedge behind the needle; the ones on
@@ -232,6 +232,8 @@ provide, per nudge: case id, data state, the headline numbers, ratio, own last l
 - 2026-11-20 · 3 blocks · Low–High: no word in the dial; under it the speedometer's text — the risk Tag (High Risk), 16, "Your chances of losing money is high" (Heading/20), 8, the fact (Description/14) — and 24 to the dock's line; Meter layout doesn't apply (hidden in the switcher).
 - 2026-11-20 · 3 blocks · Low–High: the risk Tag moves into the dial's disc (where the level word was) and fades in as the needle reaches the reading; the heading and fact follow the dial; Low · Medium · High at 16.
 - 2026-11-20 · 3 blocks · Low–High: 24 from the dial to the heading (was 16).
+- 2026-11-20 · Meter fill **One colour · Low–High**: the one-colour soft dial (the whole ring turns green → yellow → red) with the 3 blocks · Low–High design — equal thirds, Low · Medium · High round it, the High Risk tag in the disc fading in as the needle lands, the heading and fact 24 under it.
+- 2026-11-20 · Blended · 3 blocks: three equal blocks (green, yellow, red a third each; low stops at ⅙, medium at ½), as in 3 blocks · Low–High.
 
 
 ## Source — this flow
@@ -432,7 +434,7 @@ function Pill({ host }: { host: HTMLElement }) {
     </button>
     <Pick option={meterOption} menu={menu} setMenu={setMenu} short={(_, label) => label.split(' · ')[0]} />
     <Pick option={meterLevelOption} menu={menu} setMenu={setMenu} short={(_, label) => label} />
-    {!meter.startsWith('gauge') && !(meter === 'soft' && fill === 'splitWords') && <Pick option={meterLayoutOption} menu={menu} setMenu={setMenu} short={(_, label) => label} />}
+    {!meter.startsWith('gauge') && !(meter === 'soft' && (fill === 'splitWords' || fill === 'wholeWords')) && <Pick option={meterLayoutOption} menu={menu} setMenu={setMenu} short={(_, label) => label} />}
     {meter === 'soft' && <Pick option={meterFillOption} menu={menu} setMenu={setMenu} short={(_, label) => label} />}
     <Pick option={caseOption} menu={menu} setMenu={setMenu} short={(_, label) => label} wide />
     <Pick option={stateOption} menu={menu} setMenu={setMenu} short={(v) => t('switcher.state', { state: v })} />
@@ -758,6 +760,7 @@ function Menu({ option, chip, host, onClose }: { option: Option; chip: HTMLEleme
   "option.meterFillBlend": "Blended",
   "option.meterFillSplit": "Blended · 3 blocks",
   "option.meterFillSplitWords": "3 blocks · Low–High",
+  "option.meterFillWholeWords": "One colour · Low–High",
   "option.layoutZone": "5 · Risk bar",
   "option.badge": "Layout 1 header",
   "option.badgeChip": "Chip (✋ in the tag)",
@@ -943,8 +946,8 @@ export const meterLevelOption = { id: 'meterLevel', group: 'Nudge', label: t('op
 export const meterLayoutOption = { id: 'meterLayout', group: 'Nudge', label: t('option.meterLayout'), picker: 'dropdown' as const, values: [{ value: 'text', label: t('option.meterLayoutText') }, { value: 'meter', label: t('option.meterLayoutMeter') }, { value: 'tag', label: t('option.meterLayoutTag') }, { value: 'number', label: t('option.meterLayoutNumber') }], default: 'text' }
 /** Soft dial only (19 Nov): the whole ring changes colour as the needle moves, or each part keeps the colour
  *  it was filled with, blended (green → yellow → red); or (20 Nov) blended and cut into three blocks where the colour
- *  changes; and that with Low · Medium · High round it, as on the speedometer. */
-export const meterFillOption = { id: 'meterFill', group: 'Nudge', label: t('option.meterFill'), picker: 'dropdown' as const, values: [{ value: 'whole', label: t('option.meterFillWhole') }, { value: 'blend', label: t('option.meterFillBlend') }, { value: 'split', label: t('option.meterFillSplit') }, { value: 'splitWords', label: t('option.meterFillSplitWords') }], default: 'whole' }
+ *  changes; and that with Low · Medium · High round it, as on the speedometer; and (20 Nov) the one-colour ring with the same scale and tag. */
+export const meterFillOption = { id: 'meterFill', group: 'Nudge', label: t('option.meterFill'), picker: 'dropdown' as const, values: [{ value: 'whole', label: t('option.meterFillWhole') }, { value: 'blend', label: t('option.meterFillBlend') }, { value: 'split', label: t('option.meterFillSplit') }, { value: 'splitWords', label: t('option.meterFillSplitWords') }, { value: 'wholeWords', label: t('option.meterFillWholeWords') }], default: 'whole' }
 
 export const nudgeOptions = [
   caseOption,
@@ -1024,7 +1027,7 @@ import { Tag } from '@l3/components/Tag'
 import { lmSwitchArrowVertical } from '@l3/icons/lemonnade'
 import { msChevronRight, msShield } from '@l3/icons/material'
 import { inr } from '../../../shared/data/format'
-import { useFlowOption } from '../../../shared/prototype'
+import { SHOWCASE, useFlowOption } from '../../../shared/prototype'
 import type { RiskLevel } from '../sheets/SoftDial'
 import { Screen } from '../../../shared/ui/Screen'
 import { t } from '../copy'
@@ -1075,7 +1078,8 @@ export function OrderPad({ side = 'buy', product: initialProduct = 'delivery', t
   const meterFill = useFlowOption('nudges', 'meterFill', 'whole')
   const meterBlend = meterFill === 'blend' || meterFill === 'split' || meterFill === 'splitWords'
   const meterSplit = meterFill === 'split' || meterFill === 'splitWords'
-  const meterWords = meterFill === 'splitWords'
+  // Low · Medium · High round the dial and the risk tag in it: on the 3-block or the one-colour ring.
+  const meterWords = meterFill === 'splitWords' || meterFill === 'wholeWords'
   const everyBuy = useFlowOption('nudges', 'everyBuy', 'on') === 'on'
   const vibrate = useFlowOption('nudges', 'vibrate', 'on') === 'on'
   // A screen with a fixed case (03–09) shows it until the case or data state is changed in the settings; from then on
@@ -1152,7 +1156,7 @@ export function OrderPad({ side = 'buy', product: initialProduct = 'delivery', t
 
   return <Screen top={top} bottom={dock} sheet={sheet}
     toast={toast ? <Aerobar floating type="success" heading={toast} onDismiss={() => setToast(null)} /> : undefined}>
-    <SheetSwitcher open={fired !== undefined} />
+    {!SHOWCASE && <SheetSwitcher open={fired !== undefined} />}
     <Stack gap="16" className={styles.body}>
       <Stack direction="horizontal" align="center" justify="between">
         <Tabs aria-label={t('order.type')} appearance="pill" size="md" value={type} onChange={setType} items={(['market', 'limit', 'sl'] as const).map((value) => ({ value, label: t(`order.${value}`) }))} />
@@ -1745,7 +1749,7 @@ export type NudgeSheetProps = {
   meterBlend?: boolean
   /** Soft dial, blended only: the ring cut into three blocks where the colour changes. */
   meterSplit?: boolean
-  /** Soft dial, 3 blocks: Low · Medium · High round the dial. */
+  /** Soft dial (3 blocks or one colour): Low · Medium · High round the dial, the risk tag in it. */
   meterWords?: boolean
   /** Buzz the phone once when the sheet opens (two short pulses: "stop, look"). */
   vibrate?: boolean
@@ -2114,10 +2118,11 @@ export function SoftDial({ ratio, level = 'danger', blend = false, split = false
   const ids = { fill: `sd-fill-${uid}`, sweep: `sd-sweep-${uid}`, fade: `sd-fade-${uid}`, fadeMask: `sd-fademask-${uid}`, dots: `sd-dots-${uid}`, trail: `sd-trail-${uid}`, trailBlur: `sd-trailblur-${uid}`, blur: `sd-blur-${uid}`, glass: `sd-glass-${uid}`, shadow: `sd-shadow-${uid}`, shade: `sd-shade-${uid}`, cut: `sd-cut-${uid}` }
   const root = useRef<HTMLElement>(null)
   const number = showRatio && ratio !== undefined
-  const edges = EDGES[words ? 'thirds' : blend ? 'blend' : 'whole']
+  // Three equal blocks wherever the ring is cut into blocks or carries the Low · Medium · High scale (20 Nov, user).
+  const edges = EDGES[words || split ? 'thirds' : blend ? 'blend' : 'whole']
   const levels = levelsFor(edges)
   // Equal thirds: low and medium stop in the middle of their block; high as the blended dial.
-  const now = level === 'danger' ? dangerAt(ratio, blend) : words ? { safe: 1 / 6, caution: 0.5 }[level] : LEVEL_AT[blend ? 'blend' : 'whole'][level]
+  const now = level === 'danger' ? dangerAt(ratio, blend) : words || split ? { safe: 1 / 6, caution: 0.5 }[level] : LEVEL_AT[blend ? 'blend' : 'whole'][level]
   // The fill is drawn to END (a little past the reading) so the overshoot has colour under it; the sweep shows f / END of it.
   const END = Math.min(1, now + OVER)
   // When the needle first reaches fraction f (during its run).
@@ -2502,11 +2507,39 @@ export function setFlowOption(flow: string, option: string, fallback: string, va
 
 const memory = new Map<string, string>()
 
+/**
+ * Showcase links (20 Nov): `?showcase` shows one screen as it is shared (e.g. the risk-meter page for leadership) — no
+ * prototype controls over it. `?o=nudges.meter:soft,nudges.meterFill:split` sets options for this page only (never
+ * stored, so several showcase frames side by side can each show their own version).
+ */
+// A showcase frame can't always carry a query (a packed, single-file page loads the app from a blob: URL), so its
+// settings can also come in the frame's name: "showcase:?showcase&theme=dark&o=…".
+export const linkParams = (() => {
+  try {
+    const named = window.name.startsWith('showcase:') ? window.name.slice('showcase:'.length) : ''
+    return new URLSearchParams(named || location.search)
+  } catch { return new URLSearchParams() }
+})()
+export const SHOWCASE = linkParams.has('showcase')
+// A showcase frame sits in a page of phones: the app focusing its sheet must never scroll that page to it.
+if (SHOWCASE) {
+  const focus = HTMLElement.prototype.focus
+  HTMLElement.prototype.focus = function (options?: FocusOptions) { focus.call(this, { ...options, preventScroll: true }) }
+}
+const linkOptions = new Map((linkParams.get('o') ?? '').split(',').filter(Boolean).map((pair) => {
+  const [key, value = ''] = pair.split(':')
+  return [key, value] as const
+}))
+const picked = (flow: string, option: string, fallback: string) => {
+  const key = optionKey(flow, option, fallback)
+  return linkOptions.get(`${flow}.${option}`) ?? memory.get(key) ?? readOption(key)
+}
+
 /** A flow's prototype option: the picked value, or `fallback` (the option's default) when none is picked. */
 export function useFlowOption(flow: string, option: string, fallback: string) {
   return useSyncExternalStore(
     (onChange) => { optionListeners.add(onChange); return () => { optionListeners.delete(onChange) } },
-    () => memory.get(optionKey(flow, option, fallback)) ?? readOption(optionKey(flow, option, fallback)) ?? fallback,
+    () => picked(flow, option, fallback) ?? fallback,
   )
 }
 
@@ -2517,8 +2550,7 @@ export function useFlowOptionValues(flow: { id: string; options?: OptionLike[] }
   const snap = useSyncExternalStore(
     (onChange) => { optionListeners.add(onChange); return () => { optionListeners.delete(onChange) } },
     () => JSON.stringify(Object.fromEntries((flow.options ?? []).map((o) => {
-      const key = optionKey(flow.id, o.id, o.default)
-      return [o.id, memory.get(key) ?? readOption(key) ?? o.default]
+      return [o.id, picked(flow.id, o.id, o.default) ?? o.default]
     }))),
   )
   return JSON.parse(snap)
@@ -2543,8 +2575,7 @@ export function useFlowOptionsChanged(flow: { id: string; options?: { id: string
   return useSyncExternalStore(
     (onChange) => { optionListeners.add(onChange); return () => { optionListeners.delete(onChange) } },
     () => (flow.options ?? []).filter((o) => {
-      const key = optionKey(flow.id, o.id, o.default)
-      return (memory.get(key) ?? readOption(key) ?? o.default) !== o.default
+      return (picked(flow.id, o.id, o.default) ?? o.default) !== o.default
     }).length,
   )
 }

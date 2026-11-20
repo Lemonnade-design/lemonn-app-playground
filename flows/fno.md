@@ -311,7 +311,7 @@ sample signals in `data.ts` (`zingSignals`, `SignalFilter`, `matchesFilter`).
   5. Logo tag, no tabs — today's header (filter | chips, the line under it), the amber logo + name tag.
   6. Commodity picture — as 5, but a commodity signal's picture is the commodity's logo (20) on a 32 L3 Avatar circle;
      setting "Commodity picture background": Colour per commodity (Gold zing light, Natural Gas error light, Crude Oil
-     and Silver surface/secondary; default, user's pick 20 Nov) or Grey (all surface/secondary). Its tag is the name in grey, like NIFTY.
+     and Silver surface/secondary; default, user's pick 20 Nov) or Grey (all surface/secondary). Its tag is version 2's amber "MCX · Gold" (20 Nov: 2 and 6 merged).
   7. Header with tabs — as 4, but "Active signals (n)" and the Total P&L tag sit in the sheet's header (L3 sheet header:
      heading, the tag on the right), the segment tabs and chips under it — the contract picker's header · tabs · chips.
      The list starts with the cards and scrolls behind the header: no line under it, a shadow once scrolled.
@@ -623,6 +623,7 @@ The source uses old D2 controls alongside L3; their code equivalents are L3 comp
 - 2026-11-19 — How breakeven works · example: the "B/E ₹100.30" chip on the animated breakeven line is now the chart's own "Breakeven" tag — text only, no price (warning-light fill and edge, radius 4, Label/10 warning text, 16 tall), in light and dark.
 - 2026-11-19 — Breakeven sheet Version 2: the description under "What is breakeven price?" is gone (heading only). Copy `breakeven.descriptionV2` is kept, unused.
 - 2026-11-19 — Breakeven sheet Version 2 heading: "What is breakeven line?" (was "What is breakeven price?").
+- 2026-11-20 · Zing signals version 6 · Commodity picture now also carries version 2's amber "MCX · Gold" tag (was the commodity name in grey): the commodity's picture and the MCX tag together.
 
 
 ## Source — this flow
@@ -10270,9 +10271,8 @@ export function SignalsSheet({ initial = {}, onClose }: { initial?: SignalsSheet
 function MarketTags({ signal, version }: { signal: ZingSignal; version: CommodityVersion }) {
   const commodity = signal.commodity
   if (!commodity || version === 'v1') return <Tag size="sm" variant="tertiary" color="neutral" className={styles.greyTag}>{signal.underlying}</Tag>
-  if (version === 'v2') return <Tag size="sm" variant="secondary" color="warning">{t('signals.mcx', { name: signal.underlying })}</Tag>
-  // v7: the logo is the picture; the tag is the name in grey, like NIFTY.
-  if (version === 'v7') return <Tag size="sm" variant="tertiary" color="neutral" className={styles.greyTag}>{t(`signals.commodity.${commodity}`)}</Tag>
+  // v2, and v7 (20 Nov, user: version 6 = the commodity picture + version 2's tag): the amber "MCX · Gold" tag.
+  if (version === 'v2' || version === 'v7') return <Tag size="sm" variant="secondary" color="warning">{t('signals.mcx', { name: signal.underlying })}</Tag>
   // v3: the logo is on the picture's corner, so the tag is the name alone.
   if (version === 'v3') return <Tag size="sm" variant="tertiary" color="warning">{t(`signals.commodity.${commodity}`)}</Tag>
   return <Tag size="sm" variant="tertiary" color="warning" iconLeft={<img src={commodityLogos[commodity]} alt="" className={styles.tagLogo} />}>{t(`signals.commodity.${commodity}`)}</Tag>
@@ -10864,11 +10864,39 @@ export function setFlowOption(flow: string, option: string, fallback: string, va
 
 const memory = new Map<string, string>()
 
+/**
+ * Showcase links (20 Nov): `?showcase` shows one screen as it is shared (e.g. the risk-meter page for leadership) — no
+ * prototype controls over it. `?o=nudges.meter:soft,nudges.meterFill:split` sets options for this page only (never
+ * stored, so several showcase frames side by side can each show their own version).
+ */
+// A showcase frame can't always carry a query (a packed, single-file page loads the app from a blob: URL), so its
+// settings can also come in the frame's name: "showcase:?showcase&theme=dark&o=…".
+export const linkParams = (() => {
+  try {
+    const named = window.name.startsWith('showcase:') ? window.name.slice('showcase:'.length) : ''
+    return new URLSearchParams(named || location.search)
+  } catch { return new URLSearchParams() }
+})()
+export const SHOWCASE = linkParams.has('showcase')
+// A showcase frame sits in a page of phones: the app focusing its sheet must never scroll that page to it.
+if (SHOWCASE) {
+  const focus = HTMLElement.prototype.focus
+  HTMLElement.prototype.focus = function (options?: FocusOptions) { focus.call(this, { ...options, preventScroll: true }) }
+}
+const linkOptions = new Map((linkParams.get('o') ?? '').split(',').filter(Boolean).map((pair) => {
+  const [key, value = ''] = pair.split(':')
+  return [key, value] as const
+}))
+const picked = (flow: string, option: string, fallback: string) => {
+  const key = optionKey(flow, option, fallback)
+  return linkOptions.get(`${flow}.${option}`) ?? memory.get(key) ?? readOption(key)
+}
+
 /** A flow's prototype option: the picked value, or `fallback` (the option's default) when none is picked. */
 export function useFlowOption(flow: string, option: string, fallback: string) {
   return useSyncExternalStore(
     (onChange) => { optionListeners.add(onChange); return () => { optionListeners.delete(onChange) } },
-    () => memory.get(optionKey(flow, option, fallback)) ?? readOption(optionKey(flow, option, fallback)) ?? fallback,
+    () => picked(flow, option, fallback) ?? fallback,
   )
 }
 
@@ -10879,8 +10907,7 @@ export function useFlowOptionValues(flow: { id: string; options?: OptionLike[] }
   const snap = useSyncExternalStore(
     (onChange) => { optionListeners.add(onChange); return () => { optionListeners.delete(onChange) } },
     () => JSON.stringify(Object.fromEntries((flow.options ?? []).map((o) => {
-      const key = optionKey(flow.id, o.id, o.default)
-      return [o.id, memory.get(key) ?? readOption(key) ?? o.default]
+      return [o.id, picked(flow.id, o.id, o.default) ?? o.default]
     }))),
   )
   return JSON.parse(snap)
@@ -10905,8 +10932,7 @@ export function useFlowOptionsChanged(flow: { id: string; options?: { id: string
   return useSyncExternalStore(
     (onChange) => { optionListeners.add(onChange); return () => { optionListeners.delete(onChange) } },
     () => (flow.options ?? []).filter((o) => {
-      const key = optionKey(flow.id, o.id, o.default)
-      return (memory.get(key) ?? readOption(key) ?? o.default) !== o.default
+      return (picked(flow.id, o.id, o.default) ?? o.default) !== o.default
     }).length,
   )
 }
@@ -11510,7 +11536,7 @@ function Sparkler() {
 /*
  * Bottom navbar V2 — floating (FloatingNav.tsx), from the Figma floating nav (LM → Stocks Playground, node 6687:10922,
  * 20 Nov). In its 392 frame: the pill 16 / 16 in and 14 up, 56 tall (8 + 24 icon + 12 label + 12), radius full, on
- * surface/default with a 1px border/light edge and a soft double shadow; a 50 × 40 lemon glow blurred 23.3, its top
+ * surface/default with a 1px border/light edge and a soft double shadow; a 50 × 40 accent-green glow (Figma: lemon) blurred 23.3, its top
  * 27.87 above the pill's; behind it a blob of surface/default blurred 50. Figma values L3 has no token for are the
  * marked --app-fnav-* local tokens (src/local-tokens.css).
  * L3 gap: Bottom Navbar has no floating version, so this frame restyles it (fill, line, shadow, option sizes, colours).
@@ -11526,17 +11552,22 @@ function Sparkler() {
   height: 0;
 }
 
-/* Figma "Vector 3": the page's colour, blurred, its wavy top just above the pill; it runs off the bottom (clipped by
-   the phone). It never takes a tap. */
+/* The page fades out under the nav (20 Nov, user: stronger than Figma's blurred blob): the page's colour, solid from
+   the bottom edge up past the pill's middle, then fading to clear well above the pill. It never takes a tap. */
 .fade {
   position: absolute;
-  left: var(--app-fnav-blob-left);
-  bottom: var(--app-fnav-blob-bottom);
-  width: var(--app-fnav-blob-width);
-  height: var(--app-fnav-blob-height);
-  overflow: visible;
-  fill: var(--l3-surface-default);
-  filter: blur(var(--app-fnav-blob-blur));
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: calc(var(--l3-size-128) + var(--l3-size-24)); /* 152: about 80 above the pill */
+  background: linear-gradient(
+    to top,
+    var(--l3-surface-default) 0%,
+    var(--l3-surface-default) 30%,
+    color-mix(in srgb, var(--l3-surface-default) 85%, transparent) 50%,
+    color-mix(in srgb, var(--l3-surface-default) 45%, transparent) 75%,
+    color-mix(in srgb, var(--l3-surface-default) 0%, transparent) 100%
+  );
   pointer-events: none;
 }
 
@@ -11554,7 +11585,7 @@ function Sparkler() {
   box-shadow: inset 0 0 0 1px var(--l3-border-light), var(--app-fnav-shadow); /* 1px: Figma stroke weight has no variable */
 }
 
-/* The chosen tab's glow (Figma Ellipse 6871: brand lemon) from the tab's left edge, clipped by the pill. */
+/* The chosen tab's glow (Figma Ellipse 6871, in accent green) from the tab's left edge, clipped by the pill. */
 .glow {
   position: absolute;
   top: var(--app-fnav-glow-top);
@@ -11562,7 +11593,7 @@ function Sparkler() {
   width: var(--app-fnav-glow-width);
   height: var(--l3-size-40);
   border-radius: var(--l3-radius-full);
-  background: var(--l3-surface-accent-brand-default);
+  background: var(--l3-surface-accent-success-default); /* accent green (20 Nov, user; Figma's was brand lime) */
   filter: blur(var(--app-fnav-glow-blur));
   pointer-events: none;
   transition: left var(--l3-motion-duration-medium) var(--l3-motion-easing-standard);
@@ -11627,9 +11658,9 @@ import fnoIcon from './assets/floating-nav/fno.svg'
 import fnoSelectedIcon from './assets/floating-nav/fno-selected.svg'
 import styles from './FloatingNav.module.css'
 
-/** App setting "Bottom navbar" (A/B, 20 Nov): V1 docked (L3 Bottom Navbar, today) · V2 floating. */
+/** App setting "Bottom navbar" (A/B, 20 Nov): V1 docked (L3 Bottom Navbar) · V2 floating, the default at launch (20 Nov). */
 export const BOTTOM_NAV_OPTION = 'bottomNav'
-export const useFloatingNav = () => useFlowOption(USER_STATUS, BOTTOM_NAV_OPTION, 'v1') === 'v2'
+export const useFloatingNav = () => useFlowOption(USER_STATUS, BOTTOM_NAV_OPTION, 'v2') === 'v2' // V2 by default (20 Nov, user)
 
 /**
  * V2's main-nav icons, from the Figma floating nav (LM → Stocks Playground, node 6687:10998, 20 Nov). One colour
@@ -11653,8 +11684,8 @@ export function FloatingNavIcon({ name, selected = false }: { name: FloatingIcon
  * Wraps a bottom navbar (an L3 <BottomNavbar>: the main nav, the F&O and Mutual Fund sub-navs). V1 passes it through.
  * V2 is the Figma floating nav (node 6687:10922): a pill 16 in from each side and 14 up from the bottom, on
  * surface/default with a light edge and a soft double shadow; 8 above the icons and 12 below the labels; a blurred
- * lemon glow from the chosen tab's left edge, clipped by the pill; and behind it all a blurred blob of the page's colour
- * whose wavy top edge rises just above the pill, so the page fades out under the nav. The frame takes no height of
+ * accent-green glow from the chosen tab's left edge, clipped by the pill; and behind it all the page's colour, solid at
+ * the bottom and fading out above the pill (20 Nov), so the page fades out under the nav. The frame takes no height of
  * its own: the body runs on behind it and keeps its last content clear of the pill (Screen / Phone CSS).
  */
 export function FloatingNav({ children }: { children: ReactNode }) {
@@ -11683,10 +11714,8 @@ export function FloatingNav({ children }: { children: ReactNode }) {
   if (!floating) return <div className={styles.docked} data-bottom-nav="" data-surface="primary">{children}</div>
   return (
     <div className={styles.frame} data-floating-nav="" data-bottom-nav="">
-      {/* Figma "Vector 3": the blob, flipped (flat edge down), blurred 50. Its path is Figma's, in its own box. */}
-      <svg className={styles.fade} viewBox="0 0 513.5 194.255" preserveAspectRatio="none" aria-hidden="true">
-        <path transform="matrix(1 0 0 -1 -100 294.255)" d="M295 273.199C220.535 297.95 157.035 297.784 119.035 288.45L100 100H613.5C607.5 157.167 597.8 221.685 565 251.285C532.2 280.885 426.333 310.366 391.5 266.199C363.667 246.366 339.905 258.273 295 273.199Z" />
-      </svg>
+      {/* The page's colour behind the nav: solid at the bottom, fading out above the pill. */}
+      <div className={styles.fade} aria-hidden="true" />
       <div ref={pill} className={styles.pill}>
         {glowX !== null && <span className={styles.glow} style={{ '--glow-x': `${glowX}px` } as CSSProperties} aria-hidden="true" />}
         {children}
