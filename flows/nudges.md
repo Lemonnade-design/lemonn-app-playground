@@ -88,7 +88,7 @@ blocks, the body text 16 under the meter, 32 from the last text to the dock's li
 | Meter | **4f · Soft dial** (default) · 4g · Blocks · 4h · Speedometer · 0–100 · 4i · Speedometer · Low–High (4h / 4i have their own layout; Meter layout doesn't apply) |
 | Risk level | **High risk** (default) · Caution · Safe — where the reading stops, with that level's colours, glow, grains and word |
 | Meter layout | **Text first** (default: heading, sub line, meter, body text) · Meter first (meter, "You are overtrading", body text; other cases add "Your chances of losing money today are high" to their fact) · Tag first (a red secondary L3 Tag "Overtrading Detected" with a filled warning icon — 8 padding, 2 icon → text, an L3 gap — then "Your chances of losing money are high" (`heading-18`), the meter, body text) · With multiple (now the same as Text first: the dial's multiple was removed, 20 Nov) |
-| Meter fill (Soft dial only) | **One colour** (default: the whole ring turns green → yellow → red as the needle moves; levels 0–45 / 45–65 / 65–100 %, high risk lands at ~75 % for 2X) · Blended (each part keeps the colour it was filled with, melting into the next over a soft band; levels 0–33 / 33–60 / 60–100 %, high risk at ~85 %) · Blended · 3 blocks (20 Nov: the blended ring cut by a 6 gap at each colour change — three blocks, each in its own colour) |
+| Meter fill (Soft dial only) | **One colour** (default: the whole ring turns green → yellow → red as the needle moves; levels 0–45 / 45–65 / 65–100 %, high risk lands at ~75 % for 2X) · Blended (each part keeps the colour it was filled with, melting into the next over a soft band; levels 0–33 / 33–60 / 60–100 %, high risk at ~85 %) · Blended · 3 blocks (20 Nov: the blended ring cut by a 6 gap at each colour change — three blocks, each in its own colour) · 3 blocks · Low–High (20 Nov: the 3-block dial in three equal blocks (0–⅓–⅔–1; low stops at ⅙, medium at ½), drawn at 0.84 about its base centre, with Low and High beside its ends and Medium over the top — Heading/16, content/primary — the risk Tag in the disc where the level word was, fading in as the needle reaches the reading; under the dial the speedometer's heading and fact, whatever the Meter layout) |
 
 **4f · Soft dial** (`sheets/SoftDial.tsx`, from the user's reference): a thick ring filled from the left with a radial
 gradient (deep inside, light outside), sparse white grains (brightest in a soft wedge behind the needle; the ones on
@@ -227,6 +227,10 @@ provide, per nudge: case id, data state, the headline numbers, ratio, own last l
 - 2026-11-20 · Meters **4h · Speedometer · 0–100** and **4i · Speedometer · Low–High** from Figma (6917:62779), with their own layout and motion (segments light up, the needle swings up and settles). Meter fill **Blended · 3 blocks**: the blended soft dial cut into three blocks where the colour changes, each block in its own colour.
 - 2026-11-20 · 4h / 4i speedometer heading: "Your chances of losing money is high" (was "Your portfolio is at high risk"); medium / low for the other levels.
 - 2026-11-20 · 4h / 4i speedometer: the fact under the heading in L3 Description/14 (was Label/12).
+- 2026-11-20 · Meter fill **3 blocks · Low–High**: the 3-block soft dial with the speedometer's Low · Medium · High scale round it (the dial a little smaller to make room).
+- 2026-11-20 · 3 blocks · Low–High: three equal blocks (Medium now over the middle of the yellow), the scale words at 14, and the disc's word reads Low risk → Medium risk → High risk as the needle moves.
+- 2026-11-20 · 3 blocks · Low–High: no word in the dial; under it the speedometer's text — the risk Tag (High Risk), 16, "Your chances of losing money is high" (Heading/20), 8, the fact (Description/14) — and 24 to the dock's line; Meter layout doesn't apply (hidden in the switcher).
+- 2026-11-20 · 3 blocks · Low–High: the risk Tag moves into the dial's disc (where the level word was) and fades in as the needle reaches the reading; the heading and fact follow the dial; Low · Medium · High at 16.
 
 
 ## Source — this flow
@@ -387,6 +391,7 @@ function Pill({ host }: { host: HTMLElement }) {
   const pill = useRef<HTMLDivElement>(null)
   const [spot, setSpot] = useState<Spot | null>(readSpot)
   const meter = activeMeter(useFlowOption('nudges', meterOption.id, meterOption.default))
+  const fill = useFlowOption('nudges', meterFillOption.id, meterFillOption.default)
   const [menu, setMenu] = useState<{ option: Option; chip: HTMLElement } | null>(null)
   const grab = useRef<{ id: number; dx: number; dy: number } | null>(null)
 
@@ -426,7 +431,7 @@ function Pill({ host }: { host: HTMLElement }) {
     </button>
     <Pick option={meterOption} menu={menu} setMenu={setMenu} short={(_, label) => label.split(' · ')[0]} />
     <Pick option={meterLevelOption} menu={menu} setMenu={setMenu} short={(_, label) => label} />
-    {!meter.startsWith('gauge') && <Pick option={meterLayoutOption} menu={menu} setMenu={setMenu} short={(_, label) => label} />}
+    {!meter.startsWith('gauge') && !(meter === 'soft' && fill === 'splitWords') && <Pick option={meterLayoutOption} menu={menu} setMenu={setMenu} short={(_, label) => label} />}
     {meter === 'soft' && <Pick option={meterFillOption} menu={menu} setMenu={setMenu} short={(_, label) => label} />}
     <Pick option={caseOption} menu={menu} setMenu={setMenu} short={(_, label) => label} wide />
     <Pick option={stateOption} menu={menu} setMenu={setMenu} short={(v) => t('switcher.state', { state: v })} />
@@ -597,6 +602,7 @@ function Menu({ option, chip, host, onClose }: { option: Option; chip: HTMLEleme
   "nudge.vsUsual": "vs your usual",
   "nudge.highRisk": "High risk",
   "nudge.levelLow": "Low risk",
+  "nudge.levelMedium": "Medium risk",
   "nudge.levelSafe": "Safe",
   "nudge.levelMid": "Caution",
   "nudge.vsUsualPlain": "Compared with how you usually trade",
@@ -750,6 +756,7 @@ function Menu({ option, chip, host, onClose }: { option: Option; chip: HTMLEleme
   "option.meterFillWhole": "One colour",
   "option.meterFillBlend": "Blended",
   "option.meterFillSplit": "Blended · 3 blocks",
+  "option.meterFillSplitWords": "3 blocks · Low–High",
   "option.layoutZone": "5 · Risk bar",
   "option.badge": "Layout 1 header",
   "option.badgeChip": "Chip (✋ in the tag)",
@@ -935,8 +942,8 @@ export const meterLevelOption = { id: 'meterLevel', group: 'Nudge', label: t('op
 export const meterLayoutOption = { id: 'meterLayout', group: 'Nudge', label: t('option.meterLayout'), picker: 'dropdown' as const, values: [{ value: 'text', label: t('option.meterLayoutText') }, { value: 'meter', label: t('option.meterLayoutMeter') }, { value: 'tag', label: t('option.meterLayoutTag') }, { value: 'number', label: t('option.meterLayoutNumber') }], default: 'text' }
 /** Soft dial only (19 Nov): the whole ring changes colour as the needle moves, or each part keeps the colour
  *  it was filled with, blended (green → yellow → red); or (20 Nov) blended and cut into three blocks where the colour
- *  changes. */
-export const meterFillOption = { id: 'meterFill', group: 'Nudge', label: t('option.meterFill'), picker: 'dropdown' as const, values: [{ value: 'whole', label: t('option.meterFillWhole') }, { value: 'blend', label: t('option.meterFillBlend') }, { value: 'split', label: t('option.meterFillSplit') }], default: 'whole' }
+ *  changes; and that with Low · Medium · High round it, as on the speedometer. */
+export const meterFillOption = { id: 'meterFill', group: 'Nudge', label: t('option.meterFill'), picker: 'dropdown' as const, values: [{ value: 'whole', label: t('option.meterFillWhole') }, { value: 'blend', label: t('option.meterFillBlend') }, { value: 'split', label: t('option.meterFillSplit') }, { value: 'splitWords', label: t('option.meterFillSplitWords') }], default: 'whole' }
 
 export const nudgeOptions = [
   caseOption,
@@ -1065,8 +1072,9 @@ export function OrderPad({ side = 'buy', product: initialProduct = 'delivery', t
   const meterLevel = useFlowOption('nudges', 'meterLevel', 'danger') as RiskLevel
   const meterLayout = useFlowOption('nudges', 'meterLayout', 'text') as MeterLayout
   const meterFill = useFlowOption('nudges', 'meterFill', 'whole')
-  const meterBlend = meterFill === 'blend' || meterFill === 'split'
-  const meterSplit = meterFill === 'split'
+  const meterBlend = meterFill === 'blend' || meterFill === 'split' || meterFill === 'splitWords'
+  const meterSplit = meterFill === 'split' || meterFill === 'splitWords'
+  const meterWords = meterFill === 'splitWords'
   const everyBuy = useFlowOption('nudges', 'everyBuy', 'on') === 'on'
   const vibrate = useFlowOption('nudges', 'vibrate', 'on') === 'on'
   // A screen with a fixed case (03–09) shows it until the case or data state is changed in the settings; from then on
@@ -1102,7 +1110,7 @@ export function OrderPad({ side = 'buy', product: initialProduct = 'delivery', t
   const submit = () => { if (fired && (!nudged || everyBuy)) { setNudged(true); setModal({ kind: 'nudge' }) } else place() }
 
   const sheet = modal?.kind === 'nudge' && fired
-    ? <NudgeSheet caseId={fired.caseId} state={fired.state} meterStyle={meterStyle} meterLevel={meterLevel} meterLayout={meterLayout} meterBlend={meterBlend} meterSplit={meterSplit} vibrate={vibrate} actions={actions} onGuardrail={(g) => setModal({ kind: g })} onNotNow={place} />
+    ? <NudgeSheet caseId={fired.caseId} state={fired.state} meterStyle={meterStyle} meterLevel={meterLevel} meterLayout={meterLayout} meterBlend={meterBlend} meterSplit={meterSplit} meterWords={meterWords} vibrate={vibrate} actions={actions} onGuardrail={(g) => setModal({ kind: g })} onNotNow={place} />
     : modal?.kind === 'pnl'
       ? <LossLimitSheet initial={limit ?? defaultLimit} onClose={() => setModal(null)} onSave={(amount) => { setLimit(amount); setModal(null); setToast(t('pnl.saved', { amount: inr(amount, 0) })) }} />
       : modal?.kind === 'tpsl'
@@ -1695,6 +1703,8 @@ export function TpslSheet({ onSave, onClose }: { onSave: (tpsl: { targetPct: num
 .gaugeHeading { margin: 0; font: var(--l3-text-heading-20); color: var(--l3-content-primary); }
 /* The fact: L3/Description/14 (20 Nov, user; Figma had Label/12). */
 .gaugeSub { margin: 0; font: var(--l3-text-description-14); color: var(--l3-content-secondary); }
+/* Soft dial · 3 blocks · Low–High: the speedometer's 24 from the fact to the dock's line. */
+.wordsSheet.wordsSheet [data-sheet-content] { padding-bottom: var(--l3-spacing-24); }
 ```
 
 ### `src/flows/nudges/sheets/NudgeSheet.tsx`
@@ -1734,6 +1744,8 @@ export type NudgeSheetProps = {
   meterBlend?: boolean
   /** Soft dial, blended only: the ring cut into three blocks where the colour changes. */
   meterSplit?: boolean
+  /** Soft dial, 3 blocks: Low · Medium · High round the dial. */
+  meterWords?: boolean
   /** Buzz the phone once when the sheet opens (two short pulses: "stop, look"). */
   vibrate?: boolean
   /** 'one' (default): the case's guardrail (primary) + Not now (secondary) · 'two': both guardrails + Not now (ghost). */
@@ -1759,7 +1771,7 @@ type Key = Parameters<typeof t>[0]
  * The fact: size-up says "You are placing a bigger order right after a loss"; every other case its own fact
  * ("3X more orders than usual today"). Motion plays once on open; none with reduced motion.
  */
-export function NudgeSheet({ caseId, state, meterStyle = 'soft', meterLevel = 'danger', meterLayout = 'text', meterBlend = false, meterSplit = false, vibrate = true, actions = 'one', onGuardrail, onNotNow }: NudgeSheetProps) {
+export function NudgeSheet({ caseId, state, meterStyle = 'soft', meterLevel = 'danger', meterLayout = 'text', meterBlend = false, meterSplit = false, meterWords = false, vibrate = true, actions = 'one', onGuardrail, onNotNow }: NudgeSheetProps) {
   const id = useId()
   // On open only (switching case or version keeps the sheet open, so it doesn't buzz again).
   useEffect(() => { if (vibrate) buzz() }, []) // eslint-disable-line react-hooks/exhaustive-deps
@@ -1783,9 +1795,16 @@ export function NudgeSheet({ caseId, state, meterStyle = 'soft', meterLevel = 'd
   </ButtonGroup>
 
   // No multiple ("2X") in the dial in any layout (20 Nov): the disc shows the level word only.
+  // The speedometer's text under a meter: the risk tag, 16, the heading (heading-20), 8, the fact (description-14).
+  const tagColor = meterLevel === 'danger' ? 'loss' : meterLevel === 'caution' ? 'warning' : 'profit'
+  const riskTag = <Tag size="md" variant="secondary" color={tagColor} iconLeft={meterLevel === 'safe' ? undefined : <Icon icon={msWarningFill} />}>{t(`gauge.tag.${meterLevel}`)}</Tag>
+  const headingAndFact = <Stack gap="08" align="center">
+    <h2 id={id} className={styles.gaugeHeading}>{t(`gauge.heading.${meterLevel}`)}</h2>
+    <p className={styles.gaugeSub}>{caseId === 'sizeUp' ? t('gauge.sizeUp') : headline}</p>
+  </Stack>
   const meter = meterStyle === 'blocks'
     ? <BlockDial key={`${caseId}-${state}-${meterLevel}-${meterLayout}`} ratio={ratio} level={meterLevel} />
-    : <SoftDial key={`${caseId}-${state}-${meterLevel}-${meterBlend}-${meterSplit}-${meterLayout}`} ratio={ratio} level={meterLevel} blend={meterBlend} split={meterSplit} />
+    : <SoftDial key={`${caseId}-${state}-${meterLevel}-${meterBlend}-${meterSplit}-${meterWords}-${meterLayout}`} ratio={ratio} level={meterLevel} blend={meterBlend} split={meterSplit} words={meterWords} badge={meterWords ? riskTag : undefined} />
   const meterAndFact = <Stack gap="16" align="center">
     {meter}
     <p className={styles.meterFact}>{fact}</p>
@@ -1794,20 +1813,25 @@ export function NudgeSheet({ caseId, state, meterStyle = 'soft', meterLevel = 'd
   // 4h / 4i · the speedometer (Figma 6917:62779, 20 Nov) has its own layout, whatever the Meter layout setting: the pink
   // wave at the top, the dial with its scale, 16, the risk tag, 16, "Your chances of losing money is high" (heading-20), 8, the
   // fact (label-12). 24 from the top of the sheet, 24 from the fact to the dock's line.
+  const gaugeText = <Stack gap="16" align="center">{riskTag}{headingAndFact}</Stack>
   if (meterStyle === 'gauge' || meterStyle === 'gaugeWords') {
     const scale = meterStyle === 'gauge' ? 'numbers' : 'words'
-    const tagColor = meterLevel === 'danger' ? 'loss' : meterLevel === 'caution' ? 'warning' : 'profit'
     return <Sheet labelledBy={id} onClose={onNotNow} className={`${styles.sheet} ${styles.gaugeSheet}`} footer={footer}>
       <GaugeWave scale={scale} level={meterLevel} />
       <Stack gap="16" align="center" className={styles.riskText}>
         <GaugeMeter key={`${caseId}-${state}-${meterLevel}-${scale}`} scale={scale} level={meterLevel} />
-        <Stack gap="16" align="center">
-          <Tag size="md" variant="secondary" color={tagColor} iconLeft={meterLevel === 'safe' ? undefined : <Icon icon={msWarningFill} />}>{t(`gauge.tag.${meterLevel}`)}</Tag>
-          <Stack gap="08" align="center">
-            <h2 id={id} className={styles.gaugeHeading}>{t(`gauge.heading.${meterLevel}`)}</h2>
-            <p className={styles.gaugeSub}>{caseId === 'sizeUp' ? t('gauge.sizeUp') : headline}</p>
-          </Stack>
-        </Stack>
+        {gaugeText}
+      </Stack>
+    </Sheet>
+  }
+  // Soft dial · 3 blocks · Low–High (20 Nov, user): the speedometer's layout under the dial (no word in the dial), and
+  // the speedometer's 24 to the dock's line; Meter layout doesn't apply.
+  if (meterWords) {
+    return <Sheet labelledBy={id} onClose={onNotNow} className={`${styles.sheet} ${styles.wordsSheet}`} footer={footer}>
+      {/* The risk tag sits in the dial (where the level word was) and fades in as the needle lands. */}
+      <Stack gap="16" align="center" className={styles.riskText}>
+        {meter}
+        {headingAndFact}
       </Stack>
     </Sheet>
   }
@@ -1877,7 +1901,7 @@ function buzz() {
   overflow: visible;
 }
 
-.dial { margin: 0; }
+.dial { position: relative; margin: 0; }
 /* Resting colours = the end state (red); the component animates them from green. */
 .deep { stop-color: var(--l3-content-accent-error-default); }
 .mid { stop-color: var(--l3-surface-accent-error-default); }
@@ -1953,12 +1977,20 @@ function buzz() {
 @media (prefers-reduced-motion: reduce) {
   .dial, .dial * { animation: none !important; }
 }
+
+/* "3 blocks · Low–High": the scale round the dial, as on the 4i speedometer (L3 heading, content/primary; in drawing
+   units the dial's 340 is about the content's width, so 14 ≈ 14 px). */
+/* 16 (20 Nov, user: 2 bigger again). */
+.scaleWord { font: var(--l3-text-heading-16); fill: var(--l3-content-primary); }
+
+/* 3 blocks · Low–High: the risk Tag in the disc, centred where the level word sat (top set by the component). */
+.badge { position: absolute; left: 50%; translate: -50% -50%; }
 ```
 
 ### `src/flows/nudges/sheets/SoftDial.tsx`
 
 ```tsx
-import { useEffect, useId, useRef, type CSSProperties } from 'react'
+import { useEffect, useId, useRef, type CSSProperties, type ReactNode } from 'react'
 import { t } from '../copy'
 import styles from './SoftDial.module.css'
 
@@ -1983,7 +2015,8 @@ const BAND = RO - RI
  *  "a little less, like the previous version"). */
 const SAFE_END = 0.33
 const CAUTION_END = 0.6
-const EDGES = { blend: { safe: SAFE_END, caution: CAUTION_END }, whole: { safe: 0.45, caution: 0.65 } } as const
+/** "3 blocks · Low–High" (20 Nov, user): three equal blocks, so Medium sits over the middle of the yellow one. */
+const EDGES = { blend: { safe: SAFE_END, caution: CAUTION_END }, whole: { safe: 0.45, caution: 0.65 }, thirds: { safe: 1 / 3, caution: 2 / 3 } } as const
 const DELAY = 300
 /** The needle's run (19 Nov): ease-in-out up to a little past the reading (fast in the middle), then back a touch,
  *  forward a touch, and it settles — a soft bounce. Offsets are of TRAVEL; f = fraction of the scale. */
@@ -2047,13 +2080,13 @@ const dangerAt = (ratio: number | undefined, blend: boolean) => blend
  */
 const BLEND = 0.07 // half-width of the soft band at each level edge, as a fraction of the scale
 const SLICES = 90
-function blendColour(f: number, split = false) {
+function blendColour(f: number, split = false, edges: { safe: number; caution: number } = EDGES.blend) {
   const g = 'var(--l3-surface-accent-success-default)'
   const y = 'var(--l3-surface-accent-warning-default)'
   const r = 'var(--l3-surface-accent-error-default)'
   const mix = (a: string, b: string, t: number) => `color-mix(in oklab, ${a} ${Math.round((1 - t) * 100)}%, ${b})`
   const ease = (t: number) => t * t * (3 - 2 * t) // smoothstep, so each band starts and ends softly
-  if (split) return f < SAFE_END ? g : f < CAUTION_END ? y : r // three blocks: each its own colour, cut at the edges
+  if (split) return f < edges.safe ? g : f < edges.caution ? y : r // three blocks: each its own colour, cut at the edges
   if (f <= SAFE_END - BLEND) return g
   if (f < SAFE_END + BLEND) return mix(g, y, ease((f - (SAFE_END - BLEND)) / (2 * BLEND)))
   if (f <= CAUTION_END - BLEND) return y
@@ -2064,14 +2097,25 @@ function blendColour(f: number, split = false) {
 /** "Blended · 3 blocks" (20 Nov, user): the gap cut across the ring at each colour change, in drawing units. */
 const CUT = 6
 
-export function SoftDial({ ratio, level = 'danger', blend = false, split = false, showRatio = false }: { ratio?: number; level?: RiskLevel; blend?: boolean; split?: boolean; showRatio?: boolean }) {
+/** "3 blocks · Low–High" (20 Nov, user): the dial drawn at this size about its base centre, so Low · Medium · High fit
+ *  round it — Low and High beside the ends, Medium over the top — as on the 4i speedometer. */
+const WORDS_SCALE = 0.84
+const WORDS_GAP = 18 // from the ring to a scale word, in drawing units
+
+/** The badge in the disc (3 blocks · Low–High): its centre, in drawing units, where the level word sat. The figure's box
+ *  runs from y 6 to the base line (CY) and x 0–340 (see .svg in the CSS). */
+const BADGE_Y = CY - 26 * WORDS_SCALE
+const BADGE_FADE = 300
+
+export function SoftDial({ ratio, level = 'danger', blend = false, split = false, words = false, badge, showRatio = false }: { ratio?: number; level?: RiskLevel; blend?: boolean; split?: boolean; words?: boolean; badge?: ReactNode; showRatio?: boolean }) {
   const uid = useId().replace(/[^a-zA-Z0-9]/g, '')
   const ids = { fill: `sd-fill-${uid}`, sweep: `sd-sweep-${uid}`, fade: `sd-fade-${uid}`, fadeMask: `sd-fademask-${uid}`, dots: `sd-dots-${uid}`, trail: `sd-trail-${uid}`, trailBlur: `sd-trailblur-${uid}`, blur: `sd-blur-${uid}`, glass: `sd-glass-${uid}`, shadow: `sd-shadow-${uid}`, shade: `sd-shade-${uid}`, cut: `sd-cut-${uid}` }
   const root = useRef<HTMLElement>(null)
   const number = showRatio && ratio !== undefined
-  const edges = EDGES[blend ? 'blend' : 'whole']
+  const edges = EDGES[words ? 'thirds' : blend ? 'blend' : 'whole']
   const levels = levelsFor(edges)
-  const now = level === 'danger' ? dangerAt(ratio, blend) : LEVEL_AT[blend ? 'blend' : 'whole'][level]
+  // Equal thirds: low and medium stop in the middle of their block; high as the blended dial.
+  const now = level === 'danger' ? dangerAt(ratio, blend) : words ? { safe: 1 / 6, caution: 0.5 }[level] : LEVEL_AT[blend ? 'blend' : 'whole'][level]
   // The fill is drawn to END (a little past the reading) so the overshoot has colour under it; the sweep shows f / END of it.
   const END = Math.min(1, now + OVER)
   // When the needle first reaches fraction f (during its run).
@@ -2158,12 +2202,22 @@ export function SoftDial({ ratio, level = 'danger', blend = false, split = false
       word('caution', toYellow, toRed)
       word('danger', toRed, total)
     }
+    // The badge in the disc fades in as the needle reaches the reading (not before: it names where the needle lands).
+    const badgeEl = el.querySelector<HTMLElement>('[data-badge]')
+    if (badgeEl) running.push(badgeEl.animate([{ opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1 }],
+      { duration: BADGE_FADE, delay: reach(now), easing: 'cubic-bezier(0.2, 0, 0, 1)', fill: 'backwards' }))
     return () => running.forEach((a) => a.cancel())
   }, [now, END, amberAt, redAt, level])
 
   const big = { x: -80, y: -80, width: 500, height: 400 }
   return <figure ref={root} className={styles.dial} data-level={level} data-blend={blend || undefined} style={timing} role="img" aria-label={label}>
     <svg viewBox="-16 -64 372 280" className={styles.svg} aria-hidden>
+      {words && <>
+        <text x={CX - RO * WORDS_SCALE - WORDS_GAP} y={CY - 14} className={styles.scaleWord} textAnchor="end" dominantBaseline="central">{t('gauge.low')}</text>
+        <text x={CX} y={CY - RO * WORDS_SCALE - WORDS_GAP} className={styles.scaleWord} textAnchor="middle" dominantBaseline="central">{t('gauge.medium')}</text>
+        <text x={CX + RO * WORDS_SCALE + WORDS_GAP} y={CY - 14} className={styles.scaleWord} textAnchor="start" dominantBaseline="central">{t('gauge.high')}</text>
+      </>}
+      <g transform={words ? `translate(${CX} ${CY}) scale(${WORDS_SCALE}) translate(${-CX} ${-CY})` : undefined}>
       <defs>
         {/* Deep at the inner edge, the level colour through the band, light at the outer edge. */}
         <radialGradient id={ids.fill} gradientUnits="userSpaceOnUse" cx={CX} cy={CY} r={RO}>
@@ -2240,7 +2294,7 @@ export function SoftDial({ ratio, level = 'danger', blend = false, split = false
               {Array.from({ length: SLICES }, (_, i) => {
                 const from = (i / SLICES) * END
                 const to = Math.min(END, ((i + 1) / SLICES) * END + 0.003) // a hair of overlap: no seams between slices
-                return <path key={i} d={sector(from, to)} style={{ fill: blendColour((from + to) / 2, split) }} />
+                return <path key={i} d={sector(from, to)} style={{ fill: blendColour((from + to) / 2, split, edges) }} />
               })}
               <path d={sector(0, END)} fill={`url(#${ids.shade})`} />
             </>
@@ -2280,11 +2334,15 @@ export function SoftDial({ ratio, level = 'danger', blend = false, split = false
       <circle cx={CX} cy={CY} r={RI} className={styles.disc} />
       {/* "With multiple" (19 Nov): the multiple, big, above the level word. */}
       {number && <text x={CX} y={CY - 38} className={styles.value} textAnchor="middle">{ratio}X</text>}
-      {(['safe', 'caution', 'danger'] as const).map((tone) =>
+      {/* 3 blocks · Low–High: no word in the dial (the risk is in the tag under it). */}
+      {!words && (['safe', 'caution', 'danger'] as const).map((tone) =>
         <text key={tone} x={CX} y={number ? CY - 6 : CY - 22} className={styles.level} data-word={tone} textAnchor="middle">
-          {t(tone === 'safe' ? 'nudge.levelSafe' : tone === 'caution' ? 'nudge.levelMid' : 'nudge.highRisk')}
+          {/* 3 blocks · Low–High: the word follows the scale — Low risk · Medium risk · High risk. */}
+          {t(tone === 'safe' ? (words ? 'nudge.levelLow' : 'nudge.levelSafe') : tone === 'caution' ? (words ? 'nudge.levelMedium' : 'nudge.levelMid') : 'nudge.highRisk')}
         </text>)}
+      </g>
     </svg>
+    {badge && <div className={styles.badge} data-badge style={{ top: `${((BADGE_Y - 6) / (CY - 6)) * 100}%` }}>{badge}</div>}
   </figure>
 }
 ```
