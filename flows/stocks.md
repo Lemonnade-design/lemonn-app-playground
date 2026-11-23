@@ -433,6 +433,8 @@ lower on the page is scrolled into view first). `components/MarketSwitchGuide.ts
   16 / 24 icon or an Avatar only — event rows are plain buttons laid out with Stack.
 
 ### Changelog
+- 23 Nov 2026: Bottom navbar V3 — glow hidden; the coloured icon marks the chosen tab (V2 keeps its glow).
+- 23 Nov 2026: Floating navbar (V2, V3) — inactive tab labels in L3 Description/10 (500) instead of Label/10 (650), so the text sits at the same visual weight as its content/secondary icon.
 - 23 Nov 2026: Bottom navbar V3 — tabs 74 wide (56 tall); pill 370 wide, centred (local token --app-fnav-tab-width, L3 gap).
 - 23 Nov 2026: Bottom navbar V3 — each tab a full-height 56 × 56 square; the pill hugs the tabs and sits centred instead of running end to end (labels shown whole; FLAG L3 gap: Bottom Navbar has no fixed-square option).
 - 23 Nov 2026 — App setting “Bottom navbar” V3 is now a copy of V2’s floating nav with L3’s coloured icon on the chosen tab and the green glow under the tab instead of above it (it was L3’s floating variant). V2 is unchanged. F&O and Mutual Fund sub-navs keep their coloured chosen icon in V3.
@@ -59478,6 +59480,10 @@ export const Flag = ({ code }: { code: FlagCode }) => (
   top: auto;
   bottom: var(--app-fnav-glow-top);
 }
+/* V3 (23 Nov, user: "hide the glow"): no glow at all — the coloured icon marks the chosen tab. */
+.frame[data-glow-at='bottom'] .glow {
+  display: none;
+}
 
 /* V3 (23 Nov, user): each tab full height, 74 × 56, the pill hugging them, centred — not end to end. */
 .frame[data-glow-at='bottom'] .pill {
@@ -59528,6 +59534,11 @@ export const Flag = ({ code }: { code: FlagCode }) => (
   padding: 0;
   color: var(--l3-content-secondary);
   background-image: none;
+}
+/* Inactive labels in L3 Description/10 (500), not Label/10 (650): at 650 the text read stronger than its thin icon in
+   the same content/secondary (23 Nov, user: "keep the visual of the text and the icon the same"). */
+.pill :is(button, a)[class]:not([data-selected]) > span:last-child {
+  font: var(--l3-text-description-10);
 }
 .pill :is(button, a)[data-selected] {
   color: var(--l3-content-primary);

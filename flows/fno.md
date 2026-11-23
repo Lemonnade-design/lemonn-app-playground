@@ -11621,6 +11621,10 @@ function Sparkler() {
   top: auto;
   bottom: var(--app-fnav-glow-top);
 }
+/* V3 (23 Nov, user: "hide the glow"): no glow at all — the coloured icon marks the chosen tab. */
+.frame[data-glow-at='bottom'] .glow {
+  display: none;
+}
 
 /* V3 (23 Nov, user): each tab full height, 74 × 56, the pill hugging them, centred — not end to end. */
 .frame[data-glow-at='bottom'] .pill {
@@ -11671,6 +11675,11 @@ function Sparkler() {
   padding: 0;
   color: var(--l3-content-secondary);
   background-image: none;
+}
+/* Inactive labels in L3 Description/10 (500), not Label/10 (650): at 650 the text read stronger than its thin icon in
+   the same content/secondary (23 Nov, user: "keep the visual of the text and the icon the same"). */
+.pill :is(button, a)[class]:not([data-selected]) > span:last-child {
+  font: var(--l3-text-description-10);
 }
 .pill :is(button, a)[data-selected] {
   color: var(--l3-content-primary);
