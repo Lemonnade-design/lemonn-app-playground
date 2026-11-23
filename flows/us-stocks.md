@@ -22852,6 +22852,7 @@ export const usStocks: Flow = {
         { value: 'v4', label: 'V4 · settings button in the top bar' },
         { value: 'v5', label: 'V5 · settings button, amount in a box' }, // V3's settings button, order types left, amount boxed (23 Nov, user)
         { value: 'v6', label: 'V6 · amount in a box, TP/SL pill below' }, // V5's box, V2's centred tabs + pill (23 Nov, user)
+        { value: 'v7', label: 'V7 · stop loss switch in the top bar' }, // V4 with a switch in place of its button; on → the card in the pad (23 Nov, user)
       ],
       default: 'v2', // V2 by default (23 Nov, the user's call)
       floatOn: ORDER_PAD_SCREEN_IDS, // every pad screen: Market, Limit and SL keep the same settings (23 Nov, user)
@@ -22864,6 +22865,7 @@ export const usStocks: Flow = {
           { value: 'v4', label: 'V4 · settings button in the top bar', short: 'V4' },
           { value: 'v5', label: 'V5 · settings button, amount in a box', short: 'V5' },
           { value: 'v6', label: 'V6 · amount in a box, TP/SL pill below', short: 'V6' },
+          { value: 'v7', label: 'V7 · stop loss switch in the top bar', short: 'V7' },
         ],
       },
     },
@@ -39608,6 +39610,9 @@ function OrderPadV1({ config, backdrop, sheet }: OrderPadProps) {
 
 /* V4's top-bar settings button with its label (23 Nov, user): round like the Actionbar's icon actions. L3 gap: ActionbarAction has no label. */
 .tpslAction.tpslAction { --btn-radius: var(--l3-radius-full); }
+
+/* V7's top-bar switch (23 Nov, user): the label then an L3 Switch, one tap target, in the Actionbar actions slot. */
+.slToggle { display: inline-flex; align-items: center; gap: var(--l3-spacing-08); font: var(--l3-text-label-14); color: var(--l3-content-primary); cursor: pointer; }
 ```
 
 ### `src/flows/us-stocks/screens/trade/OrderPadV2.tsx`
@@ -39638,6 +39643,7 @@ import { PriceChange } from '@l3/components/PriceChange'
 import { Select } from '@l3/components/Select'
 import { Stack } from '@l3/components/Stack'
 import { Icon } from '@l3/components/Icon'
+import { Switch } from '@l3/components/Switch'
 import { Tab, Tabs } from '@l3/components/Tabs'
 import { Tooltip } from '@l3/components/Tooltip'
 import { lmAutoTpSl, lmSwitchArrowVertical } from '@l3/icons/lemonnade' // lmAutoTpSl: the V3 / V4 TP/SL button, not a gear (23 Nov, user)
@@ -39763,6 +39769,8 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
   const [tpslHint, setTpslHint] = useState(!tpslHintSeen)
   const hideTpslHint = () => { tpslHintSeen = true; setTpslHint(false) }
   const tpslOpen = useRef<(() => void) | null>(null)
+  // V7 (23 Nov, user): the top bar's Stop loss switch; on → the stop loss card in the pad (TpslControl `on`).
+  const [slOn, setSlOn] = useState(false)
   // The unit the field is showing; `value` is always kept in the config's own unit (config.mode).
   const [mode, setMode] = useState<PadMode>(config.mode)
   const [value, setValue] = useState(config.value)
@@ -39913,7 +39921,7 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
         // L3 gap: Actionbar has no centred "logo + symbol over price" title.
         // TP/SL card V4 (23 Nov, user): L3's own left-aligned title, right after the back button, with the logo big (32)
         // in front of both the name and the price.
-        tpslCard === 'v4' ? (
+        tpslCard === 'v4' || tpslCard === 'v7' ? (
           <span className={styles.contractRow}>
             <Avatar src={logo} initials={config.stock.symbol.slice(0, 1)} size={32} />
             <span className={styles.contract} data-align="start">
@@ -39943,7 +39951,16 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
       // Indian pad: the exchange switch (NSE ⇄ BSE), as the production pad's top right.
       // TP/SL card V4: the settings button (opens the TP/SL sheet) at the right, on both pads; the Indian pad's NSE ⇄ BSE left of it.
       actions={
-        tpslCard === 'v4' ? (
+        tpslCard === 'v7' ? (
+          // V7 (23 Nov, user): V4's top bar with a labelled L3 Switch in place of the settings button.
+          <>
+            {exchangeSwitch}
+            <label className={styles.slToggle}>
+              <span>{(padVersion === 'india' ? TPSL_INDIA : TPSL_US).title}</span>
+              <Switch size="sm" checked={slOn} onChange={(e) => setSlOn(e.target.checked)} />
+            </label>
+          </>
+        ) : tpslCard === 'v4' ? (
           // First-time hint (23 Nov, user): a blue L3 Tooltip with ✕ under the settings button, until it's closed or the
           // button is tapped (once per session in the prototype).
           // Indian pad: NSE ⇄ BSE is a second button, left of settings (23 Nov, user).
@@ -40301,6 +40318,8 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
             features={padVersion === 'india' ? TPSL_INDIA : TPSL_US}
             fractional={tpslOrder.qty > 0 && !Number.isInteger(Number(tpslOrder.qty.toFixed(4)))}
             openRef={tpslOpen}
+            on={tpslCard === 'v7' ? slOn : undefined}
+            onOnChange={setSlOn}
           />
         </Stack>
           </Stack>
@@ -41188,6 +41207,9 @@ export function PriceField({ label, unit, price, stepper, fixed }: PriceFieldPro
 
 /* TP/SL card V3, fractional shares: the card can't be used — dimmed, no taps (inert). L3 gap: no disabled price card. */
 .legs[data-disabled] { opacity: var(--l3-opacity-40); }
+
+/* V7's "Set SL" text action: discover text, no button box, in the edit button's place (L3 Button USAGE: inline text action). */
+.setLink.setLink { --btn-content: var(--l3-content-accent-discover-default); --btn-padding-inline: var(--l3-spacing-00); }
 ```
 
 ### `src/flows/us-stocks/screens/trade/Tpsl.tsx`
@@ -41229,7 +41251,7 @@ import { Select } from '@l3/components/Select'
 import { Stack } from '@l3/components/Stack'
 import { Switch } from '@l3/components/Switch'
 import { Tag } from '@l3/components/Tag'
-import { msAddCircleFill, msCheckCircleFill, msEdit } from '@l3/icons/material'
+import { msAddCircleFill, msCheckCircleFill, msChevronRight, msEdit } from '@l3/icons/material'
 import { lmAutoTpSl } from '@l3/icons/lemonnade'
 import { useSheetLayer } from '../../components/Phone'
 import { PadAmount, usePadMoney } from './padMoney'
@@ -41262,6 +41284,8 @@ export const TPSL_START: Tpsl = {
 export type TpslFeatures = {
   /** The pad card's name. */
   title: string
+  /** V7's link in the card once switched on ("Set SL"). */
+  setLabel: string
   /** The sheet's heading. */
   sheetTitle: string
   /** The legs offered, in order. */
@@ -41272,9 +41296,9 @@ export type TpslFeatures = {
   wholeShares: boolean
 }
 /** The Indian pad: take profit, stop loss and trailing SL. */
-export const TPSL_INDIA: TpslFeatures = { title: 'TP/SL', sheetTitle: 'TP SL & More', legs: ['tp', 'sl'], trailing: true, wholeShares: false }
+export const TPSL_INDIA: TpslFeatures = { title: 'TP/SL', setLabel: 'Set TP/SL', sheetTitle: 'TP SL & More', legs: ['tp', 'sl'], trailing: true, wholeShares: false }
 /** The US pad: a stop loss only — no take profit, no trailing, not on fractional shares (19 Nov, the user's call). */
-export const TPSL_US: TpslFeatures = { title: 'Stop loss', sheetTitle: 'Stop loss', legs: ['sl'], trailing: false, wholeShares: true }
+export const TPSL_US: TpslFeatures = { title: 'Stop loss', setLabel: 'Set SL', sheetTitle: 'Stop loss', legs: ['sl'], trailing: false, wholeShares: true }
 
 /** TP/SL as a market allows it: legs it doesn't offer are off, no trail without trailing. */
 export const fitTo = (tpsl: Tpsl, features: TpslFeatures): Tpsl => {
@@ -41375,12 +41399,15 @@ const convertTrail = (v: number, to: Unit, ltp: number) =>
 
 /** The off card (name + Switch) until TP/SL is set, then the summary card; both open the sheet. `features`: what this
  *  market offers (TPSL_INDIA / TPSL_US); `fractional`: the order's quantity isn't whole. */
-export function TpslControl({ order, features = TPSL_INDIA, fractional = false, openRef }: {
+export function TpslControl({ order, features = TPSL_INDIA, fractional = false, openRef, on, onOnChange }: {
   order: TpslOrder
   features?: TpslFeatures
   fractional?: boolean
   /** V3: the pad's settings button (by Market / Limit / SL) opens the sheet through this. */
   openRef?: MutableRefObject<(() => void) | null>
+  /** V7: the top bar's switch. On → a card with a "Set SL" link (nothing applied until the sheet is saved); off → cleared. */
+  on?: boolean
+  onOnChange?: (on: boolean) => void
 }) {
   const ltp = order.ltp
   const [tpsl, setTpsl] = useState<Tpsl | null>(null)
@@ -41390,7 +41417,7 @@ export function TpslControl({ order, features = TPSL_INDIA, fractional = false, 
   const Sheet = sheetVersion === 'b' ? TpslSheetB : TpslSheet
   const cardVersion = useTpslCard() // flow option "TP/SL card": v1 · card with a Switch, v2 · a small + button
   // V3 / V4: no card on the pad; a settings button elsewhere (by the order types / in the top bar) opens the sheet.
-  const viaSettings = cardVersion === 'v3' || cardVersion === 'v4'
+  const viaSettings = cardVersion === 'v3' || cardVersion === 'v4' || cardVersion === 'v7'
   const set = tpsl && ((tpsl.tp.on && tpsl.tp.trigger !== null) || (tpsl.sl.on && tpsl.sl.trigger !== null)) ? tpsl : null
   // Whole shares only (US): "Not on fractional shares" in red under the card (no toast, 19 Nov, the user's call) in
   // place of the sheet, until the quantity is whole again.
@@ -41411,6 +41438,19 @@ export function TpslControl({ order, features = TPSL_INDIA, fractional = false, 
     setSheetOpen(true)
   }
   if (openRef) openRef.current = open
+  // V7: the switch shows or clears the card. On fractional shares it can't turn on: the switch goes back off and the
+  // red line says why (V1's line, under where the card would be).
+  const v7 = cardVersion === 'v7' && on !== undefined
+  useEffect(() => {
+    if (!v7) return
+    if (!on) return setTpsl(null)
+    if (noFractions) {
+      onOnChange?.(false)
+      setShake((s) => ({ count: s.count + 1, afterOpen: true }))
+      return setBlocked(true)
+    }
+    // Nothing is applied yet (23 Nov, the user's call): the card only offers "Set SL"; the user sets it in the sheet.
+  }, [v7, on]) // eslint-disable-line react-hooks/exhaustive-deps
   // The red line closes on its own 3 s after it opens; each tap starts the 3 s again (23 Nov, the user's call).
   const showing = blocked && noFractions
   useEffect(() => {
@@ -41422,16 +41462,29 @@ export function TpslControl({ order, features = TPSL_INDIA, fractional = false, 
   const hasSet = set !== null
   useEffect(() => {
     if (!noFractions) return setBlocked(false)
-    if (!hasSet) return
+    if (!hasSet && !(v7 && on)) return
     setTpsl(null)
     setSheetOpen(false)
-    if (!viaSettings) setBlocked(true) // V3 / V4 show no red line
-  }, [noFractions, hasSet, viaSettings])
+    if (v7) onOnChange?.(false)
+    if (!viaSettings || v7) setBlocked(true) // V3 / V4 show no red line; V7 does (its switch turned off)
+  }, [noFractions, hasSet, viaSettings, v7 && on]) // eslint-disable-line react-hooks/exhaustive-deps
   return (
     // gap 00: the 8 above the red line rides inside its collapse, so none shows while it's closed.
     <Stack gap="00" className={styles.control}>
       {set ? (
         <TpslCard tpsl={set} ltp={ltp} title={features.title} onEdit={open} />
+      ) : v7 && on ? (
+        // V7, switched on but not set yet: the set card's head (tile, name) with a "Set SL ›" text action in the edit
+        // button's place, and no targets yet (23 Nov, the user's call). It opens the sheet; the whole row is the tap target.
+        <PadCard aria-label={features.title}>
+          <div className={padCard.head} onClick={open}>
+            <PadCardTile icon={lmAutoTpSl} tone="discover" />
+            <span className={padCard.title}>{features.title}</span>
+            <Button variant="ghost" size="sm" className={styles.setLink} iconRight={<Icon icon={msChevronRight} size={16} />} onClick={(e) => { e.stopPropagation(); open() }}>
+              {features.setLabel}
+            </Button>
+          </div>
+        </PadCard>
       ) : viaSettings ? null /* V3 / V4: nothing here until set; the settings button opens the sheet */ : cardVersion === 'v2' ? (
         // V2 (flow option "TP/SL card", 23 Nov, the user's call): an L3 action pill (md, 32 tall, the chips' size) with the
         // Add Circle (filled) icon, centred, no border and no fill: transparent, grey only on hover / press (L3's state
@@ -42586,8 +42639,6 @@ const brkB: PadStock = { symbol: 'BRK.B', price: 498.3, change: 0.42, exchange: 
 export const CHARGE_FACTOR = 1.003
 /** Shares held in the Sell screens. */
 const HELD_SHARES = 2.5307
-/** Shares that $100 buys in the Shares screen. */
-const SHARES_FOR_100 = 0.5307
 const AVAILABLE_USD = 520.4
 const LIVE_NOTE = 'US market is live till 2:30 AM IST'
 export const SELL_NOTE = '👉 Note : Sale money can be withdrawn after 1 working day'
@@ -42635,30 +42686,36 @@ const sell = (config: Partial<OrderPadConfig> & Pick<OrderPadConfig, 'label' | '
   ...config,
 })
 
+/** The buy pads start at 2 shares (23 Nov, the user's call): Shares shows 2, the $ pads 2 × the live price (read live, so
+ *  it follows the stock and its price). */
+const START_SHARES = 2
+const startAtTwoShares = (pad: OrderPadConfig): OrderPadConfig =>
+  Object.defineProperty(pad, 'value', { get: () => Math.round(START_SHARES * liveStock.price * 100) / 100, enumerable: true })
+
 const fullBuyChips = [addChip(10), addChip(50), addChip(100), setChip('Max', AVAILABLE_USD / CHARGE_FACTOR)]
 const heldChips = [heldChip('25%', 0.25), heldChip('50%', 0.5), heldChip('Max', 1)]
 
 export const orderPads: Record<string, OrderPadConfig> = {
-  [ids.T01]: buy({
+  [ids.T01]: startAtTwoShares(buy({
     label: 'Buy NVDA · Amount',
     type: 'market',
     mode: 'amount',
     toggle: true,
-    value: 100,
+    value: 0, // 2 shares' worth: startAtTwoShares
     chips: fullBuyChips,
     derive: withNote(marketBuy(), LIVE_NOTE),
     to: { toggle: ids.T02, limit: ids.T07, sl: ids.T08, cta: ids.T12 },
-  }),
+  })),
   [ids.T02]: buy({
     label: 'Buy NVDA · Shares',
     type: 'market',
     mode: 'shares',
     toggle: true,
-    value: SHARES_FOR_100,
+    value: START_SHARES,
     derive: (value, _prices, mode, { usd, inr }) => ({
-      left: mode === 'amount' ? `≈ ${il(value)} shares` : `≈ ${usd((value / SHARES_FOR_100) * 100)}`,
+      left: mode === 'amount' ? `≈ ${il(value)} shares` : `≈ ${usd(value * liveStock.price)}`,
       right: inr(value * liveStock.price),
-      req: usd((value / SHARES_FOR_100) * 100 * CHARGE_FACTOR),
+      req: usd(value * liveStock.price * CHARGE_FACTOR),
       note: LIVE_NOTE,
     }),
     to: { limit: ids.T07, sl: ids.T08, cta: ids.T12 },
@@ -42693,28 +42750,28 @@ export const orderPads: Record<string, OrderPadConfig> = {
         : { ...marketBuy()(value, prices, mode, money), note: LIVE_NOTE }
     },
   }),
-  [ids.T09]: buy({
+  [ids.T09]: startAtTwoShares(buy({
     label: 'Buy NVDA · US market closed',
     type: 'market',
     mode: 'amount',
     toggle: true,
-    value: 100,
+    value: 0, // 2 shares' worth: startAtTwoShares
     chips: fullBuyChips,
     derive: withNote(marketBuy(), 'Order will be placed once the US market opens at 8:00 PM IST on Thursday, Nov 5. Shares are worked out at the opening price.'),
     to: { cta: ids.T12 },
-  }),
-  [ids.T10]: buy({
+  })),
+  [ids.T10]: startAtTwoShares(buy({
     label: 'Buy NVDA · US market holiday',
     type: 'market',
     mode: 'amount',
     toggle: true,
-    value: 100,
+    value: 0, // 2 shares' worth: startAtTwoShares
     chips: fullBuyChips,
     derive: withNote(
       marketBuy(),
       'US markets are closed on Thursday, Nov 26 for Thanksgiving. Order will be placed once the market opens at 8:00 PM IST on Friday, Nov 27. Shares are worked out at the opening price.',
     ),
-  }),
+  })),
   [ids.T06]: buy({
     label: 'Buy BRK.B · Whole shares only',
     stock: brkB,
@@ -42730,12 +42787,12 @@ export const orderPads: Record<string, OrderPadConfig> = {
     }),
     to: { limit: ids.T07, sl: ids.T08, cta: ids.T12 },
   }),
-  [ids.T07]: buy({
+  [ids.T07]: startAtTwoShares(buy({
     label: 'Buy NVDA · Limit',
     type: 'limit',
     mode: 'amount',
     toggle: true,
-    value: 100,
+    value: 0, // 2 shares' worth: startAtTwoShares
     prices: [{ label: 'Limit', pct: -1 }],
     derive: (value, [limit], mode, { usd, inr }) => ({
       left: mode === 'shares' ? `≈ ${usd(value)} at your limit price` : `≈ ${(value / limit).toFixed(4)} shares at your limit price`,
@@ -42744,14 +42801,14 @@ export const orderPads: Record<string, OrderPadConfig> = {
       note: `Buys only if NVDA trades at ${usd(limit)} or lower today`,
     }),
     to: { sl: ids.T08, market: ids.T01, cta: ids.T12 },
-  }),
-  [ids.T08]: buy({
+  })),
+  [ids.T08]: startAtTwoShares(buy({
     label: 'Buy NVDA · SL',
     type: 'sl',
     // In $ like Market and Limit (the $ / shares switch under it), so all three types start from the same amount.
     mode: 'amount',
     toggle: true,
-    value: 100,
+    value: 0, // 2 shares' worth: startAtTwoShares
     min: 1,
     prices: [{ label: 'Trigger Price', pct: 3.5 }, { label: 'Limit', pct: 4 }],
     derive: (value, [trigger, limit], mode, { usd, inr }) => ({
@@ -42761,7 +42818,7 @@ export const orderPads: Record<string, OrderPadConfig> = {
       note: `Buys at up to ${usd(limit)} once NVDA reaches ${usd(trigger)}`,
     }),
     to: { req: ids.T11, cta: ids.T12, market: ids.T01, limit: ids.T07 },
-  }),
+  })),
   [ids.H03]: sell({
     label: 'Sell NVDA · Holding',
     value: HELD_SHARES,
@@ -43062,11 +43119,11 @@ export const usePadVersion = (): PadVersion =>
 export type TpslSheetVersion = 'a' | 'b'
 // The TP/SL card while nothing is set (flow option "TP/SL card", group Trade, 23 Nov, the user's call): v1 · a pad card
 // with a Switch (the leverage card's look); v2 · a borderless pill (Add Circle icon, the name), centred.
-export type TpslCardVersion = 'v1' | 'v2' | 'v3' | 'v4'
+export type TpslCardVersion = 'v1' | 'v2' | 'v3' | 'v4' | 'v7'
 export const useTpslCard = (): TpslCardVersion => {
   const v = useFlowOption('us-stocks', 'tpslCard', 'v2')
   if (v === 'v5') return 'v3' // V5 (23 Nov, user): V3's TP/SL settings button at the order types' right
-  return v === 'v1' || v === 'v4' ? v : 'v2' // V3 is hidden from the picker (23 Nov): a saved V3 shows V2
+  return v === 'v1' || v === 'v4' || v === 'v7' ? v : 'v2' // V3 is hidden from the picker (23 Nov): a saved V3 shows V2
 }
 /** Orderpad version V5 (23 Nov, user): V3's pad (TP/SL settings button), Market / Limit / SL left-aligned, and the amount section — Amount / Shares, the amount and its chips — in
  * one bounding box. */
