@@ -1,6 +1,6 @@
 # Flow: Profile & settings (`profile`)
 
-> One self-contained file for converting this flow to another platform. Read https://lemonnade-design.github.io/lemonn-app-prototype/CONVERT.md first. Design system: Lemonnade V3 @ `eca9d1e` (components, tokens and rules: https://lemonnade-design.github.io/lemonnade-v3-docs/llms.txt).
+> One self-contained file for converting this flow to another platform. Read https://lemonnade-design.github.io/lemonn-app-prototype/CONVERT.md first. Design system: Lemonnade V3 @ `ed10506` (components, tokens and rules: https://lemonnade-design.github.io/lemonnade-v3-docs/llms.txt).
 
 Your account, app settings (biometric, dark mode, accessibility), help, and logout.
 

@@ -1,6 +1,6 @@
 # Flow: US Stocks (`us-stocks`)
 
-> One self-contained file for converting this flow to another platform. Read https://lemonnade-design.github.io/lemonn-app-prototype/CONVERT.md first. Design system: Lemonnade V3 @ `eca9d1e` (components, tokens and rules: https://lemonnade-design.github.io/lemonnade-v3-docs/llms.txt).
+> One self-contained file for converting this flow to another platform. Read https://lemonnade-design.github.io/lemonn-app-prototype/CONVERT.md first. Design system: Lemonnade V3 @ `ed10506` (components, tokens and rules: https://lemonnade-design.github.io/lemonnade-v3-docs/llms.txt).
 
 Activate US Stocks, add money to the USD wallet, buy and sell, withdraw (teammate import, under review).
 
@@ -199,6 +199,9 @@ Every tap he wired is kept. The main path: FTUX sheet → Activate → Declarati
 → Pay on bank → Money ready → Stock → Buy → Executed → Wallet → Withdraw.
 
 ### Changelog
+- 23 Nov 2026 — **Order pad title: the stock's name, not its ticker** (every version). US: the short name (`usShortName`, e.g. NVIDIA); Indian: the short name (`src/shared/data/inShortNames.ts`, one per catalogue company, e.g. Reliance, SBI, L&T). A long name ends in … so the bar's buttons keep their place.
+- 23 Nov 2026 — **TP/SL card V4** (prototype option "TP/SL card"; V2 stays the default). As V3 (no card on the pad; on fractional shares the sheet opens with its card disabled, the reason above it and OK), but the settings button is an Actionbar action at the top bar's right (L3 `ActionbarAction`, tertiary small) on both pads, and Market / Limit / SL is back alone in its row. Indian pad: NSE ⇄ BSE moves from the top bar's right to just right of the stock name in the title.
+- 23 Nov 2026 — **TP/SL card V3** (prototype option "TP/SL card"; V2 stays the default). No card under the fields while nothing is set: Market / Limit / SL stays as small and centred as in V2, with a round settings icon button (border only, no fill) at the row's right edge (out of the flow) (L3 Button tertiary, md = the 40 tab track, icon only, labelled "TP/SL" / "Stop loss"). Tapping it opens the same TP/SL sheet. On fractional shares there's no red line: the button opens the same TP/SL sheet with every US control, its card dimmed and untouchable and "Stop loss isn’t available on fractional shares" in red just above it; the button reads OK and closes the sheet (a line far from a small icon button wouldn't explain itself). L3 gap: no disabled price card (`.legs[data-disabled]`, opacity 40). Once set, the saved card shows as in V1 / V2. L3 gap: the tertiary icon button has a white fill and its own radius, so `OrderPadV2.module.css` `.tpslSettings` clears the fill (border only) and makes it fully round like the track (23 Nov).
 - 23 Nov 2026 — **TP/SL card V2** (prototype option "TP/SL card", Trade; V2 is the default, V1 the card with a Switch). With nothing set, the pad shows a centred pill, "TP/SL" (Indian) / "Stop loss" (US) with the Add Circle (filled) icon, in place of the card with a Switch: an L3 action pill, md (32, the chips' size), with no border and a transparent fill, grey only on hover / press (L3's state layer). Same sheet; on the US pad the fractional-shares red line centres under it. In both versions that line now closes on its own after 3 s (each tap restarts the 3 s). Once set, both versions show the saved card. L3 gap: an action pill always has the pill border and fill, so `Tpsl.module.css` `.addPill` clears both.
 - 23 Nov 2026 — "Validity switch" option archived: V3 (validity above the amount, beside Amount / Shares) is the only layout; V1 (right edge) and V2 (in the order type track) code kept, unused. The V1 / V2 / V3 bubble on a phone's order pad is gone too.
 - 23 Nov 2026 — **The order pad opens in the market it was opened from.** A US page (stock page Buy / Sell, ETF page, Position details Buy more / Exit position, Order details Modify / Retry / Repeat) opens the US pad (NVDA, $); the Indian stock page (`stocks-32`…`37`) opens the Indian pad (RELIANCE, ₹). The entry point sets it just before opening (`shared/padMarket.ts` → `setPadMarket`); the Settings → Order pad switch (and the IN / US bubble on a phone) shows what was set and can still flip it. Opened straight from the screen list, the pad shows that setting (Indian by default). In the app there is no setting: the pad takes the market of the instrument it was opened for.
@@ -22705,7 +22708,9 @@ export const usStocks: Flow = {
     },
     // The TP/SL card while nothing is set (23 Nov, the user's call): V1 · the leverage card's look, a tile, the name and a
     // Switch; V2 · a borderless pill with the Add Circle
-    // icon, centred, 32 tall. Both open the same sheet; once set, both show the saved card.
+    // icon, centred, 32 tall; V3 · no card: Market / Limit / SL full width with a grey settings button on the right that
+    // opens the sheet (23 Nov); V4 · as V3, the settings button at the top bar's right (Indian pad: NSE / BSE moves next to
+    // the stock name). All open the same sheet; once set, all show the saved card.
     {
       id: 'tpslCard',
       group: 'Trade',
@@ -22714,6 +22719,8 @@ export const usStocks: Flow = {
       values: [
         { value: 'v1', label: 'V1 · card with a switch' },
         { value: 'v2', label: 'V2 · borderless pill' },
+        { value: 'v3', label: 'V3 · settings button by the order types' },
+        { value: 'v4', label: 'V4 · settings button in the top bar' },
       ],
       default: 'v2', // V2 by default (23 Nov, the user's call)
       floatOn: ['us-stocks-33'],
@@ -39333,6 +39340,9 @@ function OrderPadV1({ config, backdrop, sheet }: OrderPadProps) {
 /* US Stocks order pad V2, laid out like Minted's order pad (s05 / s13 / s14). */
 .contract { display: flex; flex-direction: column; align-items: center; gap: var(--l3-spacing-02); text-align: center; }
 .contractName { display: inline-flex; align-items: center; gap: var(--l3-spacing-08); font: var(--l3-text-heading-14); color: var(--l3-content-primary); }
+/* A long name (Life Insurance Corporation of India) ends in … rather than pushing the bar's buttons. */
+.contractName { max-width: 100%; }
+.contractTitle { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .contractPrice { display: inline-flex; align-items: center; gap: var(--l3-spacing-08); font: var(--l3-text-label-12); color: var(--l3-content-primary); }
 
 .body { padding: var(--l3-spacing-32) var(--l3-spacing-16) var(--l3-spacing-16); overflow-x: clip; }
@@ -39381,6 +39391,10 @@ function OrderPadV1({ config, backdrop, sheet }: OrderPadProps) {
 .orderTypes.orderTypes { display: inline-grid; grid-auto-flow: column; grid-auto-columns: 1fr; width: fit-content; }
 /* V3: each pill as wide as its label. */
 .orderTypes.orderTypes[data-width='hug'] { grid-auto-columns: auto; }
+.tpslSettings.tpslSettings { position: absolute; inset-inline-end: 0; inset-block: 0; margin-block: auto; } /* no transform: the press scale uses it */
+/* TP/SL card V3's settings button: at the row's right edge, out of the flow (Market / Limit / SL stays centred);
+   round like the tab track, border only, no fill (23 Nov, the user's call; L3 gap: no outline-only icon button). */
+.tpslSettings.tpslSettings { --btn-surface: transparent; --btn-radius: var(--l3-radius-full); }
 .ctaInr { font: var(--l3-text-heading-14); white-space: pre; } /* 2 smaller than the label (Heading/16), same weight */
 
 /* "Req." opens the fee sheet: secondary text, underlined like a link (L3 gap: no link-style Button). */
@@ -39437,7 +39451,7 @@ function OrderPadV1({ config, backdrop, sheet }: OrderPadProps) {
 // / MTF tabs under it (no MTF on BSE), a validity at the right of Market / Limit / SL (Market: Day / Instant; Limit: Day → Instant → Year, cycled; SL: Day / Year; not on Intraday), SL's second
 // price Limit ⇄ Market ("At market"), Intraday's "Margin (5x)" in place of Req.
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode, type SyntheticEvent } from 'react'
-import { Actionbar } from '@l3/components/Actionbar'
+import { Actionbar, ActionbarAction } from '@l3/components/Actionbar'
 import { Avatar } from '@l3/components/Avatar'
 import { Button } from '@l3/components/Button'
 import { PriceChange } from '@l3/components/PriceChange'
@@ -39446,6 +39460,7 @@ import { Stack } from '@l3/components/Stack'
 import { Icon } from '@l3/components/Icon'
 import { Tab, Tabs } from '@l3/components/Tabs'
 import { lmSwitchArrowVertical } from '@l3/icons/lemonnade'
+import { msSettings } from '@l3/icons/material'
 import { Keyboard, KeypadSlide, keypadFieldProps, typeKey } from '../../../../shared/ui/Keyboard'
 import { Phone } from '../../components/Phone'
 import { currentStock, logoFor } from '../../data'
@@ -39453,9 +39468,11 @@ import { asset } from '../../asset'
 import { useUsNav } from '../../nav'
 import { formatInr, useUsdInrRate } from '../../../../shared/money'
 import { getCompany, useMarketSnapshot } from '../../../../shared/data/companies'
+import { usShortName } from '../../../../shared/data/usShortNames'
+import { inShortName } from '../../../../shared/data/inShortNames'
 import { al, forCurrentStock } from './format'
 import type { Derived, OrderPadConfig, OrderType, PadChip, PadMode } from './types'
-import { usePadVersion, usePriceCards, useValidityPlace } from './version'
+import { usePadVersion, usePriceCards, useTpslCard, useValidityPlace } from './version'
 import { LeverageCard } from './LeverageCard'
 import { TPSL_INDIA, TPSL_US, TpslControl } from './Tpsl'
 import { FeeBreakdownSheet } from './FeeBreakdown'
@@ -39528,6 +39545,12 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
   const inr = (n: number) => (!india && n > 0 ? `≈ ${formatInr(n * rate, { decimals: 0 })}` : undefined)
   const usLogo = useStockLogo(config.stock.symbol)
   const logo = (india && getCompany(config.stock.symbol)?.logoUrl) || usLogo
+  // The title names the stock the way people say it, not its ticker (23 Nov, the user's call): US — the short name
+  // (usShortNames: NVIDIA, Apple); Indian — the short name (inShortNames: Reliance, SBI).
+  const usStock = currentStock()
+  const stockName = india
+    ? inShortName(config.stock.symbol, getCompany(config.stock.symbol)?.name ?? config.stock.symbol)
+    : usShortName(config.stock.symbol, usStock.sym === config.stock.symbol ? usStock.name : config.stock.symbol)
   // Indian pad: SL's second price at market (no limit price).
   const slAtMarket = india && config.type === 'sl' && indian.slAtMarket
   // Indian pad: the validity (Delivery and MTF; Intraday orders end with the day). Market: Day ⇄ Instant (Day by
@@ -39547,6 +39570,10 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
       : config.type === 'limit' ? { limitValidity: NEXT_LIMIT_VALIDITY[indian.limitValidity] }
         : { validity: indian.validity === 'day' ? 'year' : 'day' })
   const priceCards = usePriceCards()
+  // TP/SL card V3 (flow option "TP/SL card", 23 Nov, the user's call): Market / Limit / SL centred, with a settings
+  // button at the row's right edge that opens the TP/SL sheet (TpslControl, through tpslOpen).
+  const tpslCard = useTpslCard()
+  const tpslOpen = useRef<(() => void) | null>(null)
   // The unit the field is showing; `value` is always kept in the config's own unit (config.mode).
   const [mode, setMode] = useState<PadMode>(config.mode)
   const [value, setValue] = useState(config.value)
@@ -39682,6 +39709,11 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
   }
 
   // Header: back arrow, then the logo + symbol over the price and signed change, centred.
+  const exchangeSwitch = india ? (
+    <Select size="sm" icon="swap" onClick={() => setIndianPad({ exchange: indian.exchange === 'NSE' ? 'BSE' : 'NSE' })} aria-label={`Exchange ${indian.exchange}. Switch to ${indian.exchange === 'NSE' ? 'BSE' : 'NSE'}`}>
+      {indian.exchange}
+    </Select>
+  ) : null
   const header = (
     <Actionbar
       headingLevel={1}
@@ -39693,7 +39725,9 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
         <span className={styles.contract}>
           <span className={styles.contractName}>
             <Avatar src={logo} initials={config.stock.symbol.slice(0, 1)} size={24} className={styles.logo16} />
-            {config.stock.symbol}
+            <span className={styles.contractTitle}>{stockName}</span>
+            {/* TP/SL card V4, Indian pad: the top bar's right holds the settings button, so NSE ⇄ BSE sits right of the name. */}
+            {india && tpslCard === 'v4' && exchangeSwitch}
           </span>
           <span className={styles.contractPrice}>
             <PadAmount value={config.stock.price} />
@@ -39703,11 +39737,12 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
       }
       // US: an empty slot as wide as the back button on the right, so the title sits at the screen's centre.
       // Indian pad: the exchange switch (NSE ⇄ BSE), as the production pad's top right.
+      // TP/SL card V4: the settings button (opens the TP/SL sheet) at the right, on both pads.
       actions={
-        india ? (
-          <Select size="sm" icon="swap" onClick={() => setIndianPad({ exchange: indian.exchange === 'NSE' ? 'BSE' : 'NSE' })} aria-label={`Exchange ${indian.exchange}. Switch to ${indian.exchange === 'NSE' ? 'BSE' : 'NSE'}`}>
-            {indian.exchange}
-          </Select>
+        tpslCard === 'v4' ? (
+          <ActionbarAction icon={msSettings} label={(padVersion === 'india' ? TPSL_INDIA : TPSL_US).title} onClick={() => tpslOpen.current?.()} />
+        ) : india ? (
+          exchangeSwitch
         ) : (
           <span className={styles.backBalance} aria-hidden="true" />
         )
@@ -39937,6 +39972,11 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
           ) : (
             <>
               {orderTypeTabs}
+              {/* TP/SL card V3: a round outline icon button (L3 tertiary, md = the tab track's 40) at the row's right edge, out of the
+                  flow, so Market / Limit / SL stays as small and centred as in V2 (23 Nov, the user's call). */}
+              {tpslCard === 'v3' && (
+                <Button size="md" variant="tertiary" raised="none" className={styles.tpslSettings} iconLeft={<Icon icon={msSettings} />} aria-label={(padVersion === 'india' ? TPSL_INDIA : TPSL_US).title} onClick={() => tpslOpen.current?.()} />
+              )}
               {validity && validityPlace === 'v1' && (
                 <Select size="sm" className={styles.validity} icon="swap" onClick={onValidity} aria-label={`Validity ${validityLabel}. Switch to ${validityNext}`}>
                   {validityLabel}
@@ -40025,6 +40065,7 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
             order={tpslOrder}
             features={padVersion === 'india' ? TPSL_INDIA : TPSL_US}
             fractional={tpslOrder.qty > 0 && !Number.isInteger(Number(tpslOrder.qty.toFixed(4)))}
+            openRef={tpslOpen}
           />
         </Stack>
           </Stack>
@@ -40909,6 +40950,9 @@ export function PriceField({ label, unit, price, stepper, fixed }: PriceFieldPro
 .blocked[data-align='center'] {
   text-align: center;
 }
+
+/* TP/SL card V3, fractional shares: the card can't be used — dimmed, no taps (inert). L3 gap: no disabled price card. */
+.legs[data-disabled] { opacity: var(--l3-opacity-40); }
 ```
 
 ### `src/flows/us-stocks/screens/trade/Tpsl.tsx`
@@ -40936,7 +40980,7 @@ export function PriceField({ label, unit, price, stepper, fixed }: PriceFieldPro
 // Prototype only: TP/SL doesn't change the dock or the order.
 // FLAG: copy hard-coded like the rest of the pad (no copy.ts in this flow yet). No ⓘ tooltips (Figma has them on
 // Limit and the trailing rows). The filled field box and hairlines are hand-laid (Tpsl.module.css).
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type MutableRefObject } from 'react'
 import { BottomSheet, BottomSheetHeader } from '@l3/components/BottomSheet'
 import { Button } from '@l3/components/Button'
 import { Tab } from '@l3/components/Tabs'
@@ -41096,7 +41140,13 @@ const convertTrail = (v: number, to: Unit, ltp: number) =>
 
 /** The off card (name + Switch) until TP/SL is set, then the summary card; both open the sheet. `features`: what this
  *  market offers (TPSL_INDIA / TPSL_US); `fractional`: the order's quantity isn't whole. */
-export function TpslControl({ order, features = TPSL_INDIA, fractional = false }: { order: TpslOrder; features?: TpslFeatures; fractional?: boolean }) {
+export function TpslControl({ order, features = TPSL_INDIA, fractional = false, openRef }: {
+  order: TpslOrder
+  features?: TpslFeatures
+  fractional?: boolean
+  /** V3: the pad's settings button (by Market / Limit / SL) opens the sheet through this. */
+  openRef?: MutableRefObject<(() => void) | null>
+}) {
   const ltp = order.ltp
   const [tpsl, setTpsl] = useState<Tpsl | null>(null)
   const [sheetOpen, setSheetOpen] = useState(false)
@@ -41104,6 +41154,8 @@ export function TpslControl({ order, features = TPSL_INDIA, fractional = false }
   const sheetVersion = useTpslSheet() // A / B test (flow option "TP/SL sheet"): B is TpslSheetB.tsx, A is TpslSheet below
   const Sheet = sheetVersion === 'b' ? TpslSheetB : TpslSheet
   const cardVersion = useTpslCard() // flow option "TP/SL card": v1 · card with a Switch, v2 · a small + button
+  // V3 / V4: no card on the pad; a settings button elsewhere (by the order types / in the top bar) opens the sheet.
+  const viaSettings = cardVersion === 'v3' || cardVersion === 'v4'
   const set = tpsl && ((tpsl.tp.on && tpsl.tp.trigger !== null) || (tpsl.sl.on && tpsl.sl.trigger !== null)) ? tpsl : null
   // Whole shares only (US): "Not on fractional shares" in red under the card (no toast, 19 Nov, the user's call) in
   // place of the sheet, until the quantity is whole again.
@@ -41112,14 +41164,18 @@ export function TpslControl({ order, features = TPSL_INDIA, fractional = false }
   // Every tap on the card while blocked shakes the red line, so a repeat tap isn't lost (20 Nov, the user's call). The
   // count is the line's key: a new key replays the shake. The first tap waits for the line to open, then shakes.
   const [shake, setShake] = useState({ count: 0, afterOpen: false })
+  // V3 / V4: no red line on fractional shares — the settings button opens the TP/SL sheet as usual, its card disabled and the
+  // reason just above it (23 Nov, the user's call: a line far from a small icon button wouldn't explain itself).
+  const sheetBlocked = noFractions && viaSettings ? `${features.title} isn’t available on fractional shares` : undefined
   const open = () => {
-    if (noFractions) {
+    if (noFractions && !viaSettings) {
       setShake((s) => ({ count: s.count + 1, afterOpen: !(blocked && noFractions) }))
       return setBlocked(true)
     }
     setRound((n) => n + 1)
     setSheetOpen(true)
   }
+  if (openRef) openRef.current = open
   // The red line closes on its own 3 s after it opens; each tap starts the 3 s again (23 Nov, the user's call).
   const showing = blocked && noFractions
   useEffect(() => {
@@ -41134,14 +41190,14 @@ export function TpslControl({ order, features = TPSL_INDIA, fractional = false }
     if (!hasSet) return
     setTpsl(null)
     setSheetOpen(false)
-    setBlocked(true)
-  }, [noFractions, hasSet])
+    if (!viaSettings) setBlocked(true) // V3 / V4 show no red line
+  }, [noFractions, hasSet, viaSettings])
   return (
     // gap 00: the 8 above the red line rides inside its collapse, so none shows while it's closed.
     <Stack gap="00" className={styles.control}>
       {set ? (
         <TpslCard tpsl={set} ltp={ltp} title={features.title} onEdit={open} />
-      ) : cardVersion === 'v2' ? (
+      ) : viaSettings ? null /* V3 / V4: nothing here until set; the settings button opens the sheet */ : cardVersion === 'v2' ? (
         // V2 (flow option "TP/SL card", 23 Nov, the user's call): an L3 action pill (md, 32 tall, the chips' size) with the
         // Add Circle (filled) icon, centred, no border and no fill: transparent, grey only on hover / press (L3's state
         // layer). An action pill has a border and fill of its own (L3 gap — cleared in Tpsl.module.css .addPill).
@@ -41167,7 +41223,7 @@ export function TpslControl({ order, features = TPSL_INDIA, fractional = false }
           <p
             key={shake.count}
             className={`${styles.error} ${styles.blocked}`}
-            data-align={cardVersion === 'v2' ? 'center' : undefined} // V2: centred under the centred button
+            data-align={cardVersion !== 'v1' ? 'center' : undefined} // V2: centred
             role="alert"
             data-shake={shake.count > 0 ? (shake.afterOpen ? 'after-open' : '') : undefined}
           >{blocked && noFractions ? `${features.title} isn’t available on fractional shares` : ''}</p>
@@ -41179,6 +41235,7 @@ export function TpslControl({ order, features = TPSL_INDIA, fractional = false }
         order={order}
         features={features}
         start={tpsl ?? TPSL_START}
+        blocked={sheetBlocked}
         onClose={() => setSheetOpen(false)}
         onSave={(next) => {
           setTpsl(next)
@@ -41238,7 +41295,12 @@ type Typing = { side: Side; field: Field; text: string | null; fresh: boolean }
 
 /** "Set TP/SL" (Figma 4292:34063, with the production app's content): the stock and its qty, a card per leg (prices
  *  typed from the keypad or stepped), est. profit / loss, Clear, errors; Save once every leg that's on is valid. */
-function TpslSheet({ open, order, features, start, onClose, onSave }: { open: boolean; order: TpslOrder; features: TpslFeatures; start: Tpsl; onClose: () => void; onSave: (tpsl: Tpsl) => void }) {
+function TpslSheet({ open, order, features, start, blocked, onClose, onSave }: {
+  open: boolean; order: TpslOrder; features: TpslFeatures; start: Tpsl
+  /** TP/SL card V3: why it can't be set (fractional shares) — shown above the card, which is disabled, and no Save. */
+  blocked?: string
+  onClose: () => void; onSave: (tpsl: Tpsl) => void
+}) {
   const layer = useSheetLayer()
   const usd = usePadMoney()
   const { ltp, entry } = order
@@ -41310,31 +41372,39 @@ function TpslSheet({ open, order, features, start, onClose, onSave }: { open: bo
         }
         footer={
           <ButtonGroup aria-label={`Set ${features.title}`}>
-            <Button size="lg" fullWidth disabled={!canSave} onClick={() => onSave(draft)}>Save</Button>
+            {/* Blocked (V3, fractional shares): nothing to save, so OK just closes the sheet (23 Nov, the user's call). */}
+            {blocked ? (
+              <Button size="lg" fullWidth onClick={onClose}>OK</Button>
+            ) : (
+              <Button size="lg" fullWidth disabled={!canSave} onClick={() => onSave(draft)}>Save</Button>
+            )}
           </ButtonGroup>
         }
         utility={<KeypadSlide open={typing !== null}><Keyboard decimal onKey={onKey} /></KeypadSlide>}
       >
-        <Stack gap="16">
-          {features.legs.map((side) => (
-            <LegCard
-              key={side}
-              side={side}
-              leg={draft[side]}
-              ltp={ltp}
-              entry={entry}
-              qty={order.qty}
-              error={errors[side]}
-              typing={typing?.side === side ? typing : null}
-              onPick={(field) => pick(side, field)}
-              onChange={(leg) => {
-                setLeg(side)(leg)
-                if (typing?.side === side) setTyping({ ...typing, text: null, fresh: true })
-              }}
-              trailing={features.trailing}
-              onTrail={() => setTrailing(side)}
-            />
-          ))}
+        <Stack gap="08">
+          {blocked && <p className={styles.error} role="alert">{blocked}</p>}
+          <Stack gap="16" className={styles.legs} inert={blocked ? true : undefined} data-disabled={blocked ? '' : undefined}>
+            {features.legs.map((side) => (
+              <LegCard
+                key={side}
+                side={side}
+                leg={draft[side]}
+                ltp={ltp}
+                entry={entry}
+                qty={order.qty}
+                error={errors[side]}
+                typing={typing?.side === side ? typing : null}
+                onPick={(field) => pick(side, field)}
+                onChange={(leg) => {
+                  setLeg(side)(leg)
+                  if (typing?.side === side) setTyping({ ...typing, text: null, fresh: true })
+                }}
+                trailing={features.trailing}
+                onTrail={() => setTrailing(side)}
+              />
+            ))}
+          </Stack>
         </Stack>
       </BottomSheet>
       {trailing && (
@@ -41589,6 +41659,9 @@ function TrailSheet({ side, ltp, startUnit, start, onClose, onDone }: { side: Si
 /* "Trailing SL": a dotted underline says the name explains itself — a tap opens the info sheet (the user's call). It
    reads as the row label (Label 14, primary). L3 gap: no inline info-link. */
 .infoLink { padding: 0; border: 0; background: none; font: inherit; color: inherit; cursor: pointer; text-decoration: underline dotted; text-decoration-color: var(--l3-content-secondary); text-underline-offset: var(--l3-spacing-04); }
+
+/* TP/SL card V3, fractional shares: the card can't be used — dimmed, no taps (inert). L3 gap: no disabled price card. */
+.legs[data-disabled] { opacity: var(--l3-opacity-40); }
 ```
 
 ### `src/flows/us-stocks/screens/trade/TpslSheetB.tsx`
@@ -41633,7 +41706,12 @@ import styles from './TpslSheetB.module.css'
 
 type Typing = { side: Side; field: Field; text: string | null; fresh: boolean }
 
-export function TpslSheetB({ open, order, features, start, onClose, onSave }: { open: boolean; order: TpslOrder; features: TpslFeatures; start: Tpsl; onClose: () => void; onSave: (tpsl: Tpsl) => void }) {
+export function TpslSheetB({ open, order, features, start, blocked, onClose, onSave }: {
+  open: boolean; order: TpslOrder; features: TpslFeatures; start: Tpsl
+  /** TP/SL card V3: why it can't be set (fractional shares) — shown above the card, which is disabled, and no Save. */
+  blocked?: string
+  onClose: () => void; onSave: (tpsl: Tpsl) => void
+}) {
   const layer = useSheetLayer()
   const usd = usePadMoney()
   const { ltp, entry } = order
@@ -41708,34 +41786,42 @@ export function TpslSheetB({ open, order, features, start, onClose, onSave }: { 
         }
         footer={
           <ButtonGroup aria-label={`Set ${features.title}`}>
-            <Button size="lg" fullWidth disabled={!canSave} onClick={() => onSave(draft)}>Save</Button>
+            {/* Blocked (V3, fractional shares): nothing to save, so OK just closes the sheet (23 Nov, the user's call). */}
+            {blocked ? (
+              <Button size="lg" fullWidth onClick={onClose}>OK</Button>
+            ) : (
+              <Button size="lg" fullWidth disabled={!canSave} onClick={() => onSave(draft)}>Save</Button>
+            )}
           </ButtonGroup>
         }
         utility={<KeypadSlide open={typing !== null}><Keyboard decimal onKey={onKey} /></KeypadSlide>}
       >
-        <Stack gap="16">
-          {features.legs.map((side) => (
-            <Leg
-              key={side}
-              side={side}
-              leg={draft[side]}
-              ltp={ltp}
-              entry={entry}
-              qty={order.qty}
-              error={errors[side]}
-              typing={typing?.side === side ? typing : null}
-              onPick={(field) => {
-                if (typing?.side === side && typing.field === field) return
-                setTyping({ side, field, text: null, fresh: true })
-              }}
-              onChange={(leg) => {
-                setLeg(side)(leg)
-                if (typing?.side === side) setTyping({ ...typing, text: null, fresh: true })
-              }}
-              trailing={features.trailing}
-              onTrailInfo={() => setTrailInfo(true)}
-            />
-          ))}
+        <Stack gap="08">
+          {blocked && <p className={styles.error} role="alert">{blocked}</p>}
+          <Stack gap="16" className={styles.legs} inert={blocked ? true : undefined} data-disabled={blocked ? '' : undefined}>
+            {features.legs.map((side) => (
+              <Leg
+                key={side}
+                side={side}
+                leg={draft[side]}
+                ltp={ltp}
+                entry={entry}
+                qty={order.qty}
+                error={errors[side]}
+                typing={typing?.side === side ? typing : null}
+                onPick={(field) => {
+                  if (typing?.side === side && typing.field === field) return
+                  setTyping({ side, field, text: null, fresh: true })
+                }}
+                onChange={(leg) => {
+                  setLeg(side)(leg)
+                  if (typing?.side === side) setTyping({ ...typing, text: null, fresh: true })
+                }}
+                trailing={features.trailing}
+                onTrailInfo={() => setTrailInfo(true)}
+              />
+            ))}
+          </Stack>
         </Stack>
       </BottomSheet>
       <TrailInfoSheet
@@ -42730,8 +42816,11 @@ export const usePadVersion = (): PadVersion =>
 export type TpslSheetVersion = 'a' | 'b'
 // The TP/SL card while nothing is set (flow option "TP/SL card", group Trade, 23 Nov, the user's call): v1 · a pad card
 // with a Switch (the leverage card's look); v2 · a borderless pill (Add Circle icon, the name), centred.
-export type TpslCardVersion = 'v1' | 'v2'
-export const useTpslCard = (): TpslCardVersion => (useFlowOption('us-stocks', 'tpslCard', 'v2') === 'v1' ? 'v1' : 'v2')
+export type TpslCardVersion = 'v1' | 'v2' | 'v3' | 'v4'
+export const useTpslCard = (): TpslCardVersion => {
+  const v = useFlowOption('us-stocks', 'tpslCard', 'v2')
+  return v === 'v1' || v === 'v3' || v === 'v4' ? v : 'v2'
+}
 
 export const useTpslSheet = (): TpslSheetVersion => (useFlowOption('us-stocks', 'tpslSheet', 'b') === 'a' ? 'a' : 'b')
 
@@ -46013,6 +46102,32 @@ export const etfIssuerLogo = (sym: string): { src: string; file: string; plate: 
 
 /** The issuer's name ("Vanguard"), for the ETF page. */
 export const etfIssuerName = (sym: string): string | undefined => ISSUERS[ISSUER_OF[sym]]?.name
+```
+
+### `src/shared/data/inShortNames.ts`
+
+```ts
+// The short name people know each Indian stock by ("Reliance", not "Reliance Industries"): for titles and tight spots
+// (the order pad's top bar). Same idea as usShortNames.ts. Keyed by NSE symbol, one per company in companies.ts.
+// A symbol not here falls back to its catalogue name (inShortName).
+export const IN_SHORT_NAMES: Record<string, string> = {
+  ADANIENT: 'Adani Ent.', ADANIGREEN: 'Adani Green', ADANIPORTS: 'Adani Ports', ADANIPOWER: 'Adani Power',
+  ASIANPAINT: 'Asian Paints', AXISBANK: 'Axis Bank', 'BAJAJ-AUTO': 'Bajaj Auto', BAJAJFINSV: 'Bajaj Finserv',
+  BAJFINANCE: 'Bajaj Finance', BEL: 'BEL', BHARTIARTL: 'Airtel', COALINDIA: 'Coal India', DIVISLAB: 'Divi’s Labs',
+  DMART: 'DMart', EICHERMOT: 'Eicher Motors', ETERNAL: 'Eternal', GRASIM: 'Grasim', HAL: 'HAL', HCLTECH: 'HCLTech',
+  HDFCBANK: 'HDFC Bank', HINDALCO: 'Hindalco', HINDUNILVR: 'HUL', HINDZINC: 'Hindustan Zinc', ICICIBANK: 'ICICI Bank',
+  IDEA: 'Vodafone Idea', INDIGO: 'IndiGo', INFY: 'Infosys', IOC: 'Indian Oil', IRFC: 'IRFC', ITC: 'ITC',
+  JSWSTEEL: 'JSW Steel', KOTAKBANK: 'Kotak Bank', LICI: 'LIC', LT: 'L&T', 'M&M': 'M&M', MARUTI: 'Maruti Suzuki',
+  NESTLEIND: 'Nestlé', NHPC: 'NHPC', NTPC: 'NTPC', ONGC: 'ONGC', POWERGRID: 'Power Grid', RELIANCE: 'Reliance',
+  SBIN: 'SBI', SHRIRAMFIN: 'Shriram Finance', SOLARINDS: 'Solar Industries', SOUTHBANK: 'South Indian Bank',
+  SUNPHARMA: 'Sun Pharma', SUZLON: 'Suzlon', TATASTEEL: 'Tata Steel', TCS: 'TCS', TITAN: 'Titan', TORNTPHARM: 'Torrent Pharma',
+  TVSMOTOR: 'TVS Motor', ULTRACEMCO: 'UltraTech', WIPRO: 'Wipro', YESBANK: 'Yes Bank',
+}
+
+/** An Indian stock's short name: the list above, else its catalogue name. */
+export function inShortName(symbol: string, fullName: string): string {
+  return IN_SHORT_NAMES[symbol] ?? fullName
+}
 ```
 
 ### `src/shared/data/live.ts`
