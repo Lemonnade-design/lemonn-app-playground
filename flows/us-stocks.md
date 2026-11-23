@@ -22848,7 +22848,7 @@ export const usStocks: Flow = {
       values: [
         { value: 'v1', label: 'V1 · card with a switch' },
         { value: 'v2', label: 'V2 · borderless pill' },
-        { value: 'v3', label: 'V3 · settings button by the order types' },
+        // V3 hidden (23 Nov, user): its settings button lives on in V5; a saved V3 falls back to V2.
         { value: 'v4', label: 'V4 · settings button in the top bar' },
         { value: 'v5', label: 'V5 · settings button, amount in a box' }, // V3's settings button, order types left, amount boxed (23 Nov, user)
         { value: 'v6', label: 'V6 · amount in a box, TP/SL pill below' }, // V5's box, V2's centred tabs + pill (23 Nov, user)
@@ -22861,7 +22861,6 @@ export const usStocks: Flow = {
         values: [
           { value: 'v1', label: 'V1 · card with a switch', short: 'V1' },
           { value: 'v2', label: 'V2 · borderless pill', short: 'V2' },
-          { value: 'v3', label: 'V3 · settings button by the order types', short: 'V3' },
           { value: 'v4', label: 'V4 · settings button in the top bar', short: 'V4' },
           { value: 'v5', label: 'V5 · settings button, amount in a box', short: 'V5' },
           { value: 'v6', label: 'V6 · amount in a box, TP/SL pill below', short: 'V6' },
@@ -43061,7 +43060,7 @@ export type TpslCardVersion = 'v1' | 'v2' | 'v3' | 'v4'
 export const useTpslCard = (): TpslCardVersion => {
   const v = useFlowOption('us-stocks', 'tpslCard', 'v2')
   if (v === 'v5') return 'v3' // V5 (23 Nov, user): V3's TP/SL settings button at the order types' right
-  return v === 'v1' || v === 'v3' || v === 'v4' ? v : 'v2'
+  return v === 'v1' || v === 'v4' ? v : 'v2' // V3 is hidden from the picker (23 Nov): a saved V3 shows V2
 }
 /** Orderpad version V5 (23 Nov, user): V3's pad (TP/SL settings button), Market / Limit / SL left-aligned, and the amount section — Amount / Shares, the amount and its chips — in
  * one bounding box. */
