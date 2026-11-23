@@ -199,6 +199,7 @@ Every tap he wired is kept. The main path: FTUX sheet → Activate → Declarati
 → Pay on bank → Money ready → Stock → Buy → Executed → Wallet → Withdraw.
 
 ### Changelog
+- 23 Nov 2026 — Phone (app mode): a floating V1–V4 quick switch for the TP/SL card on every order pad screen (Market, Limit, SL), under the IN / US one. The Prototype settings sheet now opens scrolled to the current flow's section (its settings and screens), not the top.
 - 23 Nov 2026 — Prototype: the order pad's quick settings (Price cards, Order pad, TP/SL sheet, TP/SL card) float on every pad screen, so switching Market / Limit / SL keeps the same settings in view.
 - 23 Nov 2026 — Order pad, TP/SL card V4: a first-time hint under the settings button (L3 Tooltip in discover blue, ✕ to close, arrow centred on the button; gone once closed or the button is tapped, per session). The top bar uses L3's left-aligned title: a 32 logo in front of the name over the price. On the Indian pad NSE ⇄ BSE moves to the right, as a second button left of settings. L3 gaps: Tooltip has no colour option, and its arrow can't reach a target 16 from the screen edge (both set locally).
 - 23 Nov 2026 — Mutual Fund sub-nav (floating V2): the chosen Mutual Fund icon is black and white, like the main nav's.
@@ -22808,6 +22809,16 @@ export const usStocks: Flow = {
       ],
       default: 'v2', // V2 by default (23 Nov, the user's call)
       floatOn: ORDER_PAD_SCREEN_IDS, // every pad screen: Market, Limit and SL keep the same settings (23 Nov, user)
+      // Phone (app mode): a floating V1–V4 button on every order pad screen steps through the versions (23 Nov, user).
+      quickSwitch: {
+        on: ORDER_PAD_SCREEN_IDS,
+        values: [
+          { value: 'v1', label: 'V1 · card with a switch', short: 'V1' },
+          { value: 'v2', label: 'V2 · borderless pill', short: 'V2' },
+          { value: 'v3', label: 'V3 · settings button by the order types', short: 'V3' },
+          { value: 'v4', label: 'V4 · settings button in the top bar', short: 'V4' },
+        ],
+      },
     },
     // The processing screen's loader (19 Nov, from Minted): glass ring (default) or Minted's other processing animations.
     {
