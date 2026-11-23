@@ -39605,6 +39605,9 @@ function OrderPadV1({ config, backdrop, sheet }: OrderPadProps) {
 .amountRow[data-size] .amount { font-size: var(--pad-amount); line-height: 1.2; height: calc(var(--pad-amount) * 1.2); }
 .amountRow[data-size] .prefix { font-size: calc(var(--pad-amount) - 2px); }
 .amountRow[data-size] .caret { height: calc(var(--pad-amount) * 1.1); }
+
+/* V4's top-bar settings button with its label (23 Nov, user): round like the Actionbar's icon actions. L3 gap: ActionbarAction has no label. */
+.tpslAction.tpslAction { --btn-radius: var(--l3-radius-full); }
 ```
 
 ### `src/flows/us-stocks/screens/trade/OrderPadV2.tsx`
@@ -39947,7 +39950,10 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
           <>
             {exchangeSwitch}
             <Tooltip content={padVersion === 'india' ? 'You can set TP/SL from here' : 'You can set SL from here' /* the US pad has SL only (23 Nov, user) */} placement="bottom" open={tpslHint} onClose={hideTpslHint} className={styles.tpslHint}>
-              <ActionbarAction icon={lmAutoTpSl} label={(padVersion === 'india' ? TPSL_INDIA : TPSL_US).title} onClick={() => { hideTpslHint(); tpslOpen.current?.() }} />
+              {/* With its label (23 Nov, user): L3 ActionbarAction is icon-only (L3 gap), so an L3 tertiary small pill button. */}
+              <Button size="sm" variant="tertiary" className={styles.tpslAction} iconLeft={<Icon icon={lmAutoTpSl} size={16} />} onClick={() => { hideTpslHint(); tpslOpen.current?.() }}>
+                {(padVersion === 'india' ? TPSL_INDIA : TPSL_US).title}
+              </Button>
             </Tooltip>
           </>
         ) : india ? (
