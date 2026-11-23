@@ -22785,6 +22785,18 @@ export const usStocks: Flow = {
       floatOn: ORDER_PAD_SCREEN_IDS,
       floatPicker: 'dropdown', // beside the phone as a dropdown, not pills (23 Nov, user)
     },
+    // A soft grey wash in the amount box (V5 / V6), the Boosted ETF strip's grey fading out (23 Nov, the user's call).
+    {
+      id: 'amountGlow',
+      group: 'Trade',
+      label: 'Amount box gradient',
+      values: [
+        { value: 'off', label: 'Off' },
+        { value: 'on', label: 'On' },
+      ],
+      default: 'off',
+      floatOn: ORDER_PAD_SCREEN_IDS,
+    },
     // Order pad version (19 Nov, the user's call): US · stop loss only (no take profit, no trailing, no SL on fractional
     // shares) and no leverage card; Indian (the default) · the pad as Indian stocks will have it: the leverage card on
     // Market and TP + SL + trailing (Tpsl.tsx, kept as it was).
@@ -39530,6 +39542,8 @@ function OrderPadV1({ config, backdrop, sheet }: OrderPadProps) {
 .orderTypes.orderTypes { display: inline-grid; grid-auto-flow: column; grid-auto-columns: 1fr; width: fit-content; }
 /* V3: each pill as wide as its label. */
 .orderTypes.orderTypes[data-width='hug'] { grid-auto-columns: auto; }
+/* 32 wider than the labels need (23 Nov, the user's call): the 32 is shared by the three pills' six sides. */
+.orderTypes.orderTypes[data-width='hug'] [role='tab'] { --tab-padding-inline: calc(var(--l3-spacing-08) + var(--l3-spacing-32) / 6); }
 .tpslSettings.tpslSettings { position: absolute; inset-inline-end: 0; inset-block: 0; margin-block: auto; } /* no transform: the press scale uses it */
 /* TP/SL card V3's settings button: at the row's right edge, out of the flow (Market / Limit / SL stays centred);
    round like the tab track, border only, no fill (23 Nov, the user's call; L3 gap: no outline-only icon button). */
@@ -39584,6 +39598,8 @@ function OrderPadV1({ config, backdrop, sheet }: OrderPadProps) {
 /* Orderpad version V5 (23 Nov, user): the amount section (Amount / Shares, the amount, the chips) in one bounding box —
    the pad's price-card box, full width, 16 inside. */
 .amountBox.amountBox { align-self: stretch; padding: var(--l3-spacing-16); } /* doubled: beats Card padding="none" */
+/* Gradient on (flow option): the Boosted strip's grey (surface-secondary) at the top fading to the card's white by the chips. */
+.amountBox.amountGlow { background: linear-gradient(to bottom, var(--l3-surface-secondary), var(--l3-surface-primary) 85%); }
 /* Orderpad V5 (23 Nov, user): 16 above the order types, not 32. */
 .body.bodyTight { padding-top: var(--l3-spacing-16); }
 /* "Amount size" option (23 Nov, user): the amount at a local size above L3's 36; "$" stays 2 under it, the caret scales. */
@@ -39634,7 +39650,7 @@ import { usShortName } from '../../../../shared/data/usShortNames'
 import { inShortName } from '../../../../shared/data/inShortNames'
 import { al, forCurrentStock } from './format'
 import type { Derived, OrderPadConfig, OrderType, PadChip, PadMode } from './types'
-import { usePadVersion, usePriceCards, useTpslCard, useAmountBox, useAmountSize, useOrderTypesLeft, useValidityPlace } from './version'
+import { usePadVersion, usePriceCards, useTpslCard, useAmountBox, useAmountGlow, useAmountSize, useOrderTypesLeft, useValidityPlace } from './version'
 import { LeverageCard } from './LeverageCard'
 import { TPSL_INDIA, TPSL_US, TpslControl } from './Tpsl'
 import { FeeBreakdownSheet } from './FeeBreakdown'
@@ -39740,6 +39756,7 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
   const tpslCard = useTpslCard()
   const amountBox = useAmountBox() // V5 / V6: the amount section in a bounding box
   const orderTypesLeft = useOrderTypesLeft() // V5: order types on the left, the TP/SL button on the right
+  const amountGlow = useAmountGlow() // flow option "Amount box gradient"
   const amountSize = useAmountSize() // flow option "Amount size" (36 = L3 Heading/36)
   const [tpslHint, setTpslHint] = useState(!tpslHintSeen)
   const hideTpslHint = () => { tpslHintSeen = true; setTpslHint(false) }
@@ -40248,7 +40265,7 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
           {/* The amount is the same on every order type: it stays put while the part under it dissolves. V5 (23 Nov,
               user): the amount and its chips sit in one bounding box (the pad's price-card box). */}
           {amountBox ? (
-            <PriceFieldBox className={styles.amountBox}>
+            <PriceFieldBox className={[styles.amountBox, amountGlow && styles.amountGlow].filter(Boolean).join(' ')}>
               <Stack gap="16" align="center">
                 {amountSection}
                 {chipTabs}
@@ -43013,6 +43030,9 @@ export const useAmountSize = (): AmountSize => {
   const v = useFlowOption('us-stocks', 'amountSize', '36')
   return v === '40' || v === '44' || v === '48' || v === '56' ? v : '36'
 }
+
+// A soft grey wash in the amount box (flow option "Amount box gradient", group Trade, 23 Nov): off by default.
+export const useAmountGlow = (): boolean => useFlowOption('us-stocks', 'amountGlow', 'off') === 'on'
 
 // The V2 processing screen's loader (flow option "Processing animation", group Trade), imported from Minted 19 Nov
 // (OrderLoader.tsx): glass · the glass ring that turns into the tick (the default); radar · pulses round the logo that
