@@ -199,6 +199,8 @@ Every tap he wired is kept. The main path: FTUX sheet → Activate → Declarati
 → Pay on bank → Money ready → Stock → Buy → Executed → Wallet → Withdraw.
 
 ### Changelog
+- 23 Nov 2026 — **TP/SL card V2** (prototype option "TP/SL card", Trade; V2 is the default, V1 the card with a Switch). With nothing set, the pad shows a centred pill, "TP/SL" (Indian) / "Stop loss" (US) with the Add Circle (filled) icon, in place of the card with a Switch: an L3 action pill, md (32, the chips' size), with no border and a transparent fill, grey only on hover / press (L3's state layer). Same sheet; on the US pad the fractional-shares red line centres under it. In both versions that line now closes on its own after 3 s (each tap restarts the 3 s). Once set, both versions show the saved card. L3 gap: an action pill always has the pill border and fill, so `Tpsl.module.css` `.addPill` clears both.
+- 23 Nov 2026 — "Validity switch" option archived: V3 (validity above the amount, beside Amount / Shares) is the only layout; V1 (right edge) and V2 (in the order type track) code kept, unused. The V1 / V2 / V3 bubble on a phone's order pad is gone too.
 - 23 Nov 2026 — **The order pad opens in the market it was opened from.** A US page (stock page Buy / Sell, ETF page, Position details Buy more / Exit position, Order details Modify / Retry / Repeat) opens the US pad (NVDA, $); the Indian stock page (`stocks-32`…`37`) opens the Indian pad (RELIANCE, ₹). The entry point sets it just before opening (`shared/padMarket.ts` → `setPadMarket`); the Settings → Order pad switch (and the IN / US bubble on a phone) shows what was set and can still flip it. Opened straight from the screen list, the pad shows that setting (Indian by default). In the app there is no setting: the pad takes the market of the instrument it was opened for.
 - 20 Nov 2026 — **All transactions** (`us-stocks-100` INR · `us-stocks-101` USD, `screens/wallet/AllTransactions.tsx`; design from Kuber Spot → V2, 5219:109907). The wallet's "All Transactions" link now opens it, on the tab the wallet was on; the INR / USD switch stays pinned under the top bar (Actionbar `bottom`). Each wallet's money movements newest first under month headings, drawn as the Market page's stock rows (new shared `TransactionListCard`, the `StockListCard look="list"` row: 40 avatar with the kind's icon ↙ / ↗, title over date and time, amount over a status Tag, hairlines between rows). Statuses: Completed (green), In progress (orange), Taking longer (yellow), Failed (red), Refunded (grey). INR: deposits and withdrawals in every state. USD follows the user status: empty before US Stocks is active, empty with Add money (brand, Small) once active, the deposits on the way (a row opens the deposit progress sheet, Try again on a failed one), the first deposit once it landed, the full history once trading. Any other row opens a details sheet (`sheets/TransactionSheet.tsx`): kind, date and status Tag in the header; amount, ₹ paid or received (USD), bank, transaction ID (copy) in a KeyValueList card; an inline note for anything not done; Got it + Contact support (email). Sample data and types in `screens/wallet/transactions.ts`; copy in `copy.json` (`transactions.*`). Differences from Figma: no chevron on rows (as the stock row; the whole row is the tap target); amounts with paise (₹25,000.00) as the wallet; no reward rows (the Figma has a referral reward; Lemonn has no rewards); the status Tag sits under the amount and the date under the title (the Figma has them the other way). L3 gaps: no list row with a status tag slot (the Tag goes in ListCell's trailing, under the amount); the small sheet header has no tag slot (the status Tag sits in `trailing`).
 - 20 Nov 2026 — **Deposits on the way, more than one.** A US deposit takes 1–2 working days, so a user who adds money again before the first lands has two or three on the way. Wallet (`us-stocks-28`): the bar adds them up ("$1,785.37 in 3 deposits on the way · First arrives by Wed 8 PM, all by Thu 8 PM"); one deposit reads as before. The sheet (`shared/ui/DepositProgressSheet`), two or more: a generic heading ("Deposits on the way · 3 deposits · each one ready to trade on its own day", no amount, the cards carry them), each deposit as an L3 Card in a sideways `Rail` (amount, "Paid yesterday, 10:15 AM", its own "By …" tag; the first to land first, the next one peeking, the last card snaps to the end), page dots under it, and the Steps for the card in view (paid from which bank, when it's ready) — swiping changes them. Back from the bank's page shows only the deposit just paid. Each Add money payment is its own deposit (`shared/data/usDeposit.ts`); prototype setting User status → **Deposits on the way: One / Two / Three** (with Money on the way). L3 gap: no carousel or page indicator (shared `Rail` + local dots).
@@ -22648,6 +22650,8 @@ export const usStocks: Flow = {
   options: [
     // "Order pad" archived 19 Nov (the user's call): V2 · Minted layout kept; V1 · Commodity pad layout archived.
     // useOrderPadVersion() returns 'v2'; the V1 code stays in OrderPad.tsx / OrderResult.tsx.
+    // "Validity switch" archived 23 Nov (the user's call): V3 · above the amount, with Amount / Shares kept; V1 · right
+    // edge and V2 · in the order type track archived. useValidityPlace() returns 'v3'; the V1 / V2 code stays in OrderPadV2.
     // The V2 order pad's price cards (18 Nov): merged (one card, a line between the prices) or separate (a card each).
     {
       id: 'priceCards',
@@ -22684,31 +22688,6 @@ export const usStocks: Flow = {
         ],
       },
     },
-    // Indian pad's validity (Day / Instant / Year), an A/B test (20 Nov, the user's call): V2 · inside the Market / Limit /
-    // SL track, after a short divider; V1 · on its own at the row's right edge, the pills centred.
-    {
-      id: 'validityPlace',
-      group: 'Trade',
-      label: 'Validity switch',
-      picker: 'dropdown',
-      values: [
-        { value: 'v1', label: 'V1 · at the right edge' },
-        { value: 'v2', label: 'V2 · in the order type track' },
-        { value: 'v3', label: 'V3 · above the amount, with Amount / Shares' },
-      ],
-      default: 'v3',
-      floatOn: ORDER_PAD_SCREEN_IDS,
-      // Phone (app mode): a floating "V1" / "V2" / "V3" bubble on every order pad screen flips it, for the A/B test (20 Nov, the
-      // user's call). It sits under the "IN" / "US" pad bubble.
-      quickSwitch: {
-        on: ORDER_PAD_SCREEN_IDS,
-        values: [
-          { value: 'v1', label: 'Validity V1 · at the right edge', short: 'V1' },
-          { value: 'v2', label: 'Validity V2 · in the track', short: 'V2' },
-          { value: 'v3', label: 'Validity V3 · above the amount', short: 'V3' },
-        ],
-      },
-    },
     // The TP/SL sheet, an A/B test (19 Nov, the user's call: "keep this version intact for AB testing"): B · A's layout, each
     // leg one pad-style price card, no box inside a box (TpslSheetB); A · a card per leg with a box inside (TpslSheet).
     // Shows on the Indian pad.
@@ -22722,6 +22701,21 @@ export const usStocks: Flow = {
         { value: 'a', label: 'A · box inside each leg card' },
       ],
       default: 'b',
+      floatOn: ['us-stocks-33'],
+    },
+    // The TP/SL card while nothing is set (23 Nov, the user's call): V1 · the leverage card's look, a tile, the name and a
+    // Switch; V2 · a borderless pill with the Add Circle
+    // icon, centred, 32 tall. Both open the same sheet; once set, both show the saved card.
+    {
+      id: 'tpslCard',
+      group: 'Trade',
+      label: 'TP/SL card',
+      picker: 'dropdown',
+      values: [
+        { value: 'v1', label: 'V1 · card with a switch' },
+        { value: 'v2', label: 'V2 · borderless pill' },
+      ],
+      default: 'v2', // V2 by default (23 Nov, the user's call)
       floatOn: ['us-stocks-33'],
     },
     // The processing screen's loader (19 Nov, from Minted): glass ring (default) or Minted's other processing animations.
@@ -40903,6 +40897,18 @@ export function PriceField({ label, unit, price, stepper, fixed }: PriceFieldPro
 .select.select { color: var(--l3-content-accent-discover-default); }
 
 /* A price field's label ("Trigger at", "Limit at"): Description 12, secondary (the user's call). */
+
+/* TP/SL card V2 (23 Nov, the user's call): a pill with no border and no fill — transparent at rest, grey only on hover /
+   press (L3's own pill state layer), like the validity pill. L3 gap: no borderless, unfilled action pill. */
+.addPill[data-action] {
+  --tab-surface: transparent;
+  --tab-border: transparent;
+}
+
+/* TP/SL card V2: the red line centres under the centred button (23 Nov, the user's call). */
+.blocked[data-align='center'] {
+  text-align: center;
+}
 ```
 
 ### `src/flows/us-stocks/screens/trade/Tpsl.tsx`
@@ -40933,6 +40939,7 @@ export function PriceField({ label, unit, price, stepper, fixed }: PriceFieldPro
 import { useEffect, useState } from 'react'
 import { BottomSheet, BottomSheetHeader } from '@l3/components/BottomSheet'
 import { Button } from '@l3/components/Button'
+import { Tab } from '@l3/components/Tabs'
 import { ButtonGroup } from '@l3/components/ButtonGroup'
 import { Card } from '@l3/components/Card'
 import { Checkbox } from '@l3/components/Checkbox'
@@ -40943,7 +40950,7 @@ import { Select } from '@l3/components/Select'
 import { Stack } from '@l3/components/Stack'
 import { Switch } from '@l3/components/Switch'
 import { Tag } from '@l3/components/Tag'
-import { msCheckCircleFill, msEdit } from '@l3/icons/material'
+import { msAddCircleFill, msCheckCircleFill, msEdit } from '@l3/icons/material'
 import { lmAutoTpSl } from '@l3/icons/lemonnade'
 import { useSheetLayer } from '../../components/Phone'
 import { PadAmount, usePadMoney } from './padMoney'
@@ -40952,7 +40959,7 @@ import { PadCard, PadCardTile, padCard } from './PadCard'
 import { PriceField, PriceFieldBox } from './PriceField'
 import styles from './Tpsl.module.css'
 import { TpslSheetB } from './TpslSheetB'
-import { useTpslSheet } from './version'
+import { useTpslCard, useTpslSheet } from './version'
 
 export type Side = 'tp' | 'sl'
 export type Unit = 'points' | 'percent'
@@ -41096,6 +41103,7 @@ export function TpslControl({ order, features = TPSL_INDIA, fractional = false }
   const [round, setRound] = useState(0) // a new key per open, so the sheet starts from the saved values
   const sheetVersion = useTpslSheet() // A / B test (flow option "TP/SL sheet"): B is TpslSheetB.tsx, A is TpslSheet below
   const Sheet = sheetVersion === 'b' ? TpslSheetB : TpslSheet
+  const cardVersion = useTpslCard() // flow option "TP/SL card": v1 · card with a Switch, v2 · a small + button
   const set = tpsl && ((tpsl.tp.on && tpsl.tp.trigger !== null) || (tpsl.sl.on && tpsl.sl.trigger !== null)) ? tpsl : null
   // Whole shares only (US): "Not on fractional shares" in red under the card (no toast, 19 Nov, the user's call) in
   // place of the sheet, until the quantity is whole again.
@@ -41112,6 +41120,13 @@ export function TpslControl({ order, features = TPSL_INDIA, fractional = false }
     setRound((n) => n + 1)
     setSheetOpen(true)
   }
+  // The red line closes on its own 3 s after it opens; each tap starts the 3 s again (23 Nov, the user's call).
+  const showing = blocked && noFractions
+  useEffect(() => {
+    if (!showing) return
+    const id = setTimeout(() => setBlocked(false), 3000)
+    return () => clearTimeout(id)
+  }, [showing, shake.count])
   // The quantity turned fractional with TP/SL set: it can't stay. Whole again: the line goes.
   const hasSet = set !== null
   useEffect(() => {
@@ -41126,6 +41141,15 @@ export function TpslControl({ order, features = TPSL_INDIA, fractional = false }
     <Stack gap="00" className={styles.control}>
       {set ? (
         <TpslCard tpsl={set} ltp={ltp} title={features.title} onEdit={open} />
+      ) : cardVersion === 'v2' ? (
+        // V2 (flow option "TP/SL card", 23 Nov, the user's call): an L3 action pill (md, 32 tall, the chips' size) with the
+        // Add Circle (filled) icon, centred, no border and no fill: transparent, grey only on hover / press (L3's state
+        // layer). An action pill has a border and fill of its own (L3 gap — cleared in Tpsl.module.css .addPill).
+        <Stack align="center">
+          <Tab appearance="pill" size="md" emphasis="tertiary" action raised="none" className={styles.addPill} iconLeft={<Icon icon={msAddCircleFill} size={16} />} onClick={open}>
+            {features.title}
+          </Tab>
+        </Stack>
       ) : (
         // Off: the leverage card's look (PadCard, 19 Nov, the user's call: "sync both the cards"): a tile, the name and a
         // Switch; the whole row is the tap target. Turning it on opens the sheet; closing it without Save leaves it off.
@@ -41143,6 +41167,7 @@ export function TpslControl({ order, features = TPSL_INDIA, fractional = false }
           <p
             key={shake.count}
             className={`${styles.error} ${styles.blocked}`}
+            data-align={cardVersion === 'v2' ? 'center' : undefined} // V2: centred under the centred button
             role="alert"
             data-shake={shake.count > 0 ? (shake.afterOpen ? 'after-open' : '') : undefined}
           >{blocked && noFractions ? `${features.title} isn’t available on fractional shares` : ''}</p>
@@ -42703,17 +42728,19 @@ export const usePadVersion = (): PadVersion =>
 // The TP/SL sheet (flow option "TP/SL sheet", group Trade, 19 Nov — an A/B test, the user's call): b · one leg at a time,
 // no boxes (TpslSheetB.tsx, the default); a · a card per leg, the earlier design (TpslSheet in Tpsl.tsx).
 export type TpslSheetVersion = 'a' | 'b'
+// The TP/SL card while nothing is set (flow option "TP/SL card", group Trade, 23 Nov, the user's call): v1 · a pad card
+// with a Switch (the leverage card's look); v2 · a borderless pill (Add Circle icon, the name), centred.
+export type TpslCardVersion = 'v1' | 'v2'
+export const useTpslCard = (): TpslCardVersion => (useFlowOption('us-stocks', 'tpslCard', 'v2') === 'v1' ? 'v1' : 'v2')
+
 export const useTpslSheet = (): TpslSheetVersion => (useFlowOption('us-stocks', 'tpslSheet', 'b') === 'a' ? 'a' : 'b')
 
 // The Indian pad's validity switch (flow option "Validity switch", group Trade, 20 Nov — an A/B test, the user's call):
 // v2 · inside the Market / Limit / SL track after a short divider; v1 · alone at the row's right edge;
 // v3 · above the amount, right of the Amount / Shares switch (which moves up there too) — the default (20 Nov, the user's call).
 export type ValidityPlace = 'v1' | 'v2' | 'v3'
-const VALIDITY_PLACES: ValidityPlace[] = ['v1', 'v2', 'v3']
-export const useValidityPlace = (): ValidityPlace => {
-  const value = useFlowOption('us-stocks', 'validityPlace', 'v3') as ValidityPlace
-  return VALIDITY_PLACES.includes(value) ? value : 'v3'
-}
+// Archived 23 Nov (the user's call): V3 only, the setting is gone. V1 / V2's code stays in OrderPadV2, unused.
+export const useValidityPlace = (): ValidityPlace => 'v3'
 ```
 
 ### `src/flows/us-stocks/screens/types.ts`
