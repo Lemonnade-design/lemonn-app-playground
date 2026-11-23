@@ -202,6 +202,7 @@ any screen ─back─▶ where Search was opened from (stocks-01 / market-01)
 - Product rule: illiquid applies to commodity contracts only; equity / index contracts never carry the tag.
 
 ### Changelog
+- 23 Nov 2026 — Search, US tab: the Collections tiles are hidden for now (SHOW_US_COLLECTIONS in Search.tsx); the data stays.
 
 - 2026-11-04 — **Real Indian stocks and contracts.** Stocks tab chips and results come from the shared company catalogue (real names, design-system logos, snapshot prices); "Bank" now finds the 7 catalogue banks (Bank of Baroda, PNB, AU and Federal aren't in it), State Bank of India is the pre-saved one. F&O: contracts show the underlying's logo, strikes sit near today's prices / index levels, expiry 24NOV2026; Smart Futures list is on catalogue stocks. Gold (MCX) contracts unchanged.
 - 2026-11-01 — **US tab** (Stocks · US · F&O · MF · IPO): `search-29`–`31`. Replaces US Stocks' own search screen
@@ -1257,6 +1258,9 @@ import {
 import { t } from '../copy'
 import styles from './Search.module.css'
 
+/** The US tab's Collections tiles (AI Leaders, Trillion Dollar Club, …): hidden for now (23 Nov). */
+const SHOW_US_COLLECTIONS = false
+
 const TABS: SearchTab[] = ['stocks', 'us', 'fno', 'mf', 'ipo']
 
 type SearchProps = {
@@ -1346,7 +1350,8 @@ function BeforeTyping({ tab, onSignals, onPick }: { tab: SearchTab; onSignals?: 
     <Section paddingBlock="16" gap="24">
       <SearchChips title={t('recent.title')} rows={[recent[tab]]} onPick={pick} />
       <SearchChips title={t('popular.title')} rows={popular[tab]} onPick={pick} />
-      {tab === 'us' && (
+      {/* US Collections: hidden for now (23 Nov, the user's call) — flip SHOW_US_COLLECTIONS to bring them back. */}
+      {tab === 'us' && SHOW_US_COLLECTIONS && (
         <Stack as="section" gap="12" aria-label={t('collections.title')}>
           <GroupHeader title={t('collections.title')} />
           <Tiles items={usCollections} label={t('usCollections.tilesLabel')} muted />

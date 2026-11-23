@@ -543,6 +543,8 @@ The source uses old D2 controls alongside L3; their code equivalents are L3 comp
 - Weekday result dots (Zing Trades): no L3 component; 16 circles on the up / down light surfaces.
 
 ### Changelog
+- 23 Nov 2026 — F&O sub-nav (floating V2): the chosen F&O icon is black and white, like the main nav's.
+- 23 Nov 2026 — Home shortcuts (Trade Calls · Watchlist · Smart Invest · Referral) drawn as the Stocks Home's: 40 circles with a green-edged wash and green icons (lightbulb, bookmark, smart toy, redeem — Home's icons for these features), names in secondary text, via the new shared part src/shared/ui/ShortcutCircles. The old outlined tertiary buttons and their SVG art are no longer used (assets kept).
 
 - 2026-11-20 — Zing signals: the sheet is 75% of the screen's height (Screen is a size container, cqh).
 - 2026-11-20 — Zing signals: under the tabs' All, more chips (Nifty, Sensex, F&O Stocks, Commodities); version 7's header has no line and a shadow once the list scrolls.
@@ -5260,22 +5262,28 @@ import { Card } from '@l3/components/Card'
 import { Icon } from '@l3/components/Icon'
 import { SectionHeader } from '@l3/components/SectionHeader'
 import { Stack } from '@l3/components/Stack'
-import { msAdd, msChevronRight } from '@l3/icons/material'
+import { msAdd, msBookmarkFill, msChevronRight, msLightbulbFill, msRedeem, msSmartToyFill } from '@l3/icons/material'
 import { Rail } from '../../../shared/ui/Rail'
+import { ShortcutCircles } from '../../../shared/ui/ShortcutCircles'
 import { t } from '../copy'
 import type { Watchlist } from '../data'
-import calls from '../assets/trade-calls.svg'
-import watchlist from '../assets/watchlist.svg'
-import invest from '../assets/smart-invest.svg'
-import referral from '../assets/referral.svg'
 import styles from './HomeParts.module.css'
 
+/** F&O Home's shortcuts, drawn as the Stocks Home's (shared ShortcutCircles, 23 Nov — the user's call): Trade Calls ·
+ *  Watchlist · Smart Invest · Referral, icons in the Indian markets' green (the same icons Home uses for these features). */
 export function Shortcuts({ onWatchlist, onDestination }: { onWatchlist: () => void; onDestination: (label: string) => void }) {
-  const items = [{ key: 'calls', asset: calls }, { key: 'watchlist', asset: watchlist }, { key: 'invest', asset: invest }, { key: 'referral', asset: referral }] as const
-  return <div className={styles.shortcuts}>{items.map(({ key, asset }) => <Stack key={key} gap="08" align="center">
-    <Button variant="tertiary" size="md" aria-label={t(`shortcut.${key}`)} iconLeft={<span className={key === 'invest' ? styles.shortcutLarge : styles.actionIcon}><img className={styles.asset} src={asset} alt="" /></span>} onClick={key === 'watchlist' ? onWatchlist : () => onDestination(t(`shortcut.${key}`))} />
-    <span className={styles.secondaryLabel}>{t(`shortcut.${key}`)}</span>
-  </Stack>)}</div>
+  const icon = (glyph: string) => <Icon icon={glyph} size={24} />
+  const items = [
+    { id: 'calls', label: t('shortcut.calls'), icon: icon(msLightbulbFill) },
+    { id: 'watchlist', label: t('shortcut.watchlist'), icon: icon(msBookmarkFill) },
+    { id: 'invest', label: t('shortcut.invest'), icon: icon(msSmartToyFill) },
+    { id: 'referral', label: t('shortcut.referral'), icon: icon(msRedeem) },
+  ]
+  return (
+    <div className={styles.shortcuts}>
+      <ShortcutCircles items={items} tone="in" label={t('shortcut.label')} onOpen={(id) => (id === 'watchlist' ? onWatchlist() : onDestination(items.find((i) => i.id === id)!.label))} />
+    </div>
+  )
 }
 
 export function Watchlists({ lists, onAdd, onOpen }: { lists: Watchlist[]; onAdd: () => void; onOpen: (name: string) => void }) {
@@ -5293,7 +5301,7 @@ export function Watchlists({ lists, onAdd, onOpen }: { lists: Watchlist[]; onAdd
 ```tsx
 import { BottomNavbar } from '@l3/components/BottomNavbar'
 import { NavIcon } from '@l3/components/BottomNavbar/NavIcon'
-import { FloatingNav, useBottomNavVariant } from '../../../shared/ui/FloatingNav'
+import { FloatingNav, FloatingNavIcon, useBottomNavVariant, useFloatingNav } from '../../../shared/ui/FloatingNav'
 import { t } from '../copy'
 
 export function FnoNav({ onHome, onDestination, onChain, onScalper }: { onHome: () => void; onDestination: (label: string) => void; onChain: () => void; onScalper: () => void }) {
@@ -5304,7 +5312,8 @@ export function FnoNav({ onHome, onDestination, onChain, onScalper }: { onHome: 
     { value: 'scalper', label: t('nav.scalper'), name: 'fnoScalper' },
   ] as const
   const variant = useBottomNavVariant()
-  return <FloatingNav><BottomNavbar aria-label="F&O" variant={variant} home={{ label: t('nav.home'), onClick: onHome }} value="fno" onChange={(v) => { const item = items.find((i) => i.value === v); if (v === 'scalper') onScalper(); else if (v === 'chain') onChain(); else if (item && v !== 'fno') onDestination(item.label) }} items={items.map(({ value, label, name }) => ({ value, label, icon: <NavIcon name={name} />, selectedIcon: <NavIcon name={name} selected /> }))} /></FloatingNav>
+  const floating = useFloatingNav() // V2: the chosen F&O icon in black and white, like the main nav's (23 Nov, user)
+  return <FloatingNav><BottomNavbar aria-label="F&O" variant={variant} home={{ label: t('nav.home'), onClick: onHome }} value="fno" onChange={(v) => { const item = items.find((i) => i.value === v); if (v === 'scalper') onScalper(); else if (v === 'chain') onChain(); else if (item && v !== 'fno') onDestination(item.label) }} items={items.map(({ value, label, name }) => ({ value, label, icon: <NavIcon name={name} />, selectedIcon: floating && name === 'fno' ? <FloatingNavIcon name="fno" selected /> : <NavIcon name={name} selected /> }))} /></FloatingNav>
 }
 ```
 
@@ -5415,8 +5424,8 @@ export function Heatmap({ onOpen, onViewAll }: { onOpen: (name: string) => void;
 .grow { flex: 1; min-width: 0; }
 .feed { padding-block: var(--l3-spacing-24) 0; } /* page end: the body's --app-body-end */
 .ribbonIcon { display: inline-flex; width: var(--l3-size-16); height: var(--l3-size-16); }
-.shortcuts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--l3-spacing-08); padding: var(--l3-spacing-08) var(--l3-spacing-16) 0; }
-.shortcuts .secondaryLabel { white-space: normal; text-align: center; }
+/* The shortcuts row (shared ShortcutCircles brings its own 16 at the sides): 8 above it, as before. */
+.shortcuts { padding-top: var(--l3-spacing-08); }
 .actionIcon { display: inline-flex; align-items: center; justify-content: center; width: var(--l3-size-20); height: var(--l3-size-20); }
 .shortcutLarge { display: inline-flex; align-items: center; justify-content: center; width: var(--l3-size-24); height: var(--l3-size-24); }
 .asset { display: block; flex: none; }
@@ -6381,6 +6390,7 @@ function addMinutes(start: string, add: number) {
   "us.live": "LIVE",
   "us.headline": "Live now · till 2:30 AM IST",
   "us.sub": "Buy Apple, NVIDIA & more",
+  "shortcut.label": "Shortcuts",
   "shortcut.calls": "Trade Calls",
   "shortcut.watchlist": "Watchlist",
   "shortcut.invest": "Smart Invest",
@@ -11554,13 +11564,14 @@ function Sparkler() {
 }
 
 /* The page fades out under the nav (20 Nov, user: stronger than Figma's blurred blob): the page's colour, solid from
-   the bottom edge up past the pill's middle, then fading to clear well above the pill. It never takes a tap. */
+   the bottom edge up past the pill's middle, then fading to clear just above the pill (23 Nov, user: half the old
+   152, it rose too far up the page). It never takes a tap. */
 .fade {
   position: absolute;
   right: 0;
   bottom: 0;
   left: 0;
-  height: calc(var(--l3-size-128) + var(--l3-size-24)); /* 152: about 80 above the pill */
+  height: calc((var(--l3-size-128) + var(--l3-size-24)) / 2); /* 76: half the old 152, just over the pill (70) */
   background: linear-gradient(
     to top,
     var(--l3-surface-default) 0%,
@@ -11579,18 +11590,18 @@ function Sparkler() {
   left: var(--l3-spacing-16);
   box-sizing: border-box;
   overflow: hidden;
-  padding: var(--l3-spacing-08) var(--l3-spacing-12) var(--l3-spacing-12) var(--l3-spacing-16);
+  padding: var(--l3-spacing-08) 0 var(--l3-spacing-12); /* end to end: no side padding (23 Nov, user) */
   border-radius: var(--l3-radius-full);
   background: var(--l3-surface-default);
   /* Figma's 1px stroke is inside the pill (it stays 56): an inset line, then the double shadow. */
   box-shadow: inset 0 0 0 1px var(--l3-border-light), var(--app-fnav-shadow); /* 1px: Figma stroke weight has no variable */
 }
 
-/* The chosen tab's glow (Figma Ellipse 6871, in accent green) from the tab's left edge, clipped by the pill. */
+/* The chosen tab's glow (Figma Ellipse 6871, in accent green), centred on the tab, clipped by the pill. */
 .glow {
   position: absolute;
   top: var(--app-fnav-glow-top);
-  left: var(--glow-x);
+  left: calc(var(--glow-x) - var(--app-fnav-glow-width) / 2); /* centred on the chosen tab (23 Nov, user) */
   width: var(--app-fnav-glow-width);
   height: var(--l3-size-40);
   border-radius: var(--l3-radius-full);
@@ -11608,11 +11619,15 @@ function Sparkler() {
   padding-bottom: 0;
 }
 .pill > nav > ul {
-  gap: var(--l3-spacing-04);
+  gap: 0; /* equal options tile the pill edge to edge (23 Nov, user) */
 }
-/* Figma: "Mutual Fund" keeps its whole label (the others share what's left), so no label is cut at 360. */
+/* Every option the same width, the row end to end across the pill (23 Nov, user). */
 .pill > nav > ul > li {
-  min-width: max-content;
+  flex: 1 1 0;
+  min-width: 0;
+}
+.pill > nav > ul > li > :is(button, a) {
+  width: 100%;
 }
 
 /* Each option: the 24 icon right on its 12 label, no padding; content/secondary, the chosen one content/primary in
@@ -11638,8 +11653,39 @@ function Sparkler() {
   height: var(--l3-icon-size-24);
 }
 
+/* ---------- Motion (23 Nov, user: "animate the whole navbar transitions") ----------
+   Option colours ease; on a tab switch (data-motion="moved") the new tab's icon pops and its label comes up, the old
+   tab fades back from content/primary; when the options themselves change (main nav ↔ a sub-nav, "swapped") they come
+   in one by one. FLAG (L3 gap): Bottom Navbar has no selection motion; durations / easing are L3 motion tokens. */
+.pill :is(button, a)[class] {
+  transition: color var(--l3-motion-duration-medium) var(--l3-motion-easing-standard);
+}
+.frame[data-motion='moved'] .pill :is(button, a)[data-selected] .icon {
+  animation: navPop var(--l3-motion-duration-long) var(--l3-motion-easing-standard) both;
+}
+.frame[data-motion='moved'] .pill :is(button, a)[data-selected] > span:last-child {
+  animation: navRise var(--l3-motion-duration-medium) var(--l3-motion-easing-standard) both;
+}
+.frame[data-motion='moved'] .pill li[data-was-selected] :is(button, a) {
+  animation: navFadeBack var(--l3-motion-duration-medium) var(--l3-motion-easing-standard) both;
+}
+.frame[data-motion='swapped'] .pill > nav > ul > li {
+  animation: navRise var(--l3-motion-duration-medium) var(--l3-motion-easing-standard) both;
+}
+.frame[data-motion='swapped'] .pill > nav > ul > li:nth-child(2) { animation-delay: 40ms; }
+.frame[data-motion='swapped'] .pill > nav > ul > li:nth-child(3) { animation-delay: 80ms; }
+.frame[data-motion='swapped'] .pill > nav > ul > li:nth-child(4) { animation-delay: 120ms; }
+.frame[data-motion='swapped'] .pill > nav > ul > li:nth-child(5) { animation-delay: 160ms; }
+.frame[data-motion='swapped'] .glow { animation: navGlowIn var(--l3-motion-duration-long) var(--l3-motion-easing-standard) both; }
+
+@keyframes navPop { 0% { transform: scale(.7); } 60% { transform: scale(1.12); } 100% { transform: scale(1); } }
+@keyframes navRise { from { opacity: 0; transform: translateY(var(--l3-spacing-04)); } to { opacity: 1; transform: none; } }
+@keyframes navFadeBack { from { color: var(--l3-content-primary); } to { color: var(--l3-content-secondary); } }
+@keyframes navGlowIn { from { opacity: 0; } to { opacity: 1; } }
+
 @media (prefers-reduced-motion: reduce) {
   .glow { transition: none; }
+  .frame .pill *, .frame .glow { animation: none !important; transition: none !important; }
 }
 ```
 
@@ -11692,27 +11738,51 @@ export function FloatingNavIcon({ name, selected = false }: { name: FloatingIcon
  * the bottom and fading out above the pill (20 Nov), so the page fades out under the nav. The frame takes no height of
  * its own: the body runs on behind it and keeps its last content clear of the pill (Screen / Phone CSS).
  */
+/** Where the last floating nav left off: each tab is its own screen, so the nav mounts afresh on every switch. */
+let navMemory: { glowX: number | null; index: number | null; items: string | null } = { glowX: null, index: null, items: null }
+
 export function FloatingNav({ children }: { children: ReactNode }) {
   const floating = useFloatingNav()
   const l3Floating = useBottomNavVariant() === 'floating'
   const pill = useRef<HTMLDivElement>(null)
-  const [glowX, setGlowX] = useState<number | null>(null)
+  // A fresh nav starts where the last one left off (the glow at the old tab) and moves from there (23 Nov, user:
+  // "animate the whole navbar transitions like tab switch, nav items change").
+  const [glowX, setGlowX] = useState<number | null>(() => navMemory.glowX)
+  const [motion, setMotion] = useState<'moved' | 'swapped' | undefined>(undefined)
+  const firstPlace = useRef(true)
 
   // The glow sits behind the chosen tab: wherever L3 puts it (sub-navs have a Home option first).
   useLayoutEffect(() => {
     if (!floating || !pill.current) return
     const place = () => {
-      const chosen = pill.current?.querySelector<HTMLElement>('[data-selected]')
-      if (!chosen || !pill.current) return setGlowX(null)
-      const a = pill.current.getBoundingClientRect()
-      const b = chosen.getBoundingClientRect()
-      setGlowX(b.left - a.left) // Figma: the glow starts at the chosen tab's left edge
+      const box = pill.current
+      if (!box) return
+      const options = [...box.querySelectorAll<HTMLElement>('nav > ul > li')]
+      const chosenIndex = options.findIndex((li) => li.querySelector('[data-selected]'))
+      if (chosenIndex < 0) return setGlowX(null)
+      const tab = options[chosenIndex].getBoundingClientRect()
+      const x = tab.left + tab.width / 2 - box.getBoundingClientRect().left // the chosen tab's centre (23 Nov, user)
+      const items = options.map((li) => li.textContent).join('|')
+      const before = navMemory
+      navMemory = { glowX: x, index: chosenIndex, items }
+      if (!firstPlace.current) return setGlowX(x) // a change within this nav: the CSS transition slides the glow
+      firstPlace.current = false
+      if (before.items !== null && before.items !== items) {
+        setMotion('swapped') // another set of options (main nav ↔ a sub-nav): they come in one by one
+        return setGlowX(x)
+      }
+      if (before.index === null || before.index === chosenIndex || before.glowX === null) return setGlowX(x)
+      // A tab switch: the old tab fades back, the new one pops, and the glow (painted at the old x) slides over.
+      options[before.index]?.setAttribute('data-was-selected', '')
+      setMotion('moved')
+      box.querySelector<HTMLElement>('[data-glow]')?.getBoundingClientRect() // style the glow at the old x first…
+      setGlowX(x) // …so moving it runs the CSS transition (no frame wait: it works in a hidden tab too)
     }
     place()
     const watch = new MutationObserver(place)
     watch.observe(pill.current, { subtree: true, attributes: true, attributeFilter: ['data-selected'] })
     return () => watch.disconnect()
-  })
+  }, [floating])
 
   // data-bottom-nav: the preview's V1 / V2 bubble shows only on screens that have a bottom navbar. V1's wrapper says
   // data-surface="primary" so the OS navigation bar still takes the navbar's colour (it looks for the page's last part).
@@ -11720,11 +11790,11 @@ export function FloatingNav({ children }: { children: ReactNode }) {
   if (l3Floating) return <div className={styles.docked} data-floating-nav="" data-bottom-nav="">{children}</div>
   if (!floating) return <div className={styles.docked} data-bottom-nav="" data-surface="primary">{children}</div>
   return (
-    <div className={styles.frame} data-floating-nav="" data-bottom-nav="">
+    <div className={styles.frame} data-floating-nav="" data-bottom-nav="" data-motion={motion}>
       {/* The page's colour behind the nav: solid at the bottom, fading out above the pill. */}
       <div className={styles.fade} aria-hidden="true" />
       <div ref={pill} className={styles.pill}>
-        {glowX !== null && <span className={styles.glow} style={{ '--glow-x': `${glowX}px` } as CSSProperties} aria-hidden="true" />}
+        {glowX !== null && <span className={styles.glow} data-glow="" style={{ '--glow-x': `${glowX}px` } as CSSProperties} aria-hidden="true" />}
         {children}
       </div>
     </div>
@@ -12135,6 +12205,116 @@ export function SheetHost({ container, children }: { container: HTMLElement | nu
         </BottomSheet>
       )}
     </SheetHostContext.Provider>
+  )
+}
+```
+
+### `src/shared/ui/ShortcutCircles.module.css`
+
+```css
+/* Shortcut circles (ShortcutCircles.tsx) — the Stocks Home's V6 look (flows/stocks/components/Home.module.css, "Small
+   circles"). FLAG: raw mix / shadow values, as there (L3 has no coloured elevation or edge wash). */
+
+.cell {
+  --ring: var(--l3-content-accent-us-stock-default);
+}
+.cell[data-tone='in'] {
+  --ring: var(--l3-content-accent-success-default);
+}
+
+/* The whole cell is the tap target; rounded so its press layer isn't a hard box. */
+.tap.tap {
+  border-radius: var(--l3-radius-12);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--l3-spacing-08);
+  padding-block: var(--l3-spacing-04);
+  text-align: center;
+}
+
+.circle {
+  position: relative;
+  display: inline-flex;
+  isolation: isolate;
+}
+
+/* The 1px edge outside the disc: the market's colour at 30% at the top, fading to the surface at the foot. */
+.circle::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: -1px; /* 1px edge */
+  border-radius: var(--l3-radius-full);
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--ring) 30%, var(--l3-surface-primary)), var(--l3-surface-primary));
+}
+
+.disc.disc {
+  background:
+    linear-gradient(to bottom, transparent, color-mix(in srgb, var(--l3-border-light) 20%, transparent)),
+    var(--l3-surface-primary);
+  box-shadow: 0 4px 4px color-mix(in srgb, var(--ring) 4%, transparent);
+}
+
+/* The 24 icon centred in the 40 disc. L3 gap: Avatar's icon slot is fixed at 20 for a 40 avatar. */
+.disc.disc > * {
+  width: var(--l3-icon-size-24);
+  height: var(--l3-icon-size-24);
+}
+
+/* The icon's colour is set on its own wrapper: L3 Avatar colours its icon slot itself. */
+.icon {
+  display: inline-flex;
+  color: var(--ring);
+}
+
+.label {
+  font: var(--l3-text-label-12);
+  color: var(--l3-content-secondary);
+}
+```
+
+### `src/shared/ui/ShortcutCircles.tsx`
+
+```tsx
+// Shortcut circles: the Stocks Home's shortcut row (Shortcuts V6, Figma 6662:8516) as a shared part, so every home
+// that has a row of shortcuts draws them the same way (23 Nov, the user's call: F&O Home's shortcuts "same as the home
+// page"). Four across: a 40 disc (white easing to a light grey, a 1px edge in the market's colour fading out, a very
+// soft shadow) with a 24 icon in the market's colour, its name under it in secondary text. The whole cell is the tap target.
+// Built from L3: the disc is an L3 Avatar (Type Icon, 40), the tap target a flat L3 Card, the layout Inset + Grid.
+// FLAG (L3 gap): the disc's wash, edge and shadow are local (L3 Avatar has no such look); the Stocks Home still draws
+// its own copy (flows/stocks/components/Instruments.tsx, look 'mini') — move it onto this part when that flow is next touched.
+import type { ReactNode } from 'react'
+import { Avatar } from '@l3/components/Avatar'
+import { Card } from '@l3/components/Card'
+import { Grid } from '@l3/components/Grid'
+import { Inset } from '@l3/components/Inset'
+import styles from './ShortcutCircles.module.css'
+
+export type ShortcutCircle = { id: string; label: string; /** A 24 icon (L3 Icon); it takes the market's colour. */ icon: ReactNode }
+
+/** `tone`: the market's colour for the icons and the disc's edge — `in` green (Indian markets), `us` blue (US Stocks). */
+export function ShortcutCircles({ items, tone, label, onOpen }: { items: ShortcutCircle[]; tone: 'in' | 'us'; label: string; onOpen?: (id: string) => void }) {
+  return (
+    <Inset paddingInline="16" paddingBlock="00">
+      <Grid columns={4} gap="08" role="list" aria-label={label}>
+        {items.map((item) => (
+          <div key={item.id} role="listitem" className={styles.cell} data-tone={tone}>
+            <Card variant="flat" padding="none" className={styles.tap} onClick={() => onOpen?.(item.id)}>
+              <span className={styles.body}>
+                <span className={styles.circle}>
+                  <Avatar size={40} className={styles.disc} icon={<span className={styles.icon}>{item.icon}</span>} />
+                </span>
+                <span className={styles.label}>{item.label}</span>
+              </span>
+            </Card>
+          </div>
+        ))}
+      </Grid>
+    </Inset>
   )
 }
 ```

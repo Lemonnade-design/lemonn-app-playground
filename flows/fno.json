@@ -574,6 +574,8 @@
     "src/shared/ui/Screen.tsx",
     "src/shared/ui/Sheet.module.css",
     "src/shared/ui/Sheet.tsx",
+    "src/shared/ui/ShortcutCircles.module.css",
+    "src/shared/ui/ShortcutCircles.tsx",
     "src/shared/ui/Splash.module.css",
     "src/shared/ui/Splash.tsx",
     "src/shared/ui/TopBarAction.module.css",

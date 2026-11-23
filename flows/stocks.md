@@ -433,6 +433,11 @@ lower on the page is scrolled into view first). `components/MarketSwitchGuide.ts
   16 / 24 icon or an Avatar only — event rows are plain buttons laid out with Stack.
 
 ### Changelog
+- 23 Nov 2026 — Floating navbar: the green glow is centred on the chosen tab (was from its left edge, as in Figma).
+- 23 Nov 2026 — Floating navbar (shared FloatingNav): tab switches animate (the glow slides from the old tab, the new icon pops and its label rises, the old tab fades back); a sub-nav's options come in one by one; colours ease. Options are equal width, edge to edge in the pill (no side padding, no gap). The fade behind the nav is half as tall (76).
+
+- 2026-11-23 — **Stock page synced with the new US stock page.** Top: name heading 18, change Large without arrow + "(−12.70) 1D" in label 16, tertiary tags. Overview: white bordered cards (L3 Card static) with heading-16 section titles — Daily Performance (low · high, red → green day range with the bolt at the price, LTP; then Open · Prev close · Mkt cap · Volume · circuits in 3 columns), Fundamentals (2-column grid), Market Depth in a card, About Company in a card (3 lines + Read more), Key Holders (quarter pills, "4 holder types · Weight", name · short bar · share), Company financials (metric pills, tappable bars, Quarterly/Yearly select + period stepper + Q/Q or Y/Y change table). Kept Indian-only: Boost SIP, Market Depth, NSE/BSE, Events tab. Not added (no Indian data): Analyst ratings, Peers, News. L3 gaps: SectionHeader has no 16 size; ProgressBar's range type has no gradient track / marker icon (day range hand-made); no bar chart component.
+- 23 Nov 2026 — Home: no empty strip between the IN / US tabs and the header card (the summary's 16 above a hero with the ticker inside, and V19's 12, are gone); the header card (HoldingsHero, IN and US) has 24 at the top instead of 16.
 - 23 Nov 2026 — Stock page (`stocks-32`…`37`): Buy opens the shared order pad in its Indian version (`us-stocks-33`, RELIANCE in ₹), Sell the Indian sell pad (`us-stocks-47`); they used to do nothing. The US stock page opens the US pad (us-stocks README).
 - 20 Nov 2026 — US tab, Money on the way card: with two or three deposits on the way (User status → Deposits on the way) its description reads "3 deposits · first ready to trade by Wed 8 PM", and it opens the shared deposits sheet (a card per deposit you swipe through, the steps of the one in view; us-stocks README).
 - 20 Nov 2026 — US tab, Money on the way card: opens the deposits sheet over Home on every Home version (the V16 hero card went to the wallet). Taking longer than usual (User status → Deposit status → Taking longer): "Money on the way · Taking longer than usual · your money is safe" (several: "2 deposits · 1 taking longer than usual"). A failed deposit (Deposit status → Failed): one alone → "Deposit didn't go through · ₹91,320 is coming back to your bank" with an error icon; one of several → "2 deposits · 1 didn't go through". The sheet's Try again goes to US Add money (us-stocks-21).
@@ -1205,6 +1210,27 @@ D�W�k��&�� �?��DQ�y�� !i� ���n]�G��FS�
 </svg>
 ```
 
+### `src/flows/stocks/assets/in/instruments/commodities-dark.svg`
+
+```tsx
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M2.9 19.9L4.7 14.6H10.2L12 19.9H2.9Z" fill="url(#fill_commodities)" stroke="url(#line_commodities)" stroke-width="1.4" stroke-linejoin="round"/>
+<path d="M12 19.9L13.8 14.6H19.3L21.1 19.9H12Z" fill="url(#fill_commodities)" stroke="url(#line_commodities)" stroke-width="1.4" stroke-linejoin="round"/>
+<path d="M7.45 12.6L9.25 7.3H14.75L16.55 12.6H7.45Z" fill="url(#line_commodities)" stroke="url(#line_commodities)" stroke-width="1.4" stroke-linejoin="round"/>
+<path d="M18.6 2.6L19.25 4.35L21 5L19.25 5.65L18.6 7.4L17.95 5.65L16.2 5L17.95 4.35L18.6 2.6Z" fill="url(#line_commodities)"/>
+<defs>
+<linearGradient id="fill_commodities" x1="6" y1="6" x2="18" y2="20" gradientUnits="userSpaceOnUse">
+<stop stop-color="#23885A"/>
+<stop offset="1" stop-color="#0E4A2E"/>
+</linearGradient>
+<linearGradient id="line_commodities" x1="5" y1="5" x2="19" y2="19" gradientUnits="userSpaceOnUse">
+<stop stop-color="#6FCB9F"/>
+<stop offset="1" stop-color="#0C8A4F"/>
+</linearGradient>
+</defs>
+</svg>
+```
+
 ### `src/flows/stocks/assets/in/instruments/commodities.svg`
 
 ```tsx
@@ -1219,6 +1245,27 @@ D�W�k��&�� �?��DQ�y�� !i� ���n]�G��FS�
 <stop offset="1" stop-color="#CDEEDD"/>
 </linearGradient>
 <linearGradient id="line_commodities" x1="5" y1="5" x2="19" y2="19" gradientUnits="userSpaceOnUse">
+<stop stop-color="#6FCB9F"/>
+<stop offset="1" stop-color="#0C8A4F"/>
+</linearGradient>
+</defs>
+</svg>
+```
+
+### `src/flows/stocks/assets/in/instruments/fno-dark.svg`
+
+```tsx
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M7.5 3.5V7.5M7.5 17.5V20.5" stroke="url(#line_fno)" stroke-width="1.4" stroke-linecap="round"/>
+<rect x="5" y="7.5" width="5" height="10" rx="1.4" fill="url(#fill_fno)" stroke="url(#line_fno)" stroke-width="1.4" stroke-linejoin="round"/>
+<path d="M16.5 2.8V6M16.5 14V18.5" stroke="url(#line_fno)" stroke-width="1.4" stroke-linecap="round"/>
+<rect x="13.3" y="5.3" width="6.4" height="9.4" rx="1.6" fill="url(#line_fno)"/>
+<defs>
+<linearGradient id="fill_fno" x1="6" y1="6" x2="18" y2="20" gradientUnits="userSpaceOnUse">
+<stop stop-color="#23885A"/>
+<stop offset="1" stop-color="#0E4A2E"/>
+</linearGradient>
+<linearGradient id="line_fno" x1="5" y1="5" x2="19" y2="19" gradientUnits="userSpaceOnUse">
 <stop stop-color="#6FCB9F"/>
 <stop offset="1" stop-color="#0C8A4F"/>
 </linearGradient>
@@ -1247,6 +1294,28 @@ D�W�k��&�� �?��DQ�y�� !i� ���n]�G��FS�
 </svg>
 ```
 
+### `src/flows/stocks/assets/in/instruments/ipo-dark.svg`
+
+```tsx
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M12 2.6C14.9 4.7 16.4 7.9 16.4 11.2V15.8H7.6V11.2C7.6 7.9 9.1 4.7 12 2.6Z" fill="url(#fill_ipo)" stroke="url(#line_ipo)" stroke-width="1.4" stroke-linejoin="round"/>
+<circle cx="12" cy="9.8" r="1.7" fill="url(#line_ipo)"/>
+<path d="M7.6 12.2L4.9 15V18L7.6 16.6V12.2Z" fill="url(#line_ipo)" stroke="url(#line_ipo)" stroke-width="1.2" stroke-linejoin="round"/>
+<path d="M16.4 12.2L19.1 15V18L16.4 16.6V12.2Z" fill="url(#line_ipo)" stroke="url(#line_ipo)" stroke-width="1.2" stroke-linejoin="round"/>
+<path d="M10.2 17.8H13.8L12 21.6L10.2 17.8Z" fill="url(#line_ipo)" stroke="url(#line_ipo)" stroke-width="1.2" stroke-linejoin="round"/>
+<defs>
+<linearGradient id="fill_ipo" x1="6" y1="6" x2="18" y2="20" gradientUnits="userSpaceOnUse">
+<stop stop-color="#23885A"/>
+<stop offset="1" stop-color="#0E4A2E"/>
+</linearGradient>
+<linearGradient id="line_ipo" x1="5" y1="5" x2="19" y2="19" gradientUnits="userSpaceOnUse">
+<stop stop-color="#6FCB9F"/>
+<stop offset="1" stop-color="#0C8A4F"/>
+</linearGradient>
+</defs>
+</svg>
+```
+
 ### `src/flows/stocks/assets/in/instruments/ipo.svg`
 
 ```tsx
@@ -1262,6 +1331,26 @@ D�W�k��&�� �?��DQ�y�� !i� ���n]�G��FS�
 <stop offset="1" stop-color="#CDEEDD"/>
 </linearGradient>
 <linearGradient id="line_ipo" x1="5" y1="5" x2="19" y2="19" gradientUnits="userSpaceOnUse">
+<stop stop-color="#6FCB9F"/>
+<stop offset="1" stop-color="#0C8A4F"/>
+</linearGradient>
+</defs>
+</svg>
+```
+
+### `src/flows/stocks/assets/in/instruments/mutual-funds-dark.svg`
+
+```tsx
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M12 12.4V3.2A9.2 9.2 0 1 0 21.2 12.4H12Z" transform="translate(-1.2 1.2) scale(0.94)" fill="url(#fill_mutual-funds)" stroke="url(#line_mutual-funds)" stroke-width="1.5" stroke-linejoin="round"/>
+<circle cx="10.1" cy="12.9" r="3.1" fill="#181818" stroke="url(#line_mutual-funds)" stroke-width="1.4"/>
+<path d="M13.6 10.2V2.8A7.4 7.4 0 0 1 21 10.2H13.6Z" fill="url(#line_mutual-funds)"/>
+<defs>
+<linearGradient id="fill_mutual-funds" x1="6" y1="6" x2="18" y2="20" gradientUnits="userSpaceOnUse">
+<stop stop-color="#23885A"/>
+<stop offset="1" stop-color="#0E4A2E"/>
+</linearGradient>
+<linearGradient id="line_mutual-funds" x1="5" y1="5" x2="19" y2="19" gradientUnits="userSpaceOnUse">
 <stop stop-color="#6FCB9F"/>
 <stop offset="1" stop-color="#0C8A4F"/>
 </linearGradient>
@@ -20277,6 +20366,35 @@ h��ha�E�  @����=O������S��m���㡦8�
 </svg>
 ```
 
+### `src/flows/stocks/assets/us/instruments/boosted-etfs-dark.svg`
+
+```tsx
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_boosted)">
+<path d="M10.886 5.36133C10.5648 5.8119 10.3824 6.36012 10.3824 6.93777C10.3824 7.96889 10.9657 8.90481 11.8767 9.36263L12.0629 9.44748L13.7993 10.1618C13.8641 10.1885 13.9184 10.2344 13.9568 10.2918L13.9895 10.352L14.7039 12.0885C15.1226 13.1054 16.0498 13.3019 17.1495 13.3019C17.7273 13.3019 17.7623 13.3019 17.9726 13.3019V19.3741C17.9726 20.148 17.3453 20.7753 16.5713 20.7753H3.95987C3.18596 20.7753 2.55859 20.148 2.55859 19.3741V6.76261C2.55859 5.98871 3.18596 5.36133 3.95987 5.36133H10.886Z" fill="url(#paint0_linear_boosted)"/>
+<path d="M15.4419 4.45641L16.1566 2.72045C16.1971 2.62245 16.2926 2.55849 16.3985 2.55849C16.5045 2.55849 16.6 2.62245 16.6404 2.72045L17.3552 4.45641C17.6398 5.14748 18.1886 5.69625 18.8796 5.98081L20.6156 6.69563C20.7137 6.73597 20.7775 6.83148 20.7775 6.93747C20.7775 7.04347 20.7137 7.13898 20.6156 7.17932L18.8796 7.89414C18.1886 8.1787 17.6398 8.72747 17.3552 9.41854L16.6404 11.1545C16.6 11.2525 16.5045 11.3165 16.3985 11.3165C16.2926 11.3165 16.1971 11.2525 16.1566 11.1545L15.4419 9.41854C15.1573 8.72747 14.6086 8.1787 13.9175 7.89414L12.1815 7.17932C12.0835 7.13898 12.0195 7.04347 12.0195 6.93747C12.0195 6.83148 12.0835 6.73597 12.1815 6.69563L13.9175 5.98081C14.6086 5.69625 15.1573 5.14748 15.4419 4.45641Z" fill="url(#paint1_linear_boosted)"/>
+<path d="M10.441 4.74837C10.7794 4.74859 11.054 5.02298 11.054 5.36142C11.054 5.69987 10.7794 5.97427 10.441 5.97448H3.95978C3.52446 5.97448 3.17143 6.32752 3.17143 6.76284V15.519L5.2702 13.3915L5.27115 13.3906C5.51213 13.1496 5.81317 13.0295 6.16296 13.0294C6.51291 13.0294 6.81467 13.1495 7.05573 13.3906L8.34411 14.6914L10.7801 12.2794H10.3049C10.1094 12.2794 9.93768 12.212 9.80108 12.0753C9.66449 11.9388 9.59611 11.767 9.59609 11.5715C9.59609 11.376 9.66449 11.2043 9.80108 11.0677C9.93769 10.9311 10.1094 10.8627 10.3049 10.8627H12.4851C12.6805 10.8628 12.8525 10.9312 12.989 11.0677C13.1254 11.2042 13.193 11.3761 13.193 11.5715V13.7508C13.193 13.9461 13.1253 14.118 12.989 14.2546C12.8525 14.3911 12.6805 14.4595 12.4851 14.4596C12.2896 14.4596 12.1169 14.3912 11.9803 14.2546C11.844 14.118 11.7763 13.9461 11.7763 13.7508V13.2737L9.23496 15.815C8.99394 16.056 8.69299 16.1761 8.34315 16.1761C7.99332 16.1761 7.69236 16.0559 7.45134 15.815L6.16296 14.5267L3.39079 17.2998C3.32591 17.3647 3.25207 17.4126 3.17143 17.4454V19.3746C3.17165 19.8098 3.52459 20.162 3.95978 20.162H16.5715C17.0065 20.1618 17.3587 19.8096 17.359 19.3746V13.7105C17.359 13.3722 17.6336 13.0977 17.972 13.0974C18.3105 13.0974 18.585 13.372 18.5851 13.7105V19.3746C18.5848 20.4868 17.6837 21.3879 16.5715 21.3881H3.95978C2.84744 21.3881 1.94553 20.4869 1.94531 19.3746V6.76284C1.94531 5.65035 2.8473 4.74837 3.95978 4.74837H10.441ZM7.63622 15.7643C7.6383 15.766 7.64083 15.7673 7.64292 15.7691C7.61679 15.7472 7.59102 15.7239 7.56629 15.6991L7.63622 15.7643ZM16.3972 1.94554C16.7072 1.94554 16.9908 2.10935 17.1472 2.36989L17.2066 2.48676L17.9212 4.22344C18.1436 4.76316 18.5721 5.19183 19.1119 5.41411L20.8476 6.12871C21.1757 6.26363 21.3897 6.58312 21.3898 6.93718C21.3898 7.2914 21.1758 7.61162 20.8476 7.7466L19.1119 8.4612C18.5721 8.6835 18.1436 9.11211 17.9212 9.65188L17.2066 11.3876C17.0717 11.7153 16.7515 11.9298 16.3972 11.9298C16.0431 11.9296 15.7236 11.7152 15.5888 11.3876L14.8742 9.65188C14.6518 9.11214 14.2232 8.68353 13.6835 8.4612L11.9468 7.7466C11.6192 7.61161 11.4056 7.29149 11.4056 6.93718C11.4057 6.58305 11.6193 6.26366 11.9468 6.12871L13.6835 5.41411C14.2232 5.19181 14.6518 4.76313 14.8742 4.22344L15.5888 2.48676L15.6481 2.36989C15.8045 2.1095 16.0873 1.94569 16.3972 1.94554ZM9.78959 11.7603C9.79152 11.7658 9.79418 11.7711 9.7963 11.7765C9.78475 11.7465 9.77548 11.7153 9.76947 11.6826L9.78959 11.7603ZM13.0292 11.5715L13.0234 11.4872C13.0228 11.4827 13.0213 11.4783 13.0206 11.4738C13.0256 11.5052 13.0292 11.5377 13.0292 11.5715ZM9.8097 11.334C9.80722 11.3393 9.80529 11.3448 9.803 11.3502C9.81545 11.3209 9.83012 11.2927 9.84802 11.2659L9.8097 11.334ZM12.8731 11.1836L12.8117 11.1299C12.8069 11.1263 12.8014 11.1238 12.7964 11.1203C12.823 11.1388 12.8491 11.1596 12.8731 11.1836ZM12.4841 11.0265C12.5578 11.0265 12.626 11.0391 12.6882 11.0629C12.6587 11.0515 12.6282 11.042 12.5962 11.036C12.5608 11.0295 12.5237 11.0265 12.4851 11.0265H12.4841ZM16.0083 4.68993C15.6615 5.53217 14.9922 6.20146 14.15 6.54827L13.2035 6.93718L14.15 7.32705C14.9922 7.67385 15.6615 8.34314 16.0083 9.18538L16.3972 10.1308L16.7871 9.18538C17.134 8.34317 17.8031 7.67385 18.6454 7.32705L19.5909 6.93718L18.6454 6.54827C17.8031 6.20146 17.134 5.53214 16.7871 4.68993L16.3972 3.74353L16.0083 4.68993Z" fill="url(#paint2_linear_boosted)"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear_boosted" x1="4.81588" y1="7.61861" x2="15.7153" y2="18.5181" gradientUnits="userSpaceOnUse">
+<stop stop-color="#3A64B8"/>
+<stop offset="1" stop-color="#1C3670"/>
+</linearGradient>
+<linearGradient id="paint1_linear_boosted" x1="13.3021" y1="3.84103" x2="19.495" y2="10.0339" gradientUnits="userSpaceOnUse">
+<stop stop-color="#81ABF6"/>
+<stop offset="1" stop-color="#2360D9"/>
+</linearGradient>
+<linearGradient id="paint2_linear_boosted" x1="4.79282" y1="4.79278" x2="18.5409" y2="18.5422" gradientUnits="userSpaceOnUse">
+<stop stop-color="#81ABF6"/>
+<stop offset="1" stop-color="#2360D9"/>
+</linearGradient>
+<clipPath id="clip0_boosted">
+<rect width="19.4444" height="19.4444" fill="#181818" transform="translate(1.94531 1.94444)"/>
+</clipPath>
+</defs>
+</svg>
+```
+
 ### `src/flows/stocks/assets/us/instruments/boosted-etfs.svg`
 
 ```tsx
@@ -20302,6 +20420,34 @@ h��ha�E�  @����=O������S��m���㡦8�
 <clipPath id="clip0_boosted">
 <rect width="19.4444" height="19.4444" fill="white" transform="translate(1.94531 1.94444)"/>
 </clipPath>
+</defs>
+</svg>
+```
+
+### `src/flows/stocks/assets/us/instruments/etfs-dark.svg`
+
+```tsx
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M10.696 12.6389V5.34719C9.25381 5.34719 7.84404 5.77484 6.64493 6.57606C5.44583 7.37728 4.51123 8.51608 3.95935 9.84846C3.40746 11.1808 3.26306 12.647 3.54441 14.0614C3.82576 15.4758 4.52022 16.7751 5.53998 17.7948C6.55974 18.8146 7.85899 19.5091 9.27343 19.7904C10.6879 20.0718 12.154 19.9274 13.4864 19.3755C14.8187 18.8236 15.9575 17.889 16.7588 16.6899C17.56 15.4908 17.9876 14.081 17.9876 12.6389H10.696Z" fill="url(#paint0_linear_etfs)" stroke="url(#paint1_linear_etfs)" stroke-width="1.36111" stroke-linejoin="round"/>
+<path d="M10.6957 12.6389L5.54297 17.7916" stroke="url(#paint2_linear_etfs)" stroke-width="1.36111" stroke-linecap="round"/>
+<path d="M12.6406 10.6944V3.40277C13.5982 3.40277 14.5464 3.59137 15.431 3.95781C16.3157 4.32425 17.1195 4.86135 17.7966 5.53845C18.4737 6.21554 19.0108 7.01937 19.3772 7.90403C19.7437 8.7887 19.9323 9.73688 19.9323 10.6944H12.6406Z" fill="url(#paint3_linear_etfs)"/>
+<defs>
+<linearGradient id="paint0_linear_etfs" x1="5.53993" y1="7.48283" x2="15.852" y2="17.7949" gradientUnits="userSpaceOnUse">
+<stop stop-color="#3A64B8"/>
+<stop offset="1" stop-color="#1C3670"/>
+</linearGradient>
+<linearGradient id="paint1_linear_etfs" x1="5.53993" y1="7.48283" x2="15.852" y2="17.7949" gradientUnits="userSpaceOnUse">
+<stop stop-color="#81ABF6"/>
+<stop offset="1" stop-color="#2360D9"/>
+</linearGradient>
+<linearGradient id="paint2_linear_etfs" x1="6.29756" y1="13.3934" x2="9.94116" y2="17.037" gradientUnits="userSpaceOnUse">
+<stop stop-color="#81ABF6"/>
+<stop offset="1" stop-color="#2360D9"/>
+</linearGradient>
+<linearGradient id="paint3_linear_etfs" x1="13.7084" y1="4.47058" x2="18.8645" y2="9.62662" gradientUnits="userSpaceOnUse">
+<stop stop-color="#81ABF6"/>
+<stop offset="1" stop-color="#2360D9"/>
+</linearGradient>
 </defs>
 </svg>
 ```
@@ -20334,6 +20480,26 @@ h��ha�E�  @����=O������S��m���㡦8�
 </svg>
 ```
 
+### `src/flows/stocks/assets/us/instruments/fractional-dark.svg`
+
+```tsx
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect x="3" y="5.6" width="15.4" height="15.4" rx="3" fill="url(#fill_fractional)" stroke="url(#line_fractional)" stroke-width="1.4" stroke-linejoin="round"/>
+<path d="M10.7 5.6V21M3 13.3H18.4" stroke="url(#line_fractional)" stroke-width="1.4" stroke-linecap="round"/>
+<rect x="12.3" y="2.3" width="9.4" height="9.4" rx="2.6" fill="url(#line_fractional)" stroke="#181818" stroke-width="1.4"/>
+<defs>
+<linearGradient id="fill_fractional" x1="5" y1="7.5" x2="16.5" y2="19" gradientUnits="userSpaceOnUse">
+<stop stop-color="#3A64B8"/>
+<stop offset="1" stop-color="#1C3670"/>
+</linearGradient>
+<linearGradient id="line_fractional" x1="4.8" y1="4.8" x2="18.5" y2="18.5" gradientUnits="userSpaceOnUse">
+<stop stop-color="#81ABF6"/>
+<stop offset="1" stop-color="#2360D9"/>
+</linearGradient>
+</defs>
+</svg>
+```
+
 ### `src/flows/stocks/assets/us/instruments/fractional.svg`
 
 ```tsx
@@ -20347,6 +20513,26 @@ h��ha�E�  @����=O������S��m���㡦8�
 <stop offset="1" stop-color="#CCDEFF"/>
 </linearGradient>
 <linearGradient id="line_fractional" x1="4.8" y1="4.8" x2="18.5" y2="18.5" gradientUnits="userSpaceOnUse">
+<stop stop-color="#81ABF6"/>
+<stop offset="1" stop-color="#2360D9"/>
+</linearGradient>
+</defs>
+</svg>
+```
+
+### `src/flows/stocks/assets/us/instruments/themes-dark.svg`
+
+```tsx
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M3.6 15.9L12 20.5L20.4 15.9" stroke="url(#line_themes)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M3.6 11.9L12 16.5L20.4 11.9L12 7.3L3.6 11.9Z" fill="url(#fill_themes)" stroke="url(#line_themes)" stroke-width="1.4" stroke-linejoin="round"/>
+<path d="M3.6 7.9L12 12.5L20.4 7.9L12 3.3L3.6 7.9Z" fill="url(#line_themes)" stroke="#181818" stroke-width="1.2" stroke-linejoin="round"/>
+<defs>
+<linearGradient id="fill_themes" x1="5" y1="6" x2="17" y2="19" gradientUnits="userSpaceOnUse">
+<stop stop-color="#3A64B8"/>
+<stop offset="1" stop-color="#1C3670"/>
+</linearGradient>
+<linearGradient id="line_themes" x1="4.8" y1="4.8" x2="18.5" y2="18.5" gradientUnits="userSpaceOnUse">
 <stop stop-color="#81ABF6"/>
 <stop offset="1" stop-color="#2360D9"/>
 </linearGradient>
@@ -20609,6 +20795,7 @@ export function Watchlists({ lists = watchlists, onOpen, onViewAll }: { lists?: 
   gap: var(--l3-spacing-24);
   overflow: hidden;
   padding: var(--l3-spacing-16);
+  padding-top: var(--l3-spacing-24); /* 24 under the IN / US tabs (23 Nov, the user's call), 16 elsewhere */
   border-radius: 0 0 var(--l3-radius-16) var(--l3-radius-16);
   background: var(--l3-surface-primary);
   --glow: var(--l3-surface-accent-us-stock-light);
@@ -24068,15 +24255,16 @@ export function StockEvents({ events, shown, onFilters, onEvent, expanded = fals
 ### `src/flows/stocks/components/StockOverview.tsx`
 
 ```tsx
-import { useState } from 'react'
+import { useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
+import { Card } from '@l3/components/Card'
 import { Icon } from '@l3/components/Icon'
-import { KeyValueList, KeyValueRow } from '@l3/components/KeyValueList'
 import { ListCell } from '@l3/components/ListCell'
 import { ProgressBar } from '@l3/components/ProgressBar'
 import { SectionHeader } from '@l3/components/SectionHeader'
+import { Select } from '@l3/components/Select'
 import { Stack } from '@l3/components/Stack'
 import { Tabs } from '@l3/components/Tabs'
-import { msBoltFill, msChevronRight, msEventRepeat } from '@l3/icons/material'
+import { msBoltFill, msChevronLeft, msChevronRight, msEventRepeat } from '@l3/icons/material'
 import { inr } from '../../../shared/data/format'
 import { t } from '../copy'
 import type { FinancialMetric, FinancialPeriod, StockPageData } from '../data'
@@ -24095,8 +24283,9 @@ type Props = {
 }
 
 /**
- * The Overview tab, top to bottom: Boost SIP, Daily Performance, Fundamentals, Market Depth, About Company,
- * Shareholding Pattern, Financials, then the data source line.
+ * The Overview tab (23 Nov: synced with the new US stock page — white cards with a hairline border, 16 headings, label
+ * over value), top to bottom: Boost SIP, Daily Performance, Fundamentals, Market Depth, About Company, Key Holders,
+ * Company financials, then the data source line. Boost SIP and Market Depth are Indian-only.
  */
 export function StockOverview({ page, price, aboutOpen = false, onGlossary }: Props) {
   return (
@@ -24115,56 +24304,91 @@ export function StockOverview({ page, price, aboutOpen = false, onGlossary }: Pr
       <Fundamentals page={page} onInfo={() => onGlossary('fundamentals')} />
       <div data-part="depth"><MarketDepth page={page} /></div>
       <About page={page} initiallyOpen={aboutOpen} />
-      <div data-part="shareholding"><ShareholdingPattern page={page} /></div>
+      <div data-part="shareholding"><KeyHolders page={page} /></div>
       <Financials page={page} />
       <p className={styles.source}>{t('stock.source')}</p>
     </Stack>
   )
 }
 
+/** A section: its 16 heading, then the content 16 under it. */
+function Section({ title, onInfo, infoLabel, children }: { title: string; onInfo?: () => void; infoLabel?: string; children: ReactNode }) {
+  return (
+    <Stack as="section" gap="16" aria-label={title}>
+      <SectionHeader className={styles.heading} title={title} onInfo={onInfo} infoLabel={infoLabel} />
+      {children}
+    </Stack>
+  )
+}
+
+/** Label over value, as on the US page. */
+function Stat({ label, value, end }: { label: string; value: string; end?: boolean }) {
+  return (
+    <div className={styles.stat} data-end={end || undefined}>
+      <dt>{label}</dt>
+      <dd>{value}</dd>
+    </div>
+  )
+}
+
+/** The day's low → high with the last traded price on it (red → green, the bolt at the price), then the day's
+ *  numbers as a 3 × 2 grid. */
 function DailyPerformance({ page, price, onInfo }: { page: StockPageData; price: number; onInfo: () => void }) {
   const low = Math.min(page.dayLow, price)
   const high = Math.max(page.dayHigh, price)
-  const at = ((price - low) / Math.max(0.01, high - low)) * 100
-  const stat = (value: string, label: string) => <Stack gap="04"><p className={styles.statValue}>{value}</p><p className={styles.statLabel}>{label}</p></Stack>
+  const at = Math.min(100, Math.max(0, ((price - low) / Math.max(0.01, high - low)) * 100))
   return (
-    <Stack as="section" gap="16" aria-label={t('stock.daily')}>
-      <SectionHeader title={t('stock.daily')} onInfo={onInfo} infoLabel={t('stock.dailyInfo')} />
-      <div className={styles.panel}>
-        <Stack direction="horizontal" justify="between">
-          <Stack gap="04"><p className={styles.statLabel}>{t('stock.dayLow')}</p><p className={styles.statValue}>{num(low)}</p></Stack>
-          <Stack gap="04" align="end"><p className={styles.statLabel}>{t('stock.dayHigh')}</p><p className={styles.statValue}>{num(high)}</p></Stack>
+    <Section title={t('stock.daily')} onInfo={onInfo} infoLabel={t('stock.dailyInfo')}>
+      <Card>
+        <Stack gap="04">
+          <dl className={styles.lowHigh}>
+            <Stat label={t('stock.dayLow')} value={num(low)} />
+            <Stat label={t('stock.dayHigh')} value={num(high)} end />
+          </dl>
+          <div
+            className={styles.dayRange}
+            role="meter"
+            aria-label={t('stock.dayRange')}
+            aria-valuemin={low}
+            aria-valuemax={high}
+            aria-valuenow={price}
+            aria-valuetext={inr(price)}
+            style={{ '--at': `${at}%` } as CSSProperties}
+          >
+            <span className={styles.dayTick} />
+            <span className={styles.dayBolt}><Icon icon={msBoltFill} size={16} /></span>
+          </div>
+          <p className={styles.ltp}><Icon icon={msBoltFill} size={12} /> {t('stock.ltp')} {inr(price)}</p>
         </Stack>
-        <ProgressBar type="range" size="md" value={at} label={t('stock.dayRange')} valueText={inr(price)} />
-        <p className={styles.ltp}><Icon icon={msBoltFill} size={12} /> {t('stock.ltp')} <strong>{inr(price)}</strong></p>
-      </div>
-      <div className={[styles.panel, styles.statGrid].join(' ')}>
-        {stat(num(page.open), t('stock.open'))}
-        {stat(num(page.prevClose), t('stock.prevClose'))}
-        {stat(t('stock.crore', { value: num(page.marketCapCr, 1) }), t('stock.marketCap'))}
-        {stat(num(page.volume, 0), t('stock.volume'))}
-        {stat(num(page.upperCircuit), t('stock.upperCircuit'))}
-        {stat(num(page.lowerCircuit), t('stock.lowerCircuit'))}
-      </div>
-    </Stack>
+      </Card>
+      <Card>
+        <dl className={styles.statGrid} data-columns="3">
+          <Stat label={t('stock.open')} value={num(page.open)} />
+          <Stat label={t('stock.prevClose')} value={num(page.prevClose)} />
+          <Stat label={t('stock.marketCap')} value={t('stock.crore', { value: num(page.marketCapCr, 1) })} />
+          <Stat label={t('stock.volume')} value={num(page.volume, 0)} />
+          <Stat label={t('stock.upperCircuit')} value={num(page.upperCircuit)} />
+          <Stat label={t('stock.lowerCircuit')} value={num(page.lowerCircuit)} />
+        </dl>
+      </Card>
+    </Section>
   )
 }
 
 function Fundamentals({ page, onInfo }: { page: StockPageData; onInfo: () => void }) {
   const f = page.fundamentals
   return (
-    <Stack as="section" gap="16" aria-label={t('stock.fundamentals')}>
-      <SectionHeader title={t('stock.fundamentals')} onInfo={onInfo} infoLabel={t('stock.fundamentalsInfo')} />
-      <div className={styles.panel}>
-        <KeyValueList aria-label={t('stock.fundamentals')} className={styles.ruled}>
-          <KeyValueRow label={t('stock.pe')} value={num(f.pe)} />
-          <KeyValueRow label={t('stock.industryPe')} value={num(f.industryPe)} />
-          <KeyValueRow label={t('stock.roe')} value={`${num(f.roe)}%`} />
-          <KeyValueRow label={t('stock.dividendYield')} value={`${num(f.dividendYield)}%`} />
-          <KeyValueRow label={t('stock.pbv')} value={num(f.pbv)} />
-        </KeyValueList>
-      </div>
-    </Stack>
+    <Section title={t('stock.fundamentals')} onInfo={onInfo} infoLabel={t('stock.fundamentalsInfo')}>
+      <Card>
+        <dl className={styles.statGrid}>
+          <Stat label={t('stock.pe')} value={num(f.pe)} />
+          <Stat label={t('stock.industryPe')} value={num(f.industryPe)} />
+          <Stat label={t('stock.roe')} value={`${num(f.roe)}%`} />
+          <Stat label={t('stock.dividendYield')} value={`${num(f.dividendYield)}%`} />
+          <Stat label={t('stock.pbv')} value={num(f.pbv)} />
+        </dl>
+      </Card>
+    </Section>
   )
 }
 
@@ -24174,94 +24398,157 @@ function MarketDepth({ page }: { page: StockPageData }) {
     { side: 'ask', title: t('stock.ask'), rows: page.depth.asks, tone: styles.down },
   ] as const
   return (
-    <Stack as="section" gap="16" aria-label={t('stock.depth')}>
-      <SectionHeader title={t('stock.depth')} />
-      <div className={[styles.panel, styles.depth].join(' ')}>
-        {sides.map(({ side, title, rows, tone }) => (
-          <table key={side} className={styles.depthSide}>
-            <thead><tr><th>{title}</th><th>{t('stock.qty')}</th></tr></thead>
-            <tbody>{rows.map((r) => <tr key={r.price}><td>{num(r.price)}</td><td className={tone}>{num(r.qty, 0)}</td></tr>)}</tbody>
-            <tfoot><tr><td>{t('stock.total')}</td><td className={tone}>{num(rows.reduce((s, r) => s + r.qty, 0), 0)}</td></tr></tfoot>
-          </table>
-        ))}
-      </div>
-    </Stack>
+    <Section title={t('stock.depth')}>
+      <Card padding="none">
+        <div className={styles.depth}>
+          {sides.map(({ side, title, rows, tone }) => (
+            <table key={side} className={styles.depthSide}>
+              <thead><tr><th>{title}</th><th>{t('stock.qty')}</th></tr></thead>
+              <tbody>{rows.map((r) => <tr key={r.price}><td>{num(r.price)}</td><td className={tone}>{num(r.qty, 0)}</td></tr>)}</tbody>
+              <tfoot><tr><td>{t('stock.total')}</td><td className={tone}>{num(rows.reduce((s, r) => s + r.qty, 0), 0)}</td></tr></tfoot>
+            </table>
+          ))}
+        </div>
+      </Card>
+    </Section>
   )
 }
 
+/** About Company: the title inside the card (as on the US page), three lines until Read more; Read more shows only
+ *  when the text is cut. */
 function About({ page, initiallyOpen }: { page: StockPageData; initiallyOpen: boolean }) {
   const [open, setOpen] = useState(initiallyOpen)
+  const [cut, setCut] = useState(false)
+  const text = useRef<HTMLDivElement>(null)
+  useLayoutEffect(() => {
+    const el = text.current
+    if (!el || open) return
+    const measure = () => setCut(el.scrollHeight > el.clientHeight + 1)
+    measure()
+    const watch = new ResizeObserver(measure)
+    watch.observe(el)
+    return () => watch.disconnect()
+  }, [open, page])
   return (
-    <Stack as="section" gap="16" aria-label={t('stock.about')}>
-      <SectionHeader title={t('stock.about')} />
-      <div className={styles.panel}>
-        <div className={styles.about} data-open={open || undefined}>
-          {(open ? page.about : page.about.slice(0, 1)).map((p) => <p key={p}>{p}</p>)}
-        </div>
-        <button type="button" className={styles.link} aria-expanded={open} onClick={() => setOpen(!open)}>{open ? t('stock.readLess') : t('stock.readMore')}</button>
-      </div>
-    </Stack>
+    <section aria-label={t('stock.about')}>
+      <Card>
+        <Stack gap="08">
+          <SectionHeader className={styles.heading} title={t('stock.about')} />
+          <Stack gap="04" align="start">
+            <div ref={text} className={styles.about} data-collapsed={!open || undefined}>
+              {page.about.map((p) => <p key={p}>{p}</p>)}
+            </div>
+            {(cut || open) && (
+              <button type="button" className={styles.link} aria-expanded={open} onClick={() => setOpen(!open)}>
+                {open ? t('stock.readLess') : t('stock.readMore')}
+              </button>
+            )}
+          </Stack>
+        </Stack>
+      </Card>
+    </section>
   )
 }
 
-function ShareholdingPattern({ page }: { page: StockPageData }) {
+/** Key Holders (the shareholding pattern), drawn like the US page's: "4 holder types · Weight", then each holder,
+ *  a short bar against the biggest and its share. The quarter pills stay (Indian filings are quarterly). */
+function KeyHolders({ page }: { page: StockPageData }) {
   const [quarter, setQuarter] = useState(page.shareholding[0].quarter)
   const q = page.shareholding.find((s) => s.quarter === quarter) ?? page.shareholding[0]
   const groups = [
     [t('stock.promoters'), q.promoters],
-    [t('stock.retail'), q.retail],
     [t('stock.foreign'), q.foreign],
     [t('stock.domestic'), q.domestic],
+    [t('stock.retail'), q.retail],
   ] as const
+  const biggest = Math.max(...groups.map(([, pct]) => pct))
   return (
-    <Stack as="section" gap="16" aria-label={t('stock.shareholding')}>
-      <SectionHeader title={t('stock.shareholding')} />
-      {/* The quarter tabs sit with the header, outside the card (19 Nov). */}
-      <Tabs appearance="pill" emphasis="primary" size="sm" behavior="filter" aria-label={t('stock.quarter')} value={quarter} onChange={setQuarter}
-        items={page.shareholding.map((s) => ({ value: s.quarter, label: s.quarter }))} />
-      <div className={styles.panel}>
-        <Stack gap="16">
-          {groups.map(([label, pct]) => (
-            <Stack key={label} gap="08">
-              <p className={styles.holder}>{label}</p>
-              <Stack direction="horizontal" gap="12" align="center">
-                <ProgressBar className={styles.grow} size="md" value={pct} label={label} valueText={`${num(pct)}%`} />
+    <Stack as="section" gap="16" aria-label={t('stock.keyHolders')}>
+      <Stack gap="08">
+        <SectionHeader className={styles.heading} title={t('stock.keyHolders')} />
+        <Tabs appearance="pill" emphasis="primary" size="sm" behavior="filter" aria-label={t('stock.quarter')} value={quarter} onChange={setQuarter}
+          items={page.shareholding.map((s) => ({ value: s.quarter, label: s.quarter }))} />
+      </Stack>
+      <Card>
+        <Stack gap="12">
+          <p className={styles.holdersHead} aria-hidden="true"><span>{t('stock.holderTypes', { count: groups.length })}</span><span>{t('stock.weight')}</span></p>
+          <ul className={styles.holders} aria-label={t('stock.keyHolders')}>
+            {groups.map(([label, pct]) => (
+              <li key={label} aria-label={`${label}, ${num(pct)}%`}>
+                <span className={styles.holder}>{label}</span>
+                <ProgressBar className={styles.holderBar} size="sm" value={(pct / biggest) * 100} label={label} valueText={`${num(pct)}%`} />
                 <span className={styles.pct}>{num(pct)}%</span>
-              </Stack>
-            </Stack>
-          ))}
+              </li>
+            ))}
+          </ul>
         </Stack>
-      </div>
+      </Card>
     </Stack>
   )
 }
 
+/** Company financials (as on the US page): the figure pills, then a card with the bars (the picked period bright),
+ *  Quarterly / Yearly and a period stepper, and the picked period's three figures with the change from the one before. */
 function Financials({ page }: { page: StockPageData }) {
   const [period, setPeriod] = useState<FinancialPeriod>('quarterly')
   const [metric, setMetric] = useState<FinancialMetric>('revenue')
   const bars = page.financials[period]
+  const last = bars.length - 1
+  const [picked, setPicked] = useState(last)
   const max = Math.max(...bars.map((b) => b[metric]))
   const metricLabel = t(`stock.${metric}`)
+  const switchPeriod = () => {
+    const next = period === 'quarterly' ? 'yearly' : 'quarterly'
+    setPeriod(next)
+    setPicked(page.financials[next].length - 1)
+  }
+  const now = bars[picked]
+  const before = bars[picked - 1]
+  const metrics = ['revenue', 'profit', 'networth'] as const
   return (
     <Stack as="section" gap="16" aria-label={t('stock.financials')}>
-      <SectionHeader title={t('stock.financials')} action={{ type: 'switcher', label: period === 'quarterly' ? t('stock.quarterly') : t('stock.yearly'), 'aria-label': t('stock.period'), onClick: () => setPeriod(period === 'quarterly' ? 'yearly' : 'quarterly') }} />
-      {/* The metric tabs sit with the header, outside the card (19 Nov). */}
-      <Tabs appearance="pill" emphasis="primary" size="sm" behavior="filter" aria-label={t('stock.metric')} value={metric} onChange={(v) => setMetric(v as FinancialMetric)}
-        items={(['revenue', 'profit', 'networth'] as const).map((m) => ({ value: m, label: t(`stock.${m}`) }))} />
-      <div className={styles.panel}>
-        <div className={styles.bars} role="img" aria-label={`${t('stock.barsLabel', { metric: metricLabel, from: bars[0].label, to: bars[bars.length - 1].label })}: ${bars.map((b) => `${b.label} ₹${num(b[metric], 0)} Cr`).join(', ')}`}>
-          {bars.map((b) => (
-            <div key={b.label} className={styles.barCol}>
+      <Stack gap="08">
+        <SectionHeader className={styles.heading} title={t('stock.financials')} />
+        <Tabs appearance="pill" emphasis="primary" size="sm" behavior="filter" aria-label={t('stock.metric')} value={metric} onChange={(v) => setMetric(v as FinancialMetric)}
+          items={metrics.map((m) => ({ value: m, label: t(`stock.${m}`) }))} />
+      </Stack>
+      <Card padding="none">
+        <div className={styles.bars} role="img" aria-label={`${t('stock.barsLabel', { metric: metricLabel, from: bars[0].label, to: bars[last].label })}: ${bars.map((b) => `${b.label} ₹${num(b[metric], 0)} Cr`).join(', ')}`}>
+          {bars.map((b, i) => (
+            <button key={b.label} type="button" className={styles.barCol} data-active={i === picked || undefined} aria-label={t('stock.showPeriod', { period: b.label })} onClick={() => setPicked(i)}>
               <span className={styles.barTrack}>
                 <span className={styles.bar} style={{ height: `${(b[metric] / max) * 100}%` }}>
                   <span className={styles.barValue}>{t('stock.crore', { value: num(b[metric], 0) }).replace(' ', '')}</span>
                 </span>
               </span>
               <span className={styles.barLabel}>{b.label}</span>
-            </div>
+            </button>
           ))}
         </div>
-      </div>
+        <div className={styles.tableHeader}>
+          <Select size="sm" subtle aria-label={t('stock.period')} onClick={switchPeriod}>{period === 'quarterly' ? t('stock.quarterly') : t('stock.yearly')}</Select>
+          <span className={styles.stepper}>
+            <button type="button" aria-label={t('stock.prevPeriod')} disabled={picked <= 0} onClick={() => setPicked((p) => Math.max(0, p - 1))}><Icon icon={msChevronLeft} size={16} /></button>
+            {now.label}
+            <button type="button" aria-label={t('stock.nextPeriod')} disabled={picked >= last} onClick={() => setPicked((p) => Math.min(last, p + 1))}><Icon icon={msChevronRight} size={16} /></button>
+          </span>
+          <span className={styles.changeCol}>{t(period === 'quarterly' ? 'stock.qoq' : 'stock.yoy')}</span>
+        </div>
+        <dl className={styles.table}>
+          {metrics.map((m) => {
+            const delta = before ? ((now[m] - before[m]) / Math.abs(before[m])) * 100 : null
+            return (
+              <div key={m} className={styles.tableRow}>
+                <dt>{t(`stock.${m}`)}</dt>
+                <dd>{t('stock.crore', { value: num(now[m], 0) })}</dd>
+                <dd className={delta == null ? undefined : delta < 0 ? styles.down : styles.up}>
+                  {delta == null ? '—' : `${delta < 0 ? '−' : '+'}${Math.abs(delta).toFixed(1)}%`}
+                </dd>
+              </div>
+            )
+          })}
+        </dl>
+      </Card>
     </Stack>
   )
 }
@@ -29143,7 +29430,7 @@ export function useLiveHeatmap(symbols: string[] = heatSymbols): HeatValue[] {
   "stock.retail": "Retail",
   "stock.foreign": "Foreign Institutions",
   "stock.domestic": "Domestic Institutions",
-  "stock.financials": "Financials",
+  "stock.financials": "Company financials",
   "stock.quarterly": "Quarterly",
   "stock.yearly": "Yearly",
   "stock.period": "Quarterly or yearly figures",
@@ -29498,7 +29785,15 @@ export function useLiveHeatmap(symbols: string[] = heatSymbols): HeatValue[] {
   "f3.chips.sectors": "Sectors",
   "f3.chips.ideaBaskets": "Idea baskets",
   "f3.chips.heatmap": "Heatmap",
-  "f3.chips.brands": "Brands"
+  "f3.chips.brands": "Brands",
+  "stock.keyHolders": "Key Holders",
+  "stock.holderTypes": "{count} holder types",
+  "stock.weight": "Weight",
+  "stock.showPeriod": "Show {period}",
+  "stock.prevPeriod": "Previous period",
+  "stock.nextPeriod": "Next period",
+  "stock.qoq": "Q/Q change",
+  "stock.yoy": "Y/Y change"
 }
 ```
 
@@ -30692,10 +30987,10 @@ export function Glossary({ kind, onBack }: { kind: keyof typeof TERMS; onBack: (
   min-width: 0;
 }
 
-/* Ticker in the hero: no band hangs over the hero's top any more, so the summary brings 16 (+ the hero's 16 = 32 from
-   the tabs' line to the overline, as Figma). */
+/* Ticker in the hero: no band hangs over the hero's top any more, and the hero starts right under the tabs' line — no
+   extra 16 above it (23 Nov, the user's call: it read as a strip of page colour between the tabs and the hero). */
 .summary[data-hero]:has([data-hero-ticker]) {
-  padding-top: var(--l3-spacing-16);
+  padding-top: 0;
 }
 
 /* V2: the strip runs edge to edge inside the hero (the hero pads 16; the strip brings its own 16 and scrolls sideways). */
@@ -30880,6 +31175,9 @@ export function Glossary({ kind, onBack }: { kind: keyof typeof TERMS; onBack: (
    the hero's 16 corners), and the feed is a rounded sheet again (radius 32 at the top), as in the reference. The
    ticker's tap areas run 12 above and below it, as the sticky one's. */
 .flatCards[data-ticker-between] .summary[data-hero] {
+  /* No band hangs under the tabs here (--band-pad 0), so the hero starts right under the tabs' line (23 Nov, the user's
+     call: the 12 read as an empty strip). */
+  padding-top: 0;
   background: linear-gradient(to top, var(--l3-surface-accent-discover-light) var(--l3-radius-16), var(--l3-surface-default) 0);
 }
 /* V19: the hero without its blue / green glow (the user's call, 18 Nov) — plain, like the header card. */
@@ -30972,6 +31270,7 @@ import { Stack } from '@l3/components/Stack'
 import { msAnalyticsFill, msOilBarrelFill, msBoltFill, msBookmarkFill, msCandlestickChartFill, msCategoryFill, msCheckCircle, msCurrencyRupee, msDonutSmallFill, msGridViewFill, msInterestsFill, msLightbulbFill, msPieChartFill, msRedeem, msRocketLaunchFill, msScheduleFill, msShoppingBasketFill, msSmartToyFill, msStorefrontFill } from '@l3/icons/material'
 import { useAutoAdvance, useFlowOption, usePreview } from '../../../shared/prototype'
 import { user } from '../../../shared/data/user'
+import { useTheme } from '@l3/theme'
 import { viewUsStock } from '../../../shared/data/usStocks'
 import { MainNav, rememberStocksHome, takeStocksTab, type Section as NavSection } from '../../../shared/ui/MainNav'
 import { Screen } from '../../../shared/ui/Screen'
@@ -30993,13 +31292,21 @@ import { UsActivationCard } from '../components/us/UsActivationCard'
 import { UsHome } from '../components/us/UsHome'
 import { UsHero } from '../components/us/UsHero'
 import inMutualFundsArt from '../assets/in/instruments/mutual-funds.svg'
+import inMutualFundsArtDark from '../assets/in/instruments/mutual-funds-dark.svg'
 import inFnoArt from '../assets/in/instruments/fno.svg'
+import inFnoArtDark from '../assets/in/instruments/fno-dark.svg'
 import inCommoditiesArt from '../assets/in/instruments/commodities.svg'
+import inCommoditiesArtDark from '../assets/in/instruments/commodities-dark.svg'
 import inIpoArt from '../assets/in/instruments/ipo.svg'
+import inIpoArtDark from '../assets/in/instruments/ipo-dark.svg'
 import etfsArt from '../assets/us/instruments/etfs.svg'
+import etfsArtDark from '../assets/us/instruments/etfs-dark.svg'
 import boostedEtfsArt from '../assets/us/instruments/boosted-etfs.svg'
+import boostedEtfsArtDark from '../assets/us/instruments/boosted-etfs-dark.svg'
 import themesArt from '../assets/us/instruments/themes.svg'
+import themesArtDark from '../assets/us/instruments/themes-dark.svg'
 import fractionalArt from '../assets/us/instruments/fractional.svg'
+import fractionalArtDark from '../assets/us/instruments/fractional-dark.svg'
 import { UsFtuxSheet } from '../components/us/sheets/UsFtuxSheet'
 import { RiskDisclosureSheet } from '../components/us/sheets/RiskDisclosureSheet'
 import { HeroButtons, HeroShell, HoldingsHero } from '../components/HoldingsHero'
@@ -31526,6 +31833,8 @@ export function Home({ scrollTo = 'top', market = 'in', movers, onStock, onTab, 
   // as chips. Instruments open what the product cards did; of the chips, Analyst picks and Smart Invest lead somewhere
   // (the others have no screen in the prototype yet).
   const shortcutsLook = useFlowOption('stocks', 'shortcuts', DEFAULT_SHORTCUTS)
+  // Instrument art has a dark version (23 Nov): the light one's near-white fill glares on a dark disc.
+  const dark = useTheme().mode === 'dark'
   const shortcutsV3 = shortcutsLook === 'v3' || shortcutsLook === 'v4' || shortcutsLook === 'v5' || shortcutsLook === 'v6' // instruments + chips; V4 is the ringed look with icons in the chips, V5 the soft circles (Figma 6635:19626)
   const instrumentLook = shortcutsLook === 'v6' ? 'mini' : shortcutsLook === 'v5' ? 'soft' : shortcutsLook === 'v4' ? 'ring' : 'solid'
   const ringed = shortcutsLook === 'v4'
@@ -31537,16 +31846,16 @@ export function Home({ scrollTo = 'top', market = 'in', movers, onStock, onTab, 
   const art = (src: string, fallback: string, nudge = 0, nudgeY = 0) => (instrumentLook === 'mini' || shortcutsLook === 'v2' ? <img src={src} alt="" width={24} height={24} style={nudge || nudgeY ? { translate: `${nudge}px ${nudgeY}px` } : undefined} /> : glyph(fallback))
   const instruments: Record<Market, Instrument[]> = {
     in: [
-      { id: 'mutual-funds', label: t('f1.in.mutualFunds'), icon: art(inMutualFundsArt, msPieChartFill, 1.5) },
-      { id: 'fno', label: t('f3.in.fno'), icon: art(inFnoArt, msCandlestickChartFill) },
-      { id: 'commodities', label: t('f1.in.commodities'), icon: art(inCommoditiesArt, msOilBarrelFill, 0.5, -1) },
-      { id: 'ipo', label: t('f3.in.ipo'), icon: art(inIpoArt, msRocketLaunchFill) },
+      { id: 'mutual-funds', label: t('f1.in.mutualFunds'), icon: art(dark ? inMutualFundsArtDark : inMutualFundsArt, msPieChartFill, 1.5) },
+      { id: 'fno', label: t('f3.in.fno'), icon: art(dark ? inFnoArtDark : inFnoArt, msCandlestickChartFill) },
+      { id: 'commodities', label: t('f1.in.commodities'), icon: art(dark ? inCommoditiesArtDark : inCommoditiesArt, msOilBarrelFill, 0.5, -1) },
+      { id: 'ipo', label: t('f3.in.ipo'), icon: art(dark ? inIpoArtDark : inIpoArt, msRocketLaunchFill) },
     ],
     us: [
-      { id: 'etfs', label: t('f1.shortcuts.etfs'), icon: art(etfsArt, msPieChartFill, 1) },
-      { id: 'boosted-etfs', label: t('f3.us.boosted'), icon: art(boostedEtfsArt, msBoltFill, 1), isNew: true },
-      { id: 'themes', label: t('f3.us.themes'), icon: art(themesArt, msInterestsFill) },
-      { id: 'fractional', label: t('f3.us.fractional'), icon: art(fractionalArt, msDonutSmallFill) },
+      { id: 'etfs', label: t('f1.shortcuts.etfs'), icon: art(dark ? etfsArtDark : etfsArt, msPieChartFill, 1) },
+      { id: 'boosted-etfs', label: t('f3.us.boosted'), icon: art(dark ? boostedEtfsArtDark : boostedEtfsArt, msBoltFill, 1), isNew: true },
+      { id: 'themes', label: t('f3.us.themes'), icon: art(dark ? themesArtDark : themesArt, msInterestsFill) },
+      { id: 'fractional', label: t('f3.us.fractional'), icon: art(dark ? fractionalArtDark : fractionalArt, msDonutSmallFill) },
     ],
   }
   const featureChips: Record<Market, FeatureChip[]> = {
@@ -31846,9 +32155,9 @@ function horizontalRail(el: HTMLElement, root: HTMLElement): HTMLElement | null 
 .page { padding-block: var(--l3-spacing-08) var(--l3-spacing-32); }
 .grow { flex: 1; min-width: 0; }
 
-.name { margin: 0; font: var(--l3-text-heading-16); }
+.name { margin: 0; font: var(--l3-text-heading-18); }
 .price { font: var(--l3-text-heading-24); white-space: nowrap; }
-.change { display: inline-flex; align-items: center; gap: var(--l3-spacing-04); font: var(--l3-text-label-14); white-space: nowrap; }
+.change { display: inline-flex; align-items: center; gap: var(--l3-spacing-04); font: var(--l3-text-label-16); white-space: nowrap; }
 .up { color: var(--l3-content-accent-indicator-up-default); }
 .down { color: var(--l3-content-accent-indicator-down-default); }
 .compactPrice { display: inline-flex; align-items: center; gap: var(--l3-spacing-04); }
@@ -31859,48 +32168,80 @@ function horizontalRail(el: HTMLElement, root: HTMLElement): HTMLElement | null 
 
 .sip.sip { flex: none; }
 
-.panel { display: flex; flex-direction: column; gap: var(--l3-spacing-12); padding: var(--l3-spacing-16) var(--l3-spacing-12); border-radius: var(--l3-radius-16); background: var(--l3-surface-secondary); }
+/* Overview (23 Nov, synced with the US stock page): white cards with a hairline border come from L3 Card (static);
+   section headings at heading 16 (L3 gap: SectionHeader has no 16 size). */
+.heading h2 { font: var(--l3-text-heading-16); }
+/* Events keep a bordered white box per year, like the cards. */
+.panel { display: flex; flex-direction: column; border-radius: var(--l3-radius-12); background: var(--l3-surface-default); box-shadow: inset 0 0 0 1px var(--l3-border-light); }
 .boostIcon { display: inline-grid; place-items: center; width: var(--l3-size-40); height: var(--l3-size-40); border-radius: var(--l3-radius-full); background: var(--l3-surface-accent-success-light); color: var(--l3-content-accent-success-default); }
 
-.statValue { font: var(--l3-text-heading-12); white-space: nowrap; }
-.statLabel { font: var(--l3-text-label-12); color: var(--l3-content-tertiary); white-space: nowrap; }
-.statGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--l3-spacing-16) var(--l3-spacing-12); }
-.ltp { display: flex; align-items: center; gap: var(--l3-spacing-04); font: var(--l3-text-label-12); color: var(--l3-content-tertiary); }
-.ltp strong { font: var(--l3-text-heading-12); color: var(--l3-content-primary); }
+/* A stat: its name (description 12, secondary) over its value (heading 12). */
+.stat { display: flex; flex-direction: column; gap: var(--l3-spacing-04); min-width: 0; }
+.stat[data-end] { align-items: flex-end; text-align: right; }
+.stat dt { font: var(--l3-text-description-12); color: var(--l3-content-secondary); white-space: nowrap; }
+.stat dd { margin: 0; font: var(--l3-text-heading-12); color: var(--l3-content-primary); white-space: nowrap; }
+.statGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--l3-spacing-16); margin: 0; }
+.statGrid[data-columns='3'] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 
-/* Fundamentals: a hairline between rows. */
-.ruled > * + * { border-top: 1px solid var(--l3-border-light); padding-top: var(--l3-spacing-12); }
+/* Daily Performance: low · high, the day's range red → green with a tick in the middle and the bolt at the price
+   (L3 gap: ProgressBar's range type has no gradient track / marker icon), the last traded price under it. */
+.lowHigh { display: flex; justify-content: space-between; margin: 0; }
+.dayRange { position: relative; height: var(--l3-size-08); margin-block: var(--l3-spacing-04); border-radius: var(--l3-radius-full); background: linear-gradient(90deg, var(--l3-surface-accent-indicator-down-default), var(--l3-surface-primary), var(--l3-surface-accent-indicator-up-default)); }
+.dayTick { position: absolute; inset-block: 0; left: 50%; width: 1px; background: var(--l3-content-primary); }
+.dayBolt { position: absolute; top: 50%; left: var(--at); display: grid; translate: -50% -50%; color: var(--l3-content-primary); }
+.ltp { display: flex; align-items: center; gap: var(--l3-spacing-04); margin: 0; font: var(--l3-text-heading-12); color: var(--l3-content-secondary); }
 
 /* Market depth: bids | asks, a divider between, totals under a rule. */
-.depth { display: grid; grid-template-columns: 1fr 1fr; gap: 0; padding: var(--l3-spacing-12) 0; }
+.depth { display: grid; grid-template-columns: 1fr 1fr; padding: var(--l3-spacing-12) 0; }
 .depthSide { width: 100%; border-collapse: collapse; font: var(--l3-text-heading-12); }
 .depthSide + .depthSide { border-left: 1px solid var(--l3-border-light); }
-.depthSide th { font: var(--l3-text-label-12); color: var(--l3-content-secondary); text-align: left; padding: 0 var(--l3-spacing-12) var(--l3-spacing-08); }
+.depthSide th { font: var(--l3-text-description-12); color: var(--l3-content-secondary); text-align: left; padding: 0 var(--l3-spacing-12) var(--l3-spacing-08); }
 .depthSide td { padding: var(--l3-spacing-08) var(--l3-spacing-12); }
 .depthSide th:last-child, .depthSide td:last-child { text-align: right; }
-.depthSide tfoot td { border-top: 1px solid var(--l3-border-light); padding-top: var(--l3-spacing-16); }
-.depthSide tfoot td:first-child { font: var(--l3-text-label-12); color: var(--l3-content-secondary); }
+.depthSide tfoot td { border-top: 1px solid var(--l3-border-light); padding-top: var(--l3-spacing-12); }
+.depthSide tfoot td:first-child { font: var(--l3-text-description-12); color: var(--l3-content-secondary); }
 
-/* About: the first paragraph clamped to five lines until Read more. */
-.about { display: flex; flex-direction: column; gap: var(--l3-spacing-12); font: var(--l3-text-description-14); color: var(--l3-content-primary); }
-.about:not([data-open]) p { display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden; }
-.link { align-self: flex-start; position: relative; padding: 0; border: 0; background: none; font: var(--l3-text-label-14); color: var(--l3-content-accent-discover-default); cursor: pointer; }
+/* About: three lines until Read more. */
+.about { display: flex; flex-direction: column; gap: var(--l3-spacing-12); font: var(--l3-text-description-14); color: var(--l3-content-secondary); }
+.about p { margin: 0; }
+.about[data-collapsed] { display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.about[data-collapsed] p { display: inline; }
+.link { position: relative; padding: 0; border: 0; background: none; font: var(--l3-text-label-14); color: var(--l3-content-secondary); cursor: pointer; }
 .link::before { content: ''; position: absolute; inset: calc(-1 * var(--l3-spacing-12)) calc(-1 * var(--l3-spacing-08)); }
 
-/* Shareholding pattern */
-.holder { font: var(--l3-text-label-14); }
-.pct { flex: none; min-width: var(--l3-size-48); font: var(--l3-text-heading-12); text-align: right; }
+/* Key Holders: "4 holder types · Weight", then name · short bar · share per row. */
+.holdersHead { display: flex; justify-content: space-between; margin: 0; padding-bottom: var(--l3-spacing-08); border-bottom: 1px solid var(--l3-border-light); font: var(--l3-text-description-12); color: var(--l3-content-secondary); }
+.holders { display: flex; flex-direction: column; gap: var(--l3-spacing-16); margin: 0; padding: 0; list-style: none; }
+.holders li { display: flex; align-items: center; gap: var(--l3-spacing-12); }
+.holder { flex: 1; min-width: 0; font: var(--l3-text-label-14); color: var(--l3-content-primary); }
+.holders .holderBar { flex: none; width: var(--l3-size-64); }
+.pct { flex: none; min-width: var(--l3-size-48); font: var(--l3-text-heading-14); text-align: right; }
 
-/* Financials: one bar per period, its value above and the period under it. */
-.bars { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: var(--l3-spacing-08); height: var(--app-size-stock-bars); padding-top: var(--l3-spacing-08); }
-.barCol { display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: var(--l3-spacing-04); min-width: 0; }
+/* Company financials: one bar per period (its value above, the period under; the picked one bright), then the
+   Quarterly / Yearly switch with the period stepper, then the picked period's figures. */
+.bars { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: var(--l3-spacing-08); height: var(--app-size-stock-bars); padding: var(--l3-spacing-16) var(--l3-spacing-12) var(--l3-spacing-12); }
+.barCol { display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: var(--l3-spacing-04); min-width: 0; padding: 0; border: 0; background: none; color: inherit; cursor: pointer; }
+.barCol:not([data-active]) .bar { opacity: 0.45; }
+.barCol[data-active] .barLabel { color: var(--l3-content-primary); }
 /* The bar's height is a share of this track (not of the column, which also holds the period label). */
 .barTrack { display: flex; flex: 1; flex-direction: column; justify-content: flex-end; align-items: center; min-height: 0; padding-top: var(--l3-spacing-20); }
 .bar { position: relative; width: var(--l3-size-24); min-height: var(--l3-size-04); border-radius: var(--l3-radius-04) var(--l3-radius-04) 0 0; background: var(--l3-surface-accent-discover-default); }
 .barValue { position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); padding-bottom: var(--l3-spacing-04); font: var(--l3-text-label-10); color: var(--l3-content-primary); white-space: nowrap; }
 .barLabel { font: var(--l3-text-description-10); color: var(--l3-content-secondary); white-space: nowrap; }
+.tableHeader { display: flex; align-items: center; gap: var(--l3-spacing-08); padding: var(--l3-spacing-12); border-block: 1px solid var(--l3-border-light); }
+.stepper { display: inline-flex; align-items: center; gap: var(--l3-spacing-04); margin-left: auto; font: var(--l3-text-label-12); color: var(--l3-content-primary); white-space: nowrap; }
+.stepper button { display: inline-flex; padding: 0; border: 0; background: none; color: var(--l3-content-primary); cursor: pointer; }
+.stepper button:disabled { opacity: 0.3; cursor: default; }
+.changeCol, .tableRow dd:last-child { width: var(--l3-size-80); flex: none; text-align: right; }
+.changeCol { font: var(--l3-text-description-12); color: var(--l3-content-secondary); }
+.table { display: flex; flex-direction: column; margin: 0; padding: var(--l3-spacing-04) var(--l3-spacing-12) var(--l3-spacing-08); }
+.tableRow { display: flex; gap: var(--l3-spacing-08); padding: var(--l3-spacing-08) 0; font: var(--l3-text-label-12); }
+.tableRow dt { flex: 1; color: var(--l3-content-secondary); }
+.tableRow dd { margin: 0; color: var(--l3-content-primary); white-space: nowrap; text-align: right; }
+.tableRow dd.up { color: var(--l3-content-accent-indicator-up-default); }
+.tableRow dd.down { color: var(--l3-content-accent-indicator-down-default); }
 
-.source { font: var(--l3-text-description-10); color: var(--l3-content-tertiary); text-align: center; }
+.source { font: var(--l3-text-description-10); color: var(--l3-content-secondary); text-align: center; }
 
 /* Events: one grey box per year, a hairline between events. */
 .eventList { gap: 0; padding: var(--l3-spacing-04) var(--l3-spacing-04); list-style: none; margin: 0; }
@@ -32070,15 +32411,15 @@ export function StockPage({ tab: initialTab = 'overview', scrollTo = 'top', rang
                 <Stack direction="horizontal" gap="08" align="center" wrap>
                   <p className={styles.price}>{inr(price)}</p>
                   <span className={styles.change}>
-                    <PriceChange value={changePct} size="md" arrow />
-                    <span className={change < 0 ? styles.down : styles.up}>({change < 0 ? '−' : '+'}{Math.abs(change).toFixed(2)})</span>
+                    <PriceChange value={changePct} size="lg" />
+                    <span className={change < 0 ? styles.down : styles.up}>({change < 0 ? '−' : '+'}{Math.abs(change).toFixed(2)}) {range}</span>
                   </span>
                 </Stack>
               </Stack>
               <Avatar src={page.logoUrl} initials={page.initials} size={48} label={page.name} />
             </Stack>
             <Stack direction="horizontal" gap="08" align="center" justify="between">
-              <Stack direction="horizontal" gap="08" wrap>{page.tags.map((tag) => <Tag key={tag} variant="secondary" color="neutral" size="sm">{tag}</Tag>)}</Stack>
+              <Stack direction="horizontal" gap="08" wrap>{page.tags.map((tag) => <Tag key={tag} variant="tertiary" color="neutral" size="sm">{tag}</Tag>)}</Stack>
               <Stack direction="horizontal" gap="04" align="center">
                 {/* The advanced (TradingView) chart isn't in the prototype: the button doesn't go anywhere. */}
                 <Button variant="tertiary" size="sm" aria-label={t('stock.tradingView')} iconLeft={<Icon icon={msCandlestickChart} size={20} />} onClick={() => {}} />
@@ -59079,13 +59420,14 @@ export const Flag = ({ code }: { code: FlagCode }) => (
 }
 
 /* The page fades out under the nav (20 Nov, user: stronger than Figma's blurred blob): the page's colour, solid from
-   the bottom edge up past the pill's middle, then fading to clear well above the pill. It never takes a tap. */
+   the bottom edge up past the pill's middle, then fading to clear just above the pill (23 Nov, user: half the old
+   152, it rose too far up the page). It never takes a tap. */
 .fade {
   position: absolute;
   right: 0;
   bottom: 0;
   left: 0;
-  height: calc(var(--l3-size-128) + var(--l3-size-24)); /* 152: about 80 above the pill */
+  height: calc((var(--l3-size-128) + var(--l3-size-24)) / 2); /* 76: half the old 152, just over the pill (70) */
   background: linear-gradient(
     to top,
     var(--l3-surface-default) 0%,
@@ -59104,18 +59446,18 @@ export const Flag = ({ code }: { code: FlagCode }) => (
   left: var(--l3-spacing-16);
   box-sizing: border-box;
   overflow: hidden;
-  padding: var(--l3-spacing-08) var(--l3-spacing-12) var(--l3-spacing-12) var(--l3-spacing-16);
+  padding: var(--l3-spacing-08) 0 var(--l3-spacing-12); /* end to end: no side padding (23 Nov, user) */
   border-radius: var(--l3-radius-full);
   background: var(--l3-surface-default);
   /* Figma's 1px stroke is inside the pill (it stays 56): an inset line, then the double shadow. */
   box-shadow: inset 0 0 0 1px var(--l3-border-light), var(--app-fnav-shadow); /* 1px: Figma stroke weight has no variable */
 }
 
-/* The chosen tab's glow (Figma Ellipse 6871, in accent green) from the tab's left edge, clipped by the pill. */
+/* The chosen tab's glow (Figma Ellipse 6871, in accent green), centred on the tab, clipped by the pill. */
 .glow {
   position: absolute;
   top: var(--app-fnav-glow-top);
-  left: var(--glow-x);
+  left: calc(var(--glow-x) - var(--app-fnav-glow-width) / 2); /* centred on the chosen tab (23 Nov, user) */
   width: var(--app-fnav-glow-width);
   height: var(--l3-size-40);
   border-radius: var(--l3-radius-full);
@@ -59133,11 +59475,15 @@ export const Flag = ({ code }: { code: FlagCode }) => (
   padding-bottom: 0;
 }
 .pill > nav > ul {
-  gap: var(--l3-spacing-04);
+  gap: 0; /* equal options tile the pill edge to edge (23 Nov, user) */
 }
-/* Figma: "Mutual Fund" keeps its whole label (the others share what's left), so no label is cut at 360. */
+/* Every option the same width, the row end to end across the pill (23 Nov, user). */
 .pill > nav > ul > li {
-  min-width: max-content;
+  flex: 1 1 0;
+  min-width: 0;
+}
+.pill > nav > ul > li > :is(button, a) {
+  width: 100%;
 }
 
 /* Each option: the 24 icon right on its 12 label, no padding; content/secondary, the chosen one content/primary in
@@ -59163,8 +59509,39 @@ export const Flag = ({ code }: { code: FlagCode }) => (
   height: var(--l3-icon-size-24);
 }
 
+/* ---------- Motion (23 Nov, user: "animate the whole navbar transitions") ----------
+   Option colours ease; on a tab switch (data-motion="moved") the new tab's icon pops and its label comes up, the old
+   tab fades back from content/primary; when the options themselves change (main nav ↔ a sub-nav, "swapped") they come
+   in one by one. FLAG (L3 gap): Bottom Navbar has no selection motion; durations / easing are L3 motion tokens. */
+.pill :is(button, a)[class] {
+  transition: color var(--l3-motion-duration-medium) var(--l3-motion-easing-standard);
+}
+.frame[data-motion='moved'] .pill :is(button, a)[data-selected] .icon {
+  animation: navPop var(--l3-motion-duration-long) var(--l3-motion-easing-standard) both;
+}
+.frame[data-motion='moved'] .pill :is(button, a)[data-selected] > span:last-child {
+  animation: navRise var(--l3-motion-duration-medium) var(--l3-motion-easing-standard) both;
+}
+.frame[data-motion='moved'] .pill li[data-was-selected] :is(button, a) {
+  animation: navFadeBack var(--l3-motion-duration-medium) var(--l3-motion-easing-standard) both;
+}
+.frame[data-motion='swapped'] .pill > nav > ul > li {
+  animation: navRise var(--l3-motion-duration-medium) var(--l3-motion-easing-standard) both;
+}
+.frame[data-motion='swapped'] .pill > nav > ul > li:nth-child(2) { animation-delay: 40ms; }
+.frame[data-motion='swapped'] .pill > nav > ul > li:nth-child(3) { animation-delay: 80ms; }
+.frame[data-motion='swapped'] .pill > nav > ul > li:nth-child(4) { animation-delay: 120ms; }
+.frame[data-motion='swapped'] .pill > nav > ul > li:nth-child(5) { animation-delay: 160ms; }
+.frame[data-motion='swapped'] .glow { animation: navGlowIn var(--l3-motion-duration-long) var(--l3-motion-easing-standard) both; }
+
+@keyframes navPop { 0% { transform: scale(.7); } 60% { transform: scale(1.12); } 100% { transform: scale(1); } }
+@keyframes navRise { from { opacity: 0; transform: translateY(var(--l3-spacing-04)); } to { opacity: 1; transform: none; } }
+@keyframes navFadeBack { from { color: var(--l3-content-primary); } to { color: var(--l3-content-secondary); } }
+@keyframes navGlowIn { from { opacity: 0; } to { opacity: 1; } }
+
 @media (prefers-reduced-motion: reduce) {
   .glow { transition: none; }
+  .frame .pill *, .frame .glow { animation: none !important; transition: none !important; }
 }
 ```
 
@@ -59217,27 +59594,51 @@ export function FloatingNavIcon({ name, selected = false }: { name: FloatingIcon
  * the bottom and fading out above the pill (20 Nov), so the page fades out under the nav. The frame takes no height of
  * its own: the body runs on behind it and keeps its last content clear of the pill (Screen / Phone CSS).
  */
+/** Where the last floating nav left off: each tab is its own screen, so the nav mounts afresh on every switch. */
+let navMemory: { glowX: number | null; index: number | null; items: string | null } = { glowX: null, index: null, items: null }
+
 export function FloatingNav({ children }: { children: ReactNode }) {
   const floating = useFloatingNav()
   const l3Floating = useBottomNavVariant() === 'floating'
   const pill = useRef<HTMLDivElement>(null)
-  const [glowX, setGlowX] = useState<number | null>(null)
+  // A fresh nav starts where the last one left off (the glow at the old tab) and moves from there (23 Nov, user:
+  // "animate the whole navbar transitions like tab switch, nav items change").
+  const [glowX, setGlowX] = useState<number | null>(() => navMemory.glowX)
+  const [motion, setMotion] = useState<'moved' | 'swapped' | undefined>(undefined)
+  const firstPlace = useRef(true)
 
   // The glow sits behind the chosen tab: wherever L3 puts it (sub-navs have a Home option first).
   useLayoutEffect(() => {
     if (!floating || !pill.current) return
     const place = () => {
-      const chosen = pill.current?.querySelector<HTMLElement>('[data-selected]')
-      if (!chosen || !pill.current) return setGlowX(null)
-      const a = pill.current.getBoundingClientRect()
-      const b = chosen.getBoundingClientRect()
-      setGlowX(b.left - a.left) // Figma: the glow starts at the chosen tab's left edge
+      const box = pill.current
+      if (!box) return
+      const options = [...box.querySelectorAll<HTMLElement>('nav > ul > li')]
+      const chosenIndex = options.findIndex((li) => li.querySelector('[data-selected]'))
+      if (chosenIndex < 0) return setGlowX(null)
+      const tab = options[chosenIndex].getBoundingClientRect()
+      const x = tab.left + tab.width / 2 - box.getBoundingClientRect().left // the chosen tab's centre (23 Nov, user)
+      const items = options.map((li) => li.textContent).join('|')
+      const before = navMemory
+      navMemory = { glowX: x, index: chosenIndex, items }
+      if (!firstPlace.current) return setGlowX(x) // a change within this nav: the CSS transition slides the glow
+      firstPlace.current = false
+      if (before.items !== null && before.items !== items) {
+        setMotion('swapped') // another set of options (main nav ↔ a sub-nav): they come in one by one
+        return setGlowX(x)
+      }
+      if (before.index === null || before.index === chosenIndex || before.glowX === null) return setGlowX(x)
+      // A tab switch: the old tab fades back, the new one pops, and the glow (painted at the old x) slides over.
+      options[before.index]?.setAttribute('data-was-selected', '')
+      setMotion('moved')
+      box.querySelector<HTMLElement>('[data-glow]')?.getBoundingClientRect() // style the glow at the old x first…
+      setGlowX(x) // …so moving it runs the CSS transition (no frame wait: it works in a hidden tab too)
     }
     place()
     const watch = new MutationObserver(place)
     watch.observe(pill.current, { subtree: true, attributes: true, attributeFilter: ['data-selected'] })
     return () => watch.disconnect()
-  })
+  }, [floating])
 
   // data-bottom-nav: the preview's V1 / V2 bubble shows only on screens that have a bottom navbar. V1's wrapper says
   // data-surface="primary" so the OS navigation bar still takes the navbar's colour (it looks for the page's last part).
@@ -59245,11 +59646,11 @@ export function FloatingNav({ children }: { children: ReactNode }) {
   if (l3Floating) return <div className={styles.docked} data-floating-nav="" data-bottom-nav="">{children}</div>
   if (!floating) return <div className={styles.docked} data-bottom-nav="" data-surface="primary">{children}</div>
   return (
-    <div className={styles.frame} data-floating-nav="" data-bottom-nav="">
+    <div className={styles.frame} data-floating-nav="" data-bottom-nav="" data-motion={motion}>
       {/* The page's colour behind the nav: solid at the bottom, fading out above the pill. */}
       <div className={styles.fade} aria-hidden="true" />
       <div ref={pill} className={styles.pill}>
-        {glowX !== null && <span className={styles.glow} style={{ '--glow-x': `${glowX}px` } as CSSProperties} aria-hidden="true" />}
+        {glowX !== null && <span className={styles.glow} data-glow="" style={{ '--glow-x': `${glowX}px` } as CSSProperties} aria-hidden="true" />}
         {children}
       </div>
     </div>

@@ -199,6 +199,12 @@ Every tap he wired is kept. The main path: FTUX sheet → Activate → Declarati
 → Pay on bank → Money ready → Stock → Buy → Executed → Wallet → Withdraw.
 
 ### Changelog
+- 23 Nov 2026 — Prototype: the order pad's quick settings (Price cards, Order pad, TP/SL sheet, TP/SL card) float on every pad screen, so switching Market / Limit / SL keeps the same settings in view.
+- 23 Nov 2026 — Order pad, TP/SL card V4: a first-time hint under the settings button (L3 Tooltip in discover blue, ✕ to close, arrow centred on the button; gone once closed or the button is tapped, per session). The top bar uses L3's left-aligned title: a 32 logo in front of the name over the price. On the Indian pad NSE ⇄ BSE moves to the right, as a second button left of settings. L3 gaps: Tooltip has no colour option, and its arrow can't reach a target 16 from the screen edge (both set locally).
+- 23 Nov 2026 — Mutual Fund sub-nav (floating V2): the chosen Mutual Fund icon is black and white, like the main nav's.
+- 23 Nov 2026 — **Wallet: View details + Balance Details for both wallets.** The balance card now ends in a "View details" ghost button (INR and USD) that opens the wallet's Balance Details page; the withdrawable balance moved out of the card into its own small static card just under it (L3 KeyValueList card, not tappable). The Withdrawable sheet is gone (the page covers it). Balance Details follows the live app: two cards, Available balance (opening balance, Credits, Debits) and Withdrawable balance (Settlement pending); each group opens in place (chevron). INR rows: Deposits, Stocks Sell, Stocks Pledge, Equity / Commodity Options Cfs; Withdrawals, Stocks, F&O, MTF, Stocks & MTF PnL, MTM PnL; Deposit, Net Credit. New screens us-stocks-102 / 103 (INR); 60 / 61 stay the USD page. Help emails support. Sample amounts add up to the wallet page's (data.ts `BALANCE_BREAKDOWN`).
+- 23 Nov 2026 — **Balance Details: wallet tabs + Help page.** INR Wallet / USD Wallet tabs in the Actionbar switch the breakdown in place (the wallet it was opened from starts active); the group chevrons turn when open. Help (us-stocks-104, from the live app): 23 topics with icons in six sections (Trading, Money & charges, Portfolio & reports, Investing, Account & app, Other help) (US Stocks added, typos fixed, one long label shortened), then Contact Lemonn Support → `emailSupport()`. Logout left out; topic article pages not built.
+- 23 Nov 2026 — **All transactions: wallet pill + status chips.** The INR / USD pill-group under the top bar is replaced by the Market page's row: one wallet pill at the left (flag + "INR Wallet" / "USD Wallet" + ↕; one tap anywhere on its block flips the wallet), a divider, then status chips that scroll sideways: All · In progress · Completed · Failed · Refunded ("Taking longer" shows under In progress). A status with no transactions in that wallet shows an empty state ("Nothing here"). The NEW tag on USD is gone (one pill shows one wallet).
 - 23 Nov 2026 — **Order pad title: the stock's name, not its ticker** (every version). US: the short name (`usShortName`, e.g. NVIDIA); Indian: the short name (`src/shared/data/inShortNames.ts`, one per catalogue company, e.g. Reliance, SBI, L&T). A long name ends in … so the bar's buttons keep their place.
 - 23 Nov 2026 — **TP/SL card V4** (prototype option "TP/SL card"; V2 stays the default). As V3 (no card on the pad; on fractional shares the sheet opens with its card disabled, the reason above it and OK), but the settings button is an Actionbar action at the top bar's right (L3 `ActionbarAction`, tertiary small) on both pads, and Market / Limit / SL is back alone in its row. Indian pad: NSE ⇄ BSE moves from the top bar's right to just right of the stock name in the title.
 - 23 Nov 2026 — **TP/SL card V3** (prototype option "TP/SL card"; V2 stays the default). No card under the fields while nothing is set: Market / Limit / SL stays as small and centred as in V2, with a round settings icon button (border only, no fill) at the row's right edge (out of the flow) (L3 Button tertiary, md = the 40 tab track, icon only, labelled "TP/SL" / "Stop loss"). Tapping it opens the same TP/SL sheet. On fractional shares there's no red line: the button opens the same TP/SL sheet with every US control, its card dimmed and untouchable and "Stop loss isn’t available on fractional shares" in red just above it; the button reads OK and closes the sheet (a line far from a small icon button wouldn't explain itself). L3 gap: no disabled price card (`.legs[data-disabled]`, opacity 40). Once set, the saved card shows as in V1 / V2. L3 gap: the tertiary icon button has a white fill and its own radius, so `OrderPadV2.module.css` `.tpslSettings` clears the fill (border only) and makes it fully round like the track (23 Nov).
@@ -22482,6 +22488,84 @@ export function UsMainNav({ value }: { value: Section }) {
   "transactions.tabInr": "INR Wallet",
   "transactions.tabUsd": "USD Wallet",
   "transactions.tabNew": "NEW",
+  "balanceDetails.title": "Balance details",
+  "help.title": "Help",
+  "help.group.trading": "Trading",
+  "help.group.funds": "Money & charges",
+  "help.group.portfolio": "Portfolio & reports",
+  "help.group.investing": "Investing",
+  "help.group.account": "Account & app",
+  "help.group.other": "Other help",
+  "help.contactTitle": "Contact Lemonn Support",
+  "help.contactBody": "Need more help? Our support team members are ready to help you.",
+  "help.contact": "Contact Support",
+  "help.contactHours": "Available 24x7",
+  "help.topic.usStocks.label": "US Stocks",
+  "help.topic.usStocks.description": "Help with US stocks, your USD wallet and sending money abroad",
+  "help.topic.kyc.label": "KYC & Account related",
+  "help.topic.kyc.description": "Support with KYC processes and account related issues",
+  "help.topic.zing.label": "BOLT/Zing Trade",
+  "help.topic.zing.description": "Know more about Zing Trade",
+  "help.topic.funds.label": "Deposit & Withdrawal Funds",
+  "help.topic.funds.description": "Support with depositing and withdrawing funds from your account",
+  "help.topic.trading.label": "Trading & Position",
+  "help.topic.trading.description": "Support with executing trades and managing trading positions",
+  "help.topic.commodities.label": "Commodities",
+  "help.topic.commodities.description": "Support articles regarding commodities",
+  "help.topic.mtf.label": "Margin Trading Facility (MTF)",
+  "help.topic.mtf.description": "Explore articles related to the Margin Trading Facility (MTF) to enhance your understanding",
+  "help.topic.portfolio.label": "Portfolio/Holding Related",
+  "help.topic.portfolio.description": "Support with portfolio or holding related issues",
+  "help.topic.fno.label": "Futures & Options",
+  "help.topic.fno.description": "Support with futures and options related queries",
+  "help.topic.charges.label": "Rates/Charges",
+  "help.topic.charges.description": "Get help with brokerage, regulatory and other charges",
+  "help.topic.referral.label": "Referral",
+  "help.topic.referral.description": "Support with referral related queries",
+  "help.topic.mf.label": "Mutual Funds",
+  "help.topic.mf.description": "Information related to mutual fund investments",
+  "help.topic.ipo.label": "IPO",
+  "help.topic.ipo.description": "Information related to initial public offering",
+  "help.topic.app.label": "App Related",
+  "help.topic.app.description": "All aspects related to the Lemonn app",
+  "help.topic.general.label": "General",
+  "help.topic.general.description": "General inquiries and support",
+  "help.topic.nominee.label": "Nominee Related",
+  "help.topic.nominee.description": "Support with nominee related queries",
+  "help.topic.reports.label": "Reports",
+  "help.topic.reports.description": "Support with generating and understanding reports",
+  "help.topic.basics.label": "Investing & Trading Basics",
+  "help.topic.basics.description": "The basics of investments and trading",
+  "help.topic.grievance.label": "Grievance",
+  "help.topic.grievance.description": "Address your grievances/issues here",
+  "help.topic.cyber.label": "Cyber Security",
+  "help.topic.cyber.description": "Cyber Security related concerns",
+  "help.topic.pledge.label": "Stock pledge",
+  "help.topic.pledge.description": "Know more about Stock pledge",
+  "help.topic.pnl.label": "Historical P&L",
+  "help.topic.pnl.description": "Track your Daily, Weekly, Monthly, and Yearly P&L all in one place",
+  "help.topic.smartInvest.label": "Smart invest",
+  "help.topic.smartInvest.description": "Know more about Smart Invest",
+  "balanceDetails.help": "Help",
+  "balanceDetails.walletSwitch": "Wallet",
+  "balanceDetails.walletInr": "INR Wallet",
+  "balanceDetails.walletUsd": "USD Wallet",
+  "balanceDetails.available": "Available balance",
+  "balanceDetails.opening": "Opening balance",
+  "balanceDetails.credits": "Credits",
+  "balanceDetails.debits": "Debits",
+  "balanceDetails.withdrawable": "Withdrawable balance",
+  "balanceDetails.settlement": "Settlement pending",
+  "balanceDetails.show": "Show {group}",
+  "balanceDetails.hide": "Hide {group}",
+  "balanceDetails.noteUsd": "Money from a sale can be withdrawn after 1 working day.",
+  "wallet.viewDetails": "View details",
+  "wallet.withdrawable": "Withdrawable balance",
+  "transactions.walletSwitch": "{wallet}. Switch to {other}",
+  "transactions.filter.label": "Show transactions",
+  "transactions.filter.all": "All",
+  "transactions.filterEmpty.title": "Nothing here",
+  "transactions.filterEmpty.description": "No {status} transactions in this wallet.",
   "transactions.kind.deposit": "Deposit",
   "transactions.kind.withdrawal": "Withdrawal",
   "transactions.status.completed": "Completed",
@@ -22666,7 +22750,7 @@ export const usStocks: Flow = {
         { value: 'separate', label: 'Separate · a card per price' },
       ],
       default: 'merged',
-      floatOn: ['us-stocks-41'],
+      floatOn: ORDER_PAD_SCREEN_IDS, // every pad screen: Market, Limit and SL keep the same settings (23 Nov, user)
     },
     // Order pad version (19 Nov, the user's call): US · stop loss only (no take profit, no trailing, no SL on fractional
     // shares) and no leverage card; Indian (the default) · the pad as Indian stocks will have it: the leverage card on
@@ -22681,7 +22765,7 @@ export const usStocks: Flow = {
         { value: 'india', label: 'Indian · leverage + TP/SL + trailing' },
       ],
       default: 'india', // Indian by default (19 Nov, the user's call)
-      floatOn: ['us-stocks-33'],
+      floatOn: ORDER_PAD_SCREEN_IDS, // every pad screen: Market, Limit and SL keep the same settings (23 Nov, user)
       // Phone (app mode): a floating "IN" / "US" button on every order pad screen flips the pad (20 Nov, the user's call).
       quickSwitch: {
         on: ORDER_PAD_SCREEN_IDS,
@@ -22704,7 +22788,7 @@ export const usStocks: Flow = {
         { value: 'a', label: 'A · box inside each leg card' },
       ],
       default: 'b',
-      floatOn: ['us-stocks-33'],
+      floatOn: ORDER_PAD_SCREEN_IDS, // every pad screen: Market, Limit and SL keep the same settings (23 Nov, user)
     },
     // The TP/SL card while nothing is set (23 Nov, the user's call): V1 · the leverage card's look, a tile, the name and a
     // Switch; V2 · a borderless pill with the Add Circle
@@ -22723,7 +22807,7 @@ export const usStocks: Flow = {
         { value: 'v4', label: 'V4 · settings button in the top bar' },
       ],
       default: 'v2', // V2 by default (23 Nov, the user's call)
-      floatOn: ['us-stocks-33'],
+      floatOn: ORDER_PAD_SCREEN_IDS, // every pad screen: Market, Limit and SL keep the same settings (23 Nov, user)
     },
     // The processing screen's loader (19 Nov, from Minted): glass ring (default) or Minted's other processing animations.
     {
@@ -23000,8 +23084,11 @@ export const registry: UsScreenEntry[] = [
   { figma: '5852:98970', id: 'us-stocks-57', hidden: true, badge: 'changed', badgeNote: "Nudge copy: the dollar has historically gained against the rupee", section: 'wallet', name: "W0 · Wallet · US tab · Under review · Contact Support", note: "Review taking longer than 1 day. Contact Support." },
   { figma: '5852:98939', id: 'us-stocks-58', hidden: true, badge: 'changed', badgeNote: "Nudge copy: the dollar has historically gained against the rupee", section: 'wallet', name: "W1 · Wallet · US tab · $0 balance", note: "Activation approved. USD wallet at $0." },
   { figma: '5852:98908', id: 'us-stocks-59', hidden: true, section: 'wallet', name: "W2 · Wallet · US tab · Funded", note: "Wallet after adding money: total and withdrawable balance." },
-  { figma: '5852:98888', id: 'us-stocks-60', section: 'wallet', name: "W2d · Balance Details", note: "Balance details: opening, credits, debits, withdrawable, pending settlement." },
-  { figma: '5852:98862', id: 'us-stocks-61', section: 'wallet', name: "W2d-x · Balance Details · expanded", note: "Credits & Debits expanded: deposits, stock sells, dividends." },
+  { figma: '5852:98888', id: 'us-stocks-60', badge: 'changed', badgeNote: "As the live app's Balance details: two cards, groups open in place", section: 'wallet', name: "W2d · Balance Details · USD wallet", note: "The USD wallet's View details. Two cards: Available balance (opening balance, Credits, Debits) and Withdrawable balance (Settlement pending). Credits, Debits and Settlement pending each open in place to their rows. Help emails support." },
+  { figma: '5852:98862', id: 'us-stocks-61', badge: 'changed', badgeNote: "As the live app's Balance details: two cards, groups open in place", section: 'wallet', name: "W2d-x · Balance Details · USD · expanded", note: "The same page with every group open: deposits, stock sells, dividends; withdrawals, stocks, charges; the deposit and the sale still settling." },
+  { figma: '9001:66', id: 'us-stocks-102', badge: 'new', badgeNote: "From the live app's Balance details", section: 'wallet', name: "Balance Details · INR wallet", note: "The INR wallet's View details: Available balance (opening balance, Credits, Debits) and Withdrawable balance (Settlement pending), as in the live app. Groups open in place." },
+  { figma: '9001:67', id: 'us-stocks-103', badge: 'new', badgeNote: "From the live app's Balance details", section: 'wallet', name: "Balance Details · INR · expanded", note: "Every group open: Deposits, Stocks Sell, Stocks Pledge, Equity / Commodity Options Cfs; Withdrawals, Stocks, F&O, MTF, Stocks & MTF PnL, MTM PnL; Deposit and Net Credit." },
+  { figma: '9001:68', id: 'us-stocks-104', badge: 'new', badgeNote: "From the live app's help page", section: 'wallet', name: "Help", note: "Balance Details' Help. Help topics (icon, title, description) then Contact Lemonn Support, whose Contact Support card emails support. Title Help (live: Lemonn); US Stocks topic added; Logout left out. Topic article pages aren't built." },
   { figma: '5852:100550', id: 'us-stocks-62', section: 'wallet', name: "H08 · Withdraw · enter amount", note: "Withdraw: enter $ amount, see ₹ estimate." },
   { figma: '5852:100492', id: 'us-stocks-63', section: 'wallet', name: "H09 · Withdraw · more than withdrawable", note: "Error: amount is more than the withdrawable balance." },
   { figma: '5852:100472', id: 'us-stocks-64', section: 'wallet', name: "H10 · Withdraw · request placed", note: "Withdraw request placed. Usually 1–2 working days." },
@@ -28275,7 +28362,7 @@ import { Card } from '@l3/components/Card'
 import { Icon } from '@l3/components/Icon'
 import { Tabs } from '@l3/components/Tabs'
 import { Tag } from '@l3/components/Tag'
-import { FloatingNav, useBottomNavVariant } from '../../../../shared/ui/FloatingNav'
+import { FloatingNav, FloatingNavIcon, useBottomNavVariant, useFloatingNav } from '../../../../shared/ui/FloatingNav'
 import { InlineSvg } from '../../components/InlineSvg'
 import { Phone } from '../../components/Phone'
 import { usePreview } from '../../../../shared/prototype'
@@ -28350,6 +28437,7 @@ const SectionTitle = ({ children, seeAll = true }: { children: ReactNode; seeAll
 export function MutualFundHomeScreen() {
   const preview = usePreview()
   const navVariant = useBottomNavVariant()
+  const floatingNav = useFloatingNav() // V2: the chosen icon in black and white, like the main nav's (23 Nov, user)
   const [popular, setPopular] = useState('high')
   const [explore, setExplore] = useState('equity')
   const { go } = useUsNav()
@@ -28376,7 +28464,7 @@ export function MutualFundHomeScreen() {
             home={{ label: 'Home', onClick: () => goToTab(preview.go, 'stocks') }}
             value="mf"
             items={[
-              { value: 'mf', label: 'Mutual Fund', icon: <NavIcon name="mutualFund" />, selectedIcon: <NavIcon name="mutualFund" selected /> },
+              { value: 'mf', label: 'Mutual Fund', icon: <NavIcon name="mutualFund" />, selectedIcon: floatingNav ? <FloatingNavIcon name="mutualFund" selected /> : <NavIcon name="mutualFund" selected /> },
               { value: 'funds', label: 'Funds', icon: <NavIcon name="mfFunds" /> },
               { value: 'dashboard', label: 'Dashboard', icon: <NavIcon name="mfDashboard" /> },
               { value: 'sips', label: 'SIPs', icon: <NavIcon name="mfSips" /> },
@@ -39343,6 +39431,8 @@ function OrderPadV1({ config, backdrop, sheet }: OrderPadProps) {
 /* A long name (Life Insurance Corporation of India) ends in … rather than pushing the bar's buttons. */
 .contractName { max-width: 100%; }
 .contractTitle { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.contractRow { display: flex; align-items: center; gap: var(--l3-spacing-08); min-width: 0; } /* V4: logo, then name over price */
+.contract[data-align='start'] { min-width: 0;  align-items: flex-start; text-align: start; } /* TP/SL card V4: L3's left-aligned title */
 .contractPrice { display: inline-flex; align-items: center; gap: var(--l3-spacing-08); font: var(--l3-text-label-12); color: var(--l3-content-primary); }
 
 .body { padding: var(--l3-spacing-32) var(--l3-spacing-16) var(--l3-spacing-16); overflow-x: clip; }
@@ -39428,6 +39518,19 @@ function OrderPadV1({ config, backdrop, sheet }: OrderPadProps) {
 /* Validity switch V3 (20 Nov, the user's call): both switches above the amount — Amount ⇕ | Day ⇕ — each hugging its label;
    OrderPadV2 slides them when a label changes size. */
 .switchRow { max-width: 100%; }
+
+/* TP/SL settings hint (first time, 23 Nov, user: "a simple blue tooltip with text and cross"): L3 Tooltip in the
+   discover blue. FLAG (L3 gap): Tooltip has no colour option (it's always surface/inverted), so this sets its surface. */
+.tpslHint [role='tooltip'] {
+  --tt-surface: var(--l3-surface-accent-discover-default);
+  color: var(--l3-static-white);
+}
+/* The arrow right under the settings button's centre (23 Nov, user). L3 keeps the arrow 22 from the bubble's corner,
+   which leaves it 6 short of a button 16 from the screen's edge; --tt-left is the bubble's offset from the 32 button.
+   FLAG (L3 gap): Tooltip's arrow can't reach a target near the screen's edge. */
+.tpslHint [role='tooltip']::after {
+  left: calc(var(--l3-size-32) / 2 - var(--tt-left) - var(--tt-arrow-w) / 2);
+}
 ```
 
 ### `src/flows/us-stocks/screens/trade/OrderPadV2.tsx`
@@ -39459,6 +39562,7 @@ import { Select } from '@l3/components/Select'
 import { Stack } from '@l3/components/Stack'
 import { Icon } from '@l3/components/Icon'
 import { Tab, Tabs } from '@l3/components/Tabs'
+import { Tooltip } from '@l3/components/Tooltip'
 import { lmSwitchArrowVertical } from '@l3/icons/lemonnade'
 import { msSettings } from '@l3/icons/material'
 import { Keyboard, KeypadSlide, keypadFieldProps, typeKey } from '../../../../shared/ui/Keyboard'
@@ -39518,6 +39622,9 @@ function useStockLogo(symbol: string) {
 
 type PadProps = { config: OrderPadConfig; backdrop?: boolean; sheet?: ReactNode }
 
+/** The TP/SL settings hint shows until it's closed once (per session: the prototype keeps no account). */
+let tpslHintSeen = false
+
 /** The pad for the flow option "Order pad": US (the config as it is, in $) or Indian (the same state as RELIANCE, in ₹).
  *  Switching remounts the pad. */
 export function OrderPadV2(props: PadProps) {
@@ -39573,6 +39680,8 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
   // TP/SL card V3 (flow option "TP/SL card", 23 Nov, the user's call): Market / Limit / SL centred, with a settings
   // button at the row's right edge that opens the TP/SL sheet (TpslControl, through tpslOpen).
   const tpslCard = useTpslCard()
+  const [tpslHint, setTpslHint] = useState(!tpslHintSeen)
+  const hideTpslHint = () => { tpslHintSeen = true; setTpslHint(false) }
   const tpslOpen = useRef<(() => void) | null>(null)
   // The unit the field is showing; `value` is always kept in the config's own unit (config.mode).
   const [mode, setMode] = useState<PadMode>(config.mode)
@@ -39722,25 +39831,48 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
       title={
         // Spans, not Stack: the title sits inside the Actionbar's <h1>, where L3's block-level Stack isn't valid.
         // L3 gap: Actionbar has no centred "logo + symbol over price" title.
-        <span className={styles.contract}>
-          <span className={styles.contractName}>
-            <Avatar src={logo} initials={config.stock.symbol.slice(0, 1)} size={24} className={styles.logo16} />
-            <span className={styles.contractTitle}>{stockName}</span>
-            {/* TP/SL card V4, Indian pad: the top bar's right holds the settings button, so NSE ⇄ BSE sits right of the name. */}
-            {india && tpslCard === 'v4' && exchangeSwitch}
+        // TP/SL card V4 (23 Nov, user): L3's own left-aligned title, right after the back button, with the logo big (32)
+        // in front of both the name and the price.
+        tpslCard === 'v4' ? (
+          <span className={styles.contractRow}>
+            <Avatar src={logo} initials={config.stock.symbol.slice(0, 1)} size={32} />
+            <span className={styles.contract} data-align="start">
+              <span className={styles.contractName}>
+                <span className={styles.contractTitle}>{stockName}</span>
+              </span>
+              <span className={styles.contractPrice}>
+                <PadAmount value={config.stock.price} />
+                <PriceChange value={config.stock.change} unit="percent" size="sm" />
+              </span>
+            </span>
           </span>
-          <span className={styles.contractPrice}>
-            <PadAmount value={config.stock.price} />
-            <PriceChange value={config.stock.change} unit="percent" size="sm" />
+        ) : (
+          <span className={styles.contract}>
+            <span className={styles.contractName}>
+              <Avatar src={logo} initials={config.stock.symbol.slice(0, 1)} size={24} className={styles.logo16} />
+              <span className={styles.contractTitle}>{stockName}</span>
+            </span>
+            <span className={styles.contractPrice}>
+              <PadAmount value={config.stock.price} />
+              <PriceChange value={config.stock.change} unit="percent" size="sm" />
+            </span>
           </span>
-        </span>
+        )
       }
       // US: an empty slot as wide as the back button on the right, so the title sits at the screen's centre.
       // Indian pad: the exchange switch (NSE ⇄ BSE), as the production pad's top right.
-      // TP/SL card V4: the settings button (opens the TP/SL sheet) at the right, on both pads.
+      // TP/SL card V4: the settings button (opens the TP/SL sheet) at the right, on both pads; the Indian pad's NSE ⇄ BSE left of it.
       actions={
         tpslCard === 'v4' ? (
-          <ActionbarAction icon={msSettings} label={(padVersion === 'india' ? TPSL_INDIA : TPSL_US).title} onClick={() => tpslOpen.current?.()} />
+          // First-time hint (23 Nov, user): a blue L3 Tooltip with ✕ under the settings button, until it's closed or the
+          // button is tapped (once per session in the prototype).
+          // Indian pad: NSE ⇄ BSE is a second button, left of settings (23 Nov, user).
+          <>
+            {exchangeSwitch}
+            <Tooltip content="You can set TP/SL from here" placement="bottom" open={tpslHint} onClose={hideTpslHint} className={styles.tpslHint}>
+              <ActionbarAction icon={msSettings} label={(padVersion === 'india' ? TPSL_INDIA : TPSL_US).title} onClick={() => { hideTpslHint(); tpslOpen.current?.() }} />
+            </Tooltip>
+          </>
         ) : india ? (
           exchangeSwitch
         ) : (
@@ -42859,14 +42991,54 @@ export type UsScreenMap = Record<string, ComponentType<{ backdrop?: boolean }>>
   min-height: 100%;
   padding-inline: var(--l3-spacing-16);
 }
+
+/* Pinned row (23 Nov), as the Market page's: the wallet pill | a divider | the status chips, 8 above and below. */
+.filterRow {
+  padding-block: var(--l3-spacing-08);
+}
+
+/* The wallet pill's tap area is the whole block around it, the row's full height (the pill itself stays small). */
+.picker {
+  display: flex;
+  flex: none;
+  align-self: stretch;
+  align-items: center;
+  cursor: pointer;
+}
+
+/* The picker's ↕ is 14, as on Market. L3 gap: a Tab's icon slot is fixed at 16. */
+.picker [role='tab'] > span:last-child {
+  width: var(--l3-icon-size-14);
+  height: var(--l3-icon-size-14);
+}
+
+.divider {
+  flex: none;
+  align-self: center;
+  width: 1px; /* 1px hairline */
+  height: var(--l3-size-24);
+  background: var(--l3-border-light);
+}
+
+/* The chips take the rest of the row and scroll sideways; 16 from the divider to the first chip and after the last. */
+.tabs {
+  flex: 1;
+  min-width: 0;
+}
+
+.tabs [role='tablist'] {
+  padding-inline: var(--l3-spacing-16);
+}
 ```
 
 ### `src/flows/us-stocks/screens/wallet/AllTransactions.tsx`
 
 ```tsx
 // All transactions (us-stocks-100 INR · us-stocks-101 USD; Figma Kuber Spot → V2, 5219:109907 "Transaction History"):
-// the wallet's "All Transactions" link. One page with the wallet's INR / USD switch pinned under the top bar; it opens on
-// the tab the wallet was on. Each wallet's deposits and withdrawals newest first under month headings,
+// the wallet's "All Transactions" link. Pinned under the top bar, as the Market page's IN / US row (23 Nov, the user's
+// call): a wallet pill at the left ("INR Wallet ⇕" / "USD Wallet ⇕", one tap flips it), a divider, then status chips (All ·
+// In progress · Completed · Failed · Refunded; "Taking longer" counts as In progress). It opens on the wallet the wallet
+// screen was on. Each wallet's deposits and withdrawals newest first under month headings,
 // drawn as the Market page's stock rows (TransactionListCard). A row opens its details sheet; a US deposit still on its
 // way opens the deposit progress sheet, as the wallet's bar does. The USD list follows the user status: empty until money
 // was added (with Add money once US Stocks is active), the deposits on the way while they are, then the history.
@@ -42874,25 +43046,34 @@ import { useState } from 'react'
 import { Actionbar } from '@l3/components/Actionbar'
 import { Button } from '@l3/components/Button'
 import { EmptyState } from '@l3/components/EmptyState'
+import { Icon } from '@l3/components/Icon'
+import { Inset } from '@l3/components/Inset'
 import { Section } from '@l3/components/Section'
+import { Stack } from '@l3/components/Stack'
 import { SectionHeader } from '@l3/components/SectionHeader'
 import { Tabs } from '@l3/components/Tabs'
-import { Tag } from '@l3/components/Tag'
+import { lmSwitchArrowVertical } from '@l3/icons/lemonnade'
 import { Phone } from '../../components/Phone'
 import { useUsNav } from '../../nav'
 import { useUsJourney } from '../../../../shared/userStatus'
 import { useDepositsOnTheWay } from '../../../../shared/data/usDeposit'
 import { Usd, formatInr } from '../../../../shared/money'
 import { TransactionListCard } from '../../../../shared/ui/TransactionListCard'
+import { CenteredTabs } from '../../../../shared/ui/CenteredTabs'
+import { Flag } from '../../../../shared/ui/Flag'
 import { t } from '../money/copy'
 import { FIGMA } from './data'
 import { DepositProgressSheet } from './sheets/DepositProgressSheet'
 import { TransactionSheet } from './sheets/TransactionSheet'
 import { KIND_ICON, StatusTag, kindLabel, statusLabel } from './TransactionParts'
-import { INR_TRANSACTIONS, byMonth, usdTransactions, type Transaction } from './transactions'
+import { INR_TRANSACTIONS, byMonth, usdTransactions, type Transaction, type TransactionStatus } from './transactions'
 import type { WalletTab } from './WalletScreen'
-import walletStyles from './WalletScreen.module.css'
 import styles from './AllTransactions.module.css'
+
+/** The status chips: All, then each status (Taking longer is shown under In progress). */
+type StatusFilter = 'all' | Exclude<TransactionStatus, 'delayed'>
+const STATUS_FILTERS: StatusFilter[] = ['all', 'inProgress', 'completed', 'failed', 'refunded']
+const filterOf = (status: TransactionStatus): StatusFilter => (status === 'delayed' ? 'inProgress' : status)
 
 export function AllTransactionsScreen({ tab = 'usd', backdrop = false }: { tab?: WalletTab; backdrop?: boolean }) {
   const { open, back } = useUsNav()
@@ -42900,8 +43081,12 @@ export function AllTransactionsScreen({ tab = 'usd', backdrop = false }: { tab?:
   const onTheWay = useDepositsOnTheWay()
   const [active, setActive] = useState<WalletTab>(tab)
   const [opened, setOpened] = useState<Transaction | null>(null)
+  const [filter, setFilter] = useState<StatusFilter>('all')
 
-  const list = active === 'inr' ? INR_TRANSACTIONS : usdTransactions(journey, onTheWay)
+  const all = active === 'inr' ? INR_TRANSACTIONS : usdTransactions(journey, onTheWay)
+  const list = filter === 'all' ? all : all.filter((tx) => filterOf(tx.status) === filter)
+  const other: WalletTab = active === 'inr' ? 'usd' : 'inr'
+  const walletLabel = (w: WalletTab) => t(w === 'inr' ? 'transactions.tabInr' : 'transactions.tabUsd')
 
   const amountOf = (tx: Transaction) => (tx.wallet === 'usd' ? <Usd value={tx.amount} layout="inline" align="end" /> : formatInr(tx.amount))
   const amountText = (tx: Transaction) => (tx.wallet === 'usd' ? `$${tx.amount.toFixed(2)}` : formatInr(tx.amount))
@@ -42911,24 +43096,33 @@ export function AllTransactionsScreen({ tab = 'usd', backdrop = false }: { tab?:
       onBack={() => back(FIGMA.walletUsActivate)}
       title={t('transactions.title')}
       bottom={
-        <div className={walletStyles.switch}>
-          <Tabs
-            appearance="pill-group"
-            width="fill"
-            behavior="tabs"
-            aria-label={t('transactions.title')}
-            value={active}
-            onChange={(next) => { if (!backdrop) setActive(next) }}
-            items={[
-              { value: 'inr', label: t('transactions.tabInr') },
-              {
-                value: 'usd',
-                label: t('transactions.tabUsd'),
-                badge: <Tag variant="primary" color="discover" size="sm">{t('transactions.tabNew')}</Tag>,
-              },
-            ]}
-          />
-        </div>
+        <Stack direction="horizontal" align="center" className={styles.filterRow}>
+          {/* One pill, one tap (as the Market page's IN / US picker): the wallet on screen with ↕; the whole block around it
+              takes the tap. */}
+          <div className={styles.picker} onClick={() => { if (!backdrop) setActive(other) }}>
+            <Inset paddingInline="16" paddingBlock="00">
+              <Tabs
+                appearance="pill"
+                size="md"
+                aria-label={t('transactions.walletSwitch', { wallet: walletLabel(active), other: walletLabel(other) })}
+                items={[{ value: active, label: walletLabel(active), iconLeft: <Flag code={active === 'inr' ? 'in' : 'us'} />, iconRight: <Icon icon={lmSwitchArrowVertical} size={14} /> }]}
+                value={active}
+                onChange={() => {}}
+              />
+            </Inset>
+          </div>
+          <span className={styles.divider} aria-hidden="true" />
+          <div className={styles.tabs}>
+            <CenteredTabs
+              appearance="pill"
+              emphasis="secondary"
+              aria-label={t('transactions.filter.label')}
+              items={STATUS_FILTERS.map((id) => ({ value: id, label: id === 'all' ? t('transactions.filter.all') : statusLabel(id) }))}
+              value={filter}
+              onChange={(next) => { if (!backdrop) setFilter(next as StatusFilter) }}
+            />
+          </div>
+        </Stack>
       }
     />
   )
@@ -42941,8 +43135,18 @@ export function AllTransactionsScreen({ tab = 'usd', backdrop = false }: { tab?:
       <TransactionSheet transaction={opened} onClose={() => setOpened(null)} />
     ) : null
 
+  // A status with nothing in it: say so (the wallet does have transactions, just none of this kind).
+  const filteredEmpty = all.length > 0 && list.length === 0 && (
+    <div className={styles.empty}>
+      <EmptyState
+        title={t('transactions.filterEmpty.title')}
+        description={t('transactions.filterEmpty.description', { status: filter === 'all' ? '' : statusLabel(filter).toLowerCase() })}
+      />
+    </div>
+  )
+
   // Empty: nothing has moved in the USD wallet yet. Once US Stocks is active, Add money starts the first deposit.
-  const empty = list.length === 0 && (
+  const empty = all.length === 0 && (
     <div className={styles.empty}>
       <EmptyState
         title={t('transactions.empty.title')}
@@ -42960,8 +43164,8 @@ export function AllTransactionsScreen({ tab = 'usd', backdrop = false }: { tab?:
 
   return (
     <Phone label={t('transactions.title')} header={header} gesture="none" overlay={overlay}>
-      {empty || (
-        <Section paddingInline="16" paddingBlock="16" gap="24" key={active}>
+      {empty || filteredEmpty || (
+        <Section paddingInline="16" paddingBlock="16" gap="24" key={`${active}-${filter}`}>
           {byMonth(list).map(({ month, items }) => (
             <Section key={month} gap="04">
               <SectionHeader title={month} />
@@ -43643,9 +43847,11 @@ export type BalanceCardProps = {
   currency?: 'INR' | 'USD'
   /** A line under the amount (the "≈ ₹…" equivalent of a $ balance). */
   below?: ReactNode
+  /** The details button's label (default "View details" on the centred looks, "Details" on the others). */
+  detailsLabel?: string
 }
 
-export function BalanceCard({ total, facts = [], onDetails, still, look = 'dashed', link, extra, withdrawable, currency: wallet, below }: BalanceCardProps) {
+export function BalanceCard({ total, facts = [], onDetails, still, look = 'dashed', link, extra, withdrawable, currency: wallet, below, detailsLabel }: BalanceCardProps) {
   const [flipFrom] = useState(() => {
     const from = still ? null : takeFlipFrom()
     return from && from !== total ? from : null
@@ -43665,7 +43871,7 @@ export function BalanceCard({ total, facts = [], onDetails, still, look = 'dashe
 
   const detailsButton = (
     <Button variant="ghost" size="sm" className={styles.details} iconRight={<Icon icon={chevronRightIcon} size={16} />} onClick={onDetails}>
-      {centred ? 'View details' : 'Details'}
+      {detailsLabel ?? (centred ? 'View details' : 'Details')}
     </Button>
   )
 
@@ -43808,109 +44014,168 @@ export function BalanceCard({ total, facts = [], onDetails, still, look = 'dashe
 
 ```css
 .body {
-  /* FLAG: raw display:flex + gap/padding instead of L3 Stack/Inset */
-  gap:var(--l3-spacing-16);
-  padding:var(--l3-spacing-16) var(--l3-spacing-16) var(--l3-spacing-00);
-  flex-direction:column;
-  display:flex;
+  padding: var(--l3-spacing-16) var(--l3-spacing-16) var(--l3-spacing-00);
 }
 
-.divider {
-  background:var(--l3-border-light);
-  border:0;
-  width:100%;
-  height:1px;
-  margin:0;
+/* A group's rows sit 8 in from the card's content edge, under their group row. */
+.rows {
+  padding-inline-start: var(--l3-spacing-08);
 }
 
-.settlement {
-  gap:var(--l3-spacing-08);
-  flex-direction:column;
-  display:flex;
+/* A group's label is its toggle: the label text with the chevron right after it, no button box (L3 ghost sm, padding
+   and height cleared so the row keeps the KeyValueRow label's look). */
+.toggle[data-variant] {
+  --btn-height: auto;
+  --btn-padding-inline: var(--l3-spacing-00);
+  --btn-padding-block: var(--l3-spacing-00);
+  --btn-label-padding: var(--l3-spacing-00);
+  --btn-gap: var(--l3-spacing-04);
+  --btn-font: inherit;
+  --btn-content: inherit;
+}
+
+/* The two card totals (Available, Withdrawable) in the heading font, bold. */
+.total {
+  font: var(--l3-text-heading-16);
+}
+
+/* The chevron turns up while its group is open. */
+/* Wallet tabs in the Actionbar's bottom slot, as on the wallet page. */
+.switch {
+  padding: var(--l3-spacing-00) var(--l3-spacing-16) var(--l3-spacing-12);
+}
+
+.toggle > span:last-child > span {
+  transition: rotate var(--l3-motion-duration-short) var(--l3-motion-easing-standard);
+}
+
+.toggle[aria-expanded='true'] > span:last-child > span {
+  rotate: 180deg;
 }
 
 .note {
-  font:var(--l3-text-description-12);
-  color:var(--l3-content-secondary);
-  margin:0;
+  font: var(--l3-text-description-12);
+  color: var(--l3-content-secondary);
+  margin: 0;
 }
 ```
 
 ### `src/flows/us-stocks/screens/wallet/BalanceDetails.tsx`
 
 ```tsx
-// W2d / W2d-x · Balance Details: the wallet's balance broken into opening balance, credits, debits and settlement.
-// "Credits" and "Debits" expand into their rows (the expanded screen is a separate Figma frame, so the toggle navigates).
-// FLAG: raw <hr> dividers and a hand-made body layout (see BalanceDetails.module.css); the "👉 Note" copy has an emoji.
+// W2d / W2d-x · Balance Details: the full breakdown behind the wallet's "View details", for the INR and the USD wallet
+// (23 Nov, from the live app's Balance Details). Two cards: Available Bal. (opening balance, credits, debits) and
+// Withdrawable Bal. (settlement pending). Credits, Debits and Settlement Pending each open in place to their rows.
+// The expanded Figma frame only starts with every group open. INR Wallet / USD Wallet tabs on top (as on the wallet page)
+// switch the breakdown in place; the tab of the wallet it was opened from starts active.
+import { useState } from 'react'
 import { Actionbar } from '@l3/components/Actionbar'
 import { Button } from '@l3/components/Button'
 import { Icon } from '@l3/components/Icon'
 import { KeyValueList, KeyValueRow } from '@l3/components/KeyValueList'
+import { Stack } from '@l3/components/Stack'
+import { Tabs } from '@l3/components/Tabs'
 import { Phone } from '../../components/Phone'
 import { useUsNav } from '../../nav'
-import { Usd } from '../../../../shared/money'
-import { CREDIT_ROWS, DEBIT_ROWS, FIGMA } from './data'
+import { Usd, parseUsd } from '../../../../shared/money'
+import { t } from '../money/copy'
+import { BALANCE_BREAKDOWN, FIGMA, type BalanceGroup } from './data'
 import { chevronDownIcon } from './lib/icons'
 import styles from './BalanceDetails.module.css'
 
-export function BalanceDetails({ expanded = false }: { expanded?: boolean }) {
-  const { go, back } = useUsNav()
+type GroupId = 'credits' | 'debits' | 'settlement'
 
-  const toggle = (name: string) => (
-    <Button
-      variant="ghost"
-      size="sm"
-      iconLeft={<Icon icon={chevronDownIcon} size={16} />}
-      aria-label={`${expanded ? 'Hide' : 'Show'} ${name}`}
-      aria-expanded={expanded}
-      onClick={() => !expanded && go(FIGMA.balanceDetailsExpanded)}
-    />
-  )
+type Wallet = 'inr' | 'usd'
 
-  const group = (label: string, value: string, rows: [string, string][]) => (
-    <KeyValueList size="sm" aria-label={label}>
-      <KeyValueRow size="md" label={label} value={<Usd text={value} align="end" />} valueEnd={toggle(label.toLowerCase())} />
-      {expanded && rows.map(([rowLabel, rowValue]) => <KeyValueRow key={rowLabel} label={rowLabel} value={<Usd text={rowValue} align="end" layout="inline" />} />)}
-    </KeyValueList>
-  )
+export function BalanceDetails({ wallet: startWallet = 'usd', expanded = false }: { wallet?: Wallet; expanded?: boolean }) {
+  const { back, open: openPage } = useUsNav()
+  const [wallet, setWallet] = useState<Wallet>(startWallet)
+  const data = BALANCE_BREAKDOWN[wallet]
+  const [open, setOpen] = useState<Record<GroupId, boolean>>({ credits: expanded, debits: expanded, settlement: expanded })
+
+  // A US amount goes through <Usd> (the app's $ / ₹ setting); rupees stay as written.
+  const money = (text: string, sub = false) =>
+    parseUsd(text) ? <Usd text={text} align="end" layout={sub ? 'inline' : 'stack'} /> : text
+
+  const group = (id: GroupId, { total, rows }: BalanceGroup) => {
+    const label = t(`balanceDetails.${id}`)
+    return (
+      <>
+        <KeyValueRow
+          label={
+            // The chevron sits right after the label (as in the live app); the label and chevron are one tap target.
+            <Button
+              variant="ghost"
+              size="sm"
+              className={styles.toggle}
+              iconRight={<Icon icon={chevronDownIcon} size={16} />}
+              aria-label={t(open[id] ? 'balanceDetails.hide' : 'balanceDetails.show', { group: label })}
+              aria-expanded={open[id]}
+              onClick={() => setOpen((now) => ({ ...now, [id]: !now[id] }))}
+            >
+              {label}
+            </Button>
+          }
+          value={money(total)}
+        />
+        {open[id] && (
+          <div className={styles.rows}>
+            <KeyValueList size="sm" aria-label={label}>
+              {rows.map(([rowLabel, rowValue]) => (
+                <KeyValueRow key={rowLabel} label={`• ${rowLabel}`} value={money(rowValue, true)} />
+              ))}
+            </KeyValueList>
+          </div>
+        )}
+      </>
+    )
+  }
 
   return (
     <Phone
-      label={expanded ? 'Balance Details, Credits and Debits expanded' : 'Balance Details'}
+      label={t('balanceDetails.title')}
       gesture="none"
       header={
         <Actionbar
-          title="Balance Details"
-          onBack={() => back(FIGMA.walletUsActivate)}
+          title={t('balanceDetails.title')}
+          onBack={() => back(wallet === 'inr' ? FIGMA.walletInr : FIGMA.walletUsActivate)}
           actions={
-            <Button variant="ghost" size="sm">
-              Help
+            <Button variant="ghost" size="sm" onClick={() => openPage(FIGMA.help)}>
+              {t('balanceDetails.help')}
             </Button>
+          }
+          bottom={
+            <div className={styles.switch}>
+              <Tabs
+                appearance="pill-group"
+                width="fill"
+                behavior="tabs"
+                aria-label={t('balanceDetails.walletSwitch')}
+                value={wallet}
+                onChange={(next) => setWallet(next as Wallet)}
+                items={[
+                  { value: 'inr', label: t('balanceDetails.walletInr') },
+                  { value: 'usd', label: t('balanceDetails.walletUsd') },
+                ]}
+              />
+            </div>
           }
         />
       }
     >
-      <div className={styles.body}>
-        <KeyValueList aria-label="Available balance">
-          <KeyValueRow total label="Available Bal." value={<Usd text="$520.40" align="end" />} />
+      <Stack gap="16" className={styles.body}>
+        <KeyValueList variant="card" aria-label={t('balanceDetails.available')}>
+          <KeyValueRow total label={t('balanceDetails.available')} value={<span className={styles.total}>{money(data.available)}</span>} />
+          <KeyValueRow label={t('balanceDetails.opening')} value={money(data.opening)} />
+          {group('credits', data.credits)}
+          {group('debits', data.debits)}
         </KeyValueList>
-        <hr className={styles.divider} />
-        <KeyValueList size="sm" aria-label="Opening balance">
-          <KeyValueRow size="md" label="Opening balance" value={<Usd text="$350.00" align="end" />} />
+        <KeyValueList variant="card" aria-label={t('balanceDetails.withdrawable')}>
+          <KeyValueRow total label={t('balanceDetails.withdrawable')} value={<span className={styles.total}>{money(data.withdrawable)}</span>} />
+          {group('settlement', data.settlement)}
         </KeyValueList>
-        {group('Credits', '$621.80', CREDIT_ROWS)}
-        {group('Debits', '$451.40', DEBIT_ROWS)}
-        <hr className={styles.divider} />
-        <KeyValueList aria-label="Withdrawable balance">
-          <KeyValueRow total label="Withdrawable Bal." value={<Usd text="$417.03" align="end" />} />
-        </KeyValueList>
-        <div className={styles.settlement}>
-          <KeyValueList aria-label="Settlement pending">
-            <KeyValueRow label="Settlement Pending" value={<Usd text="$103.37" align="end" />} />
-          </KeyValueList>
-          <p className={styles.note}>👉 Note : Sale money can be withdrawn after 1 working day</p>
-        </div>
-      </div>
+        {wallet === 'usd' && <p className={styles.note}>{t('balanceDetails.noteUsd')}</p>}
+      </Stack>
     </Phone>
   )
 }
@@ -44105,6 +44370,104 @@ export function GrowNudge() {
         </p>
       </span>
     </div>
+  )
+}
+```
+
+### `src/flows/us-stocks/screens/wallet/HelpScreen.module.css`
+
+```css
+.body {
+  padding: var(--l3-spacing-08) var(--l3-spacing-16) var(--l3-spacing-00);
+}
+
+/* A hairline between topics, as in the live app. */
+.topic + .topic {
+  border-top: 1px solid var(--l3-border-light);
+}
+
+/* The page already has its 16 margin, so the topic rows drop their own side padding (icons line up with the card below); 12 above and below. */
+.topic > button[data-variant][data-size] {
+  padding: var(--l3-spacing-12) var(--l3-spacing-00);
+  --cell-icon: var(--l3-icon-size-24); /* icons stay 24 in the small row */
+}
+
+/* Section titles at heading 16 (L3 SectionHeader only has 14; L3 gap). */
+.heading h2 {
+  font: var(--l3-text-heading-16);
+}
+```
+
+### `src/flows/us-stocks/screens/wallet/HelpScreen.tsx`
+
+```tsx
+// Help (23 Nov, from the live app's help page, opened by Balance Details' "Help"). A list of help topics, then
+// "Contact Lemonn Support" with a Contact Support card that emails support. Differences from the live app: the title
+// is "Help" (live: "Lemonn"), every topic has a real icon (live: some show a letter), the typos are fixed
+// ("regarding", "Margin Trading Facility"), "Understand Investing & Trading Basics" is shortened to fit one line, US Stocks is added first, and Logout is left out (not a help action).
+// Topics are grouped into sections (Trading, Money & charges, …); the live app has one flat list.
+// The topics' article pages aren't built.
+import { Actionbar } from '@l3/components/Actionbar'
+import { Icon } from '@l3/components/Icon'
+import { ListCell } from '@l3/components/ListCell'
+import { SectionHeader } from '@l3/components/SectionHeader'
+import { Stack } from '@l3/components/Stack'
+import { msPerson } from '@l3/icons/material'
+import { Phone } from '../../components/Phone'
+import { useUsNav } from '../../nav'
+import { emailSupport } from '../../../../shared/support'
+import { t } from '../money/copy'
+import { FIGMA } from './data'
+import { HELP_GROUPS } from './helpTopics'
+import { chevronRightIcon } from './lib/icons'
+import styles from './HelpScreen.module.css'
+
+export function HelpScreen() {
+  const { back } = useUsNav()
+  const chevron = <Icon icon={chevronRightIcon} size={20} />
+
+  return (
+    <Phone
+      label={t('help.title')}
+      gesture="none"
+      header={<Actionbar title={t('help.title')} onBack={() => back(FIGMA.balanceDetails)} />}
+    >
+      <Stack gap="32" className={styles.body}>
+        {HELP_GROUPS.map((group) => (
+          <Stack gap="04" key={group.id}>
+            <SectionHeader className={styles.heading} title={t(`help.group.${group.id}`)} />
+            <div role="list" aria-label={t(`help.group.${group.id}`)}>
+              {group.topics.map(({ id, icon }) => (
+                <div role="listitem" key={id} className={styles.topic}>
+                  <ListCell
+                    as="button"
+                    size="sm"
+                    iconLeft={<Icon icon={icon} />}
+                    label={t(`help.topic.${id}.label`)}
+                    description={t(`help.topic.${id}.description`)}
+                    multiline
+                    iconRight={chevron}
+                    onClick={() => {}}
+                  />
+                </div>
+              ))}
+            </div>
+          </Stack>
+        ))}
+        <Stack gap="16">
+          <SectionHeader className={styles.heading} title={t('help.contactTitle')} description={t('help.contactBody')} />
+          <ListCell
+            variant="card"
+            as="button"
+            iconLeft={<Icon icon={msPerson} />}
+            label={t('help.contact')}
+            description={t('help.contactHours')}
+            iconRight={chevron}
+            onClick={() => emailSupport(t('help.title'))}
+          />
+        </Stack>
+      </Stack>
+    </Phone>
   )
 }
 ```
@@ -44316,6 +44679,11 @@ export const KIND_ICON: Record<TransactionKind, IconSource> = {
   font: var(--l3-text-description-12);
   color: var(--l3-content-secondary);
 }
+
+/* The withdrawable amount in its small card: the money look of the wallet (whole figures, tabular). */
+.withdrawableValue {
+  font-variant-numeric: tabular-nums;
+}
 ```
 
 ### `src/flows/us-stocks/screens/wallet/WalletScreen.tsx`
@@ -44333,6 +44701,9 @@ import { Aerobar } from '@l3/components/Aerobar'
 import { Button } from '@l3/components/Button'
 import { ButtonGroup } from '@l3/components/ButtonGroup'
 import { Icon } from '@l3/components/Icon'
+import { Inset } from '@l3/components/Inset'
+import { KeyValueList, KeyValueRow } from '@l3/components/KeyValueList'
+import { Stack } from '@l3/components/Stack'
 import { Tabs } from '@l3/components/Tabs'
 import { Tag } from '@l3/components/Tag'
 import { Phone } from '../../components/Phone'
@@ -44342,13 +44713,13 @@ import { msAccountBalance } from '@l3/icons/material'
 import { moneyIds } from '../money/ids'
 import { formatInr, parseUsd, useMoneyDisplay, useUsd } from '../../../../shared/money'
 import { BalanceCard } from './BalanceCard'
+import { t } from '../money/copy'
 import { FIGMA } from './data'
 import { GrowNudge } from './GrowNudge'
 import { bigAmount, useBigAmounts } from './lib/bigAmounts'
 import { infoIcon } from './lib/icons'
 import { neighbour, useSwipeTabs } from './lib/swipeTabs'
 import { PendingBanner, type PendingBannerProps } from './PendingBanner'
-import { WithdrawableSheet } from './sheets/WithdrawableSheet'
 import styles from './WalletScreen.module.css'
 
 // FLAG: experiment switch read from the URL (?link=1|2|3) — three looks for joining the tabs to the balance card.
@@ -44379,7 +44750,7 @@ export type WalletScreenProps = {
   /** The balance as written: "$520.40" (a US wallet, shown in the currency the $ / ₹ switch picks) or "₹1,100.00". */
   total: string
   withdrawable: string
-  /** `true`: the "Withdrawable" tap opens the sheet; a Figma id also adds "Full balance details" to it. */
+  /** Unused since 23 Nov (View details always opens the Balance Details page); kept because the screens pass it. */
   details?: boolean | string
   /** Unused by the original's component (kept because the screens pass it). */
   tight?: boolean
@@ -44411,8 +44782,8 @@ export const INR_VIEW = {
 export function WalletScreen(props: WalletScreenProps) {
   const { tab = 'usd', backdrop } = props
   const [active, setActive] = useState<WalletTab>(tab)
-  const { label, total, withdrawable, details, children, dock, backTo, sheet, noteFlow, inr, nudge, pending } =
-    active === 'usd' ? props : { ...props, ...INR_VIEW, nudge: false, details: undefined, sheet: undefined, noteFlow: false, pending: undefined }
+  const { label, total, withdrawable, children, dock, backTo, sheet, noteFlow, inr, nudge, pending } =
+    active === 'usd' ? props : { ...props, ...INR_VIEW, nudge: false, sheet: undefined, noteFlow: false, pending: undefined }
 
   const bigAmounts = useBigAmounts()
   const rawTotal = bigAmounts ? bigAmount(total, 'total') : total
@@ -44447,21 +44818,9 @@ export function WalletScreen(props: WalletScreenProps) {
     page: active,
   })
 
-  // The "Withdrawable" sheet: open, or closing (stays mounted while it slides away).
-  const [detailsState, setDetailsState] = useState<'open' | 'closing' | null>(null)
-  const fullDetailsTo = !inr && typeof details === 'string' ? details : undefined
-  const detailsSheet = detailsState && (
-    <WithdrawableSheet
-      open={detailsState === 'open'}
-      onClose={() => {
-        setDetailsState('closing')
-        setTimeout(() => setDetailsState(null), 300)
-      }}
-      total={rawTotal}
-      withdrawable={rawWithdrawable}
-      onFullDetails={fullDetailsTo ? () => open(fullDetailsTo) : undefined}
-    />
-  )
+  // "View details" under the balance opens the wallet's Balance Details page (23 Nov: it replaced the Withdrawable sheet;
+  // the page has the full breakdown, withdrawable and what is still settling included).
+  const detailsTo = inr ? FIGMA.balanceDetailsInr : FIGMA.balanceDetails
 
   // Deposit, Withdraw and Add bank open a page on top of the wallet (in from the right; back slides it out right).
   const goTo = (figma?: string) => () => {
@@ -44544,23 +44903,32 @@ export function WalletScreen(props: WalletScreenProps) {
       bodyRef={swipe.bind}
       statusbar="transparent"
       gesture="default"
-      backdropArt={<div className={styles.wash} data-sheet={sheet || detailsState ? '' : undefined} />}
+      backdropArt={<div className={styles.wash} data-sheet={sheet ? '' : undefined} />}
       header={header}
       footer={footer}
-      overlay={sheet ?? detailsSheet}
+      overlay={sheet}
     >
       {/* The whole body (balance card and what's under it) pushes left / right when the wallet switches. */}
       <div className={styles.stack} ref={swipe.contentRef}>
-        <BalanceCard
-          look="dashed"
-          link={linkLook}
-          total={shownTotal}
-          still={backdrop}
-          withdrawable={shownWithdrawable}
-          currency={inr ? 'INR' : 'USD'}
-          below={!inr && totalUsd && balanceInr ? <span className={styles.balanceInr}>{balanceInr}</span> : undefined}
-          onDetails={backdrop ? undefined : () => setDetailsState('open')}
-        />
+        {/* The balance card (amount + View details), then the withdrawable balance in its own small card under it:
+            plain facts, not a button (23 Nov). */}
+        <Stack gap="12">
+          <BalanceCard
+            look="dashed"
+            link={linkLook}
+            total={shownTotal}
+            still={backdrop}
+            currency={inr ? 'INR' : 'USD'}
+            below={!inr && totalUsd && balanceInr ? <span className={styles.balanceInr}>{balanceInr}</span> : undefined}
+            detailsLabel={t('wallet.viewDetails')}
+            onDetails={goTo(detailsTo)}
+          />
+          <Inset paddingInline="16" paddingBlock="00">
+            <KeyValueList variant="card" aria-label={t('wallet.withdrawable')}>
+              <KeyValueRow label={t('wallet.withdrawable')} value={<span className={styles.withdrawableValue}>{shownWithdrawable}</span>} />
+            </KeyValueList>
+          </Inset>
+        </Stack>
         <div className={`${styles.page} ${styles.body}`} data-flow={noteFlow || undefined}>
           {children}
           {nudge && !inr && <GrowNudge />}
@@ -44827,8 +45195,15 @@ export const FIGMA = {
   walletFunded: '5852:98908',
   /** W2d-x · Balance Details · expanded. */
   balanceDetailsExpanded: '5852:98862',
-  /** W2d · Balance Details. */
+  /** W2d · Balance Details (USD wallet). */
   balanceDetails: '5852:98888',
+  /** Balance Details of the INR wallet (no Figma frame: from the live app's Balance Details). */
+  balanceDetailsInr: '9001:66',
+  /** The same, every group open. */
+  balanceDetailsInrExpanded: '9001:67',
+  help: '9001:68',
+  /** W0 · Wallet · Indian tab. */
+  walletInr: '5852:99084',
   /** M01 · Add money · enter ₹. */
   addMoney: '5776:84630',
   /** H08 · Withdraw · enter amount. */
@@ -44847,28 +45222,129 @@ export const FIGMA = {
   transactionsUsd: '9001:65',
 } as const
 
-/** Pending rows under "Credits" and "Debits" on Balance Details. */
-export const CREDIT_ROWS: [string, string][] = [
-  ['• Deposits', '$500.00'],
-  ['• Stocks Sell', '$103.37'],
-  ['• Dividends', '$18.43'],
-]
-export const DEBIT_ROWS: [string, string][] = [
-  ['• Withdrawals', '$0.00'],
-  ['• Stocks', '$448.55'],
-  ['• Charges', '$2.85'],
-]
+/** One group on Balance Details (Credits, Debits, Settlement Pending): its total and the rows it opens to. */
+export type BalanceGroup = { total: string; rows: [string, string][] }
+export type BalanceBreakdown = {
+  available: string
+  opening: string
+  credits: BalanceGroup
+  debits: BalanceGroup
+  withdrawable: string
+  settlement: BalanceGroup
+}
 
-/** Money still settling from sales, in USD (the Withdrawable sheet's "Settling from sales"). */
-export const SETTLING_USD = 103.37
-/** Brokerage credits shown in the INR Withdrawable sheet (only usable for brokerage). */
-export const BROKERAGE_CREDITS_INR = 1000
+/**
+ * Balance Details, per wallet. Rows as in the live app; amounts add up to the wallet page's (INR_VIEW: ₹1,100.00,
+ * ₹10.00 withdrawable; the funded US wallet: $520.40, $317.03 withdrawable): opening + credits − debits = available,
+ * withdrawable + settlement pending = available.
+ */
+export const BALANCE_BREAKDOWN: Record<'inr' | 'usd', BalanceBreakdown> = {
+  inr: {
+    available: '₹1,100.00',
+    opening: '₹850.00',
+    credits: {
+      total: '₹1,450.00',
+      rows: [
+        ['Deposits', '₹1,000.00'],
+        ['Stocks Sell', '₹450.00'],
+        ['Stocks Pledge', '₹0.00'],
+        ['Equity Options Cfs', '₹0.00'],
+        ['Commodity Options Cfs', '₹0.00'],
+      ],
+    },
+    debits: {
+      total: '₹1,200.00',
+      rows: [
+        ['Withdrawals', '₹500.00'],
+        ['Stocks', '₹650.00'],
+        ['Futures & Options', '₹0.00'],
+        ['MTF', '₹0.00'],
+        ['Stocks & MTF PnL', '₹50.00'],
+        ['MTM PnL', '₹0.00'],
+      ],
+    },
+    withdrawable: '₹10.00',
+    settlement: { total: '₹1,090.00', rows: [['Deposit', '₹640.00'], ['Net Credit', '₹450.00']] },
+  },
+  usd: {
+    available: '$520.40',
+    opening: '$350.00',
+    credits: { total: '$621.80', rows: [['Deposits', '$500.00'], ['Stocks Sell', '$103.37'], ['Dividends', '$18.43']] },
+    debits: { total: '$451.40', rows: [['Withdrawals', '$0.00'], ['Stocks', '$448.55'], ['Charges', '$2.85']] },
+    withdrawable: '$317.03',
+    settlement: { total: '$203.37', rows: [['Deposit', '$100.00'], ['Stocks Sell', '$103.37']] },
+  },
+}
 
 /** The two pending withdrawal requests listed in the W3c sheet. */
 export const WITHDRAWAL_REQUESTS = [
   { id: 'a', amount: 142.45 },
   { id: 'b', amount: 50 },
 ]
+```
+
+### `src/flows/us-stocks/screens/wallet/helpTopics.ts`
+
+```ts
+// The Help page's topics, grouped by what they're about (the live app has one flat list; US Stocks added for this flow). Labels and descriptions in
+// copy.json under help.topic.<id>. Each topic opens its help articles in the live app; those pages aren't built here.
+import { msBadge, msBolt, msCandlestickChart, msDescription, msDiamond, msFamilyRestroom, msGavel, msHistory, msInfo, msLock, msMobile, msPayments, msPercent, msPieChart, msPublic, msReceiptLong, msRedeem, msRocketLaunch, msSavings, msSchool, msSecurity, msSwapHoriz, msTrendingUp } from '@l3/icons/material'
+
+export const HELP_GROUPS = [
+  {
+    id: 'trading',
+    topics: [
+      { id: 'usStocks', icon: msPublic },
+      { id: 'trading', icon: msSwapHoriz },
+      { id: 'zing', icon: msBolt },
+      { id: 'fno', icon: msCandlestickChart },
+      { id: 'commodities', icon: msDiamond },
+      { id: 'mtf', icon: msPercent },
+    ],
+  },
+  {
+    id: 'funds',
+    topics: [
+      { id: 'funds', icon: msPayments },
+      { id: 'charges', icon: msReceiptLong },
+      { id: 'pledge', icon: msLock },
+    ],
+  },
+  {
+    id: 'portfolio',
+    topics: [
+      { id: 'portfolio', icon: msPieChart },
+      { id: 'pnl', icon: msHistory },
+      { id: 'reports', icon: msDescription },
+    ],
+  },
+  {
+    id: 'investing',
+    topics: [
+      { id: 'mf', icon: msSavings },
+      { id: 'ipo', icon: msRocketLaunch },
+      { id: 'smartInvest', icon: msTrendingUp },
+      { id: 'basics', icon: msSchool },
+    ],
+  },
+  {
+    id: 'account',
+    topics: [
+      { id: 'kyc', icon: msBadge },
+      { id: 'nominee', icon: msFamilyRestroom },
+      { id: 'app', icon: msMobile },
+      { id: 'cyber', icon: msSecurity },
+    ],
+  },
+  {
+    id: 'other',
+    topics: [
+      { id: 'referral', icon: msRedeem },
+      { id: 'general', icon: msInfo },
+      { id: 'grievance', icon: msGavel },
+    ],
+  },
+] as const
 ```
 
 ### `src/flows/us-stocks/screens/wallet/index.tsx`
@@ -44883,6 +45359,7 @@ import { useUsJourney } from '../../../../shared/userStatus'
 import type { UsScreenMap } from '../types'
 import { AllTransactionsScreen } from './AllTransactions'
 import { BalanceDetails } from './BalanceDetails'
+import { HelpScreen } from './HelpScreen'
 import { FIGMA } from './data'
 import {
   WalletActivationFailedScreen,
@@ -44933,6 +45410,9 @@ export const screens: UsScreenMap = {
   '5852:98908': WalletFundedScreen,
   '5852:98888': () => <BalanceDetails />,
   '5852:98862': () => <BalanceDetails expanded />,
+  [FIGMA.balanceDetailsInr]: () => <BalanceDetails wallet="inr" />,
+  [FIGMA.balanceDetailsInrExpanded]: () => <BalanceDetails wallet="inr" expanded />,
+  [FIGMA.help]: () => <HelpScreen />,
   '5776:84195': WalletTransferInProgressScreen,
   '9001:22': WalletMoneySentScreen,
   '5852:98799': WalletWithdrawalInProgressScreen,
@@ -45487,90 +45967,6 @@ export function TransactionSheet({ transaction: tx, onClose }: { transaction: Tr
         </KeyValueList>
         {message && <Aerobar floating placement="inline" type={message.type} paragraph={message.text} />}
       </Section>
-    </BottomSheet>
-  )
-}
-```
-
-### `src/flows/us-stocks/screens/wallet/sheets/WithdrawableSheet.tsx`
-
-```tsx
-// "Withdrawable balance" sheet: how the total splits into what can go to the bank now and what is held back.
-import { BottomSheet, BottomSheetHeader } from '@l3/components/BottomSheet'
-import { Button } from '@l3/components/Button'
-import { ButtonGroup } from '@l3/components/ButtonGroup'
-import { KeyValueList, KeyValueRow } from '@l3/components/KeyValueList'
-import { useSheetLayer } from '../../../components/Phone'
-import { Usd, formatInr, parseUsd } from '../../../../../shared/money'
-import { BROKERAGE_CREDITS_INR, SETTLING_USD } from '../data'
-
-const amountOf = (text: string) => Number(text.replace(/[^\d.]/g, '')) || 0
-
-export function WithdrawableSheet({
-  open,
-  onClose,
-  total,
-  withdrawable,
-  onFullDetails,
-}: {
-  open: boolean
-  onClose: () => void
-  /** As written ("$520.40" or "₹1,100.00"): US amounts show in the currency the $ / ₹ switch picks. */
-  total: string
-  withdrawable: string
-  onFullDetails?: () => void
-}) {
-  const layer = useSheetLayer()
-  const inr = total.includes('₹')
-  // The INR wallet's rows are rupees; the US wallet's go through <Usd> (right-aligned, with the ≈ ₹ line when set).
-  // `minus`: a deduction, shown with a "-". Rows that already have a caption under the value skip the ≈ ₹ line.
-  const money = (n: number, minus = false) => {
-    const value = minus ? -n : n
-    return inr ? formatInr(value) : <Usd value={value} align="end" layout={minus ? 'inline' : 'stack'} />
-  }
-  const held = Math.max(0, amountOf(total) - amountOf(withdrawable))
-  const settling = Math.min(held, inr ? BROKERAGE_CREDITS_INR : SETTLING_USD)
-  const rest = Math.round((held - settling) * 100) / 100
-
-  return (
-    <BottomSheet
-      open={open}
-      onClose={onClose}
-      container={layer}
-      aria-labelledby="withdrawable-title"
-      header={<BottomSheetHeader heading="Withdrawable balance" headingId="withdrawable-title" description="What you can send to your bank right now" />}
-      footer={
-        <ButtonGroup aria-label="Withdrawable balance">
-          <Button variant="primary" size="lg" fullWidth onClick={onClose}>
-            Got it
-          </Button>
-          {onFullDetails && (
-            <Button variant="secondary" size="lg" fullWidth onClick={onFullDetails}>
-              Full balance details
-            </Button>
-          )}
-        </ButtonGroup>
-      }
-    >
-      {/* L3 money breakdown: the card KeyValueList, its `total` row (divider + Withdrawable) at the end. */}
-      <KeyValueList
-        variant="card"
-        aria-label="Balance breakdown"
-        total={{ label: 'Withdrawable', value: parseUsd(withdrawable) ? <Usd text={withdrawable} align="end" /> : withdrawable }}
-      >
-        <KeyValueRow label={inr ? 'INR balance' : 'USD balance'} value={money(amountOf(total))} />
-        {inr ? (
-          <>
-            <KeyValueRow label="Brokerage credits" caption="Used for brokerage only" value={money(settling, true)} />
-            {rest > 0 && <KeyValueRow label="Blocked for orders" caption="Free once they settle" value={money(rest, true)} />}
-          </>
-        ) : (
-          <>
-            <KeyValueRow label="Settling from sales" caption="Free in 1 working day" value={money(settling, true)} />
-            {rest > 0 && <KeyValueRow label="Withdrawals sent" caption="On the way to your bank" value={money(rest, true)} />}
-          </>
-        )}
-      </KeyValueList>
     </BottomSheet>
   )
 }
@@ -71274,6 +71670,53 @@ export function BankOptions({ banks, selected, name, onPick, variant = 'card' }:
 }
 ```
 
+### `src/shared/ui/CenteredTabs.module.css`
+
+```css
+/* Only a handle to find the tab row: takes no box, so the Tabs lay out as if it weren't there. */
+.rail {
+  display: contents;
+}
+```
+
+### `src/shared/ui/CenteredTabs.tsx`
+
+```tsx
+// A scrolling L3 Tabs row whose selected tab glides to the middle, so the tabs after it come into view (17 Nov).
+// L3 Tabs only keeps the selected tab inside the row (scrolls just enough); this re-centres it after every change.
+// L3 gap: Tabs has no "centre the selected tab" option — when it gets one, use it and drop this wrapper.
+import { useEffect, useLayoutEffect, useRef, type ComponentProps } from 'react'
+import { Tabs } from '@l3/components/Tabs'
+import styles from './CenteredTabs.module.css'
+
+export function CenteredTabs(props: ComponentProps<typeof Tabs>) {
+  const rail = useRef<HTMLDivElement>(null)
+  const first = useRef(true)
+  const before = useRef(0)
+  const tabList = () => rail.current?.querySelector<HTMLElement>('[role="tablist"]')
+  // Where the row was before L3's own effect jumps it (layout effects run first)…
+  useLayoutEffect(() => {
+    before.current = tabList()?.scrollLeft ?? 0
+  }, [props.value])
+  useEffect(() => {
+    const list = tabList()
+    const tab = list?.querySelector<HTMLElement>('[aria-selected="true"]')
+    if (!list || !tab) return
+    // …put it back before the frame is painted, so the row makes one smooth glide instead of a jump and a glide.
+    if (!first.current) list.scrollTo({ left: before.current, behavior: 'instant' })
+    const left = tab.offsetLeft + tab.offsetWidth / 2 - list.clientWidth / 2
+    const still = first.current || matchMedia('(prefers-reduced-motion: reduce)').matches
+    first.current = false
+    list.scrollTo({ left: Math.max(0, left), behavior: still ? 'auto' : 'smooth' })
+  }, [props.value])
+  return (
+    <div ref={rail} className={styles.rail}>
+      <Tabs {...props} />
+    </div>
+  )
+}
+```
+
 ### `src/shared/ui/DepositProgressSheet.module.css`
 
 ```css
@@ -71640,13 +72083,14 @@ export const Flag = ({ code }: { code: FlagCode }) => (
 }
 
 /* The page fades out under the nav (20 Nov, user: stronger than Figma's blurred blob): the page's colour, solid from
-   the bottom edge up past the pill's middle, then fading to clear well above the pill. It never takes a tap. */
+   the bottom edge up past the pill's middle, then fading to clear just above the pill (23 Nov, user: half the old
+   152, it rose too far up the page). It never takes a tap. */
 .fade {
   position: absolute;
   right: 0;
   bottom: 0;
   left: 0;
-  height: calc(var(--l3-size-128) + var(--l3-size-24)); /* 152: about 80 above the pill */
+  height: calc((var(--l3-size-128) + var(--l3-size-24)) / 2); /* 76: half the old 152, just over the pill (70) */
   background: linear-gradient(
     to top,
     var(--l3-surface-default) 0%,
@@ -71665,18 +72109,18 @@ export const Flag = ({ code }: { code: FlagCode }) => (
   left: var(--l3-spacing-16);
   box-sizing: border-box;
   overflow: hidden;
-  padding: var(--l3-spacing-08) var(--l3-spacing-12) var(--l3-spacing-12) var(--l3-spacing-16);
+  padding: var(--l3-spacing-08) 0 var(--l3-spacing-12); /* end to end: no side padding (23 Nov, user) */
   border-radius: var(--l3-radius-full);
   background: var(--l3-surface-default);
   /* Figma's 1px stroke is inside the pill (it stays 56): an inset line, then the double shadow. */
   box-shadow: inset 0 0 0 1px var(--l3-border-light), var(--app-fnav-shadow); /* 1px: Figma stroke weight has no variable */
 }
 
-/* The chosen tab's glow (Figma Ellipse 6871, in accent green) from the tab's left edge, clipped by the pill. */
+/* The chosen tab's glow (Figma Ellipse 6871, in accent green), centred on the tab, clipped by the pill. */
 .glow {
   position: absolute;
   top: var(--app-fnav-glow-top);
-  left: var(--glow-x);
+  left: calc(var(--glow-x) - var(--app-fnav-glow-width) / 2); /* centred on the chosen tab (23 Nov, user) */
   width: var(--app-fnav-glow-width);
   height: var(--l3-size-40);
   border-radius: var(--l3-radius-full);
@@ -71694,11 +72138,15 @@ export const Flag = ({ code }: { code: FlagCode }) => (
   padding-bottom: 0;
 }
 .pill > nav > ul {
-  gap: var(--l3-spacing-04);
+  gap: 0; /* equal options tile the pill edge to edge (23 Nov, user) */
 }
-/* Figma: "Mutual Fund" keeps its whole label (the others share what's left), so no label is cut at 360. */
+/* Every option the same width, the row end to end across the pill (23 Nov, user). */
 .pill > nav > ul > li {
-  min-width: max-content;
+  flex: 1 1 0;
+  min-width: 0;
+}
+.pill > nav > ul > li > :is(button, a) {
+  width: 100%;
 }
 
 /* Each option: the 24 icon right on its 12 label, no padding; content/secondary, the chosen one content/primary in
@@ -71724,8 +72172,39 @@ export const Flag = ({ code }: { code: FlagCode }) => (
   height: var(--l3-icon-size-24);
 }
 
+/* ---------- Motion (23 Nov, user: "animate the whole navbar transitions") ----------
+   Option colours ease; on a tab switch (data-motion="moved") the new tab's icon pops and its label comes up, the old
+   tab fades back from content/primary; when the options themselves change (main nav ↔ a sub-nav, "swapped") they come
+   in one by one. FLAG (L3 gap): Bottom Navbar has no selection motion; durations / easing are L3 motion tokens. */
+.pill :is(button, a)[class] {
+  transition: color var(--l3-motion-duration-medium) var(--l3-motion-easing-standard);
+}
+.frame[data-motion='moved'] .pill :is(button, a)[data-selected] .icon {
+  animation: navPop var(--l3-motion-duration-long) var(--l3-motion-easing-standard) both;
+}
+.frame[data-motion='moved'] .pill :is(button, a)[data-selected] > span:last-child {
+  animation: navRise var(--l3-motion-duration-medium) var(--l3-motion-easing-standard) both;
+}
+.frame[data-motion='moved'] .pill li[data-was-selected] :is(button, a) {
+  animation: navFadeBack var(--l3-motion-duration-medium) var(--l3-motion-easing-standard) both;
+}
+.frame[data-motion='swapped'] .pill > nav > ul > li {
+  animation: navRise var(--l3-motion-duration-medium) var(--l3-motion-easing-standard) both;
+}
+.frame[data-motion='swapped'] .pill > nav > ul > li:nth-child(2) { animation-delay: 40ms; }
+.frame[data-motion='swapped'] .pill > nav > ul > li:nth-child(3) { animation-delay: 80ms; }
+.frame[data-motion='swapped'] .pill > nav > ul > li:nth-child(4) { animation-delay: 120ms; }
+.frame[data-motion='swapped'] .pill > nav > ul > li:nth-child(5) { animation-delay: 160ms; }
+.frame[data-motion='swapped'] .glow { animation: navGlowIn var(--l3-motion-duration-long) var(--l3-motion-easing-standard) both; }
+
+@keyframes navPop { 0% { transform: scale(.7); } 60% { transform: scale(1.12); } 100% { transform: scale(1); } }
+@keyframes navRise { from { opacity: 0; transform: translateY(var(--l3-spacing-04)); } to { opacity: 1; transform: none; } }
+@keyframes navFadeBack { from { color: var(--l3-content-primary); } to { color: var(--l3-content-secondary); } }
+@keyframes navGlowIn { from { opacity: 0; } to { opacity: 1; } }
+
 @media (prefers-reduced-motion: reduce) {
   .glow { transition: none; }
+  .frame .pill *, .frame .glow { animation: none !important; transition: none !important; }
 }
 ```
 
@@ -71778,27 +72257,51 @@ export function FloatingNavIcon({ name, selected = false }: { name: FloatingIcon
  * the bottom and fading out above the pill (20 Nov), so the page fades out under the nav. The frame takes no height of
  * its own: the body runs on behind it and keeps its last content clear of the pill (Screen / Phone CSS).
  */
+/** Where the last floating nav left off: each tab is its own screen, so the nav mounts afresh on every switch. */
+let navMemory: { glowX: number | null; index: number | null; items: string | null } = { glowX: null, index: null, items: null }
+
 export function FloatingNav({ children }: { children: ReactNode }) {
   const floating = useFloatingNav()
   const l3Floating = useBottomNavVariant() === 'floating'
   const pill = useRef<HTMLDivElement>(null)
-  const [glowX, setGlowX] = useState<number | null>(null)
+  // A fresh nav starts where the last one left off (the glow at the old tab) and moves from there (23 Nov, user:
+  // "animate the whole navbar transitions like tab switch, nav items change").
+  const [glowX, setGlowX] = useState<number | null>(() => navMemory.glowX)
+  const [motion, setMotion] = useState<'moved' | 'swapped' | undefined>(undefined)
+  const firstPlace = useRef(true)
 
   // The glow sits behind the chosen tab: wherever L3 puts it (sub-navs have a Home option first).
   useLayoutEffect(() => {
     if (!floating || !pill.current) return
     const place = () => {
-      const chosen = pill.current?.querySelector<HTMLElement>('[data-selected]')
-      if (!chosen || !pill.current) return setGlowX(null)
-      const a = pill.current.getBoundingClientRect()
-      const b = chosen.getBoundingClientRect()
-      setGlowX(b.left - a.left) // Figma: the glow starts at the chosen tab's left edge
+      const box = pill.current
+      if (!box) return
+      const options = [...box.querySelectorAll<HTMLElement>('nav > ul > li')]
+      const chosenIndex = options.findIndex((li) => li.querySelector('[data-selected]'))
+      if (chosenIndex < 0) return setGlowX(null)
+      const tab = options[chosenIndex].getBoundingClientRect()
+      const x = tab.left + tab.width / 2 - box.getBoundingClientRect().left // the chosen tab's centre (23 Nov, user)
+      const items = options.map((li) => li.textContent).join('|')
+      const before = navMemory
+      navMemory = { glowX: x, index: chosenIndex, items }
+      if (!firstPlace.current) return setGlowX(x) // a change within this nav: the CSS transition slides the glow
+      firstPlace.current = false
+      if (before.items !== null && before.items !== items) {
+        setMotion('swapped') // another set of options (main nav ↔ a sub-nav): they come in one by one
+        return setGlowX(x)
+      }
+      if (before.index === null || before.index === chosenIndex || before.glowX === null) return setGlowX(x)
+      // A tab switch: the old tab fades back, the new one pops, and the glow (painted at the old x) slides over.
+      options[before.index]?.setAttribute('data-was-selected', '')
+      setMotion('moved')
+      box.querySelector<HTMLElement>('[data-glow]')?.getBoundingClientRect() // style the glow at the old x first…
+      setGlowX(x) // …so moving it runs the CSS transition (no frame wait: it works in a hidden tab too)
     }
     place()
     const watch = new MutationObserver(place)
     watch.observe(pill.current, { subtree: true, attributes: true, attributeFilter: ['data-selected'] })
     return () => watch.disconnect()
-  })
+  }, [floating])
 
   // data-bottom-nav: the preview's V1 / V2 bubble shows only on screens that have a bottom navbar. V1's wrapper says
   // data-surface="primary" so the OS navigation bar still takes the navbar's colour (it looks for the page's last part).
@@ -71806,11 +72309,11 @@ export function FloatingNav({ children }: { children: ReactNode }) {
   if (l3Floating) return <div className={styles.docked} data-floating-nav="" data-bottom-nav="">{children}</div>
   if (!floating) return <div className={styles.docked} data-bottom-nav="" data-surface="primary">{children}</div>
   return (
-    <div className={styles.frame} data-floating-nav="" data-bottom-nav="">
+    <div className={styles.frame} data-floating-nav="" data-bottom-nav="" data-motion={motion}>
       {/* The page's colour behind the nav: solid at the bottom, fading out above the pill. */}
       <div className={styles.fade} aria-hidden="true" />
       <div ref={pill} className={styles.pill}>
-        {glowX !== null && <span className={styles.glow} style={{ '--glow-x': `${glowX}px` } as CSSProperties} aria-hidden="true" />}
+        {glowX !== null && <span className={styles.glow} data-glow="" style={{ '--glow-x': `${glowX}px` } as CSSProperties} aria-hidden="true" />}
         {children}
       </div>
     </div>

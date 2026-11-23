@@ -26762,13 +26762,14 @@ export const Flag = ({ code }: { code: FlagCode }) => (
 }
 
 /* The page fades out under the nav (20 Nov, user: stronger than Figma's blurred blob): the page's colour, solid from
-   the bottom edge up past the pill's middle, then fading to clear well above the pill. It never takes a tap. */
+   the bottom edge up past the pill's middle, then fading to clear just above the pill (23 Nov, user: half the old
+   152, it rose too far up the page). It never takes a tap. */
 .fade {
   position: absolute;
   right: 0;
   bottom: 0;
   left: 0;
-  height: calc(var(--l3-size-128) + var(--l3-size-24)); /* 152: about 80 above the pill */
+  height: calc((var(--l3-size-128) + var(--l3-size-24)) / 2); /* 76: half the old 152, just over the pill (70) */
   background: linear-gradient(
     to top,
     var(--l3-surface-default) 0%,
@@ -26787,18 +26788,18 @@ export const Flag = ({ code }: { code: FlagCode }) => (
   left: var(--l3-spacing-16);
   box-sizing: border-box;
   overflow: hidden;
-  padding: var(--l3-spacing-08) var(--l3-spacing-12) var(--l3-spacing-12) var(--l3-spacing-16);
+  padding: var(--l3-spacing-08) 0 var(--l3-spacing-12); /* end to end: no side padding (23 Nov, user) */
   border-radius: var(--l3-radius-full);
   background: var(--l3-surface-default);
   /* Figma's 1px stroke is inside the pill (it stays 56): an inset line, then the double shadow. */
   box-shadow: inset 0 0 0 1px var(--l3-border-light), var(--app-fnav-shadow); /* 1px: Figma stroke weight has no variable */
 }
 
-/* The chosen tab's glow (Figma Ellipse 6871, in accent green) from the tab's left edge, clipped by the pill. */
+/* The chosen tab's glow (Figma Ellipse 6871, in accent green), centred on the tab, clipped by the pill. */
 .glow {
   position: absolute;
   top: var(--app-fnav-glow-top);
-  left: var(--glow-x);
+  left: calc(var(--glow-x) - var(--app-fnav-glow-width) / 2); /* centred on the chosen tab (23 Nov, user) */
   width: var(--app-fnav-glow-width);
   height: var(--l3-size-40);
   border-radius: var(--l3-radius-full);
@@ -26816,11 +26817,15 @@ export const Flag = ({ code }: { code: FlagCode }) => (
   padding-bottom: 0;
 }
 .pill > nav > ul {
-  gap: var(--l3-spacing-04);
+  gap: 0; /* equal options tile the pill edge to edge (23 Nov, user) */
 }
-/* Figma: "Mutual Fund" keeps its whole label (the others share what's left), so no label is cut at 360. */
+/* Every option the same width, the row end to end across the pill (23 Nov, user). */
 .pill > nav > ul > li {
-  min-width: max-content;
+  flex: 1 1 0;
+  min-width: 0;
+}
+.pill > nav > ul > li > :is(button, a) {
+  width: 100%;
 }
 
 /* Each option: the 24 icon right on its 12 label, no padding; content/secondary, the chosen one content/primary in
@@ -26846,8 +26851,39 @@ export const Flag = ({ code }: { code: FlagCode }) => (
   height: var(--l3-icon-size-24);
 }
 
+/* ---------- Motion (23 Nov, user: "animate the whole navbar transitions") ----------
+   Option colours ease; on a tab switch (data-motion="moved") the new tab's icon pops and its label comes up, the old
+   tab fades back from content/primary; when the options themselves change (main nav ↔ a sub-nav, "swapped") they come
+   in one by one. FLAG (L3 gap): Bottom Navbar has no selection motion; durations / easing are L3 motion tokens. */
+.pill :is(button, a)[class] {
+  transition: color var(--l3-motion-duration-medium) var(--l3-motion-easing-standard);
+}
+.frame[data-motion='moved'] .pill :is(button, a)[data-selected] .icon {
+  animation: navPop var(--l3-motion-duration-long) var(--l3-motion-easing-standard) both;
+}
+.frame[data-motion='moved'] .pill :is(button, a)[data-selected] > span:last-child {
+  animation: navRise var(--l3-motion-duration-medium) var(--l3-motion-easing-standard) both;
+}
+.frame[data-motion='moved'] .pill li[data-was-selected] :is(button, a) {
+  animation: navFadeBack var(--l3-motion-duration-medium) var(--l3-motion-easing-standard) both;
+}
+.frame[data-motion='swapped'] .pill > nav > ul > li {
+  animation: navRise var(--l3-motion-duration-medium) var(--l3-motion-easing-standard) both;
+}
+.frame[data-motion='swapped'] .pill > nav > ul > li:nth-child(2) { animation-delay: 40ms; }
+.frame[data-motion='swapped'] .pill > nav > ul > li:nth-child(3) { animation-delay: 80ms; }
+.frame[data-motion='swapped'] .pill > nav > ul > li:nth-child(4) { animation-delay: 120ms; }
+.frame[data-motion='swapped'] .pill > nav > ul > li:nth-child(5) { animation-delay: 160ms; }
+.frame[data-motion='swapped'] .glow { animation: navGlowIn var(--l3-motion-duration-long) var(--l3-motion-easing-standard) both; }
+
+@keyframes navPop { 0% { transform: scale(.7); } 60% { transform: scale(1.12); } 100% { transform: scale(1); } }
+@keyframes navRise { from { opacity: 0; transform: translateY(var(--l3-spacing-04)); } to { opacity: 1; transform: none; } }
+@keyframes navFadeBack { from { color: var(--l3-content-primary); } to { color: var(--l3-content-secondary); } }
+@keyframes navGlowIn { from { opacity: 0; } to { opacity: 1; } }
+
 @media (prefers-reduced-motion: reduce) {
   .glow { transition: none; }
+  .frame .pill *, .frame .glow { animation: none !important; transition: none !important; }
 }
 ```
 
@@ -26900,27 +26936,51 @@ export function FloatingNavIcon({ name, selected = false }: { name: FloatingIcon
  * the bottom and fading out above the pill (20 Nov), so the page fades out under the nav. The frame takes no height of
  * its own: the body runs on behind it and keeps its last content clear of the pill (Screen / Phone CSS).
  */
+/** Where the last floating nav left off: each tab is its own screen, so the nav mounts afresh on every switch. */
+let navMemory: { glowX: number | null; index: number | null; items: string | null } = { glowX: null, index: null, items: null }
+
 export function FloatingNav({ children }: { children: ReactNode }) {
   const floating = useFloatingNav()
   const l3Floating = useBottomNavVariant() === 'floating'
   const pill = useRef<HTMLDivElement>(null)
-  const [glowX, setGlowX] = useState<number | null>(null)
+  // A fresh nav starts where the last one left off (the glow at the old tab) and moves from there (23 Nov, user:
+  // "animate the whole navbar transitions like tab switch, nav items change").
+  const [glowX, setGlowX] = useState<number | null>(() => navMemory.glowX)
+  const [motion, setMotion] = useState<'moved' | 'swapped' | undefined>(undefined)
+  const firstPlace = useRef(true)
 
   // The glow sits behind the chosen tab: wherever L3 puts it (sub-navs have a Home option first).
   useLayoutEffect(() => {
     if (!floating || !pill.current) return
     const place = () => {
-      const chosen = pill.current?.querySelector<HTMLElement>('[data-selected]')
-      if (!chosen || !pill.current) return setGlowX(null)
-      const a = pill.current.getBoundingClientRect()
-      const b = chosen.getBoundingClientRect()
-      setGlowX(b.left - a.left) // Figma: the glow starts at the chosen tab's left edge
+      const box = pill.current
+      if (!box) return
+      const options = [...box.querySelectorAll<HTMLElement>('nav > ul > li')]
+      const chosenIndex = options.findIndex((li) => li.querySelector('[data-selected]'))
+      if (chosenIndex < 0) return setGlowX(null)
+      const tab = options[chosenIndex].getBoundingClientRect()
+      const x = tab.left + tab.width / 2 - box.getBoundingClientRect().left // the chosen tab's centre (23 Nov, user)
+      const items = options.map((li) => li.textContent).join('|')
+      const before = navMemory
+      navMemory = { glowX: x, index: chosenIndex, items }
+      if (!firstPlace.current) return setGlowX(x) // a change within this nav: the CSS transition slides the glow
+      firstPlace.current = false
+      if (before.items !== null && before.items !== items) {
+        setMotion('swapped') // another set of options (main nav ↔ a sub-nav): they come in one by one
+        return setGlowX(x)
+      }
+      if (before.index === null || before.index === chosenIndex || before.glowX === null) return setGlowX(x)
+      // A tab switch: the old tab fades back, the new one pops, and the glow (painted at the old x) slides over.
+      options[before.index]?.setAttribute('data-was-selected', '')
+      setMotion('moved')
+      box.querySelector<HTMLElement>('[data-glow]')?.getBoundingClientRect() // style the glow at the old x first…
+      setGlowX(x) // …so moving it runs the CSS transition (no frame wait: it works in a hidden tab too)
     }
     place()
     const watch = new MutationObserver(place)
     watch.observe(pill.current, { subtree: true, attributes: true, attributeFilter: ['data-selected'] })
     return () => watch.disconnect()
-  })
+  }, [floating])
 
   // data-bottom-nav: the preview's V1 / V2 bubble shows only on screens that have a bottom navbar. V1's wrapper says
   // data-surface="primary" so the OS navigation bar still takes the navbar's colour (it looks for the page's last part).
@@ -26928,11 +26988,11 @@ export function FloatingNav({ children }: { children: ReactNode }) {
   if (l3Floating) return <div className={styles.docked} data-floating-nav="" data-bottom-nav="">{children}</div>
   if (!floating) return <div className={styles.docked} data-bottom-nav="" data-surface="primary">{children}</div>
   return (
-    <div className={styles.frame} data-floating-nav="" data-bottom-nav="">
+    <div className={styles.frame} data-floating-nav="" data-bottom-nav="" data-motion={motion}>
       {/* The page's colour behind the nav: solid at the bottom, fading out above the pill. */}
       <div className={styles.fade} aria-hidden="true" />
       <div ref={pill} className={styles.pill}>
-        {glowX !== null && <span className={styles.glow} style={{ '--glow-x': `${glowX}px` } as CSSProperties} aria-hidden="true" />}
+        {glowX !== null && <span className={styles.glow} data-glow="" style={{ '--glow-x': `${glowX}px` } as CSSProperties} aria-hidden="true" />}
         {children}
       </div>
     </div>
