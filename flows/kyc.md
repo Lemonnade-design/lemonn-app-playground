@@ -1395,6 +1395,9 @@ export const linkedBanks: LinkedBank[] = [
  * accounts: Three" and "SBI only" add it, to show the US Stocks bank step with an account it can't use.
  */
 export const otherBank: LinkedBank = { id: 'sbi', bank: 'State Bank of India', accountNumber: '38201945520', ifsc: 'SBIN0000300', type: 'Savings', branch: 'Fort, Mumbai', logoSymbol: 'SBIN', last4: '5520' }
+
+/** The instant-balance offer (₹, for intraday, MTF and F&O): Profile's row and the Indian wallet's card show it. */
+export const INSTANT_BALANCE = 149
 ```
 
 ### `src/shared/prototype.ts`

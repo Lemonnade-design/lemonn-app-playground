@@ -124,6 +124,7 @@ platform's string table (Flutter ARB, iOS Localizable.strings).
   (`components/SettingCard`).
 
 ### Changelog
+- 23 Nov 2026 — INSTANT_BALANCE (₹149) moved to src/shared/data/user.ts so the INR wallet's instant-balance card shows the same offer; profile/data.ts re-exports it.
 
 - 2026-10-22 — first version (6 screens): Profile and Settings replicated from the live app with L3 parts;
   Accessibility (4 states) from the PM proposal.
@@ -358,15 +359,12 @@ export const t = makeCopy('profile', copy)
 ```ts
 // Sample data for Profile & settings. FICTIONAL — the live screenshots show a real customer's name and balance; never
 // copy them. The person is the app's sample user (src/shared/data/user.ts).
-import { bankAccount, user } from '../../shared/data/user'
+import { INSTANT_BALANCE, bankAccount, user } from '../../shared/data/user'
 
-export { bankAccount, user }
+export { INSTANT_BALANCE, bankAccount, user }
 
 /** The trading balance (₹). Can be negative when charges are due — shown as "−₹…". */
 export const balance = -245.3
-
-/** The instant-balance offer (₹, for intraday, MTF and F&O). */
-export const INSTANT_BALANCE = 149
 
 /** The app version shown under About. */
 export const APP_VERSION = '7.2.38 (3)'
@@ -996,6 +994,9 @@ export const linkedBanks: LinkedBank[] = [
  * accounts: Three" and "SBI only" add it, to show the US Stocks bank step with an account it can't use.
  */
 export const otherBank: LinkedBank = { id: 'sbi', bank: 'State Bank of India', accountNumber: '38201945520', ifsc: 'SBIN0000300', type: 'Savings', branch: 'Fort, Mumbai', logoSymbol: 'SBIN', last4: '5520' }
+
+/** The instant-balance offer (₹, for intraday, MTF and F&O): Profile's row and the Indian wallet's card show it. */
+export const INSTANT_BALANCE = 149
 ```
 
 ### `src/shared/prototype.ts`

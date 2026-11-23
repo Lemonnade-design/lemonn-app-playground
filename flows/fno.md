@@ -5301,7 +5301,7 @@ export function Watchlists({ lists, onAdd, onOpen }: { lists: Watchlist[]; onAdd
 ```tsx
 import { BottomNavbar } from '@l3/components/BottomNavbar'
 import { NavIcon } from '@l3/components/BottomNavbar/NavIcon'
-import { FloatingNav, FloatingNavIcon, useBottomNavVariant, useFloatingNav } from '../../../shared/ui/FloatingNav'
+import { FloatingNav, FloatingNavIcon, useBottomNavVariant, useColourNavIcons, useFloatingNav } from '../../../shared/ui/FloatingNav'
 import { t } from '../copy'
 
 export function FnoNav({ onHome, onDestination, onChain, onScalper }: { onHome: () => void; onDestination: (label: string) => void; onChain: () => void; onScalper: () => void }) {
@@ -5312,7 +5312,9 @@ export function FnoNav({ onHome, onDestination, onChain, onScalper }: { onHome: 
     { value: 'scalper', label: t('nav.scalper'), name: 'fnoScalper' },
   ] as const
   const variant = useBottomNavVariant()
-  const floating = useFloatingNav() // V2: the chosen F&O icon in black and white, like the main nav's (23 Nov, user)
+  // V2: the chosen F&O icon in black and white, like the main nav's; V3 keeps L3's coloured one (23 Nov, user)
+  const colourNav = useColourNavIcons()
+  const floating = useFloatingNav() && !colourNav
   return <FloatingNav><BottomNavbar aria-label="F&O" variant={variant} home={{ label: t('nav.home'), onClick: onHome }} value="fno" onChange={(v) => { const item = items.find((i) => i.value === v); if (v === 'scalper') onScalper(); else if (v === 'chain') onChain(); else if (item && v !== 'fno') onDestination(item.label) }} items={items.map(({ value, label, name }) => ({ value, label, icon: <NavIcon name={name} />, selectedIcon: floating && name === 'fno' ? <FloatingNavIcon name="fno" selected /> : <NavIcon name={name} selected /> }))} /></FloatingNav>
 }
 ```
@@ -10790,6 +10792,9 @@ export const linkedBanks: LinkedBank[] = [
  * accounts: Three" and "SBI only" add it, to show the US Stocks bank step with an account it can't use.
  */
 export const otherBank: LinkedBank = { id: 'sbi', bank: 'State Bank of India', accountNumber: '38201945520', ifsc: 'SBIN0000300', type: 'Savings', branch: 'Fort, Mumbai', logoSymbol: 'SBIN', last4: '5520' }
+
+/** The instant-balance offer (₹, for intraday, MTF and F&O): Profile's row and the Indian wallet's card show it. */
+export const INSTANT_BALANCE = 149
 ```
 
 ### `src/shared/prototype.ts`
@@ -11611,6 +11616,34 @@ function Sparkler() {
   transition: left var(--l3-motion-duration-medium) var(--l3-motion-easing-standard);
 }
 
+/* V3 (23 Nov, user): the glow under the chosen tab, mirrored — as far below the pill's foot as V2's is above its top. */
+.frame[data-glow-at='bottom'] .glow {
+  top: auto;
+  bottom: var(--app-fnav-glow-top);
+}
+
+/* V3 (23 Nov, user): each tab full height, 74 × 56, the pill hugging them, centred — not end to end. */
+.frame[data-glow-at='bottom'] .pill {
+  right: 0;
+  left: 0;
+  width: max-content;
+  margin-inline: auto;
+  padding: 0;
+}
+.frame[data-glow-at='bottom'] .pill > nav > ul > li {
+  flex: 0 0 var(--app-fnav-tab-width);
+  width: var(--app-fnav-tab-width); /* 74 wide × 56 tall (23 Nov, user) */
+}
+.frame[data-glow-at='bottom'] .pill :is(button, a)[class] {
+  height: var(--l3-size-56);
+  white-space: nowrap;
+}
+/* Labels shown whole, never cut to "Mutual Fu…". FLAG (L3 gap): Bottom Navbar truncates labels; no fixed-size option. */
+.frame[data-glow-at='bottom'] .pill :is(button, a)[class] > span:last-child {
+  overflow: visible;
+  text-overflow: clip;
+}
+
 /* L3 Bottom Navbar inside the pill: no fill, line, shadow or safe-area pad of its own; 4 between options. */
 .pill > nav {
   position: relative;
@@ -11705,12 +11738,16 @@ import fnoIcon from './assets/floating-nav/fno.svg'
 import fnoSelectedIcon from './assets/floating-nav/fno-selected.svg'
 import styles from './FloatingNav.module.css'
 
-/** App setting "Bottom navbar" (A/B, 20 Nov): V1 docked (L3 Bottom Navbar) · V2 floating, the default at launch (20 Nov). */
+/** App setting "Bottom navbar" (A/B, 20 Nov): V1 docked (L3 Bottom Navbar) · V2 floating, the default at launch (20 Nov) ·
+ * V3 V2's floating nav with L3's coloured icon on the chosen tab and the glow under it, not over it (23 Nov, user). */
 export const BOTTOM_NAV_OPTION = 'bottomNav'
 const useBottomNavVersion = () => useFlowOption(USER_STATUS, BOTTOM_NAV_OPTION, 'v2') // V2 by default (20 Nov, user)
-export const useFloatingNav = () => useBottomNavVersion() === 'v2'
-/** V3: L3's own floating Bottom Navbar. Pass it to <BottomNavbar variant={…}> inside a <FloatingNav>. */
-export const useBottomNavVariant = (): 'docked' | 'floating' => (useBottomNavVersion() === 'v3' ? 'floating' : 'docked')
+/** V2 and V3: the floating nav (this frame and its own Figma icons). */
+export const useFloatingNav = () => useBottomNavVersion() !== 'v1'
+/** V3: the chosen tab shows L3's coloured (two-tone brand) icon instead of the black-and-white one. */
+export const useColourNavIcons = () => useBottomNavVersion() === 'v3'
+/** The L3 Bottom Navbar variant to pass: always docked now (V3 was L3's floating variant until 23 Nov; the frame floats it). */
+export const useBottomNavVariant = (): 'docked' | 'floating' => 'docked'
 
 /**
  * V2's main-nav icons, from the Figma floating nav (LM → Stocks Playground, node 6687:10998, 20 Nov). One colour
@@ -11743,7 +11780,7 @@ let navMemory: { glowX: number | null; index: number | null; items: string | nul
 
 export function FloatingNav({ children }: { children: ReactNode }) {
   const floating = useFloatingNav()
-  const l3Floating = useBottomNavVariant() === 'floating'
+  const glowBelow = useColourNavIcons() // V3: the glow sits under the chosen tab (23 Nov, user)
   const pill = useRef<HTMLDivElement>(null)
   // A fresh nav starts where the last one left off (the glow at the old tab) and moves from there (23 Nov, user:
   // "animate the whole navbar transitions like tab switch, nav items change").
@@ -11786,11 +11823,9 @@ export function FloatingNav({ children }: { children: ReactNode }) {
 
   // data-bottom-nav: the preview's V1 / V2 bubble shows only on screens that have a bottom navbar. V1's wrapper says
   // data-surface="primary" so the OS navigation bar still takes the navbar's colour (it looks for the page's last part).
-  // V3: the navbar floats itself (L3 variant="floating"); the wrapper only marks it, so the screen's body clears the pill.
-  if (l3Floating) return <div className={styles.docked} data-floating-nav="" data-bottom-nav="">{children}</div>
   if (!floating) return <div className={styles.docked} data-bottom-nav="" data-surface="primary">{children}</div>
   return (
-    <div className={styles.frame} data-floating-nav="" data-bottom-nav="" data-motion={motion}>
+    <div className={styles.frame} data-floating-nav="" data-bottom-nav="" data-motion={motion} data-glow-at={glowBelow ? 'bottom' : undefined}>
       {/* The page's colour behind the nav: solid at the bottom, fading out above the pill. */}
       <div className={styles.fade} aria-hidden="true" />
       <div ref={pill} className={styles.pill}>

@@ -199,6 +199,11 @@ Every tap he wired is kept. The main path: FTUX sheet → Activate → Declarati
 → Pay on bank → Money ready → Stock → Buy → Executed → Wallet → Withdraw.
 
 ### Changelog
+- 23 Nov 2026 — USD wallet: the “≈ ₹…” line moved above the $ amount (under “USD balance”); the withdrawable line stays under it. BalanceCard gained an `above` slot.
+- 23 Nov 2026 — All transactions: a 1px border-light hairline under the wallet picker and filters (the sticky bar's bottom), with 12 below the pills (8 above). FLAG (L3 gap): Actionbar has no divider for its content-bottom slot.
+- 23 Nov 2026 — Wallet: the instant-balance card has no shadow (L3 ListCell raised={false}): flat, border only, like the balance card.
+- 23 Nov 2026 — Wallet: the withdrawable balance is no longer a card; it is a line of text under the balance (“Withdrawable balance ₹10.00”), above View details, in both wallets. The INR wallet gains the instant-balance entry point under the balance card: an L3 ListCell card “Get ₹149 instant balance · For intraday, MTF, F&O” (bolt icon, chevron; no screen yet). The ₹149 now lives in src/shared/data/user.ts (INSTANT_BALANCE), shared with Profile.
+- 23 Nov 2026 — Order pad, TP/SL card V3 / V4: the button shows the TP/SL icon (L3 lmAutoTpSl) instead of a settings gear. On the US pad the first-time hint reads “You can set SL from here” (the US pad has SL only); the Indian pad keeps “You can set TP/SL from here”.
 - 23 Nov 2026 — Phone (app mode): a floating V1–V4 quick switch for the TP/SL card on every order pad screen (Market, Limit, SL), under the IN / US one. The Prototype settings sheet now opens scrolled to the current flow's section (its settings and screens), not the top.
 - 23 Nov 2026 — Prototype: the order pad's quick settings (Price cards, Order pad, TP/SL sheet, TP/SL card) float on every pad screen, so switching Market / Limit / SL keeps the same settings in view.
 - 23 Nov 2026 — Order pad, TP/SL card V4: a first-time hint under the settings button (L3 Tooltip in discover blue, ✕ to close, arrow centred on the button; gone once closed or the button is tapped, per session). The top bar uses L3's left-aligned title: a 32 logo in front of the name over the price. On the Indian pad NSE ⇄ BSE moves to the right, as a second button left of settings. L3 gaps: Tooltip has no colour option, and its arrow can't reach a target 16 from the screen edge (both set locally).
@@ -22562,6 +22567,8 @@ export function UsMainNav({ value }: { value: Section }) {
   "balanceDetails.noteUsd": "Money from a sale can be withdrawn after 1 working day.",
   "wallet.viewDetails": "View details",
   "wallet.withdrawable": "Withdrawable balance",
+  "wallet.instant": "Get {amount} instant balance",
+  "wallet.instantHint": "For intraday, MTF, F&O",
   "transactions.walletSwitch": "{wallet}. Switch to {other}",
   "transactions.filter.label": "Show transactions",
   "transactions.filter.all": "All",
@@ -28373,7 +28380,7 @@ import { Card } from '@l3/components/Card'
 import { Icon } from '@l3/components/Icon'
 import { Tabs } from '@l3/components/Tabs'
 import { Tag } from '@l3/components/Tag'
-import { FloatingNav, FloatingNavIcon, useBottomNavVariant, useFloatingNav } from '../../../../shared/ui/FloatingNav'
+import { FloatingNav, FloatingNavIcon, useBottomNavVariant, useColourNavIcons, useFloatingNav } from '../../../../shared/ui/FloatingNav'
 import { InlineSvg } from '../../components/InlineSvg'
 import { Phone } from '../../components/Phone'
 import { usePreview } from '../../../../shared/prototype'
@@ -28448,7 +28455,9 @@ const SectionTitle = ({ children, seeAll = true }: { children: ReactNode; seeAll
 export function MutualFundHomeScreen() {
   const preview = usePreview()
   const navVariant = useBottomNavVariant()
-  const floatingNav = useFloatingNav() // V2: the chosen icon in black and white, like the main nav's (23 Nov, user)
+  // V2: the chosen icon in black and white, like the main nav's; V3 keeps L3's coloured one (23 Nov, user)
+  const colourNav = useColourNavIcons()
+  const floatingNav = useFloatingNav() && !colourNav
   const [popular, setPopular] = useState('high')
   const [explore, setExplore] = useState('equity')
   const { go } = useUsNav()
@@ -39574,8 +39583,7 @@ import { Stack } from '@l3/components/Stack'
 import { Icon } from '@l3/components/Icon'
 import { Tab, Tabs } from '@l3/components/Tabs'
 import { Tooltip } from '@l3/components/Tooltip'
-import { lmSwitchArrowVertical } from '@l3/icons/lemonnade'
-import { msSettings } from '@l3/icons/material'
+import { lmAutoTpSl, lmSwitchArrowVertical } from '@l3/icons/lemonnade' // lmAutoTpSl: the V3 / V4 TP/SL button, not a gear (23 Nov, user)
 import { Keyboard, KeypadSlide, keypadFieldProps, typeKey } from '../../../../shared/ui/Keyboard'
 import { Phone } from '../../components/Phone'
 import { currentStock, logoFor } from '../../data'
@@ -39880,8 +39888,8 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
           // Indian pad: NSE ⇄ BSE is a second button, left of settings (23 Nov, user).
           <>
             {exchangeSwitch}
-            <Tooltip content="You can set TP/SL from here" placement="bottom" open={tpslHint} onClose={hideTpslHint} className={styles.tpslHint}>
-              <ActionbarAction icon={msSettings} label={(padVersion === 'india' ? TPSL_INDIA : TPSL_US).title} onClick={() => { hideTpslHint(); tpslOpen.current?.() }} />
+            <Tooltip content={padVersion === 'india' ? 'You can set TP/SL from here' : 'You can set SL from here' /* the US pad has SL only (23 Nov, user) */} placement="bottom" open={tpslHint} onClose={hideTpslHint} className={styles.tpslHint}>
+              <ActionbarAction icon={lmAutoTpSl} label={(padVersion === 'india' ? TPSL_INDIA : TPSL_US).title} onClick={() => { hideTpslHint(); tpslOpen.current?.() }} />
             </Tooltip>
           </>
         ) : india ? (
@@ -40118,7 +40126,7 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
               {/* TP/SL card V3: a round outline icon button (L3 tertiary, md = the tab track's 40) at the row's right edge, out of the
                   flow, so Market / Limit / SL stays as small and centred as in V2 (23 Nov, the user's call). */}
               {tpslCard === 'v3' && (
-                <Button size="md" variant="tertiary" raised="none" className={styles.tpslSettings} iconLeft={<Icon icon={msSettings} />} aria-label={(padVersion === 'india' ? TPSL_INDIA : TPSL_US).title} onClick={() => tpslOpen.current?.()} />
+                <Button size="md" variant="tertiary" raised="none" className={styles.tpslSettings} iconLeft={<Icon icon={lmAutoTpSl} />} aria-label={(padVersion === 'india' ? TPSL_INDIA : TPSL_US).title} onClick={() => tpslOpen.current?.()} />
               )}
               {validity && validityPlace === 'v1' && (
                 <Select size="sm" className={styles.validity} icon="swap" onClick={onValidity} aria-label={`Validity ${validityLabel}. Switch to ${validityNext}`}>
@@ -43005,7 +43013,10 @@ export type UsScreenMap = Record<string, ComponentType<{ backdrop?: boolean }>>
 
 /* Pinned row (23 Nov), as the Market page's: the wallet pill | a divider | the status chips, 8 above and below. */
 .filterRow {
-  padding-block: var(--l3-spacing-08);
+  padding-block: var(--l3-spacing-08) var(--l3-spacing-12); /* 12 above the hairline (23 Nov, user) */
+  /* A hairline under the wallet picker and filters, closing the sticky bar off from the list (23 Nov, user).
+     FLAG (L3 gap): Actionbar has no divider option for its content-bottom slot. */
+  border-bottom: 1px solid var(--l3-border-light); /* 1px hairline */
 }
 
 /* The wallet pill's tap area is the whole block around it, the row's full height (the pill itself stays small). */
@@ -43474,6 +43485,10 @@ export function AllTransactionsScreen({ tab = 'usd', backdrop = false }: { tab?:
   color:var(--l3-content-secondary);
   font-variant-numeric:tabular-nums;
 }
+/* The line over the amount (≈ ₹ of a $ balance): its gap is below it, not above. */
+.exact[data-above] {
+  margin:0 0 var(--l3-spacing-02);
+}
 
 .hero[data-look=dashed] .withdrawable {
   white-space:nowrap;
@@ -43856,13 +43871,15 @@ export type BalanceCardProps = {
   withdrawable?: string
   /** Which wallet it is. Default: read from the amount's symbol — pass it when a USD balance is shown in ₹ (the $ / ₹ switch). */
   currency?: 'INR' | 'USD'
-  /** A line under the amount (the "≈ ₹…" equivalent of a $ balance). */
+  /** A line over the amount, under the label (the "≈ ₹…" equivalent of a $ balance, 23 Nov). */
+  above?: ReactNode
+  /** A line under the amount (the withdrawable balance). */
   below?: ReactNode
   /** The details button's label (default "View details" on the centred looks, "Details" on the others). */
   detailsLabel?: string
 }
 
-export function BalanceCard({ total, facts = [], onDetails, still, look = 'dashed', link, extra, withdrawable, currency: wallet, below, detailsLabel }: BalanceCardProps) {
+export function BalanceCard({ total, facts = [], onDetails, still, look = 'dashed', link, extra, withdrawable, currency: wallet, above, below, detailsLabel }: BalanceCardProps) {
   const [flipFrom] = useState(() => {
     const from = still ? null : takeFlipFrom()
     return from && from !== total ? from : null
@@ -43899,6 +43916,7 @@ export function BalanceCard({ total, facts = [], onDetails, still, look = 'dashe
         </p>
         {!centred && detailsButton}
       </div>
+      {above && <p className={styles.exact} data-above="">{above}</p>}
       <p className={styles.amount} aria-hidden="true">
         <span className={styles.sign}>
           <Swap key={prefix} fresh={fresh}>
@@ -44691,8 +44709,17 @@ export const KIND_ICON: Record<TransactionKind, IconSource> = {
   color: var(--l3-content-secondary);
 }
 
-/* The withdrawable amount in its small card: the money look of the wallet (whole figures, tabular). */
+/* The withdrawable balance: a line of text under the amount (23 Nov, user), each line of the balance's foot on its own. */
+.balanceInr,
+.withdrawableLine {
+  display: block;
+}
+.withdrawableLine {
+  font: var(--l3-text-description-12);
+  color: var(--l3-content-secondary);
+}
 .withdrawableValue {
+  color: var(--l3-content-primary);
   font-variant-numeric: tabular-nums;
 }
 ```
@@ -44713,14 +44740,15 @@ import { Button } from '@l3/components/Button'
 import { ButtonGroup } from '@l3/components/ButtonGroup'
 import { Icon } from '@l3/components/Icon'
 import { Inset } from '@l3/components/Inset'
-import { KeyValueList, KeyValueRow } from '@l3/components/KeyValueList'
+import { ListCell } from '@l3/components/ListCell'
 import { Stack } from '@l3/components/Stack'
 import { Tabs } from '@l3/components/Tabs'
 import { Tag } from '@l3/components/Tag'
 import { Phone } from '../../components/Phone'
 import { useUsNav } from '../../nav'
 import { startAddBank, useLinkedBanks } from '../../../../shared/userStatus'
-import { msAccountBalance } from '@l3/icons/material'
+import { msAccountBalance, msBolt } from '@l3/icons/material'
+import { INSTANT_BALANCE } from '../../../../shared/data/user'
 import { moneyIds } from '../money/ids'
 import { formatInr, parseUsd, useMoneyDisplay, useUsd } from '../../../../shared/money'
 import { BalanceCard } from './BalanceCard'
@@ -44728,7 +44756,7 @@ import { t } from '../money/copy'
 import { FIGMA } from './data'
 import { GrowNudge } from './GrowNudge'
 import { bigAmount, useBigAmounts } from './lib/bigAmounts'
-import { infoIcon } from './lib/icons'
+import { chevronRightIcon, infoIcon } from './lib/icons'
 import { neighbour, useSwipeTabs } from './lib/swipeTabs'
 import { PendingBanner, type PendingBannerProps } from './PendingBanner'
 import styles from './WalletScreen.module.css'
@@ -44921,8 +44949,8 @@ export function WalletScreen(props: WalletScreenProps) {
     >
       {/* The whole body (balance card and what's under it) pushes left / right when the wallet switches. */}
       <div className={styles.stack} ref={swipe.contentRef}>
-        {/* The balance card (amount + View details), then the withdrawable balance in its own small card under it:
-            plain facts, not a button (23 Nov). */}
+        {/* The balance card: the amount, then the withdrawable balance as a line of text under it (23 Nov, user: no card of
+            its own, as in the live wallet), then View details. The Indian wallet adds the instant-balance offer under it. */}
         <Stack gap="12">
           <BalanceCard
             look="dashed"
@@ -44930,15 +44958,30 @@ export function WalletScreen(props: WalletScreenProps) {
             total={shownTotal}
             still={backdrop}
             currency={inr ? 'INR' : 'USD'}
-            below={!inr && totalUsd && balanceInr ? <span className={styles.balanceInr}>{balanceInr}</span> : undefined}
+            above={!inr && totalUsd && balanceInr ? <span className={styles.balanceInr}>{balanceInr}</span> : undefined} // ≈ ₹ over the $ amount (23 Nov, user)
+            below={
+              <span className={styles.withdrawableLine}>
+                {t('wallet.withdrawable')} <span className={styles.withdrawableValue}>{shownWithdrawable}</span>
+              </span>
+            }
             detailsLabel={t('wallet.viewDetails')}
             onDetails={goTo(detailsTo)}
           />
-          <Inset paddingInline="16" paddingBlock="00">
-            <KeyValueList variant="card" aria-label={t('wallet.withdrawable')}>
-              <KeyValueRow label={t('wallet.withdrawable')} value={<span className={styles.withdrawableValue}>{shownWithdrawable}</span>} />
-            </KeyValueList>
-          </Inset>
+          {/* The instant-balance entry point (23 Nov, user: as on Profile), Indian wallet only. Prototype: no screen yet. */}
+          {inr && (
+            <Inset paddingInline="16" paddingBlock="00">
+              <ListCell
+                variant="card"
+                raised={false} // no shadow: flat like the balance card above (23 Nov, user)
+                as="button"
+                iconLeft={<Icon icon={msBolt} />}
+                label={t('wallet.instant', { amount: formatInr(INSTANT_BALANCE, { decimals: 0 }) })}
+                description={t('wallet.instantHint')}
+                iconRight={<Icon icon={chevronRightIcon} size={20} />}
+                onClick={() => {}}
+              />
+            </Inset>
+          )}
         </Stack>
         <div className={`${styles.page} ${styles.body}`} data-flow={noteFlow || undefined}>
           {children}
@@ -70890,6 +70933,9 @@ export const linkedBanks: LinkedBank[] = [
  * accounts: Three" and "SBI only" add it, to show the US Stocks bank step with an account it can't use.
  */
 export const otherBank: LinkedBank = { id: 'sbi', bank: 'State Bank of India', accountNumber: '38201945520', ifsc: 'SBIN0000300', type: 'Savings', branch: 'Fort, Mumbai', logoSymbol: 'SBIN', last4: '5520' }
+
+/** The instant-balance offer (₹, for intraday, MTF and F&O): Profile's row and the Indian wallet's card show it. */
+export const INSTANT_BALANCE = 149
 ```
 
 ### `src/shared/money.module.css`
@@ -72141,6 +72187,34 @@ export const Flag = ({ code }: { code: FlagCode }) => (
   transition: left var(--l3-motion-duration-medium) var(--l3-motion-easing-standard);
 }
 
+/* V3 (23 Nov, user): the glow under the chosen tab, mirrored — as far below the pill's foot as V2's is above its top. */
+.frame[data-glow-at='bottom'] .glow {
+  top: auto;
+  bottom: var(--app-fnav-glow-top);
+}
+
+/* V3 (23 Nov, user): each tab full height, 74 × 56, the pill hugging them, centred — not end to end. */
+.frame[data-glow-at='bottom'] .pill {
+  right: 0;
+  left: 0;
+  width: max-content;
+  margin-inline: auto;
+  padding: 0;
+}
+.frame[data-glow-at='bottom'] .pill > nav > ul > li {
+  flex: 0 0 var(--app-fnav-tab-width);
+  width: var(--app-fnav-tab-width); /* 74 wide × 56 tall (23 Nov, user) */
+}
+.frame[data-glow-at='bottom'] .pill :is(button, a)[class] {
+  height: var(--l3-size-56);
+  white-space: nowrap;
+}
+/* Labels shown whole, never cut to "Mutual Fu…". FLAG (L3 gap): Bottom Navbar truncates labels; no fixed-size option. */
+.frame[data-glow-at='bottom'] .pill :is(button, a)[class] > span:last-child {
+  overflow: visible;
+  text-overflow: clip;
+}
+
 /* L3 Bottom Navbar inside the pill: no fill, line, shadow or safe-area pad of its own; 4 between options. */
 .pill > nav {
   position: relative;
@@ -72235,12 +72309,16 @@ import fnoIcon from './assets/floating-nav/fno.svg'
 import fnoSelectedIcon from './assets/floating-nav/fno-selected.svg'
 import styles from './FloatingNav.module.css'
 
-/** App setting "Bottom navbar" (A/B, 20 Nov): V1 docked (L3 Bottom Navbar) · V2 floating, the default at launch (20 Nov). */
+/** App setting "Bottom navbar" (A/B, 20 Nov): V1 docked (L3 Bottom Navbar) · V2 floating, the default at launch (20 Nov) ·
+ * V3 V2's floating nav with L3's coloured icon on the chosen tab and the glow under it, not over it (23 Nov, user). */
 export const BOTTOM_NAV_OPTION = 'bottomNav'
 const useBottomNavVersion = () => useFlowOption(USER_STATUS, BOTTOM_NAV_OPTION, 'v2') // V2 by default (20 Nov, user)
-export const useFloatingNav = () => useBottomNavVersion() === 'v2'
-/** V3: L3's own floating Bottom Navbar. Pass it to <BottomNavbar variant={…}> inside a <FloatingNav>. */
-export const useBottomNavVariant = (): 'docked' | 'floating' => (useBottomNavVersion() === 'v3' ? 'floating' : 'docked')
+/** V2 and V3: the floating nav (this frame and its own Figma icons). */
+export const useFloatingNav = () => useBottomNavVersion() !== 'v1'
+/** V3: the chosen tab shows L3's coloured (two-tone brand) icon instead of the black-and-white one. */
+export const useColourNavIcons = () => useBottomNavVersion() === 'v3'
+/** The L3 Bottom Navbar variant to pass: always docked now (V3 was L3's floating variant until 23 Nov; the frame floats it). */
+export const useBottomNavVariant = (): 'docked' | 'floating' => 'docked'
 
 /**
  * V2's main-nav icons, from the Figma floating nav (LM → Stocks Playground, node 6687:10998, 20 Nov). One colour
@@ -72273,7 +72351,7 @@ let navMemory: { glowX: number | null; index: number | null; items: string | nul
 
 export function FloatingNav({ children }: { children: ReactNode }) {
   const floating = useFloatingNav()
-  const l3Floating = useBottomNavVariant() === 'floating'
+  const glowBelow = useColourNavIcons() // V3: the glow sits under the chosen tab (23 Nov, user)
   const pill = useRef<HTMLDivElement>(null)
   // A fresh nav starts where the last one left off (the glow at the old tab) and moves from there (23 Nov, user:
   // "animate the whole navbar transitions like tab switch, nav items change").
@@ -72316,11 +72394,9 @@ export function FloatingNav({ children }: { children: ReactNode }) {
 
   // data-bottom-nav: the preview's V1 / V2 bubble shows only on screens that have a bottom navbar. V1's wrapper says
   // data-surface="primary" so the OS navigation bar still takes the navbar's colour (it looks for the page's last part).
-  // V3: the navbar floats itself (L3 variant="floating"); the wrapper only marks it, so the screen's body clears the pill.
-  if (l3Floating) return <div className={styles.docked} data-floating-nav="" data-bottom-nav="">{children}</div>
   if (!floating) return <div className={styles.docked} data-bottom-nav="" data-surface="primary">{children}</div>
   return (
-    <div className={styles.frame} data-floating-nav="" data-bottom-nav="" data-motion={motion}>
+    <div className={styles.frame} data-floating-nav="" data-bottom-nav="" data-motion={motion} data-glow-at={glowBelow ? 'bottom' : undefined}>
       {/* The page's colour behind the nav: solid at the bottom, fading out above the pill. */}
       <div className={styles.fade} aria-hidden="true" />
       <div ref={pill} className={styles.pill}>
@@ -72502,7 +72578,7 @@ export function KeypadSlide({ open, children }: { open: boolean; children: React
 ```tsx
 import { BottomNavbar } from '@l3/components/BottomNavbar'
 import { NavIcon } from '@l3/components/BottomNavbar/NavIcon'
-import { FloatingNav, FloatingNavIcon, useBottomNavVariant, useFloatingNav } from './FloatingNav'
+import { FloatingNav, FloatingNavIcon, useBottomNavVariant, useColourNavIcons, useFloatingNav } from './FloatingNav'
 import styles from './MainNav.module.css'
 
 export type Section = 'stocks' | 'market' | 'portfolio' | 'mutualFund' | 'fno'
@@ -72518,8 +72594,9 @@ const items: { value: Section; label: string }[] = [
 /** The Lemonn app's main bottom navbar (L3: Bottom Navbar). Every L1 screen uses this — never a lookalike. Setting
  * "Bottom navbar" V2 floats it (FloatingNav). */
 export function MainNav({ value, onChange }: { value: Section; onChange?: (value: Section) => void }) {
-  const variant = useBottomNavVariant() // V3: L3's floating variant, with L3's icons
-  const floating = useFloatingNav() // V2 uses the floating nav's own Figma icons
+  const variant = useBottomNavVariant()
+  const floating = useFloatingNav() // V2 / V3 use the floating nav's own Figma icons
+  const colour = useColourNavIcons() // V3: the chosen tab in L3's coloured icon (23 Nov, user)
   return (
     <FloatingNav>
       <BottomNavbar
@@ -72529,7 +72606,7 @@ export function MainNav({ value, onChange }: { value: Section; onChange?: (value
         value={value}
         onChange={(v) => onChange?.(v as Section)}
         items={items.map((i) => floating
-          ? { ...i, icon: <FloatingNavIcon name={i.value} />, selectedIcon: <FloatingNavIcon name={i.value} selected /> }
+          ? { ...i, icon: <FloatingNavIcon name={i.value} />, selectedIcon: colour ? <NavIcon name={i.value} selected /> : <FloatingNavIcon name={i.value} selected /> }
           : { ...i, icon: <NavIcon name={i.value} />, selectedIcon: <NavIcon name={i.value} selected /> })}
       />
     </FloatingNav>
