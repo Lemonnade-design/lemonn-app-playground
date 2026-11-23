@@ -1,6 +1,6 @@
 # Flow: Stocks (`stocks`)
 
-> One self-contained file for converting this flow to another platform. Read https://lemonnade-design.github.io/lemonn-app-prototype/CONVERT.md first. Design system: Lemonnade V3 @ `3cd03a0` (components, tokens and rules: https://lemonnade-design.github.io/lemonnade-v3-docs/llms.txt).
+> One self-contained file for converting this flow to another platform. Read https://lemonnade-design.github.io/lemonn-app-prototype/CONVERT.md first. Design system: Lemonnade V3 @ `eca9d1e` (components, tokens and rules: https://lemonnade-design.github.io/lemonnade-v3-docs/llms.txt).
 
 The Stocks tab — the home after login: indices, holdings, products, movers, watchlists, ideas.
 
@@ -433,6 +433,9 @@ lower on the page is scrolled into view first). `components/MarketSwitchGuide.ts
   16 / 24 icon or an Avatar only — event rows are plain buttons laid out with Stack.
 
 ### Changelog
+- 23 Nov 2026 — Stock page (`stocks-32`…`37`): Buy opens the shared order pad in its Indian version (`us-stocks-33`, RELIANCE in ₹), Sell the Indian sell pad (`us-stocks-47`); they used to do nothing. The US stock page opens the US pad (us-stocks README).
+- 20 Nov 2026 — US tab, Money on the way card: with two or three deposits on the way (User status → Deposits on the way) its description reads "3 deposits · first ready to trade by Wed 8 PM", and it opens the shared deposits sheet (a card per deposit you swipe through, the steps of the one in view; us-stocks README).
+- 20 Nov 2026 — US tab, Money on the way card: opens the deposits sheet over Home on every Home version (the V16 hero card went to the wallet). Taking longer than usual (User status → Deposit status → Taking longer): "Money on the way · Taking longer than usual · your money is safe" (several: "2 deposits · 1 taking longer than usual"). A failed deposit (Deposit status → Failed): one alone → "Deposit didn't go through · ₹91,320 is coming back to your bank" with an error icon; one of several → "2 deposits · 1 didn't go through". The sheet's Try again goes to US Add money (us-stocks-21).
 - 19 Nov: A stock, ETF or bank with no logo shows one letter (its first), not two or three — app-wide (companies, market list, US banks, every Avatar / disc fallback).
 - 2026-11-19 — Stock page dock: SIP is an icon-only secondary button (square, aria-label "SIP"), so Buy and Sell take the width.
 - 2026-11-19 — Flags are the system flag emoji (🇮🇳 🇺🇸 🇨🇳 🇯🇵 🇪🇺 🇰🇷, shared `Flag`) everywhere — IN / US tabs, hub, US home, global markets — instead of round SVGs. L3 gap: no flag icons, and Tabs' icon slot is square only, so the flag widens it locally. Sticky ticker tray: its foot keeps its 20 corners until the last 16 px before the tabs, then squares off as it meets them (was over the whole approach).
@@ -25329,8 +25332,9 @@ export function LogoStack({ symbols, max = 3, size = 32, more }: { symbols: stri
 import { Fragment, type ReactNode } from 'react'
 import { Icon } from '@l3/components/Icon'
 import { ListCell } from '@l3/components/ListCell'
-import { msCheck, msChevronRight, msScheduleFill, msShieldLockFill } from '@l3/icons/material'
+import { msCheck, msChevronRight, msErrorFill, msScheduleFill, msShieldLockFill } from '@l3/icons/material'
 import { Usd } from '../../../../shared/money'
+import { useDepositsOnTheWay } from '../../../../shared/data/usDeposit'
 import { usTransfer, type TransferStep } from './data'
 import { t } from '../../copy'
 import styles from './UsHome.module.css'
@@ -25382,14 +25386,32 @@ export function TransferSafeLine() {
 
 /** Money on the way, as a small card under the US holdings ($0.00 until the money lands): the clock, "Money on the way",
  *  when it's ready to trade, and a chevron to the transfer's details. */
+/** Home's "Money on the way" card. Two or more deposits on the way: how many, and when the first is ready. A deposit the
+ *  US bank sent back: one alone turns the card into "Deposit didn't go through" (error icon, the ₹ coming back); one of
+ *  several is counted in the line. Taking longer than usual: the line says so, and that the money is safe. Either way the card opens the deposits sheet. */
 export function TransferStatusCard({ onOpen }: { onOpen?: () => void }) {
+  const deposits = useDepositsOnTheWay()
+  const failed = deposits.filter((d) => d.failed).length
+  const delayed = deposits.filter((d) => d.delayed).length
+  const allFailed = deposits.length === 1 && failed === 1
+  const description = allFailed
+    ? t('us.onTheWay.failedSubtitle', { inr: deposits[0].inr })
+    : deposits.length > 1
+      ? failed
+        ? t('us.onTheWay.subtitleManyFailed', { count: deposits.length, failed })
+        : delayed
+          ? t('us.onTheWay.subtitleManyDelayed', { count: deposits.length, delayed })
+          : t('us.onTheWay.subtitleMany', { count: deposits.length, eta: deposits[0].eta })
+      : delayed
+        ? t('us.onTheWay.delayedSubtitle')
+        : t('us.onTheWay.subtitle')
   return (
     <ListCell
       variant="card"
       as="button"
-      iconLeft={<span className={styles.transferStatusIcon}><Icon icon={msScheduleFill} /></span>}
-      label={t('us.onTheWay.title')}
-      description={t('us.onTheWay.subtitle')}
+      iconLeft={<span className={styles.transferStatusIcon} data-failed={failed > 0 || undefined}><Icon icon={failed ? msErrorFill : msScheduleFill} /></span>}
+      label={allFailed ? t('us.onTheWay.failedTitle') : t('us.onTheWay.title')}
+      description={description}
       iconRight={<Icon icon={msChevronRight} />}
       onClick={onOpen}
     />
@@ -25669,6 +25691,8 @@ export function UsHero({ onHoldings, onBuy, onAddUsd, empty = false, children }:
 .stateIcon[data-status='warning'] { color: var(--l3-content-accent-warning-default); }
 .stateIcon[data-status='error'] { color: var(--l3-content-accent-error-default); }
 .transferStatusIcon { display: flex; color: var(--l3-content-accent-warning-default); }
+/* A deposit the US bank sent back: the error icon in error. */
+.transferStatusIcon[data-failed] { color: var(--l3-content-accent-error-default); }
 .stateIcon[data-status='success'] { color: var(--l3-content-accent-success-default); }
 
 /* FLAG: hand-made horizontal stepper (L3 Steps is vertical only). Row 1, the track across the panel's full width:
@@ -27974,18 +27998,28 @@ const movers: Record<CapValue, Mover[]> = {
   ],
 }
 
+/** Every Top Movers rail shows at least this many cards, whatever the cap and tab. */
+export const MIN_MOVERS = 5
+
 /** The (up to) fifteen movers (one swipeable row of cards) of a cap bucket for a filter, from their real day change and range: gainers = biggest rises,
- *  losers = biggest falls, most active = highest volume, 52W high / low = closest to it. */
+ *  losers = biggest falls, most active = highest volume, 52W high / low = closest to it. On a day when fewer than five
+ *  stocks of the bucket rose (or fell), Gainers (Losers) tops up with the next best (worst) performers so the rail never
+ *  has fewer than MIN_MOVERS cards; those cards keep their real colour. */
 export function moversFor(cap: CapValue, filter: MoverFilter): MoverToday[] {
   // Only stocks the snapshot has a real price for (a symbol Yahoo didn't answer for is left out).
   const today = movers[cap].filter((m) => usQuote(m.sym)?.price != null).map((m) => ({ ...m, change: usStock(m.sym).change, q: usQuote(m.sym) }))
   const near = (to: 'high52' | 'low52') => (m: (typeof today)[number]) => (m.q?.[to] ? Math.abs(m.q.price / m.q[to]! - 1) : 9)
   const sorted =
-    filter === 'gainers' ? today.filter((m) => m.change > 0).sort((a, b) => b.change - a.change)
-    : filter === 'losers' ? today.filter((m) => m.change < 0).sort((a, b) => a.change - b.change)
+    filter === 'gainers' ? atLeastMin(today.sort((a, b) => b.change - a.change), (m) => m.change > 0)
+    : filter === 'losers' ? atLeastMin(today.sort((a, b) => a.change - b.change), (m) => m.change < 0)
     : filter === 'active' ? today.sort((a, b) => (b.q?.volume ?? 0) - (a.q?.volume ?? 0))
     : today.sort((a, b) => near(filter)(a) - near(filter)(b))
   return sorted.slice(0, 15).map(({ sym, name, change }) => ({ sym, name, up: change >= 0 }))
+}
+
+/** The ranked list cut to the ones that match (the risers for Gainers), but never shorter than MIN_MOVERS. */
+function atLeastMin<T>(ranked: T[], matches: (item: T) => boolean): T[] {
+  return ranked.slice(0, Math.max(ranked.filter(matches).length, MIN_MOVERS))
 }
 
 // ---- Brands You Know (two rows) ----
@@ -29320,6 +29354,12 @@ export function useLiveHeatmap(symbols: string[] = heatSymbols): HeatValue[] {
   "us.support.cta": "Contact Support",
   "us.onTheWay.title": "Money on the way",
   "us.onTheWay.subtitle": "Expected ready to trade by Thu 8 PM",
+  "us.onTheWay.subtitleMany": "{count} deposits · first ready to trade {eta}",
+  "us.onTheWay.failedTitle": "Deposit didn't go through",
+  "us.onTheWay.failedSubtitle": "{inr} is coming back to your bank",
+  "us.onTheWay.subtitleManyFailed": "{count} deposits · {failed} didn't go through",
+  "us.onTheWay.delayedSubtitle": "Taking longer than usual · your money is safe",
+  "us.onTheWay.subtitleManyDelayed": "{count} deposits · {delayed} taking longer than usual",
   "us.onTheWay.cta": "View details",
   "us.transfer.label": "Your transfer to US Stocks",
   "us.transfer.paid": "Paid",
@@ -29805,6 +29845,7 @@ export function priceSeries(page: StockPageData, range: ChartRange, price: numbe
 
 ```tsx
 import { emailSupport } from '../../shared/support'
+import { setPadMarket } from '../../shared/padMarket'
 import { useEffect, useState, type ComponentProps } from 'react'
 import type { Flow } from '../types'
 import { goToTab } from '../../shared/ui/MainNav'
@@ -29826,7 +29867,7 @@ import { ActivationSubmittedSheet } from './components/us/sheets/ActivationSubmi
 import { UsFtuxSheet } from './components/us/sheets/UsFtuxSheet'
 
 /** The US tab's taps, by screen id: Activate US Stocks → the activation pages (us-stocks-94: declarations, then the bank), a stock → its page (not activated, in the US Stocks flow), View all / a theme → Market on the US list. */
-const usNav = (go: Go) => ({ onActivateUs: () => go('us-stocks-94'), onUsStock: () => go('us-stocks-13'), onUsMarket: () => go('market-10'), onUsTheme: (id: ThemeId) => go(themeScreenId(id)), onUsEtfs: () => go('us-stocks-71'), onUsFractional: () => go('us-stocks-99'), onUsEtf: () => go('us-stocks-72'), onUsPicks: () => go('stocks-29'), onUsBrands: () => go('stocks-31'), onUsHoldings: () => go('us-stocks-77'), onInHoldings: () => go('us-stocks-05') })
+const usNav = (go: Go) => ({ onActivateUs: () => go('us-stocks-94'), onUsStock: () => go('us-stocks-13'), onUsMarket: () => go('market-10'), onUsTheme: (id: ThemeId) => go(themeScreenId(id)), onUsEtfs: () => go('us-stocks-71'), onUsFractional: () => go('us-stocks-99'), onUsEtf: () => go('us-stocks-72'), onUsPicks: () => go('stocks-29'), onUsBrands: () => go('stocks-31'), onUsHoldings: () => go('us-stocks-77'), onInHoldings: () => go('us-stocks-05'), onUsAddMoney: () => go('us-stocks-21') })
 
 /** The top bar and navbar taps every Home screen shares. */
 /** Search from the Home field: the Stocks tab on IND, the US tab on US (search-29). */
@@ -29835,6 +29876,13 @@ const searchFor = (market: 'in' | 'us') => (market === 'us' ? 'search-29' : 'sea
 const chrome = (go: Go) => ({ onStock: (sym: string) => { openStock(sym); go('stocks-32') }, onTab: (t: Parameters<typeof goToTab>[1]) => goToTab(go, t), onSearch: (m: 'in' | 'us') => go(searchFor(m)), onProfile: () => go('profile-01'), onCommodities: () => go('fno-08'), onAddMoney: () => go('deposit-01') })
 
 /** Wallet icon on the US tab, by where the user is (screens of the US Stocks flow): Indian wallet · under review · failed · $0 · funded. */
+// The Indian stock page's Buy / Sell open the shared order pad (US Stocks flow) in its Indian version (23 Nov, the
+// user's call): Buy → us-stocks-33 (T01 · Buy · Amount), Sell → us-stocks-47 (H03 · Sell · Holding). The pad itself
+// shows RELIANCE in ₹ (us-stocks/screens/trade/indianPad.ts).
+const indianPad = (go: Go) => ({
+  onBuy: () => { setPadMarket('india'); go('us-stocks-33') },
+  onSell: () => { setPadMarket('india'); go('us-stocks-47') },
+})
 const walletFor: Record<UsState, string> = { kyc: 'us-stocks-53', activate: 'us-stocks-53', review: 'us-stocks-55', support: 'us-stocks-57', failed: 'us-stocks-56', activated: 'us-stocks-20', onTheWay: 'us-stocks-28', ready: 'us-stocks-59', holding: 'us-stocks-59' }
 
 /** A Home screen on the US tab in one of the user's US Stocks states (Figma frames designed in the US Stocks flow). */
@@ -29966,12 +30014,12 @@ export const stocks: Flow = {
     })),
     // The Indian stock page (main, 2026-11-02): any Indian stock tapped in the app (Market, Top movers) — the board shows
     // Bharat Electronics. Renumbered stocks-32 … 39 when merged with the US Stocks work (its Home states own 09 … 31).
-    { id: 'stocks-32', name: 'Stock · Overview', figma: '', badge: 'new', note: 'Rebuilt from the live app (ADB, 2026-11-02). The top part follows the US stock page: change over the chart range, NSE / BSE switch, line chart, ranges.', render: (go) => <StockPage onBack={() => go('stocks-01')} onGlossary={(k) => go(k === 'performance' ? 'stocks-38' : 'stocks-39')} /> },
-    { id: 'stocks-33', name: 'Stock · depth & about', figma: '', badge: 'new', note: 'Scrolled: the Actionbar shows symbol + price, the tabs stick under it. About Company opened (Read more).', render: (go) => <StockPage scrollTo="depth" aboutOpen onBack={() => go('stocks-01')} onGlossary={(k) => go(k === 'performance' ? 'stocks-38' : 'stocks-39')} /> },
-    { id: 'stocks-34', name: 'Stock · shareholding & financials', figma: '', badge: 'new', note: 'Quarter chips change the bars; Quarterly ⇅ switches the Financials to yearly; Revenue / Profit / Networth.', render: (go) => <StockPage scrollTo="shareholding" onBack={() => go('stocks-01')} onGlossary={(k) => go(k === 'performance' ? 'stocks-38' : 'stocks-39')} /> },
-    { id: 'stocks-35', name: 'Stock · Events', figma: '', badge: 'new', note: 'Events by year, latest first; Filters on the first year; View more lists older years.', render: (go) => <StockPage tab="events" onBack={() => go('stocks-01')} onGlossary={(k) => go(k === 'performance' ? 'stocks-38' : 'stocks-39')} /> },
-    { id: 'stocks-36', name: 'Stock · event details', figma: '', badge: 'new', note: 'A tapped event: period and release date.', render: (go) => <StockPage tab="events" sheet="event" onBack={() => go('stocks-01')} onGlossary={(k) => go(k === 'performance' ? 'stocks-38' : 'stocks-39')} /> },
-    { id: 'stocks-37', name: 'Stock · event filters', figma: '', badge: 'new', note: 'Choose filter: one checkbox per event type, Done applies.', render: (go) => <StockPage tab="events" sheet="filter" onBack={() => go('stocks-01')} onGlossary={(k) => go(k === 'performance' ? 'stocks-38' : 'stocks-39')} /> },
+    { id: 'stocks-32', name: 'Stock · Overview', figma: '', badge: 'new', note: 'Rebuilt from the live app (ADB, 2026-11-02). The top part follows the US stock page: change over the chart range, NSE / BSE switch, line chart, ranges.', render: (go) => <StockPage {...indianPad(go)} onBack={() => go('stocks-01')} onGlossary={(k) => go(k === 'performance' ? 'stocks-38' : 'stocks-39')} /> },
+    { id: 'stocks-33', name: 'Stock · depth & about', figma: '', badge: 'new', note: 'Scrolled: the Actionbar shows symbol + price, the tabs stick under it. About Company opened (Read more).', render: (go) => <StockPage {...indianPad(go)} scrollTo="depth" aboutOpen onBack={() => go('stocks-01')} onGlossary={(k) => go(k === 'performance' ? 'stocks-38' : 'stocks-39')} /> },
+    { id: 'stocks-34', name: 'Stock · shareholding & financials', figma: '', badge: 'new', note: 'Quarter chips change the bars; Quarterly ⇅ switches the Financials to yearly; Revenue / Profit / Networth.', render: (go) => <StockPage {...indianPad(go)} scrollTo="shareholding" onBack={() => go('stocks-01')} onGlossary={(k) => go(k === 'performance' ? 'stocks-38' : 'stocks-39')} /> },
+    { id: 'stocks-35', name: 'Stock · Events', figma: '', badge: 'new', note: 'Events by year, latest first; Filters on the first year; View more lists older years.', render: (go) => <StockPage {...indianPad(go)} tab="events" onBack={() => go('stocks-01')} onGlossary={(k) => go(k === 'performance' ? 'stocks-38' : 'stocks-39')} /> },
+    { id: 'stocks-36', name: 'Stock · event details', figma: '', badge: 'new', note: 'A tapped event: period and release date.', render: (go) => <StockPage {...indianPad(go)} tab="events" sheet="event" onBack={() => go('stocks-01')} onGlossary={(k) => go(k === 'performance' ? 'stocks-38' : 'stocks-39')} /> },
+    { id: 'stocks-37', name: 'Stock · event filters', figma: '', badge: 'new', note: 'Choose filter: one checkbox per event type, Done applies.', render: (go) => <StockPage {...indianPad(go)} tab="events" sheet="filter" onBack={() => go('stocks-01')} onGlossary={(k) => go(k === 'performance' ? 'stocks-38' : 'stocks-39')} /> },
     { id: 'stocks-38', name: 'Performance (ⓘ)', figma: '', badge: 'new', note: 'Daily Performance ⓘ: what each number means.', render: (go) => <Glossary kind="performance" onBack={() => go('stocks-32')} /> },
     { id: 'stocks-39', name: 'Glossary · Fundamentals (ⓘ)', figma: '', badge: 'new', note: 'Fundamentals ⓘ: what each ratio means.', render: (go) => <Glossary kind="fundamentals" onBack={() => go('stocks-32')} /> },
     // The launch splash (hidden at launch for now).
@@ -30937,7 +30985,7 @@ import { MarketSwitchGuide } from '../components/MarketSwitchGuide'
 import { HomeSwitcher } from '../components/HomeSwitcher'
 import { HubSummary } from '../components/HubSummary'
 import { TopBar } from '../components/TopBar'
-import { DEPOSIT_ETA, depositOnTheWay } from '../../../shared/data/usDeposit'
+import { useDepositsOnTheWay } from '../../../shared/data/usDeposit'
 import { DepositProgressSheet } from '../../../shared/ui/DepositProgressSheet'
 import { TransferStatusCard } from '../components/us/TransferProgress'
 import { activatedStates, inKycCard, usIndices, type ThemeId, type UsState } from '../components/us/data'
@@ -31001,6 +31049,8 @@ type Props = {
   usState?: UsState
   /** US tab: the card's button — Activate US Stocks / Retry / Add money / Explore, by `usState`. */
   onActivateUs?: () => void
+  /** US Stocks Add money (Try again on a failed deposit). */
+  onUsAddMoney?: () => void
   /** The US holdings card was tapped → Portfolio, Holdings, with the US Stocks card upfront. */
   onUsHoldings?: () => void
   /** The Indian holdings card: Portfolio, Holdings, on the Indian holdings. */
@@ -31073,9 +31123,10 @@ const riskAgreedThisSession = () => {
   try { return sessionStorage.getItem(RISK_AGREED_KEY) === '1' } catch { return false }
 }
 
-export function Home({ scrollTo = 'top', market = 'in', movers, onStock, onTab, onSearch, onProfile, onWallet, onCommodities, onAddMoney, usState = 'activate', onActivateUs, onUsHoldings, onInHoldings, onUsStock, onUsMarket, onUsTheme, onUsEtfs, onUsFractional, onUsEtf, onUsPicks, onUsBrands, autoNext, sheet, introOnOpen = false }: Props) {
+export function Home({ scrollTo = 'top', market = 'in', movers, onStock, onTab, onSearch, onProfile, onWallet, onCommodities, onAddMoney, usState = 'activate', onActivateUs, onUsAddMoney, onUsHoldings, onInHoldings, onUsStock, onUsMarket, onUsTheme, onUsEtfs, onUsFractional, onUsEtf, onUsPicks, onUsBrands, autoNext, sheet, introOnOpen = false }: Props) {
   // Money on the way: its card opens the deposit explainer over Home (the timed move to "money ready" waits while it's open).
   const [explaining, setExplaining] = useState(false)
+  const depositsOnTheWay = useDepositsOnTheWay()
   useAutoAdvance(explaining ? undefined : autoNext, 2000)
   // The US Stocks intro on opening the app (8 Nov, the user's ask): only once, over the Home in whatever status.
   // Only on the F1 versions (V16, V17: the jojo branch's work); the other versions keep their Home as it was.
@@ -31558,10 +31609,11 @@ export function Home({ scrollTo = 'top', market = 'in', movers, onStock, onTab, 
             // Money ready on V16: the holdings hero as when holding (the NVDA holding), no card; the "Your money is
             // ready" aerobar says it (8 Nov).
             : f1 && m === 'us' && usState === 'ready' ? (heroCards ? <UsHero onHoldings={onUsHoldings}>{oneCard ? false : cardsRail(m)}</UsHero> : <UsHero onHoldings={onUsHoldings} onBuy={onUsStock} onAddUsd={onWallet} />)
-            // Money on the way on V16: the activated hero at $0.00 with the "Money on the way" card in place of its buttons (8 Nov).
+            // Money on the way on V16: the activated hero at $0.00 with the "Money on the way" card in place of its buttons (8 Nov);
+            // the card opens the deposits sheet over Home (20 Nov), like the other Money on the way cards.
             : f1 && m === 'us' && usState === 'onTheWay' ? (heroCards
-              ? <UsHero empty onHoldings={onUsHoldings}>{oneCard ? <TransferStatusCard onOpen={onActivateUs} /> : <Stack gap="16"><TransferStatusCard onOpen={onActivateUs} />{cardsRail(m)}</Stack>}</UsHero>
-              : <UsHero empty onHoldings={onUsHoldings}><TransferStatusCard onOpen={onActivateUs} /></UsHero>)
+              ? <UsHero empty onHoldings={onUsHoldings}>{oneCard ? <TransferStatusCard onOpen={() => setExplaining(true)} /> : <Stack gap="16"><TransferStatusCard onOpen={() => setExplaining(true)} />{cardsRail(m)}</Stack>}</UsHero>
+              : <UsHero empty onHoldings={onUsHoldings}><TransferStatusCard onOpen={() => setExplaining(true)} /></UsHero>)
             : f1 ? <HeroShell market={m} tone={shellTone} subtle={preActivation || justActivated}>{heroCards && !oneCard ? <Stack gap="16">{inCard(topCard(m))}{inCard(cardsRail(m))}</Stack> : inCard(topCard(m))}</HeroShell>
             : inCard(topCard(m))}
         </div>
@@ -31593,7 +31645,7 @@ export function Home({ scrollTo = 'top', market = 'in', movers, onStock, onTab, 
 
   return (
     <Screen
-      sheet={sheet ?? (risk ? <RiskDisclosureSheet onAgree={agreeRisk} onClose={() => { setRisk(false); switchTo('in') }} /> : explaining ? <DepositProgressSheet deposit={depositOnTheWay()} eta={DEPOSIT_ETA} onClose={() => setExplaining(false)} /> : intro && f1 ? introSheet : guiding && <MarketSwitchGuide key={version.id} onView={() => switchInPage('us')} onClose={() => setGuideDoneFor(version.id)} />)}
+      sheet={sheet ?? (risk ? <RiskDisclosureSheet onAgree={agreeRisk} onClose={() => { setRisk(false); switchTo('in') }} /> : explaining ? <DepositProgressSheet deposits={depositsOnTheWay} onClose={() => setExplaining(false)} onRetry={onUsAddMoney} /> : intro && f1 ? introSheet : guiding && <MarketSwitchGuide key={version.id} onView={() => switchInPage('us')} onClose={() => setGuideDoneFor(version.id)} />)}
       toast={showToast && <Aerobar type="success" floating icon={<Icon icon={msCheckCircle} />} heading={t('us.ready.title')} paragraph={t('us.ready.subtitle')} duration={3000} action={{ label: t('us.ready.ok'), onClick: () => setToastGone(true) }} onDismiss={() => setToastGone(true)} />}
       bottom={<MainNav value="stocks" onChange={onTab} />}
     >
@@ -31913,6 +31965,9 @@ type Props = {
   /** Board: a sheet open over the Events tab. */
   sheet?: 'event' | 'filter'
   onBack: () => void
+  /** Buy / Sell open the order pad in its Indian version (the stocks flow sets the market, then opens it). */
+  onBuy?: () => void
+  onSell?: () => void
   onGlossary: (kind: 'performance' | 'fundamentals') => void
 }
 
@@ -31922,7 +31977,7 @@ type Props = {
  * advanced-chart button and the NSE / BSE switch; the line chart and its ranges; Overview / Events tabs. Once the
  * header scrolls away the Actionbar shows symbol + price, and the tabs stick under it. SIP · Buy · Sell docked.
  */
-export function StockPage({ tab: initialTab = 'overview', scrollTo = 'top', range: initialRange = '1D', exchange: initialExchange = 'NSE', aboutOpen, eventsExpanded, sheet: initialSheet, onBack, onGlossary }: Props) {
+export function StockPage({ tab: initialTab = 'overview', scrollTo = 'top', range: initialRange = '1D', exchange: initialExchange = 'NSE', aboutOpen, eventsExpanded, sheet: initialSheet, onBack, onBuy, onSell, onGlossary }: Props) {
   useMarketSnapshot()
   const page = stockPage(useOpenStock())
   const [tab, setTab] = useState<StockTab>(initialTab)
@@ -31991,13 +32046,13 @@ export function StockPage({ tab: initialTab = 'overview', scrollTo = 'top', rang
       bottom={stuck ? tabs : undefined}
     />
   )
-  // No order pad or SIP flow in the prototype yet: the dock's buttons don't go anywhere.
+  // Buy / Sell open the order pad (Indian version, 23 Nov). No SIP flow in the prototype yet: SIP goes nowhere.
   const dock = (
     <ButtonGroup aria-label={t('stock.trade', { symbol: page.symbol })} direction="horizontal">
       {/* SIP is icon-only, square, so Buy and Sell get the width (19 Nov, the user's call). */}
       <Button variant="secondary" aria-label={t('stock.sip')} iconLeft={<Icon icon={msEventRepeat} size={20} />} className={styles.sip} onClick={() => {}} />
-      <Button variant="brand" onClick={() => {}}>{t('stock.buy')}</Button>
-      <Button variant="secondary" onClick={() => {}}>{t('stock.sell')}</Button>
+      <Button variant="brand" onClick={onBuy}>{t('stock.buy')}</Button>
+      <Button variant="secondary" onClick={onSell}>{t('stock.sell')}</Button>
     </ButtonGroup>
   )
   const sheetEl = sheet?.kind === 'filter'
@@ -57297,27 +57352,74 @@ export const watchlists: Watchlist[] = [
 ### `src/shared/data/usDeposit.ts`
 
 ```ts
-// The US Stocks deposit on its way (paid in ₹, not yet in the USD wallet). Shared because Home's "Money on the way"
-// card and the US wallet both explain it with the same sheet (shared/ui/DepositProgressSheet).
+// The US Stocks deposits on their way (paid in ₹, not yet in the USD wallet). Shared because Home's "Money on the way"
+// card and the US wallet both show them, with the same sheet (shared/ui/DepositProgressSheet).
+// A US deposit takes 1–2 working days, so a user who adds money again before the first lands has two (or more) on the
+// way at once — each with its own day it lands. The screens add them up and list each one.
+import { useFlowOption } from '../prototype'
+import { USER_STATUS, userStatusOptions } from '../userStatus'
 
-/** A deposit paid on the bank's page: $ that will land, ₹ that left the bank, and which bank. */
-export type SentDeposit = { usd: number; inr: string; bank: string }
+/** A deposit paid on the bank's page: $ that will land, ₹ that left the bank, which bank, when it was paid and lands. */
+export type SentDeposit = {
+  usd: number
+  inr: string
+  bank: string
+  /** When it was paid ("Today, 11:20 AM"). */
+  paid: string
+  /** When it's ready to trade ("by Thu 8 PM"). */
+  eta: string
+  /** The US bank sent it back (a returned transfer): the ₹ goes back to the bank it came from. */
+  failed?: boolean
+  /** Past its day and still with the US bank: taking longer than usual, the money is safe. */
+  delayed?: boolean
+}
+
+/** When a returned deposit's ₹ is back in the user's bank (word joiners keep "3–5" on one line). */
+export const REFUND_DAYS = '3\u2060–\u20605 working days'
 
 /** When a deposit paid now is ready to trade (the prototype's fixed day). */
 export const DEPOSIT_ETA = 'by Thu 8 PM'
 
 /** Shown when no deposit was paid in this session (a screen opened straight from the list). */
-const SAMPLE_DEPOSIT: SentDeposit = { usd: 1035.37, inr: '₹91,320', bank: 'HDFC Bank ••7821' }
+const SAMPLE_DEPOSIT: SentDeposit = { usd: 1035.37, inr: '₹91,320', bank: 'HDFC Bank ••7821', paid: 'Today, 11:20 AM', eta: DEPOSIT_ETA }
+/**
+ * Paid before today, for "User status → Deposits on the way: Two / Three", oldest first: each lands on its own day,
+ * before today's. Two adds the last one, Three both.
+ */
+const EARLIER_DEPOSITS: SentDeposit[] = [
+  { usd: 250, inr: '₹22,050', bank: 'ICICI Bank ••4410', paid: 'Yesterday, 10:15 AM', eta: 'by Wed 8 PM' },
+  { usd: 500, inr: '₹44,100', bank: 'HDFC Bank ••7821', paid: 'Yesterday, 6:45 PM', eta: 'by Thu 11 AM' },
+]
 
-let sent: SentDeposit | null = null
+/** Deposits paid in this session (Add money → the bank's page), oldest first. Kept in memory: shown until they land. */
+let sent: SentDeposit[] = []
 
-/** Remember the deposit being paid (Add money → the bank's page). */
-export const setSentDeposit = (deposit: SentDeposit) => {
-  sent = deposit
+/** Remember a deposit being paid (Add money → the bank's page). Each payment is its own deposit. */
+export const setSentDeposit = (deposit: Omit<SentDeposit, 'paid' | 'eta'>) => {
+  sent = [...sent, { ...deposit, paid: 'Today, just now', eta: DEPOSIT_ETA }]
 }
 
-/** The deposit last paid, or the sample. Kept: it's shown until it lands. */
-export const depositOnTheWay = (): SentDeposit => sent ?? SAMPLE_DEPOSIT
+/** The deposit paid last (the one the "money sent" sheet is about), or the sample. */
+export const depositOnTheWay = (): SentDeposit => sent[sent.length - 1] ?? SAMPLE_DEPOSIT
+
+/**
+ * Every deposit on its way, the one landing first first. The ones paid in this session, or the sample; "Deposits on
+ * the way: Two / Three" tops it up with ones paid yesterday when this session hasn't paid that many itself.
+ */
+export function useDepositsOnTheWay(): SentDeposit[] {
+  const option = useFlowOption(USER_STATUS, 'deposits', userStatusOptions.find((o) => o.id === 'deposits')!.default)
+  const wanted = option === 'three' ? 3 : option === 'two' ? 2 : 1
+  const paid = sent.length ? sent : [SAMPLE_DEPOSIT]
+  const missing = Math.max(0, wanted - paid.length)
+  const deposits = [...EARLIER_DEPOSITS.slice(EARLIER_DEPOSITS.length - missing), ...paid].slice(-Math.max(wanted, paid.length))
+  // "Deposit status": the oldest one (the first to be processed) is taking longer than usual, or the US bank sent it back.
+  const status = useFlowOption(USER_STATUS, 'depositStatus', userStatusOptions.find((o) => o.id === 'depositStatus')!.default)
+  if (status === 'onTime') return deposits
+  return deposits.map((d, i) => (i === 0 ? { ...d, [status === 'failed' ? 'failed' : 'delayed']: true } : d))
+}
+
+/** What the deposits still on the way come to in $ (a returned one isn't coming). */
+export const depositsTotal = (deposits: SentDeposit[]) => deposits.reduce((sum, d) => sum + (d.failed ? 0 : d.usd), 0)
 ```
 
 ### `src/shared/data/usStocks.ts`
@@ -57779,6 +57881,28 @@ export function CurrencySwitch({ className }: { className?: string }) {
 }
 ```
 
+### `src/shared/padMarket.ts`
+
+```ts
+// Which market the order pad opens in (23 Nov, the user's call). One pad (us-stocks/screens/trade/OrderPadV2), two
+// markets: Indian (₹, NSE / BSE, leverage, TP / SL + trailing) and US ($, stop loss only). The page the user leaves from
+// decides: a US stock / ETF / order opens the US pad, an Indian stock page the Indian pad. The prototype's "Order pad"
+// setting (US Stocks flow, Trade) shows what was picked last and can still flip it; opened straight from the screen
+// list, the pad shows that setting (Indian by default).
+// In the app there is no setting: the pad takes the market of the instrument it was opened for.
+import { setFlowOption } from './prototype'
+
+export type PadMarket = 'india' | 'us'
+
+/** The "Order pad" flow option this sets (read by usePadVersion in us-stocks/screens/trade/version.ts). */
+export const PAD_MARKET_OPTION = { flow: 'us-stocks', id: 'padVersion', default: 'india' as PadMarket }
+
+/** Call just before opening the order pad: it opens in this market. */
+export function setPadMarket(market: PadMarket) {
+  setFlowOption(PAD_MARKET_OPTION.flow, PAD_MARKET_OPTION.id, PAD_MARKET_OPTION.default, market)
+}
+```
+
 ### `src/shared/prototype.ts`
 
 ```ts
@@ -58019,6 +58143,42 @@ export function CenteredTabs(props: ComponentProps<typeof Tabs>) {
   flex: none;
   color: var(--l3-content-accent-success-default);
 }
+
+/* Two or more on the way: the cards' rail runs edge to edge in the sheet (out of its 16 content padding; the Rail
+   brings its own 16 back), so the next card peeks in from the sheet's edge. */
+.bleed {
+  margin-inline: calc(-1 * var(--l3-spacing-16));
+}
+
+/* The last card can't line up with the start (nothing after it), so it snaps to the end — otherwise the rail snaps
+   back and the last deposit is never fully in view. */
+.bleed > :last-child {
+  scroll-snap-align: end;
+}
+
+.amount {
+  font: var(--l3-text-heading-18);
+  color: var(--l3-content-primary);
+}
+
+.paid {
+  font: var(--l3-text-description-12);
+  color: var(--l3-content-secondary);
+}
+
+/* Page dots under the rail (L3 gap: no carousel indicator). The one in view is a longer pill. */
+.dots > span {
+  width: var(--l3-spacing-06);
+  height: var(--l3-spacing-06);
+  border-radius: var(--l3-radius-full);
+  background: var(--l3-content-disabled);
+  transition: width var(--l3-motion-duration-short) var(--l3-motion-easing-standard), background var(--l3-motion-duration-short) var(--l3-motion-easing-standard);
+}
+
+.dots > span[data-active] {
+  width: var(--l3-spacing-16);
+  background: var(--l3-content-primary);
+}
 ```
 
 ### `src/shared/ui/DepositProgressSheet.tsx`
@@ -58029,17 +58189,34 @@ export function CenteredTabs(props: ComponentProps<typeof Tabs>) {
 // the US side crediting it (US banks take 1–2 working days). Kept short: one line per step, the safe note under them.
 // Opened from Home's "Money on the way" card, the wallet's deposit-in-progress bar, and back from the bank's page.
 // When it'll be ready is a Tag in the header (processing colour: still under way).
-// L3 gap: Steps has no warning (yellow) or pulsing "in progress" marker — the running step uses `current` (success dot).
+// Two or more on the way (the user added money again before the first one landed, 20 Nov): a generic heading, each
+// deposit as a card in a swipeable rail (amount, when paid, its own "By …" tag, the first to land first), dots for the
+// one in view, and the Steps for that one. No second sheet per deposit: swiping is how you see each.
+// The running step is a `live` current step: its halo pulses like a live dot, so it reads as under way (20 Nov).
+// Failed (the US bank sent it back, 20 Nov): the heading says it didn't go through with a red "Failed" tag, the steps stop
+// at US bank processing (failed) and go on to the refund to the bank it came from, and the buttons are Try again
+// (brand: it moves money) and Contact support (email). With several, the failed card has the Failed tag.
+// Buttons belong to the sheet, not the card in view (20 Nov): Contact support always; Got it, or Try again when the
+// sheet is one failed deposit. Tapping a half-visible card scrolls it into view.
+// Taking longer (past its day, still with the US bank, 20 Nov): "Taking longer than usual" with an amber "Delayed" tag,
+// the bank step still live ("we're on it"), and a note that the money is safe and, if it fails, goes back to the bank
+// it came from in 3–5 working days.
+// L3 gap until shipped: Steps' `live` and `failed` are new in L3 (working copy); the pinned build draws them as plain.
 import { BottomSheet, BottomSheetHeader } from '@l3/components/BottomSheet'
 import { Button } from '@l3/components/Button'
 import { ButtonGroup } from '@l3/components/ButtonGroup'
 import { Icon } from '@l3/components/Icon'
 import { Inset } from '@l3/components/Inset'
+import { Card } from '@l3/components/Card'
 import { Stack } from '@l3/components/Stack'
-import { Steps } from '@l3/components/Steps'
+import { Steps, type StepItem } from '@l3/components/Steps'
 import { Tag } from '@l3/components/Tag'
-import { msSchedule, msShieldLockFill } from '@l3/icons/material'
-import { formatUsd } from '../money'
+import { msErrorFill, msSchedule, msShieldLockFill } from '@l3/icons/material'
+import { useRef, useState, type UIEvent } from 'react'
+import { formatUsd, Usd } from '../money'
+import { emailSupport } from '../support'
+import { REFUND_DAYS } from '../data/usDeposit'
+import { Rail } from './Rail'
 import { Sheet } from './Sheet'
 import styles from './DepositProgressSheet.module.css'
 
@@ -58050,53 +58227,90 @@ export type DepositInProgress = {
   inr: string
   /** The bank it left, as written ("HDFC Bank ••7821"). */
   bank: string
+  /** When it was paid ("Today, 11:20 AM"). */
+  paid: string
+  /** When it's ready to trade ("by Thu 8 PM"). */
+  eta: string
+  /** The US bank sent it back: the ₹ is on its way back to `bank`. */
+  failed?: boolean
+  /** Past its day, still with the US bank: taking longer than usual. */
+  delayed?: boolean
 }
 
 type DepositProgressSheetProps = {
-  deposit: DepositInProgress
-  /** When it's ready to trade ("by Thu 8 PM"). */
-  eta: string
+  /** The deposits on their way, the first to land on top. One: its steps. More: the list. */
+  deposits: DepositInProgress[]
   onClose: () => void
+  /** Try again on a failed deposit: Add money. Without it a failed deposit offers Contact support only. */
+  onRetry?: () => void
   /** A screen that draws its own sheet layer (US Stocks' Phone) passes it; otherwise the screen's SheetHost shows it. */
   container?: HTMLElement | null
 }
 
 const HEADING_ID = 'deposit-progress-title'
 
-export function DepositProgressSheet({ deposit, eta, onClose, container }: DepositProgressSheetProps) {
-  // When it's expected stands out as a tag beside the heading ("By Thu 8 PM"), not buried in the description.
-  const header = (
-    <BottomSheetHeader
-      heading={`${formatUsd(deposit.usd)} on the way`}
-      headingId={HEADING_ID}
-      description="Expected to be ready to trade"
-      trailing={<Tag variant="secondary" color="processing" size="md" iconLeft={<Icon icon={msSchedule} />}>{eta.charAt(0).toUpperCase() + eta.slice(1)}</Tag>}
-    />
+const capital = (text: string) => text.charAt(0).toUpperCase() + text.slice(1)
+const lower = (text: string) => text.charAt(0).toLowerCase() + text.slice(1)
+const etaTag = (eta: string) => <Tag variant="secondary" color="processing" size="md" iconLeft={<Icon icon={msSchedule} />}>{capital(eta)}</Tag>
+const failedTag = <Tag variant="secondary" color="error" size="md" iconLeft={<Icon icon={msErrorFill} />}>Failed</Tag>
+const delayedTag = <Tag variant="secondary" color="warning" size="md" iconLeft={<Icon icon={msSchedule} />}>Delayed</Tag>
+/** By the amount: when it's ready, that it's late, or that it failed. */
+const statusTag = (deposit: DepositInProgress) => (deposit.failed ? failedTag : deposit.delayed ? delayedTag : etaTag(deposit.eta))
+
+const note = (text: string) => (
+  <Inset padding="12" className={styles.safeNote}>
+    <Stack direction="horizontal" align="center" gap="12">
+      <Icon icon={msShieldLockFill} size={24} />
+      <span>{text}</span>
+    </Stack>
+  </Inset>
+)
+const safeNote = (deposit: DepositInProgress) =>
+  note(
+    deposit.failed
+      ? 'Your money is safe. It goes back only to the bank you paid from.'
+      : deposit.delayed
+        ? `Your money is safe and hasn't gone anywhere. If the transfer fails, it's refunded to ${deposit.bank} in ${REFUND_DAYS}.`
+        : 'Your money is safe, held in your name at our US partner.',
   )
+
+/** Where one deposit is: paid, sent, the US bank crediting it (live) — or sending it back, then the refund. */
+const depositSteps = (deposit: DepositInProgress): StepItem[] => [
+  { label: 'Paid', state: 'done', description: `${deposit.inr} from ${deposit.bank}` },
+  { label: 'Sent to the US', state: 'done', description: 'Your money has left India' },
+  ...(deposit.failed
+    ? ([
+        { label: 'US bank processing', state: 'failed', description: 'The US bank sent it back' },
+        { label: 'Refund to your bank', state: 'todo', description: `${deposit.inr} back to ${deposit.bank} in ${REFUND_DAYS}` },
+      ] satisfies StepItem[])
+    : deposit.delayed
+      ? ([
+          { label: 'US bank processing', state: 'current', live: true, description: "Taking longer than usual · we're on it" },
+          { label: 'Ready to trade', state: 'todo', description: "We'll notify you as soon as it lands" },
+        ] satisfies StepItem[])
+      : ([
+          { label: 'US bank processing', state: 'current', live: true, description: 'US banks usually take 1–2 working days' },
+          { label: 'Ready to trade', state: 'todo', description: `${capital(deposit.eta)} · we'll notify you` },
+        ] satisfies StepItem[])),
+]
+
+export function DepositProgressSheet({ deposits, onClose, onRetry, container }: DepositProgressSheetProps) {
+  // The card in view (two or more): its steps show, and the buttons follow it (a failed one: Try again).
+  const [active, setActive] = useState(0)
+  // The footer belongs to the sheet, not the card in view: swiping between deposits never changes the buttons.
+  // One failed deposit: Try again (brand) + Contact support. Anything else: Got it + Contact support.
+  const retry = deposits.length === 1 && deposits[0].failed && onRetry
   const footer = (
     <ButtonGroup aria-label="Deposit progress">
-      <Button variant="primary" size="lg" fullWidth onClick={onClose}>Got it</Button>
+      {retry ? (
+        <Button variant="brand" size="lg" fullWidth onClick={retry}>Try again</Button>
+      ) : (
+        <Button variant="primary" size="lg" fullWidth onClick={onClose}>Got it</Button>
+      )}
+      <Button variant="secondary" size="lg" fullWidth onClick={() => emailSupport('My US Stocks deposit')}>Contact support</Button>
     </ButtonGroup>
   )
-  const body = (
-    <Stack gap="24">
-      <Steps
-        label="Your deposit"
-        steps={[
-          { label: 'Paid', state: 'done', description: `${deposit.inr} from ${deposit.bank}` },
-          { label: 'Sent to the US', state: 'done', description: 'Your money has left India' },
-          { label: 'US bank processing', state: 'current', description: 'US banks usually take 1–2 working days' },
-          { label: 'Ready to trade', state: 'todo', description: `${eta} · we'll notify you` },
-        ]}
-      />
-      <Inset padding="12" className={styles.safeNote}>
-        <Stack direction="horizontal" align="center" gap="12">
-          <Icon icon={msShieldLockFill} size={24} />
-          <span>Your money is safe, held in your name at our US partner.</span>
-        </Stack>
-      </Inset>
-    </Stack>
-  )
+  const { header, body } = deposits.length > 1 ? manyDeposits(deposits, active, setActive) : oneDeposit(deposits[0])
   if (container !== undefined) {
     return (
       <BottomSheet open onClose={onClose} container={container} aria-labelledby={HEADING_ID} header={header} footer={footer}>
@@ -58105,6 +58319,113 @@ export function DepositProgressSheet({ deposit, eta, onClose, container }: Depos
     )
   }
   return <Sheet labelledBy={HEADING_ID} onClose={onClose} header={header} footer={footer}>{body}</Sheet>
+}
+
+/** One deposit: where it is, as Steps. */
+function oneDeposit(deposit: DepositInProgress) {
+  // When it's expected stands out as a tag beside the heading ("By Thu 8 PM"), not buried in the description; a failed
+  // one has a red "Failed" tag there instead.
+  const header = deposit.failed ? (
+    <BottomSheetHeader
+      heading="Deposit didn't go through"
+      headingId={HEADING_ID}
+      description={`${formatUsd(deposit.usd)} · the US bank sent it back`}
+      trailing={failedTag}
+    />
+  ) : deposit.delayed ? (
+    <BottomSheetHeader
+      heading="Taking longer than usual"
+      headingId={HEADING_ID}
+      description={`${formatUsd(deposit.usd)} · was expected ${deposit.eta}`}
+      trailing={delayedTag}
+    />
+  ) : (
+    <BottomSheetHeader
+      heading={`${formatUsd(deposit.usd)} on the way`}
+      headingId={HEADING_ID}
+      description="Expected to be ready to trade"
+      trailing={etaTag(deposit.eta)}
+    />
+  )
+  const body = (
+    <Stack gap="24">
+      <Steps label="Your deposit" steps={depositSteps(deposit)} />
+      {safeNote(deposit)}
+    </Stack>
+  )
+  return { header, body }
+}
+
+/**
+ * Two or more: a generic heading (the cards carry the amounts), each deposit as a card in a sideways rail — its amount,
+ * when it was paid, when it's ready — the first to land first, the next one peeking in. The steps under the rail follow
+ * the card in view, so swiping shows where each deposit is.
+ */
+function manyDeposits(deposits: DepositInProgress[], active: number, setActive: (index: number) => void) {
+  const failed = deposits.filter((d) => d.failed).length
+  const delayed = deposits.filter((d) => d.delayed).length
+  const header = (
+    <BottomSheetHeader
+      heading="Deposits on the way"
+      headingId={HEADING_ID}
+      description={
+        failed
+          ? `${deposits.length} deposits · ${failed} didn't go through`
+          : delayed
+            ? `${deposits.length} deposits · ${delayed} taking longer than usual`
+            : `${deposits.length} deposits · each one ready to trade on its own day`
+      }
+    />
+  )
+  return { header, body: <DepositCarousel deposits={deposits} active={active} setActive={setActive} /> }
+}
+
+function DepositCarousel({ deposits, active, setActive }: { deposits: DepositInProgress[]; active: number; setActive: (index: number) => void }) {
+  // Which card is in view: the rail's scroll over one card's step (the last one once the rail can't scroll further).
+  const onRailScroll = (event: UIEvent<HTMLDivElement>) => {
+    const rail = event.currentTarget
+    const cards = rail.children
+    if (cards.length < 2) return
+    const step = (cards[1] as HTMLElement).offsetLeft - (cards[0] as HTMLElement).offsetLeft
+    const atEnd = rail.scrollLeft >= rail.scrollWidth - rail.clientWidth - 1
+    setActive(atEnd ? cards.length - 1 : Math.round(rail.scrollLeft / step))
+  }
+  // Tapping a card that only peeks in (the next or previous one) scrolls it into view; onRailScroll then follows it.
+  const railRef = useRef<HTMLDivElement>(null)
+  const showCard = (index: number) => {
+    const rail = railRef.current
+    const cards = rail?.children
+    if (!rail || !cards || index === active) return
+    const left = (cards[index] as HTMLElement).offsetLeft - (cards[0] as HTMLElement).offsetLeft
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    rail.scrollTo({ left, behavior: reduce ? 'auto' : 'smooth' })
+  }
+  const deposit = deposits[active]
+  return (
+    <Stack gap="24">
+      <Stack gap="12">
+        <Rail label="Your deposits" visible={1.2} className={styles.bleed} onScroll={onRailScroll} railRef={railRef}>
+            {deposits.map((d, i) => (
+              <Card key={`${d.paid}-${d.usd}`} onClick={() => showCard(i)} aria-label={`Deposit ${i + 1} of ${deposits.length}`}>
+                <Stack gap="08">
+                  <Stack direction="horizontal" align="center" justify="between" gap="08">
+                    <span className={styles.amount}><Usd value={d.usd} layout="inline" /></span>
+                    {statusTag(d)}
+                  </Stack>
+                  <span className={styles.paid}>Paid {lower(d.paid)}</span>
+                </Stack>
+              </Card>
+            ))}
+          </Rail>
+        {/* Which card is in view (L3 gap: no carousel or page indicator yet). */}
+        <Stack direction="horizontal" justify="center" gap="04" className={styles.dots} aria-hidden>
+          {deposits.map((d, i) => <span key={`${d.paid}-${d.usd}`} data-active={i === active || undefined} />)}
+        </Stack>
+      </Stack>
+      <Steps label={`Deposit ${active + 1} of ${deposits.length}`} steps={depositSteps(deposit)} />
+      {safeNote(deposit)}
+    </Stack>
+  )
 }
 ```
 
@@ -58865,7 +59186,10 @@ import styles from './FloatingNav.module.css'
 
 /** App setting "Bottom navbar" (A/B, 20 Nov): V1 docked (L3 Bottom Navbar) · V2 floating, the default at launch (20 Nov). */
 export const BOTTOM_NAV_OPTION = 'bottomNav'
-export const useFloatingNav = () => useFlowOption(USER_STATUS, BOTTOM_NAV_OPTION, 'v2') === 'v2' // V2 by default (20 Nov, user)
+const useBottomNavVersion = () => useFlowOption(USER_STATUS, BOTTOM_NAV_OPTION, 'v2') // V2 by default (20 Nov, user)
+export const useFloatingNav = () => useBottomNavVersion() === 'v2'
+/** V3: L3's own floating Bottom Navbar. Pass it to <BottomNavbar variant={…}> inside a <FloatingNav>. */
+export const useBottomNavVariant = (): 'docked' | 'floating' => (useBottomNavVersion() === 'v3' ? 'floating' : 'docked')
 
 /**
  * V2's main-nav icons, from the Figma floating nav (LM → Stocks Playground, node 6687:10998, 20 Nov). One colour
@@ -58895,6 +59219,7 @@ export function FloatingNavIcon({ name, selected = false }: { name: FloatingIcon
  */
 export function FloatingNav({ children }: { children: ReactNode }) {
   const floating = useFloatingNav()
+  const l3Floating = useBottomNavVariant() === 'floating'
   const pill = useRef<HTMLDivElement>(null)
   const [glowX, setGlowX] = useState<number | null>(null)
 
@@ -58916,6 +59241,8 @@ export function FloatingNav({ children }: { children: ReactNode }) {
 
   // data-bottom-nav: the preview's V1 / V2 bubble shows only on screens that have a bottom navbar. V1's wrapper says
   // data-surface="primary" so the OS navigation bar still takes the navbar's colour (it looks for the page's last part).
+  // V3: the navbar floats itself (L3 variant="floating"); the wrapper only marks it, so the screen's body clears the pill.
+  if (l3Floating) return <div className={styles.docked} data-floating-nav="" data-bottom-nav="">{children}</div>
   if (!floating) return <div className={styles.docked} data-bottom-nav="" data-surface="primary">{children}</div>
   return (
     <div className={styles.frame} data-floating-nav="" data-bottom-nav="">
@@ -58947,7 +59274,7 @@ export function FloatingNav({ children }: { children: ReactNode }) {
 ```tsx
 import { BottomNavbar } from '@l3/components/BottomNavbar'
 import { NavIcon } from '@l3/components/BottomNavbar/NavIcon'
-import { FloatingNav, FloatingNavIcon, useFloatingNav } from './FloatingNav'
+import { FloatingNav, FloatingNavIcon, useBottomNavVariant, useFloatingNav } from './FloatingNav'
 import styles from './MainNav.module.css'
 
 export type Section = 'stocks' | 'market' | 'portfolio' | 'mutualFund' | 'fno'
@@ -58963,11 +59290,13 @@ const items: { value: Section; label: string }[] = [
 /** The Lemonn app's main bottom navbar (L3: Bottom Navbar). Every L1 screen uses this — never a lookalike. Setting
  * "Bottom navbar" V2 floats it (FloatingNav). */
 export function MainNav({ value, onChange }: { value: Section; onChange?: (value: Section) => void }) {
+  const variant = useBottomNavVariant() // V3: L3's floating variant, with L3's icons
   const floating = useFloatingNav() // V2 uses the floating nav's own Figma icons
   return (
     <FloatingNav>
       <BottomNavbar
         aria-label="Main"
+        variant={variant}
         className={styles.nav}
         value={value}
         onChange={(v) => onChange?.(v as Section)}
@@ -59069,7 +59398,7 @@ export const goToTab = (go: (id: string) => void, section: Section) => {
 ### `src/shared/ui/Rail.tsx`
 
 ```tsx
-import type { CSSProperties, ReactNode } from 'react'
+import type { CSSProperties, ReactNode, Ref, UIEventHandler } from 'react'
 import styles from './Rail.module.css'
 
 type RailProps = {
@@ -59084,15 +59413,19 @@ type RailProps = {
   snap?: 'start' | 'center'
   /** Extra room inside the row (e.g. above the cards, for a tag sitting on a card's top edge). */
   className?: string
+  /** Called as the row scrolls (e.g. to follow which card is in view). */
+  onScroll?: UIEventHandler<HTMLDivElement>
+  /** The scrolling row itself (e.g. to scroll a tapped card into view). */
+  railRef?: Ref<HTMLDivElement>
 }
 
 /**
  * A row that scrolls sideways — cards, baskets, ideas. Its first item lines up with the 16 page margin, items are
  * 12 apart and snap into place, and there's no scrollbar. Not L3 yet (a "carousel / rail" is missing there).
  */
-export function Rail({ children, label, visible, rows = 1, snap = 'start', className }: RailProps) {
+export function Rail({ children, label, visible, rows = 1, snap = 'start', className, onScroll, railRef }: RailProps) {
   return (
-    <div className={[styles.rail, className].filter(Boolean).join(' ')} role="region" aria-label={label} data-rows={rows} data-snap={snap} style={{ '--rail-visible': visible } as CSSProperties}>
+    <div ref={railRef} className={[styles.rail, className].filter(Boolean).join(' ')} role="region" aria-label={label} data-rows={rows} data-snap={snap} style={{ '--rail-visible': visible } as CSSProperties} onScroll={onScroll}>
       {children}
     </div>
   )
@@ -60170,6 +60503,30 @@ export const userStatusOptions: FlowOption[] = [
     // The prototype opens on a user who's all set: activated, money in the wallet, holding US stocks.
     default: 'holding',
     floatOn: STATUS_SCREENS,
+  },
+  {
+    // Money on the way, more than once: a US deposit takes 1–2 working days, so adding money again before the first one
+    // lands means two or three on the way (20 Nov). The wallet's bar and Home's card add them up; their sheet shows each one.
+    id: 'deposits',
+    group: 'User status',
+    label: 'Deposits on the way',
+    showIf: { account: ['onTheWay'] },
+    values: [{ value: 'one', label: 'One' }, { value: 'two', label: 'Two' }, { value: 'three', label: 'Three' }],
+    default: 'one',
+    floatOn: [...STATUS_SCREENS, 'us-stocks-28', 'us-stocks-93'],
+  },
+  {
+    // How the oldest deposit on the way is doing (20 Nov). Taking longer: past its day, still with the US bank — the
+    // sheet says it's taking longer than usual, the money is safe, and a failed one is refunded to the bank it came from.
+    // Failed: the US bank sent it back — where it stopped, the refund, Try again and Contact support. Home's card and the
+    // wallet's bar say so.
+    id: 'depositStatus',
+    group: 'User status',
+    label: 'Deposit status',
+    showIf: { account: ['onTheWay'] },
+    values: [{ value: 'onTime', label: 'On time' }, { value: 'delayed', label: 'Taking longer' }, { value: 'failed', label: 'Failed' }],
+    default: 'onTime',
+    floatOn: [...STATUS_SCREENS, 'us-stocks-28'],
   },
   {
     // Bank accounts linked to Lemonn (KYC adds the first). None = the add-money screens ask for one first.

@@ -1,6 +1,6 @@
 # Flow: First deposit (`deposit`)
 
-> One self-contained file for converting this flow to another platform. Read https://lemonnade-design.github.io/lemonn-app-prototype/CONVERT.md first. Design system: Lemonnade V3 @ `3cd03a0` (components, tokens and rules: https://lemonnade-design.github.io/lemonnade-v3-docs/llms.txt).
+> One self-contained file for converting this flow to another platform. Read https://lemonnade-design.github.io/lemonn-app-prototype/CONVERT.md first. Design system: Lemonnade V3 @ `eca9d1e` (components, tokens and rules: https://lemonnade-design.github.io/lemonnade-v3-docs/llms.txt).
 
 Add money over UPI after account setup: amount, UPI app, confirmation, receipt or failure.
 
@@ -17722,6 +17722,30 @@ export const userStatusOptions: FlowOption[] = [
     // The prototype opens on a user who's all set: activated, money in the wallet, holding US stocks.
     default: 'holding',
     floatOn: STATUS_SCREENS,
+  },
+  {
+    // Money on the way, more than once: a US deposit takes 1–2 working days, so adding money again before the first one
+    // lands means two or three on the way (20 Nov). The wallet's bar and Home's card add them up; their sheet shows each one.
+    id: 'deposits',
+    group: 'User status',
+    label: 'Deposits on the way',
+    showIf: { account: ['onTheWay'] },
+    values: [{ value: 'one', label: 'One' }, { value: 'two', label: 'Two' }, { value: 'three', label: 'Three' }],
+    default: 'one',
+    floatOn: [...STATUS_SCREENS, 'us-stocks-28', 'us-stocks-93'],
+  },
+  {
+    // How the oldest deposit on the way is doing (20 Nov). Taking longer: past its day, still with the US bank — the
+    // sheet says it's taking longer than usual, the money is safe, and a failed one is refunded to the bank it came from.
+    // Failed: the US bank sent it back — where it stopped, the refund, Try again and Contact support. Home's card and the
+    // wallet's bar say so.
+    id: 'depositStatus',
+    group: 'User status',
+    label: 'Deposit status',
+    showIf: { account: ['onTheWay'] },
+    values: [{ value: 'onTime', label: 'On time' }, { value: 'delayed', label: 'Taking longer' }, { value: 'failed', label: 'Failed' }],
+    default: 'onTime',
+    floatOn: [...STATUS_SCREENS, 'us-stocks-28'],
   },
   {
     // Bank accounts linked to Lemonn (KYC adds the first). None = the add-money screens ask for one first.

@@ -1,6 +1,6 @@
 # Flow: F&O (`fno`)
 
-> One self-contained file for converting this flow to another platform. Read https://lemonnade-design.github.io/lemonn-app-prototype/CONVERT.md first. Design system: Lemonnade V3 @ `3cd03a0` (components, tokens and rules: https://lemonnade-design.github.io/lemonnade-v3-docs/llms.txt).
+> One self-contained file for converting this flow to another platform. Read https://lemonnade-design.github.io/lemonn-app-prototype/CONVERT.md first. Design system: Lemonnade V3 @ `eca9d1e` (components, tokens and rules: https://lemonnade-design.github.io/lemonnade-v3-docs/llms.txt).
 
 Equity F&O home: P&L, indices, chart metrics, watchlists, Smart Options, Futures Heatmap and Smart Futures.
 
@@ -5293,7 +5293,7 @@ export function Watchlists({ lists, onAdd, onOpen }: { lists: Watchlist[]; onAdd
 ```tsx
 import { BottomNavbar } from '@l3/components/BottomNavbar'
 import { NavIcon } from '@l3/components/BottomNavbar/NavIcon'
-import { FloatingNav } from '../../../shared/ui/FloatingNav'
+import { FloatingNav, useBottomNavVariant } from '../../../shared/ui/FloatingNav'
 import { t } from '../copy'
 
 export function FnoNav({ onHome, onDestination, onChain, onScalper }: { onHome: () => void; onDestination: (label: string) => void; onChain: () => void; onScalper: () => void }) {
@@ -5303,7 +5303,8 @@ export function FnoNav({ onHome, onDestination, onChain, onScalper }: { onHome: 
     { value: 'positions', label: t('nav.positions'), name: 'fnoPositions' },
     { value: 'scalper', label: t('nav.scalper'), name: 'fnoScalper' },
   ] as const
-  return <FloatingNav><BottomNavbar aria-label="F&O" home={{ label: t('nav.home'), onClick: onHome }} value="fno" onChange={(v) => { const item = items.find((i) => i.value === v); if (v === 'scalper') onScalper(); else if (v === 'chain') onChain(); else if (item && v !== 'fno') onDestination(item.label) }} items={items.map(({ value, label, name }) => ({ value, label, icon: <NavIcon name={name} />, selectedIcon: <NavIcon name={name} selected /> }))} /></FloatingNav>
+  const variant = useBottomNavVariant()
+  return <FloatingNav><BottomNavbar aria-label="F&O" variant={variant} home={{ label: t('nav.home'), onClick: onHome }} value="fno" onChange={(v) => { const item = items.find((i) => i.value === v); if (v === 'scalper') onScalper(); else if (v === 'chain') onChain(); else if (item && v !== 'fno') onDestination(item.label) }} items={items.map(({ value, label, name }) => ({ value, label, icon: <NavIcon name={name} />, selectedIcon: <NavIcon name={name} selected /> }))} /></FloatingNav>
 }
 ```
 
@@ -11660,7 +11661,10 @@ import styles from './FloatingNav.module.css'
 
 /** App setting "Bottom navbar" (A/B, 20 Nov): V1 docked (L3 Bottom Navbar) · V2 floating, the default at launch (20 Nov). */
 export const BOTTOM_NAV_OPTION = 'bottomNav'
-export const useFloatingNav = () => useFlowOption(USER_STATUS, BOTTOM_NAV_OPTION, 'v2') === 'v2' // V2 by default (20 Nov, user)
+const useBottomNavVersion = () => useFlowOption(USER_STATUS, BOTTOM_NAV_OPTION, 'v2') // V2 by default (20 Nov, user)
+export const useFloatingNav = () => useBottomNavVersion() === 'v2'
+/** V3: L3's own floating Bottom Navbar. Pass it to <BottomNavbar variant={…}> inside a <FloatingNav>. */
+export const useBottomNavVariant = (): 'docked' | 'floating' => (useBottomNavVersion() === 'v3' ? 'floating' : 'docked')
 
 /**
  * V2's main-nav icons, from the Figma floating nav (LM → Stocks Playground, node 6687:10998, 20 Nov). One colour
@@ -11690,6 +11694,7 @@ export function FloatingNavIcon({ name, selected = false }: { name: FloatingIcon
  */
 export function FloatingNav({ children }: { children: ReactNode }) {
   const floating = useFloatingNav()
+  const l3Floating = useBottomNavVariant() === 'floating'
   const pill = useRef<HTMLDivElement>(null)
   const [glowX, setGlowX] = useState<number | null>(null)
 
@@ -11711,6 +11716,8 @@ export function FloatingNav({ children }: { children: ReactNode }) {
 
   // data-bottom-nav: the preview's V1 / V2 bubble shows only on screens that have a bottom navbar. V1's wrapper says
   // data-surface="primary" so the OS navigation bar still takes the navbar's colour (it looks for the page's last part).
+  // V3: the navbar floats itself (L3 variant="floating"); the wrapper only marks it, so the screen's body clears the pill.
+  if (l3Floating) return <div className={styles.docked} data-floating-nav="" data-bottom-nav="">{children}</div>
   if (!floating) return <div className={styles.docked} data-bottom-nav="" data-surface="primary">{children}</div>
   return (
     <div className={styles.frame} data-floating-nav="" data-bottom-nav="">
@@ -11832,7 +11839,7 @@ export function IlliquidSheet({ copy, onClose }: { copy: IlliquidSheetCopy; onCl
 ### `src/shared/ui/Rail.tsx`
 
 ```tsx
-import type { CSSProperties, ReactNode } from 'react'
+import type { CSSProperties, ReactNode, Ref, UIEventHandler } from 'react'
 import styles from './Rail.module.css'
 
 type RailProps = {
@@ -11847,15 +11854,19 @@ type RailProps = {
   snap?: 'start' | 'center'
   /** Extra room inside the row (e.g. above the cards, for a tag sitting on a card's top edge). */
   className?: string
+  /** Called as the row scrolls (e.g. to follow which card is in view). */
+  onScroll?: UIEventHandler<HTMLDivElement>
+  /** The scrolling row itself (e.g. to scroll a tapped card into view). */
+  railRef?: Ref<HTMLDivElement>
 }
 
 /**
  * A row that scrolls sideways — cards, baskets, ideas. Its first item lines up with the 16 page margin, items are
  * 12 apart and snap into place, and there's no scrollbar. Not L3 yet (a "carousel / rail" is missing there).
  */
-export function Rail({ children, label, visible, rows = 1, snap = 'start', className }: RailProps) {
+export function Rail({ children, label, visible, rows = 1, snap = 'start', className, onScroll, railRef }: RailProps) {
   return (
-    <div className={[styles.rail, className].filter(Boolean).join(' ')} role="region" aria-label={label} data-rows={rows} data-snap={snap} style={{ '--rail-visible': visible } as CSSProperties}>
+    <div ref={railRef} className={[styles.rail, className].filter(Boolean).join(' ')} role="region" aria-label={label} data-rows={rows} data-snap={snap} style={{ '--rail-visible': visible } as CSSProperties} onScroll={onScroll}>
       {children}
     </div>
   )
@@ -13084,6 +13095,30 @@ export const userStatusOptions: FlowOption[] = [
     // The prototype opens on a user who's all set: activated, money in the wallet, holding US stocks.
     default: 'holding',
     floatOn: STATUS_SCREENS,
+  },
+  {
+    // Money on the way, more than once: a US deposit takes 1–2 working days, so adding money again before the first one
+    // lands means two or three on the way (20 Nov). The wallet's bar and Home's card add them up; their sheet shows each one.
+    id: 'deposits',
+    group: 'User status',
+    label: 'Deposits on the way',
+    showIf: { account: ['onTheWay'] },
+    values: [{ value: 'one', label: 'One' }, { value: 'two', label: 'Two' }, { value: 'three', label: 'Three' }],
+    default: 'one',
+    floatOn: [...STATUS_SCREENS, 'us-stocks-28', 'us-stocks-93'],
+  },
+  {
+    // How the oldest deposit on the way is doing (20 Nov). Taking longer: past its day, still with the US bank — the
+    // sheet says it's taking longer than usual, the money is safe, and a failed one is refunded to the bank it came from.
+    // Failed: the US bank sent it back — where it stopped, the refund, Try again and Contact support. Home's card and the
+    // wallet's bar say so.
+    id: 'depositStatus',
+    group: 'User status',
+    label: 'Deposit status',
+    showIf: { account: ['onTheWay'] },
+    values: [{ value: 'onTime', label: 'On time' }, { value: 'delayed', label: 'Taking longer' }, { value: 'failed', label: 'Failed' }],
+    default: 'onTime',
+    floatOn: [...STATUS_SCREENS, 'us-stocks-28'],
   },
   {
     // Bank accounts linked to Lemonn (KYC adds the first). None = the add-money screens ask for one first.

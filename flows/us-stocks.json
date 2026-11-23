@@ -4,7 +4,7 @@
   "description": "Activate US Stocks, add money to the USD wallet, buy and sell, withdraw (teammate import, under review).",
   "designSystem": {
     "name": "Lemonnade V3 (L3)",
-    "commit": "3cd03a0",
+    "commit": "eca9d1e",
     "docs": "https://lemonnade-design.github.io/lemonnade-v3-docs/llms.txt"
   },
   "prototype": {
@@ -290,6 +290,8 @@
     "src/flows/us-stocks/screens/trade/types.ts",
     "src/flows/us-stocks/screens/trade/version.ts",
     "src/flows/us-stocks/screens/types.ts",
+    "src/flows/us-stocks/screens/wallet/AllTransactions.module.css",
+    "src/flows/us-stocks/screens/wallet/AllTransactions.tsx",
     "src/flows/us-stocks/screens/wallet/BalanceCard.module.css",
     "src/flows/us-stocks/screens/wallet/BalanceCard.tsx",
     "src/flows/us-stocks/screens/wallet/BalanceDetails.module.css",
@@ -298,6 +300,7 @@
     "src/flows/us-stocks/screens/wallet/CoinArt.tsx",
     "src/flows/us-stocks/screens/wallet/GrowNudge.tsx",
     "src/flows/us-stocks/screens/wallet/PendingBanner.tsx",
+    "src/flows/us-stocks/screens/wallet/TransactionParts.tsx",
     "src/flows/us-stocks/screens/wallet/WalletScreen.module.css",
     "src/flows/us-stocks/screens/wallet/WalletScreen.tsx",
     "src/flows/us-stocks/screens/wallet/WalletScreens.tsx",
@@ -310,8 +313,10 @@
     "src/flows/us-stocks/screens/wallet/sheets/CancelWithdrawalSheet.tsx",
     "src/flows/us-stocks/screens/wallet/sheets/DepositProgressSheet.tsx",
     "src/flows/us-stocks/screens/wallet/sheets/Sheets.module.css",
+    "src/flows/us-stocks/screens/wallet/sheets/TransactionSheet.tsx",
     "src/flows/us-stocks/screens/wallet/sheets/WithdrawableSheet.tsx",
-    "src/flows/us-stocks/screens/wallet/sheets/WithdrawalRequestsSheet.tsx"
+    "src/flows/us-stocks/screens/wallet/sheets/WithdrawalRequestsSheet.tsx",
+    "src/flows/us-stocks/screens/wallet/transactions.ts"
   ],
   "shared": [
     "src/shared/copy.ts",
@@ -329,6 +334,7 @@
     "src/shared/data/user.ts",
     "src/shared/money.module.css",
     "src/shared/money.tsx",
+    "src/shared/padMarket.ts",
     "src/shared/prototype.ts",
     "src/shared/support.ts",
     "src/shared/ui/AmountEntry.module.css",
@@ -354,6 +360,8 @@
     "src/shared/ui/SupportedBanks.tsx",
     "src/shared/ui/TopBarAction.module.css",
     "src/shared/ui/TopBarAction.tsx",
+    "src/shared/ui/TransactionListCard.module.css",
+    "src/shared/ui/TransactionListCard.tsx",
     "src/shared/ui/assets/floating-nav/fno-selected.svg",
     "src/shared/ui/assets/floating-nav/fno.svg",
     "src/shared/ui/assets/floating-nav/market-selected.svg",
