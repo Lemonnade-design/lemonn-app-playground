@@ -307,7 +307,7 @@ sample signals in `data.ts` (`zingSignals`, `SignalFilter`, `matchesFilter`).
   signal — how many traded it today, today's move). One design, no setting (24 Nov: Gold glow, Colour per commodity,
   Dark ticker, Off and the "Commodity nudge strip" setting are archived in `archive/zing-nudge-strip-versions/`).
   Look: the strip warm in its top-left corner (halfway zing light → honey 200) fading to zing light 64 across; a 1 gold
-  ring round strip and card (zing light → honey 300 at the bottom); Heading/10 + Label/10 in honey 800. The strip runs
+  ring round strip and card (L3 extra/gold/50 at the top → extra/gold/300 at the bottom; dark: honey 900 → 600); Heading/10 + Label/10 in honey 800. The strip runs
   12 under the card so the card's rounded corners sit on its colour.
   Its line and picture turn over every 5 s, rising in together: the gold bars (other commodities: their logo) ·
   "**2.1K+ people** have traded on gold today" → the orange flame · "**Trending on MCX** · 2.1K+ traded today" → a trend
@@ -316,6 +316,9 @@ sample signals in `data.ts` (`zingSignals`, `SignalFilter`, `matchesFilter`).
   Motion: once the sheet is up the strip slides out from behind the card (0 → 28, 400 ms, decelerate; one card after
   another, 250 ms apart), the ring fades in, then the line rises in; the card itself never changes size. Reduced motion:
   none.
+  **Only on one card** (24 Nov, user): the strip sits on the first commodity card in the list only (whatever chip is
+  picked), just to show that commodity signals are there; the other commodity cards are plain (amber logo tag only).
+  No setting — a strip on every commodity card is archived in `archive/zing-nudge-strip-versions/`.
 - Product tabs: Equity → fno-01, Commodities → fno-08, Strategies → fno-15. The header and tabs don't move; only the content below slides (forward = from the right, back = from the left). On scroll the tabs stick right under the top bar (`position: sticky` in the page — they sit mid-page under the overview, so not in the Actionbar's bottom slot); a tab switch while scrolled lines the new content up under them. Once stuck, the tab row takes the scrolled top bar's colour (surface/primary, not the active tab's gradient); the active tab stays as it is.
 - **Shortcuts** Gold · Silver · Crude Oil · Natural Gas (artwork, name, day change in up / down colour) → Gold Summary (fno-12).
 - **Expiring This Week** (`ExpiringThisWeek`, between the shortcuts and the chart): a sideways rail of contracts expiring soon (`expiringThisWeek` in `commodities/data.ts`), in three variants (`kind`): **option**, **future** (one GOLDM future sits second, for testing) and **event** (third), snapping to the 16 inset. Each card: the symbol (GOLDM) over the expiry as plain description text (12) — option “OPT Expiry Today / Tomorrow / <weekday>”, future “FUT Expiry 3 Dec” (no Tag; the future's expiry line is not shown); on the right the trend read-out (`TrendBadge`, the same component as the chart's header: Strong Uptrend / Downtrend in up / down colour over “Since 3:25 PM” (description 12 here, 10 in the chart), double arrow); a hairline; then two columns, label (description 12) over value — the ATM option (₹ premium + change) — or LTP (₹ + change) for a future — left, Margin Per Lot right. Action footer (no fill, 16 under the details like the other parts): ScalpPro (secondary, Medium) → fno-05 and Buy (primary, Medium) → the contract sheet. A tap on the card → the contract's asset page (fno-21). The trend read-out (the whole top right — label, since, the i, the arrow; hit area grown 12 around it) → the **trend info sheet** (`TrendInfoSheet`, live app reference 2026-11-17): no header; the trend on the left (arrow first, text left-aligned) and the symbol with its day change on the right over a hairline, Dash's two bullets on what's behind the trend (`trendNotes` in `commodities/data.ts`), a grey disclaimer (warning icon, “Disclaimer:”), a dashed rule, “Analyzed by Dash” with the Dash orb (24), then Okay (Large). The event card's Bullish read-out has the i too and opens the same sheet. The read-out is a `role="button"` span, not a button, because the card body is already a button; its tap doesn't open the card. The commodity art is hidden (`SHOW_ART = false`, kept). Prototype setting “Expiring card buttons” (Commodities, toggle, default Shown) hides the whole button footer; on a phone (app mode) a floating “BTN ON / BTN OFF” switch on the Commodities home (fno-08 … 10) flips it in one tap.
@@ -534,6 +537,8 @@ The source uses old D2 controls alongside L3; their code equivalents are L3 comp
 - Weekday result dots (Zing Trades): no L3 component; 16 circles on the up / down light surfaces.
 
 ### Changelog
+- 24 Nov 2026 — Zing signals: the nudge strip shows only on the first commodity card (no setting; every-card archived).
+- 24 Nov 2026 — Zing signals: the nudge strip's outline stroke uses L3 extra/gold/50 → extra/gold/300 (top to bottom).
 - 24 Nov 2026 — Zing signals: Rotating facts is the only nudge strip; the setting, Off, Gold glow, Colour per commodity and Dark ticker are archived in `archive/zing-nudge-strip-versions/`.
 - 24 Nov 2026 — Zing signals: the sheet opens with nudge strip 4 (Rotating facts) by default.
 - 24 Nov 2026 — Zing signals: no shimmer on nudge strip 4 (Rotating facts).
@@ -9912,8 +9917,10 @@ export function IndicatorDetailsSheet({ name, onChart, onToggle, onOpenInDash, o
   --strip-from: var(--l3-surface-accent-zing-light);
   --strip-to: var(--l3-border-accent-zing-light);
   --strip-ink: var(--app-strip-gold-ink);
-  /* The ring's bottom colour (Figma frame stroke: zing light → honey 300). */
-  --strip-ring: var(--l3-border-accent-zing-default);
+  /* The ring (outline stroke): L3 extra/gold/50 at the top → extra/gold/300 at the bottom (user, 24 Nov; the tokens
+     follow the theme — dark: honey 900 → honey 600). */
+  --strip-ring-top: var(--l3-extra-gold-50);
+  --strip-ring: var(--l3-extra-gold-300);
   position: relative;
   /* The ring: Figma's 1 stroke round strip and card. It sits just outside the card (padding 1, margin −1), so the card
      keeps its exact size and place — only the strip grows in above it. */
@@ -9921,12 +9928,12 @@ export function IndicatorDetailsSheet({ name, onChart, onToggle, onOpenInDash, o
   margin: -1px;
   border-radius: calc(var(--l3-radius-12) + 1px);
 }
-/* The ring (and what shows behind the card's corners): the strip's colour deepening to the ring colour at the bottom. */
+/* The ring (and what shows behind the card's corners): extra gold 50 → extra gold 300, top to bottom. */
 .ring {
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: linear-gradient(180deg, var(--strip-from), var(--strip-ring));
+  background: linear-gradient(180deg, var(--strip-ring-top), var(--strip-ring));
 }
 
 /* Entry, once the sheet is up (its own slide takes ~400): the strip slides out from behind the card (its row grows
@@ -10044,10 +10051,11 @@ import styles from './SignalStrip.module.css'
  * The only version since 24 Nov (the Commodity nudge strip setting and Gold glow, Colour per commodity and Dark ticker
  * are archived in archive/zing-nudge-strip-versions/).
  */
-export function SignalStrip({ signal, logo, order, children }: { signal: ZingSignal; logo: string; order: number; children: ReactNode }) {
+export function SignalStrip({ signal, show = true, logo, order, children }: { signal: ZingSignal; show?: boolean; logo: string; order: number; children: ReactNode }) {
   const nudge = signal.nudge
   const commodity = signal.commodity
-  if (!nudge || !commodity) return <>{children}</>
+  // `show`: only the first commodity card in the list gets the strip (SignalsSheet).
+  if (!show || !nudge || !commodity) return <>{children}</>
 
   // The gold bars sit on Figma's soft white glow; logos and icons don't.
   const bars = commodity === 'gold'
@@ -10459,7 +10467,7 @@ export function SignalsSheet({ initial = {}, onClose }: { initial?: SignalsSheet
     <Sheet label={t('signals.title')} onClose={onClose} header={header} className={styles.sheet}>
       <div className={styles.body}>
         {plain ? (
-          <Stack gap="16">{zingSignals.map((s) => <SignalCard key={s.id} signal={s} order={stripOrder(zingSignals, s)} />)}</Stack>
+          <Stack gap="16">{zingSignals.map((s) => <SignalCard key={s.id} signal={s} order={stripOrder(zingSignals, s)} strip={stripOn(zingSignals, s)} />)}</Stack>
         ) : (
           <Stack gap="16">
             <Stack direction="horizontal" align="center" justify="between" gap="12">
@@ -10467,7 +10475,7 @@ export function SignalsSheet({ initial = {}, onClose }: { initial?: SignalsSheet
               {totalTag}
             </Stack>
             {shown.length ? (
-              <Stack gap="16">{shown.map((s) => <SignalCard key={s.id} signal={s} order={stripOrder(shown, s)} />)}</Stack>
+              <Stack gap="16">{shown.map((s) => <SignalCard key={s.id} signal={s} order={stripOrder(shown, s)} strip={stripOn(shown, s)} />)}</Stack>
             ) : (
               <EmptyState title={t('signals.none')} description={t('signals.noneHint')} />
             )}
@@ -10486,9 +10494,9 @@ function MarketTags({ signal }: { signal: ZingSignal }) {
 }
 
 /** One signal: who sent it, where and how good it is, View; the trade under a line. */
-function SignalCard({ signal, order = 0 }: { signal: ZingSignal; order?: number }) {
+function SignalCard({ signal, order = 0, strip = true }: { signal: ZingSignal; order?: number; strip?: boolean }) {
   return (
-    <SignalStrip signal={signal} logo={signal.commodity ? commodityLogos[signal.commodity] : ''} order={order}>
+    <SignalStrip signal={signal} show={strip} logo={signal.commodity ? commodityLogos[signal.commodity] : ''} order={order}>
     <Card className={styles.signalCard}>
       <Stack gap="12">
         <Stack direction="horizontal" align="center" justify="between" gap="12">
@@ -10525,6 +10533,13 @@ function SignalCard({ signal, order = 0 }: { signal: ZingSignal; order?: number 
 
 /** Where a card's strip comes in the stagger: the strips slide out one after another, top down. */
 const stripOrder = (list: ZingSignal[], signal: ZingSignal) => list.filter((s) => s.nudge).indexOf(signal)
+
+/**
+ * The nudge strip goes on the first commodity card in the list only (24 Nov, user) — just to show that commodity signals
+ * are there; the other commodity cards are plain. (A strip on every commodity card is archived in
+ * archive/zing-nudge-strip-versions/.)
+ */
+const stripOn = (list: ZingSignal[], signal: ZingSignal) => stripOrder(list, signal) === 0
 
 type FilterProps = { draft: SignalFilter; onDraft: (draft: SignalFilter) => void }
 
