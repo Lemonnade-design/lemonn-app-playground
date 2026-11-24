@@ -199,6 +199,9 @@ Every tap he wired is kept. The main path: FTUX sheet → Activate → Declarati
 → Pay on bank → Money ready → Stock → Buy → Executed → Wallet → Withdraw.
 
 ### Changelog
+- 24 Nov: Portfolio → Orders, Indian side gets the US filter row on Open / History: "All orders ⇕" steps All → Delivery → Intraday, Filters opens the same sheet with Indian groups (Side, Order type, Status on History), badge + "No orders match" empty state. OrderFilterSheet now takes `groups` / `empty` props.
+- 2026-11-24 — Order pad: Market / Limit / SL centred in every TP/SL card version (was left-aligned in V5 / V8 / V9).
+- 2026-11-24 — Portfolio → Orders: Indian sample orders for every state (indianOrders.ts, InOrderCard.tsx) — Open (Open, Partly filled, Trigger pending, AMO, GTT active), SIP (Active, Paused), History (Executed buy / sell, Partly executed, Rejected, Cancelled, Expired). US samples show for any active US account (was holders only). Order pills at hug width, 12 each side (8 + 4).
 - 23 Nov 2026: Orderpad version V6 — V5's amount box (and 16 top padding), with V2's centred Market / Limit / SL and the TP/SL pill under the amount (no settings button).
 - 23 Nov 2026: Orderpad V5 — Market / Limit / SL back at their own size, left-aligned, with V3's TP/SL settings button on the right (no TP/SL pill under the amount); replaces the full-width order types.
 - 23 Nov 2026: "Amount size" shows as a dropdown beside the phone (new option field floatPicker: 'dropdown' in the preview).
@@ -29763,8 +29766,8 @@ export function MaskImg({ src, w, h = w, className }: { src: string; w: number; 
 .pills [role=tab][data-appearance] {
   --tab-height: var(--l3-size-32);
   --tab-font: var(--l3-text-label-14);
-  flex: 1 1 0;
-  min-width: 0;
+  --tab-padding-inline: var(--l3-spacing-12); /* L3 pill md 8 + 4 (24 Nov, user) */
+  flex: none; /* hug: each pill as wide as its label (24 Nov, user: equal widths cut "History (6)") */
 }
 
 /* FLAG: hand-made pill (unused in JSX) — use L3 Tabs pill / Tag */
@@ -29907,11 +29910,15 @@ export function MaskImg({ src, w, h = w, className }: { src: string; w: number; 
 ### `src/flows/us-stocks/screens/entry/components/OrdersTab.tsx`
 
 ```tsx
-// Portfolio → Orders: an IND / US switcher and pill tabs. Indian: Open · SIP · History, each an empty state.
+// Portfolio → Orders: an IND / US switcher and pill tabs. Indian: Open (n) · SIP (n) · History (n), with sample orders
+// for every state (indianOrders.ts, 24 Nov, the user's call: developers see every card), the empty states as before
+// when a list is empty.
 // US: Open (n) · History (n) (US Stocks have no SIPs), then "All orders ⇕" (Stocks / ETFs) and Filters, then the order
 // cards — layout from "Positions & orders" (nLs24dTJdPz9A5pu3AWMbe, 6754:65685 / 6754:66744, empty 6754:66494…66560).
-// The US lists show the sample orders only for a user who holds US stocks (User status → journey 'holding'); every
-// other user (not activated, under review, $0, money on the way, funded but nothing bought yet) sees the empty states.
+// The US lists show the sample orders to any user whose US account is active (User status → Active …; 24 Nov, the
+// user's call, was holders only); a user not yet activated or under review sees the empty states.
+// Indian Open / History get the same row (24 Nov, the user's call): "All orders ⇕" steps All → Delivery → Intraday, and
+// Filters opens the same sheet with Indian groups (side, order type, status). SIP has no row (3 SIPs, nothing to sort).
 // The picker and the filters are shared by Open and History (switching tabs keeps them). The US side remembers Open /
 // History, the picker and the applied filters across remounts (module-level, like `currentOrder` in orders/data.ts), so
 // coming back from Order Details shows the same list. The Indian side starts on Open each time, as before.
@@ -29931,6 +29938,22 @@ import { useUsMarketSnapshot } from '../../../../../shared/data/usStocks'
 import { useUsJourney } from '../../../../../shared/userStatus'
 import { useUsNav } from '../../../nav'
 import { historyOrders, openOrder, openOrders, type UsOrder } from '../../orders/data'
+import {
+  IN_NO_FILTERS,
+  IN_PRODUCT_LABEL,
+  applyInFilters,
+  inFilterCount,
+  inFilterGroups,
+  inHistoryOrders,
+  inOpenOrders,
+  inSips,
+  nextInProduct,
+  ofInProduct,
+  type InFilters,
+  type InOrder,
+  type InProductPick,
+} from '../../orders/indianOrders'
+import { InOrderCard, InSipCard } from '../../orders/InOrderCard'
 import { OrderCard } from '../../orders/OrderCard'
 import { NO_FILTERS, OrderFilterSheet, applyFilters, filterCount, type OrderFilters } from '../../orders/OrderFilterSheet'
 import { ORDER_KIND_LABEL, type OrderKind } from '../../orders/OrderKindSheet'
@@ -29969,6 +29992,8 @@ export function OrdersTab({ banner, initialMarket = 'in' }: { banner?: ReactNode
     lastFilters = next
     setFiltersState(next)
   }
+  const [inProduct, setInProduct] = useState<InProductPick>('all')
+  const [inFilters, setInFilters] = useState<InFilters>(IN_NO_FILTERS)
   const lists = useUsOrderLists()
   const current = markets[market]
   // US has no SIP tab: coming over from SIP lands on Open.
@@ -29991,7 +30016,7 @@ export function OrdersTab({ banner, initialMarket = 'in' }: { banner?: ReactNode
           <Tabs
             appearance="pill"
             behavior="tabs"
-            width="fill"
+            width="hug"
             aria-label="US orders"
             className={`${styles.pills} ${styles.tabs}`}
             value={usList}
@@ -30008,15 +30033,15 @@ export function OrdersTab({ banner, initialMarket = 'in' }: { banner?: ReactNode
           <Tabs
             appearance="pill"
             behavior="tabs"
-            width="fill"
+            width="hug"
             aria-label="Orders"
             className={`${styles.pills} ${styles.tabs}`}
             value={tab}
             onChange={(value) => setTab(value as OrderTab)}
             items={[
-              { value: 'open', label: 'Open' },
-              { value: 'sip', label: 'SIP' },
-              { value: 'history', label: 'History' },
+              { value: 'open', label: `Open (${ofInProduct(inOpenOrders, inProduct).length})` },
+              { value: 'sip', label: `SIP (${inSips.length})` },
+              { value: 'history', label: `History (${ofInProduct(inHistoryOrders, inProduct).length})` },
             ]}
           />
         )}
@@ -30024,23 +30049,33 @@ export function OrdersTab({ banner, initialMarket = 'in' }: { banner?: ReactNode
       {banner}
       {market === 'us' ? (
         <UsOrders list={usList} orders={lists[usList]} kind={kind} onKind={setKind} filters={filters} onFilters={setFilters} />
+      ) : tab !== 'sip' ? (
+        <InOrders
+          list={tab}
+          orders={tab === 'open' ? inOpenOrders : inHistoryOrders}
+          product={inProduct}
+          onProduct={setInProduct}
+          filters={inFilters}
+          onFilters={setInFilters}
+        />
+      ) : inSips.length ? (
+        <Stack as="ul" gap="16" className={styles.list} aria-label="Indian SIPs">
+          {inSips.map((sip) => <li key={sip.id}><InSipCard sip={sip} /></li>)}
+        </Stack>
       ) : (
         /* L3 Empty state with its default illustration, centred in the space under the tabs. */
-        <EmptyState
-          key={`${tab}${market}`}
-          className={styles.empty}
-          title={{ open: 'You do not have any pending Indian orders', sip: 'You do not have any Indian SIPs', history: 'No Indian orders in your history yet' }[tab]}
-        />
+        <EmptyState key={`${tab}${market}`} className={styles.empty} title="You do not have any Indian SIPs" />
       )}
     </div>
   )
 }
 
-/** The US sample orders the user has (none until they hold US stocks). */
+/** The US sample orders the user has (none until their US account is active). */
 function useUsOrderLists(): Record<UsList, UsOrder[]> {
   const journey = useUsJourney()
   useUsMarketSnapshot() // re-render when prices tick (the cards' LTP)
-  return journey === 'holding' ? { open: openOrders, history: historyOrders } : { open: [], history: [] }
+  const active = journey === 'activated' || journey === 'onTheWay' || journey === 'ready' || journey === 'holding'
+  return active ? { open: openOrders, history: historyOrders } : { open: [], history: [] }
 }
 
 /** The picker is a switcher, as the USD / INR one: each tap steps All orders → Stocks → ETFs (no sheet, 3 Nov). */
@@ -30143,6 +30178,100 @@ function UsOrders({
           setSheet(null)
         }}
         onClose={() => setSheet(null)}
+      />
+    </>
+  )
+}
+
+/** An Indian Open / History list: the same picker + Filters row as the US side, then the cards (or the empty state). */
+function InOrders({
+  list,
+  orders,
+  product,
+  onProduct,
+  filters,
+  onFilters,
+}: {
+  list: UsList
+  orders: InOrder[]
+  product: InProductPick
+  onProduct: (product: InProductPick) => void
+  filters: InFilters
+  onFilters: (filters: InFilters) => void
+}) {
+  const [open, setOpen] = useState(false)
+  const [filterRun, setFilterRun] = useState(0)
+  const narrowed = ofInProduct(orders, product)
+  const shown = applyInFilters(narrowed, filters, list)
+  const activeFilters = inFilterCount(filters, list)
+  const productWord = product === 'all' ? '' : ` ${product.toLowerCase()}`
+
+  let content: ReactNode
+  if (shown.length) {
+    content = (
+      <Stack as="ul" gap="16" className={styles.list} aria-label={list === 'open' ? 'Open Indian orders' : 'Indian order history'}>
+        {shown.map((order) => <li key={order.id}><InOrderCard order={order} /></li>)}
+      </Stack>
+    )
+  } else if (narrowed.length && activeFilters) {
+    content = (
+      <EmptyState
+        className={styles.empty}
+        title="No orders match these filters"
+        action={<Button size="sm" onClick={() => onFilters(IN_NO_FILTERS)}>Clear filters</Button>}
+      />
+    )
+  } else {
+    content = (
+      <EmptyState
+        key={`${list}${product}`}
+        className={styles.empty}
+        title={list === 'open' ? `You do not have any pending${productWord} Indian orders` : `No${productWord} Indian orders in your history yet`}
+      />
+    )
+  }
+
+  return (
+    <>
+      <Stack direction="horizontal" align="center" justify="between" gap="12" className={styles.pickerRow}>
+        <Tab
+          action
+          appearance="pill"
+          size="sm"
+          iconRight={<Icon icon={lmSwitchArrowVertical} />}
+          aria-label={`Showing ${IN_PRODUCT_LABEL[product]}, tap for ${IN_PRODUCT_LABEL[nextInProduct(product)]}`}
+          onClick={() => onProduct(nextInProduct(product))}
+        >
+          {IN_PRODUCT_LABEL[product]}
+        </Tab>
+        <Tab
+          action
+          appearance="pill"
+          size="sm"
+          iconLeft={<Icon icon={msFilterList} />}
+          badge={activeFilters ? <Badge count={activeFilters} color="discover" label="filters on" /> : undefined}
+          aria-label={activeFilters ? `Filters, ${activeFilters} on. Change` : 'Filters'}
+          onClick={() => {
+            setFilterRun((n) => n + 1)
+            setOpen(true)
+          }}
+        >
+          Filters
+        </Tab>
+      </Stack>
+      {content}
+      <OrderFilterSheet<InFilters>
+        key={filterRun}
+        open={open}
+        list={list}
+        value={filters}
+        groups={inFilterGroups(list)}
+        empty={IN_NO_FILTERS}
+        onApply={(next) => {
+          onFilters(next)
+          setOpen(false)
+        }}
+        onClose={() => setOpen(false)}
       />
     </>
   )
@@ -36951,6 +37080,108 @@ export function CancelOrderSheet({ open, order, onKeep, onCancel }: { open: bool
 }
 ```
 
+### `src/flows/us-stocks/screens/orders/InOrderCard.tsx`
+
+```tsx
+// One Indian order (or stock SIP) in Portfolio → Orders: the US OrderCard's layout in ₹ — type · product · validity,
+// status and side tags; the logo, symbol and quantity; the live LTP and the order's own price. A static L3 Card: Indian
+// orders have no Order Details page in the prototype yet (FLAG). Data: indianOrders.ts.
+import { Avatar } from '@l3/components/Avatar'
+import { Card } from '@l3/components/Card'
+import { Stack } from '@l3/components/Stack'
+import { Tag, type TagColor } from '@l3/components/Tag'
+import { getCompany, useMarketSnapshot } from '../../../../shared/data/companies'
+import { formatInr } from '../../../../shared/money'
+import { IN_OPEN_STATUSES, IN_STATUS_TAG, IN_TYPE_LABEL, type InOrder, type InSip } from './indianOrders'
+import styles from './OrderCard.module.css'
+
+const TONE_COLOR: Record<'warning' | 'positive' | 'negative' | 'neutral', TagColor> = {
+  warning: 'processing',
+  positive: 'success',
+  negative: 'error',
+  neutral: 'neutral',
+}
+
+function Logo({ sym }: { sym: string }) {
+  const company = getCompany(sym)
+  return <Avatar src={company?.logoUrl} initials={company?.initials ?? sym.slice(0, 2)} size={24} />
+}
+
+/** Quantity: "11/25" while some (not all) shares went through, otherwise the shares asked for. */
+const quantity = (o: InOrder) => (o.filled > 0 && o.filled < o.qty ? `${o.filled}/${o.qty}` : `${o.qty}`)
+
+/** The order's own price: Avg once shares went through (History), else its trigger / limit / Mkt. */
+function orderPrice(o: InOrder): { label: string; value?: number } {
+  if (!IN_OPEN_STATUSES.includes(o.status) && o.filled > 0 && o.avgPrice !== undefined) return { label: 'Avg', value: o.avgPrice }
+  if ((o.type === 'sl' || o.type === 'sl-m' || o.status === 'gtt') && o.triggerPrice !== undefined) return { label: 'Trigger', value: o.triggerPrice }
+  if (o.limitPrice !== undefined) return { label: 'At limit', value: o.limitPrice }
+  return { label: 'Mkt' }
+}
+
+export function InOrderCard({ order }: { order: InOrder }) {
+  useMarketSnapshot() // re-render when prices tick (the LTP)
+  const status = IN_STATUS_TAG[order.status]
+  const price = orderPrice(order)
+  const ltp = getCompany(order.sym)?.market?.price ?? 0
+  const side = order.side === 'buy' ? 'Buy' : 'Sell'
+  return (
+    <Card className={styles.card} aria-label={`${side} ${order.sym}, ${IN_TYPE_LABEL[order.type]} order, ${status.label}`}>
+      <Stack gap="08">
+        <Stack direction="horizontal" align="center" justify="between" gap="08">
+          <span className={styles.meta}>{IN_TYPE_LABEL[order.type]} · {order.product} · {order.validity}</span>
+          <Stack direction="horizontal" align="center" gap="04">
+            <Tag variant="secondary" size="sm" color={TONE_COLOR[status.tone]}>{status.label}</Tag>
+            <Tag variant="secondary" size="sm" color={order.side === 'buy' ? 'profit' : 'loss'}>{side}</Tag>
+          </Stack>
+        </Stack>
+        <Stack direction="horizontal" align="center" justify="between" gap="08">
+          <Stack direction="horizontal" align="center" gap="08" className={styles.name}>
+            <Logo sym={order.sym} />
+            <span className={styles.sym}>{order.sym}</span>
+          </Stack>
+          <span className={styles.figure}><span className={styles.label}>Qty </span>{quantity(order)}</span>
+        </Stack>
+        <Stack direction="horizontal" align="center" justify="between" gap="08">
+          <span className={styles.figure}><span className={styles.label}>LTP </span>{formatInr(ltp)}</span>
+          <span className={styles.figure}>
+            <span className={styles.label}>{price.label}{price.value === undefined ? '' : ' '}</span>
+            {price.value === undefined ? null : formatInr(price.value)}
+          </span>
+        </Stack>
+      </Stack>
+    </Card>
+  )
+}
+
+/** A stock SIP: frequency, status tag; logo, symbol and amount; instalments done and the next date. */
+export function InSipCard({ sip }: { sip: InSip }) {
+  const active = sip.status === 'active'
+  return (
+    <Card className={styles.card} aria-label={`${sip.sym} SIP, ${formatInr(sip.amount, { decimals: 0 })} ${sip.frequency.toLowerCase()}, ${active ? 'active' : 'paused'}`}>
+      <Stack gap="08">
+        <Stack direction="horizontal" align="center" justify="between" gap="08">
+          <span className={styles.meta}>SIP · {sip.frequency}</span>
+          <Tag variant="secondary" size="sm" color={active ? 'success' : 'neutral'}>{active ? 'Active' : 'Paused'}</Tag>
+        </Stack>
+        <Stack direction="horizontal" align="center" justify="between" gap="08">
+          <Stack direction="horizontal" align="center" gap="08" className={styles.name}>
+            <Logo sym={sip.sym} />
+            <span className={styles.sym}>{sip.sym}</span>
+          </Stack>
+          <span className={styles.figure}><span className={styles.label}>Amount </span>{formatInr(sip.amount, { decimals: 0 })}</span>
+        </Stack>
+        <Stack direction="horizontal" align="center" justify="between" gap="08">
+          <span className={styles.figure}><span className={styles.label}>Instalments </span>{sip.done}</span>
+          <span className={styles.figure}>
+            {sip.nextOn ? <><span className={styles.label}>Next on </span>{sip.nextOn}</> : <span className={styles.label}>Paused by you</span>}
+          </span>
+        </Stack>
+      </Stack>
+    </Card>
+  )
+}
+```
+
 ### `src/flows/us-stocks/screens/orders/OrderCard.module.css`
 
 ```css
@@ -37438,6 +37669,7 @@ export function OrderDetailsFor({ id, backdrop }: { id: string; backdrop?: boole
 // Portfolio → Orders (US) → Filters: an L3 Bottom sheet of checkbox rows in groups — Side, Order type, and on History
 // Status — with Clear / Apply. Several can be picked in a group (multi-select → checkbox rows, DESIGN_SYSTEM 7.1b);
 // nothing picked in a group means "any". Changes apply on Apply; tapping away keeps the filters as they were.
+// The Indian side passes its own `groups` (Side, Order type, Product, Status; 24 Nov) and its own empty filters.
 import { useState } from 'react'
 import { BottomSheet, BottomSheetHeader } from '@l3/components/BottomSheet'
 import { Button } from '@l3/components/Button'
@@ -37471,25 +37703,33 @@ export function applyFilters(orders: UsOrder[], filters: OrderFilters, list: 'op
   )
 }
 
-type Group<K extends keyof OrderFilters> = { key: K; title: string; options: { value: OrderFilters[K][number]; label: string }[] }
+/** One group of checkbox rows: the filter key it sets and its options. */
+export type FilterGroup = { key: string; title: string; options: { value: string; label: string }[] }
+type AnyFilters = Record<string, string[]>
 
-export function OrderFilterSheet({
+export function OrderFilterSheet<F extends AnyFilters = OrderFilters>({
   open,
   list,
   value,
   onApply,
   onClose,
+  groups: customGroups,
+  empty,
 }: {
   open: boolean
   list: 'open' | 'history'
-  value: OrderFilters
-  onApply: (filters: OrderFilters) => void
+  value: F
+  onApply: (filters: F) => void
   onClose: () => void
+  /** Another market's groups (the Indian side); the US groups when left out. */
+  groups?: FilterGroup[]
+  /** What Clear resets to (NO_FILTERS for the US). */
+  empty?: F
 }) {
   const layer = useSheetLayer()
-  const [draft, setDraft] = useState<OrderFilters>(value)
+  const [draft, setDraft] = useState<F>(value)
 
-  const groups: Group<keyof OrderFilters>[] = [
+  const groups: FilterGroup[] = customGroups ?? [
     { key: 'side', title: 'Side', options: [{ value: 'buy', label: 'Buy' }, { value: 'sell', label: 'Sell' }] },
     { key: 'type', title: 'Order type', options: (['market', 'limit', 'sl'] as OrderType[]).map((t) => ({ value: t, label: TYPE_LABEL[t] })) },
     ...(list === 'history'
@@ -37497,8 +37737,8 @@ export function OrderFilterSheet({
       : []),
   ]
 
-  const toggle = (key: keyof OrderFilters, item: string, on: boolean) =>
-    setDraft((prev) => ({ ...prev, [key]: on ? [...prev[key], item] : (prev[key] as string[]).filter((v) => v !== item) }))
+  const toggle = (key: string, item: string, on: boolean) =>
+    setDraft((prev) => ({ ...prev, [key]: on ? [...(prev[key] ?? []), item] : (prev[key] ?? []).filter((v) => v !== item) }))
 
   return (
     <BottomSheet
@@ -37509,7 +37749,7 @@ export function OrderFilterSheet({
       header={<BottomSheetHeader heading="Filters" headingId="order-filters-title" />}
       footer={
         <ButtonGroup direction="horizontal" aria-label="Filters">
-          <Button variant="secondary" size="lg" onClick={() => setDraft(NO_FILTERS)}>Clear</Button>
+          <Button variant="secondary" size="lg" onClick={() => setDraft(empty ?? (NO_FILTERS as unknown as F))}>Clear</Button>
           <Button variant="primary" size="lg" onClick={() => onApply(draft)}>Apply</Button>
         </ButtonGroup>
       }
@@ -37520,7 +37760,7 @@ export function OrderFilterSheet({
             <SectionHeader title={<span id={`order-filter-${group.key}`}>{group.title}</span>} headingLevel={3} />
             <Stack className={styles.rows}>
               {group.options.map((option) => {
-                const checked = (draft[group.key] as string[]).includes(option.value)
+                const checked = (draft[group.key] ?? []).includes(option.value)
                 return (
                   <ListCell
                     key={option.value}
@@ -38419,6 +38659,150 @@ export const screens: UsScreenMap = {
   ...Object.fromEntries(
     Object.entries(ORDER_STATE_SCREENS).map(([figma, id]) => [figma, ({ backdrop }: { backdrop?: boolean }) => <OrderDetailsFor id={id} backdrop={backdrop} />]),
   ),
+}
+```
+
+### `src/flows/us-stocks/screens/orders/indianOrders.ts`
+
+```ts
+// Portfolio → Orders, Indian side: sample orders for every list and every state an Indian stock order can be in, so a
+// developer sees each card (24 Nov, the user's call: "add orders in both Indian and US, Open and History, all
+// categories"). Prices sit near the bundled NSE snapshot (src/shared/data/market-snapshot.json); the card's LTP is live.
+// This file is the API contract for the Indian lists: an order has one status, and the list it sits in follows from it.
+// FLAG: hard-coded sample orders (the API would send them). Indian orders have no Order Details page in the prototype yet.
+
+export type InOrderStatus =
+  // Open list
+  | 'open' // at the exchange, waiting for its price
+  | 'amo' // after-market order: placed while the market was closed, sent at 9:15 AM
+  | 'partial' // some shares filled, the rest waiting
+  | 'trigger-pending' // a stop loss waiting for its trigger
+  | 'gtt' // a GTT (good till triggered) waiting, for up to a year
+  // History list
+  | 'executed'
+  | 'partial-executed' // the day ended with only some shares filled
+  | 'rejected' // by the broker or the exchange
+  | 'cancelled' // by the user
+  | 'expired' // a GTT that reached its end date
+
+export const IN_OPEN_STATUSES: InOrderStatus[] = ['open', 'amo', 'partial', 'trigger-pending', 'gtt']
+
+/** The status label and its tone (the card maps the tone to an L3 Tag colour, as the US card does). */
+export const IN_STATUS_TAG: Record<InOrderStatus, { label: string; tone: 'warning' | 'positive' | 'negative' | 'neutral' }> = {
+  open: { label: 'Open', tone: 'warning' },
+  amo: { label: 'AMO', tone: 'warning' },
+  partial: { label: 'Partly filled', tone: 'warning' },
+  'trigger-pending': { label: 'Trigger pending', tone: 'warning' },
+  gtt: { label: 'GTT active', tone: 'warning' },
+  executed: { label: 'Executed', tone: 'positive' },
+  'partial-executed': { label: 'Partly executed', tone: 'positive' },
+  rejected: { label: 'Rejected', tone: 'negative' },
+  cancelled: { label: 'Cancelled', tone: 'neutral' },
+  expired: { label: 'Expired', tone: 'neutral' },
+}
+
+export type InOrderType = 'market' | 'limit' | 'sl' | 'sl-m'
+export const IN_TYPE_LABEL: Record<InOrderType, string> = { market: 'Market', limit: 'Limit', sl: 'Stop loss', 'sl-m': 'SL-M' }
+
+/** Delivery (CNC) or Intraday (MIS). */
+export type InProduct = 'Delivery' | 'Intraday'
+
+export type InOrder = {
+  id: string
+  /** NSE symbol (getCompany). */
+  sym: string
+  side: 'buy' | 'sell'
+  type: InOrderType
+  product: InProduct
+  qty: number
+  filled: number
+  limitPrice?: number
+  triggerPrice?: number
+  avgPrice?: number
+  status: InOrderStatus
+  /** Day, IOC, or GTT's one year. */
+  validity: 'Day' | 'IOC' | 'GTT'
+  /** "24 Nov, 10:42 AM". */
+  placedAt: string
+  /** Why it was rejected / cancelled / expired / only partly executed. */
+  reason?: string
+}
+
+/** Orders still working — the Open list (today is Mon 24 Nov). */
+export const inOpenOrders: InOrder[] = [
+  { id: 'in-o1', sym: 'RELIANCE', side: 'buy', type: 'limit', product: 'Delivery', qty: 10, filled: 0, limitPrice: 1172, status: 'open', validity: 'Day', placedAt: '24 Nov, 10:42 AM' },
+  { id: 'in-o2', sym: 'HDFCBANK', side: 'buy', type: 'limit', product: 'Delivery', qty: 25, filled: 11, limitPrice: 692.5, avgPrice: 692.35, status: 'partial', validity: 'Day', placedAt: '24 Nov, 9:31 AM' },
+  { id: 'in-o3', sym: 'TATASTEEL', side: 'sell', type: 'sl', product: 'Intraday', qty: 100, filled: 0, triggerPrice: 168, limitPrice: 167.5, status: 'trigger-pending', validity: 'Day', placedAt: '24 Nov, 11:05 AM' },
+  { id: 'in-o4', sym: 'INFY', side: 'buy', type: 'limit', product: 'Delivery', qty: 8, filled: 0, limitPrice: 1140, status: 'amo', validity: 'Day', placedAt: '23 Nov, 8:14 PM' },
+  { id: 'in-o5', sym: 'TCS', side: 'buy', type: 'limit', product: 'Delivery', qty: 4, filled: 0, triggerPrice: 2420, limitPrice: 2425, status: 'gtt', validity: 'GTT', placedAt: '18 Nov, 2:20 PM' },
+]
+
+/** Finished orders — the History list, newest first. */
+export const inHistoryOrders: InOrder[] = [
+  { id: 'in-h1', sym: 'ITC', side: 'buy', type: 'market', product: 'Delivery', qty: 50, filled: 50, avgPrice: 258.65, status: 'executed', validity: 'Day', placedAt: '24 Nov, 9:16 AM' },
+  { id: 'in-h2', sym: 'SBIN', side: 'sell', type: 'limit', product: 'Intraday', qty: 20, filled: 20, limitPrice: 975, avgPrice: 975.2, status: 'executed', validity: 'Day', placedAt: '21 Nov, 10:02 AM' },
+  { id: 'in-h3', sym: 'BHARTIARTL', side: 'buy', type: 'limit', product: 'Delivery', qty: 12, filled: 7, limitPrice: 1880, avgPrice: 1879.4, status: 'partial-executed', validity: 'Day', placedAt: '20 Nov, 1:48 PM', reason: '5 shares didn’t reach ₹1,880.00 before the market closed, so that part was cancelled.' },
+  { id: 'in-h4', sym: 'ETERNAL', side: 'buy', type: 'market', product: 'Intraday', qty: 200, filled: 0, status: 'rejected', validity: 'Day', placedAt: '19 Nov, 3:22 PM', reason: 'Intraday orders close at 3:20 PM.' },
+  { id: 'in-h5', sym: 'LT', side: 'sell', type: 'limit', product: 'Delivery', qty: 3, filled: 0, limitPrice: 3720, status: 'cancelled', validity: 'Day', placedAt: '18 Nov, 11:40 AM', reason: 'You cancelled this order.' },
+  { id: 'in-h6', sym: 'SUZLON', side: 'buy', type: 'sl-m', product: 'Delivery', qty: 500, filled: 0, triggerPrice: 42, status: 'expired', validity: 'GTT', placedAt: '24 Nov 2025, 10:10 AM', reason: 'The GTT didn’t trigger within a year.' },
+]
+
+/** A stock SIP: a fixed amount every month, on a date. */
+export type InSip = {
+  id: string
+  sym: string
+  /** ₹ per instalment. */
+  amount: number
+  frequency: 'Monthly' | 'Weekly'
+  /** "5 Dec". */
+  nextOn?: string
+  status: 'active' | 'paused'
+  /** Instalments done so far. */
+  done: number
+}
+
+export const inSips: InSip[] = [
+  { id: 'in-s1', sym: 'RELIANCE', amount: 5000, frequency: 'Monthly', nextOn: '5 Dec', status: 'active', done: 7 },
+  { id: 'in-s2', sym: 'IRFC', amount: 1000, frequency: 'Weekly', nextOn: '1 Dec', status: 'active', done: 22 },
+  { id: 'in-s3', sym: 'INFY', amount: 2500, frequency: 'Monthly', status: 'paused', done: 4 },
+]
+
+// ── Filters (24 Nov, the user's call: the Indian side gets the US filter row) ──────────────────────────────────────
+// The picker steps All orders → Delivery → Intraday (the product, as Stocks / ETFs on the US side); the Filters sheet
+// (OrderFilterSheet, given these groups) narrows by side, order type and, on History, status. Empty group = any.
+
+export type InProductPick = 'all' | InProduct
+export const IN_PRODUCT_LABEL: Record<InProductPick, string> = { all: 'All orders', Delivery: 'Delivery', Intraday: 'Intraday' }
+export const nextInProduct = (p: InProductPick): InProductPick => (p === 'all' ? 'Delivery' : p === 'Delivery' ? 'Intraday' : 'all')
+export const ofInProduct = (orders: InOrder[], p: InProductPick) => (p === 'all' ? orders : orders.filter((o) => o.product === p))
+
+export type InFilters = { side: string[]; type: string[]; status: string[] }
+export const IN_NO_FILTERS: InFilters = { side: [], type: [], status: [] }
+
+const IN_HISTORY_STATUSES: InOrderStatus[] = ['executed', 'partial-executed', 'rejected', 'cancelled', 'expired']
+
+/** The sheet's groups for a list: Status only on History (every Open order is still working). */
+export function inFilterGroups(list: 'open' | 'history') {
+  return [
+    { key: 'side', title: 'Side', options: [{ value: 'buy', label: 'Buy' }, { value: 'sell', label: 'Sell' }] },
+    { key: 'type', title: 'Order type', options: (Object.keys(IN_TYPE_LABEL) as InOrderType[]).map((v) => ({ value: v, label: IN_TYPE_LABEL[v] })) },
+    ...(list === 'history'
+      ? [{ key: 'status', title: 'Status', options: IN_HISTORY_STATUSES.map((s) => ({ value: s, label: IN_STATUS_TAG[s].label })) }]
+      : []),
+  ]
+}
+
+export function inFilterCount(f: InFilters, list: 'open' | 'history') {
+  return f.side.length + f.type.length + (list === 'history' ? f.status.length : 0)
+}
+
+export function applyInFilters(orders: InOrder[], f: InFilters, list: 'open' | 'history') {
+  return orders.filter(
+    (o) =>
+      (!f.side.length || f.side.includes(o.side)) &&
+      (!f.type.length || f.type.includes(o.type)) &&
+      (list === 'open' || !f.status.length || f.status.includes(o.status)),
+  )
 }
 ```
 
@@ -40296,8 +40680,9 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
         inert={backdrop || undefined}
         ref={bodyRef}
       >
-        {/* V5 (23 Nov, user): Market / Limit / SL at their own size, left-aligned; the TP/SL settings button on the right. */}
-        <Stack direction="horizontal" justify={orderTypesLeft ? 'start' : 'center'} align="center" gap="12" className={styles.typeRow}>
+        {/* V5 (23 Nov, user): Market / Limit / SL at their own size; the TP/SL settings button on the right. Centred in every
+            version since 24 Nov (the user's call; was left-aligned in V5 / V8 / V9): the button is out of the flow. */}
+        <Stack direction="horizontal" justify="center" align="center" gap="12" className={styles.typeRow}>
           {/* Indian pad, Delivery / MTF: how long the order stays (Market Day / Instant, Limit Day / Instant / Year, SL Day /
               Year). An A/B test (flow option "Validity switch", 20 Nov, the user's call): V2 · inside the order type's
               track, after a short divider, the whole track centred; V1 · alone at the row's right edge, out of the flow,
