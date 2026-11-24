@@ -433,6 +433,8 @@ lower on the page is scrolled into view first). `components/MarketSwitchGuide.ts
   16 / 24 icon or an Avatar only — event rows are plain buttons laid out with Stack.
 
 ### Changelog
+- 2026-11-24 — US coming soon: the status line wraps to two lines instead of being cut (L3 gap: ListCell truncates labels).
+- 2026-11-24 — US coming soon: the ready / in-review card is one line, no description ("All set! We'll notify you at launch" / "Verification in progress"), 8 more above it.
 - 2026-11-24 — US coming soon: the ready / in-review row has 12 above and below (ListCell md's 8 + 4).
 - 2026-11-24 — US coming soon: the ready / in-review card is L3 Card padding none, so only the ListCell's padding shows (no double padding).
 - 2026-11-24 — US coming soon: no "Coming soon" tag (the title says it); title at L3 Heading/20, on one line; one-line subtitle ("Apple, NVIDIA, Tesla and 5,000+ more", Description/16); the page fills the screen from the tabs to the navbar, content centred.
@@ -25999,6 +26001,19 @@ export function UsActivationCard({ state, spec: specOverride, holdings, onCta }:
 .statusCell.statusCell.statusCell.statusCell { /* beats ListCell .cell[data-variant][data-size] */
   padding-block: var(--l3-spacing-12);
 }
+
+/* 8 more above the status card than the 24 gap (24 Nov, user). */
+.statusCard {
+  margin-top: var(--l3-spacing-08);
+}
+
+/* The one-line status may wrap to two lines rather than be cut ("…") (24 Nov, user).
+   FLAG (L3 gap): ListCell truncates its label even when multiline; no wrap option. */
+.statusCell.statusCell > span:last-child > span {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+}
 ```
 
 ### `src/flows/stocks/components/us/UsComingSoon.tsx`
@@ -26098,11 +26113,11 @@ export function UsComingSoon({ usState = 'activate', onActivate }: { usState?: U
           </Stack>
 
           {ready || inReview ? (
-            <Card padding="none">{/* the ListCell brings its own padding (24 Nov, user: no double padding) */}
+            // The small version (24 Nov, user): one line that says it all, no description; 8 more above it.
+            <Card padding="none" className={styles.statusCard}>{/* the ListCell brings its own padding (no double padding) */}
               <ListCell size="md" multiline className={styles.statusCell}
                 iconLeft={<span className={styles.status} data-tone={ready ? 'ready' : 'review'}><Icon icon={ready ? msCheckCircle : msHourglassTop} /></span>}
-                label={t(ready ? 'us.soon.ready.title' : 'us.soon.review.title')}
-                description={t(ready ? 'us.soon.ready.text' : 'us.soon.review.text')} />
+                label={t(ready ? 'us.soon.ready.title' : 'us.soon.review.title')} />
             </Card>
           ) : (
             <Stack gap="08" align="center">
@@ -30058,10 +30073,8 @@ export function useLiveHeatmap(symbols: string[] = heatSymbols): HeatValue[] {
   "us.soon.subtitle": "Apple, NVIDIA, Tesla and 5,000+ more",
   "us.soon.cta": "Activate US Stocks in advance",
   "us.soon.note": "Free to activate · No money needed now",
-  "us.soon.review.title": "Activation under review",
-  "us.soon.review.text": "You'll be ready to invest the day US Stocks launches.",
-  "us.soon.ready.title": "You're all set for US Stocks",
-  "us.soon.ready.text": "Your account is active. We'll let you know the moment US Stocks goes live."
+  "us.soon.review.title": "Verification in progress",
+  "us.soon.ready.title": "All set! We'll notify you at launch"
 }
 ```
 
