@@ -433,6 +433,11 @@ lower on the page is scrolled into view first). `components/MarketSwitchGuide.ts
   16 / 24 icon or an Avatar only — event rows are plain buttons laid out with Stack.
 
 ### Changelog
+- 2026-11-24 — US coming soon: the ready / in-review row has 12 above and below (ListCell md's 8 + 4).
+- 2026-11-24 — US coming soon: the ready / in-review card is L3 Card padding none, so only the ListCell's padding shows (no double padding).
+- 2026-11-24 — US coming soon: no "Coming soon" tag (the title says it); title at L3 Heading/20, on one line; one-line subtitle ("Apple, NVIDIA, Tesla and 5,000+ more", Description/16); the page fills the screen from the tabs to the navbar, content centred.
+- 2026-11-24: US Stocks coming soon fits the first fold: the three reasons dropped, the orbit smaller (rings 80 / 124, stage 280) and the flag's circle 80, so it sits 20 clear of the inner ring.
+- 2026-11-24: US Stocks coming soon (setting Home → "US Stocks coming soon", off by default, also beside the phone on Home screens): the US tab shows the US flag with US company logos orbiting it, the pitch, three reasons and Activate US Stocks in advance (→ activation pages); under review / activated users see where they stand instead. V19 archived — V18 is the final homepage (no floating version switch). Shortcuts setting archived — circles only.
 - 23 Nov 2026: Bottom navbar V3 — glow hidden; the coloured icon marks the chosen tab (V2 keeps its glow).
 - 23 Nov 2026: Floating navbar (V2, V3) — inactive tab labels in L3 Description/10 (500) instead of Label/10 (650), so the text sits at the same visual weight as its content/secondary icon.
 - 23 Nov 2026: Bottom navbar V3 — tabs 74 wide (56 tall); pill 370 wide, centred (local token --app-fnav-tab-width, L3 gap).
@@ -25450,10 +25455,10 @@ export const homeVersions: HomeVersion[] = [
   { id: 'v18', name: 'F1 top · V14 body', figma: '', place: 'top', scope: 'page', look: 'underline', labels: 'stocks', flags: true, usNew: false, tiles: 'today', ticker: true, usHome: 'f1', cards: true, usBody: 'classic' },
   // V19 (18 Nov, the user's ask): V18 with the index marquee moved from under the top bar to between the hero (the
   // header) and the feed (the body), scrolling with the page; only the IN / US tabs stay sticky.
-  { id: 'v19', name: 'V18 · marquee under the hero', figma: '', place: 'top', scope: 'page', look: 'underline', labels: 'stocks', flags: true, usNew: false, tiles: 'today', ticker: true, tickerPlace: 'between', usHome: 'f1', cards: true, oneCard: true, usBody: 'classic' },
+  { id: 'v19', name: 'V18 · marquee under the hero', figma: '', place: 'top', scope: 'page', look: 'underline', labels: 'stocks', flags: true, usNew: false, tiles: 'today', ticker: true, tickerPlace: 'between', usHome: 'f1', cards: true, oneCard: true, usBody: 'classic', archived: true },
 ]
 
-// Archived 2026-11-02 (V2, V3, V4, V5, V6, V9), back in the picker the same day. V9, V10 and V11 archived again later that day. V2–V7 archived too (playground), leaving V8, V12 and V13. V14 added 5 Nov. V15 (One home) added and archived 5 Nov. V16 and V17 archived 17 Nov (V18 keeps their F1 top). V8, V12, V13 and V14 archived 18 Nov: V18 is the only home.
+// Archived 2026-11-02 (V2, V3, V4, V5, V6, V9), back in the picker the same day. V9, V10 and V11 archived again later that day. V2–V7 archived too (playground), leaving V8, V12 and V13. V14 added 5 Nov. V15 (One home) added and archived 5 Nov. V16 and V17 archived 17 Nov (V18 keeps their F1 top). V8, V12, V13 and V14 archived 18 Nov: V18 is the only home. V19 archived 24 Nov (the user's call: V18 is the final homepage).
 
 /** The version shown until one is picked (and in place of an archived pick). */
 export const DEFAULT_HOME_VERSION: HomeVersionId = 'v18'
@@ -25858,6 +25863,256 @@ export function UsActivationCard({ state, spec: specOverride, holdings, onCta }:
         </div>
       )}
     </section>
+  )
+}
+```
+
+### `src/flows/stocks/components/us/UsComingSoon.module.css`
+
+```css
+/* US Stocks coming soon (UsComingSoon.tsx). FLAG (L3 gap): the orbit is local art — ring radii, stage height and
+   speeds are marked --app-soon-* local tokens (src/local-tokens.css); 1px ring hairlines. */
+
+.soon {
+  padding-top: var(--l3-spacing-08);
+  box-sizing: border-box; /* min-height (set in code) fills the screen down to the navbar's clearance */
+}
+
+/* The solar system: the flag is the sun, two rings of logos turn round it (inner clockwise, outer the other way). */
+.stage {
+  position: relative;
+  height: var(--app-soon-stage);
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+}
+.stage > * {
+  grid-area: 1 / 1;
+}
+
+/* The FTUX sheet's red and blue blooms, soft behind the sun. */
+.bloom {
+  width: var(--app-soon-bloom);
+  opacity: 0.5;
+  pointer-events: none;
+}
+.bloom[data-bloom='blue'] { transform: translate(-22%, -12%); }
+.bloom[data-bloom='red'] { transform: translate(22%, 12%); }
+
+/* The orbits' paths: 1px hairlines. */
+.track {
+  border-radius: var(--l3-radius-full);
+  border: 1px dashed var(--l3-border-light);
+}
+.track[data-ring='inner'] { width: calc(var(--app-soon-inner) * 2); height: calc(var(--app-soon-inner) * 2); }
+.track[data-ring='outer'] { width: calc(var(--app-soon-outer) * 2); height: calc(var(--app-soon-outer) * 2); }
+
+.ring {
+  --radius: var(--app-soon-inner);
+  --spin: var(--app-soon-spin-inner);
+  width: 0;
+  height: 0;
+  animation: soonSpin var(--spin) linear infinite;
+}
+.ring[data-ring='outer'] {
+  --radius: var(--app-soon-outer);
+  --spin: var(--app-soon-spin-outer);
+  animation-direction: reverse;
+}
+
+/* Each planet sits on the ring at its angle, then turns back so the logo is level; .upright undoes the ring's spin. */
+.planet {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: rotate(var(--angle)) translateX(var(--radius)) rotate(calc(-1 * var(--angle)));
+}
+.upright {
+  display: block;
+  transform: translate(-50%, -50%);
+}
+.upright > * {
+  animation: soonSpin var(--spin) linear infinite reverse;
+}
+.ring[data-ring='outer'] .upright > * {
+  animation-direction: normal;
+}
+
+.logo.logo {
+  background: var(--l3-surface-primary);
+  box-shadow: var(--l3-shadow-elevation-medium);
+  outline: 1px solid var(--l3-border-light);
+}
+
+/* The sun: the waving US flag, floating gently. */
+.sun {
+  display: grid;
+  place-items: center;
+  width: var(--l3-size-80); /* smaller sun: 20 clear of the inner ring's logos (24 Nov, user) */
+  height: var(--l3-size-80);
+  border-radius: var(--l3-radius-full);
+  background: var(--l3-surface-primary);
+  box-shadow: var(--l3-shadow-elevation-medium);
+  animation: soonFloat 4s ease-in-out infinite;
+}
+.flag {
+  width: 82%;
+  height: auto;
+}
+
+.copy {
+  text-align: center;
+}
+.soon.soon .title.title { /* beats Home's .flatCards h2 (section headings at 16) */
+  margin: 0;
+  font: var(--l3-text-heading-20); /* one line, even on a 360 phone (24 Nov, user: 32 on two lines was too big) */
+  color: var(--l3-content-primary);
+}
+.subtitle,
+.note {
+  margin: 0;
+  color: var(--l3-content-secondary);
+}
+.subtitle {
+  font: var(--l3-text-description-16); /* one line (24 Nov, user) */
+}
+.note {
+  font: var(--l3-text-description-12);
+}
+
+.status {
+  display: inline-flex;
+  color: var(--l3-content-accent-warning-default);
+}
+.status[data-tone='ready'] {
+  color: var(--l3-content-accent-success-default);
+}
+
+@keyframes soonSpin { to { transform: rotate(360deg); } }
+@keyframes soonFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(calc(-1 * var(--l3-spacing-04))); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .ring, .upright > *, .sun { animation: none; }
+}
+
+/* The ready / in-review row: 4 more above and below than ListCell md's 8 (24 Nov, user). */
+.statusCell.statusCell.statusCell.statusCell { /* beats ListCell .cell[data-variant][data-size] */
+  padding-block: var(--l3-spacing-12);
+}
+```
+
+### `src/flows/stocks/components/us/UsComingSoon.tsx`
+
+```tsx
+// The US Stocks tab before launch (24 Nov, the user's call): the Indian redesign rolls out first, so the US tab is there
+// but says "coming soon". Art: the US flag in the middle with big US companies orbiting it like a solar system — an
+// inner ring of four, an outer ring of six turning the other way, each logo staying upright. Under it the pitch and
+// Activate US Stocks in advance (→ the activation pages), so the user is ready on launch day. Once they have
+// activated (or it is under review) the button gives way to where they stand.
+// Prototype setting: Stocks → Home → "US Stocks coming soon" (stocks index.tsx, usComingSoon).
+// FLAG (L3 gap): the orbit (rings, motion) is local art; L3 has no illustration or orbit component. Sizes on the stage are
+// marked local tokens (src/local-tokens.css, --app-soon-*). 24 Nov: the three reasons dropped and the art made smaller,
+// so the button is in the first fold. Later on 24 Nov: no "Coming soon" tag (the title says it), a bigger two-line title,
+// a one-line subtitle, and the page fills the screen from the tabs down to the navbar, its content centred in it.
+import { useLayoutEffect, useRef, useState, type CSSProperties, type RefObject } from 'react'
+import { Avatar } from '@l3/components/Avatar'
+import { Button } from '@l3/components/Button'
+import { Card } from '@l3/components/Card'
+import { Icon } from '@l3/components/Icon'
+import { Inset } from '@l3/components/Inset'
+import { ListCell } from '@l3/components/ListCell'
+import { Stack } from '@l3/components/Stack'
+import { msCheckCircle, msHourglassTop } from '@l3/icons/material'
+import { usLogo } from '../../../../shared/data/usStocks'
+import flag from '../../assets/us/ftux/flag.webp'
+import bloomBlue from '../../assets/us/ftux/bloom-blue.svg'
+import bloomRed from '../../assets/us/ftux/bloom-red.svg'
+import { t } from '../../copy'
+import { activatedStates, type UsState } from './data'
+import styles from './UsComingSoon.module.css'
+
+/** The inner ring (40 logos) and the outer ring (32 logos), the biggest US names. */
+const INNER = ['AAPL', 'NVDA', 'TSLA', 'MSFT'].filter((s) => usLogo(s))
+const OUTER = ['GOOGL', 'AMZN', 'META', 'NFLX', 'AMD', 'COST'].filter((s) => usLogo(s))
+
+function Ring({ symbols, ring, size }: { symbols: string[]; ring: 'inner' | 'outer'; size: 32 | 40 }) {
+  return (
+    <div className={styles.ring} data-ring={ring}>
+      {symbols.map((sym, i) => (
+        <span key={sym} className={styles.planet} style={{ '--angle': `${(360 / symbols.length) * i}deg` } as CSSProperties}>
+          <span className={styles.upright}>
+            <Avatar size={size} src={usLogo(sym)} label={sym} className={styles.logo} />
+          </span>
+        </span>
+      ))}
+    </div>
+  )
+}
+
+/** The height from the top of the page to where the scrolling body's content ends (above the navbar's clearance), so
+ *  the page fills the screen and its content can sit centred in it. Re-measured when the body resizes. */
+function useScreenFill(page: RefObject<HTMLElement | null>) {
+  const [height, setHeight] = useState<number | null>(null)
+  useLayoutEffect(() => {
+    const el = page.current
+    let body = el?.parentElement ?? null
+    while (body && !/(auto|scroll)/.test(getComputedStyle(body).overflowY)) body = body.parentElement
+    if (!el || !body) return
+    const scroller = body
+    const measure = () => {
+      // Both in the body's content coordinates: where the page starts, and where the body's content must end.
+      const top = el.getBoundingClientRect().top - scroller.getBoundingClientRect().top + scroller.scrollTop
+      const end = scroller.clientHeight - parseFloat(getComputedStyle(scroller).paddingBottom)
+      setHeight(Math.max(0, Math.floor(end - top)))
+    }
+    measure()
+    const watch = new ResizeObserver(measure)
+    watch.observe(scroller)
+    return () => watch.disconnect()
+  }, [page])
+  return height
+}
+
+export function UsComingSoon({ usState = 'activate', onActivate }: { usState?: UsState; onActivate?: () => void }) {
+  const ready = activatedStates.includes(usState)
+  const inReview = usState === 'review' || usState === 'support'
+  const page = useRef<HTMLElement>(null)
+  const fillHeight = useScreenFill(page)
+  return (
+    <Stack ref={page} gap="24" justify="center" className={styles.soon} style={fillHeight ? { minHeight: fillHeight } : undefined}>
+      <div className={styles.stage} aria-hidden="true">
+        <img className={styles.bloom} data-bloom="blue" src={bloomBlue} alt="" />
+        <img className={styles.bloom} data-bloom="red" src={bloomRed} alt="" />
+        <span className={styles.track} data-ring="outer" />
+        <span className={styles.track} data-ring="inner" />
+        <Ring symbols={OUTER} ring="outer" size={32} />
+        <Ring symbols={INNER} ring="inner" size={40} />
+        <span className={styles.sun}><img className={styles.flag} src={flag} alt="" /></span>
+      </div>
+
+      <Inset paddingInline="16" paddingBlock="00">
+        <Stack gap="24">
+          <Stack gap="08" align="center" className={styles.copy}>
+            <h2 className={styles.title}>{t('us.soon.title')}</h2>
+            <p className={styles.subtitle}>{t('us.soon.subtitle')}</p>
+          </Stack>
+
+          {ready || inReview ? (
+            <Card padding="none">{/* the ListCell brings its own padding (24 Nov, user: no double padding) */}
+              <ListCell size="md" multiline className={styles.statusCell}
+                iconLeft={<span className={styles.status} data-tone={ready ? 'ready' : 'review'}><Icon icon={ready ? msCheckCircle : msHourglassTop} /></span>}
+                label={t(ready ? 'us.soon.ready.title' : 'us.soon.review.title')}
+                description={t(ready ? 'us.soon.ready.text' : 'us.soon.review.text')} />
+            </Card>
+          ) : (
+            <Stack gap="08" align="center">
+              <Button variant="primary" size="lg" fullWidth onClick={onActivate}>{t('us.soon.cta')}</Button>
+              <p className={styles.note}>{t('us.soon.note')}</p>
+            </Stack>
+          )}
+        </Stack>
+      </Inset>
+    </Stack>
   )
 }
 ```
@@ -29798,7 +30053,15 @@ export function useLiveHeatmap(symbols: string[] = heatSymbols): HeatValue[] {
   "stock.prevPeriod": "Previous period",
   "stock.nextPeriod": "Next period",
   "stock.qoq": "Q/Q change",
-  "stock.yoy": "Y/Y change"
+  "stock.yoy": "Y/Y change",
+  "us.soon.title": "US Stocks are coming to Lemonn",
+  "us.soon.subtitle": "Apple, NVIDIA, Tesla and 5,000+ more",
+  "us.soon.cta": "Activate US Stocks in advance",
+  "us.soon.note": "Free to activate · No money needed now",
+  "us.soon.review.title": "Activation under review",
+  "us.soon.review.text": "You'll be ready to invest the day US Stocks launches.",
+  "us.soon.ready.title": "You're all set for US Stocks",
+  "us.soon.ready.text": "Your account is active. We'll let you know the moment US Stocks goes live."
 }
 ```
 
@@ -30246,9 +30509,7 @@ export const stocks: Flow = {
       picker: 'dropdown',
       values: activeHomeVersions.map((v) => ({ value: v.id, label: `${v.id.toUpperCase()} · ${v.name}` })),
       default: DEFAULT_HOME_VERSION,
-      // V18 and V19 (18 Nov): the floating one-tap switch is back, to flip between them — only on the Home screens
-      // (IND and US tab, every state), the only pages the version changes.
-      quickSwitch: { on: HOME_SCREEN_IDS },
+      // V19 archived 24 Nov: V18 is the only home, so there is no floating switch any more.
     },
     // FTUX guide for the IND / US switch: dims the screen, lights the switch with a tooltip. Shown every time a Home
     // opens (and again after a version change) while on; tap anywhere or ✕ to end it.
@@ -30267,7 +30528,8 @@ export const stocks: Flow = {
     // Home shortcuts: V2 was the default (18 Nov, the user's call); V1 is the earlier row.
     // The two versions to show (Figma 6662:8516): the instruments as circles, or the shortcuts card. Shortcuts V1 and V3–V5
     // are archived (19 Nov): still in the code (Discover.tsx, Instruments.tsx), no longer offered.
-    { id: 'shortcuts', group: 'Home', label: 'Version', values: [{ value: 'v6', label: 'Circles' }, { value: 'v2', label: 'Card' }], default: 'v6' },
+    // Archived 24 Nov (the user's call): the Shortcuts setting — the circles (v6) are the shortcuts; the card stays in the code.
+    { id: 'usComingSoon', group: 'Home', label: 'US Stocks coming soon', picker: 'toggle', values: [{ value: 'off', label: 'Off' }, { value: 'on', label: 'On' }], default: 'off', floatOn: HOME_SCREEN_IDS },
     // US tab, Discover ETFs: the region pills with their round flags (default) or text only — testing whether the flags are too much (3 Nov).
     // Archived 18 Nov (the user's call): "Chips" on the US home rows (Top Movers, Heatmap, ETFs). V2 kept (L3's primary
     // switcher pill + outlined-selected chips); the V1 hand-made switcher stays in UsHome.tsx behind US_CHIPS_V1.
@@ -31322,6 +31584,7 @@ import { holdings } from '../../../shared/data/portfolio'
 import { inr } from '../../../shared/data/format'
 import { UsHomeF1, UsRoundShortcuts } from '../components/us/UsHomeF1'
 import { neighbour, useSwipeBetween } from '../../../shared/ui/useSwipeBetween'
+import { UsComingSoon } from '../components/us/UsComingSoon'
 import { DEFAULT_SHORTCUTS, Shortcuts, TopMovers, Watchlists } from '../components/Discover'
 import { FeatureChips, InstrumentRow, type FeatureChip, type Instrument } from '../components/Instruments'
 import { productsClassic, products, productsF1, productsF1Us, productsWithInvest, productsWithUs, type MoverList } from '../data'
@@ -31455,6 +31718,8 @@ export function Home({ scrollTo = 'top', market = 'in', movers, onStock, onTab, 
   // The market switch guide (prototype setting, on by default) shows every time this Home opens, and again for each
   // homepage version picked; ending it hides it for this version until the Home opens again.
   const guideOn = useFlowOption('stocks', 'switchGuide', 'off') === 'on'
+  // US Stocks before launch (24 Nov, the user's call): the US tab is a coming-soon page (no hero, no feed).
+  const usComingSoon = useFlowOption('stocks', 'usComingSoon', 'off') === 'on'
   const tickerLook = TICKER_LOOK
   // Archived 3 Nov: the "Header" setting. The holdings are always on the page; flip this to see them inside the top card.
   const headerCard = HEADER_CARD
@@ -31837,7 +32102,7 @@ export function Home({ scrollTo = 'top', market = 'in', movers, onStock, onTab, 
   // Shortcuts V3 (Figma 6631:16280, 19 Nov): what can be traded in the market on show as icon circles, then the features
   // as chips. Instruments open what the product cards did; of the chips, Analyst picks and Smart Invest lead somewhere
   // (the others have no screen in the prototype yet).
-  const shortcutsLook = useFlowOption('stocks', 'shortcuts', DEFAULT_SHORTCUTS)
+  const shortcutsLook: string = DEFAULT_SHORTCUTS // circles; the Shortcuts setting archived 24 Nov (the user's call)
   // Instrument art has a dark version (23 Nov): the light one's near-white fill glares on a dark disc.
   const dark = useTheme().mode === 'dark'
   const shortcutsV3 = shortcutsLook === 'v3' || shortcutsLook === 'v4' || shortcutsLook === 'v5' || shortcutsLook === 'v6' // instruments + chips; V4 is the ringed look with icons in the chips, V5 the soft circles (Figma 6635:19626)
@@ -32035,7 +32300,7 @@ export function Home({ scrollTo = 'top', market = 'in', movers, onStock, onTab, 
               : <HoldingsSwitcher view={holdingsView} onView={setHoldingsView} usEmpty={usState !== 'holding'} />}
             {usState !== 'kyc' && <ProductCards key={version.tiles} items={tiles[version.tiles]} onProduct={onProduct} />}
           </Stack>
-        ) : (
+        ) : usComingSoon && tab === 'us' ? null : (
           <Stack key="summary" gap="24" className={styles.summary} data-hero={heroTop || undefined}>
             {usState === 'kyc'
               ? (f1 ? <HeroShell market={tab} subtle>{inCard(<UsActivationCard spec={inKycCard} onCta={onActivateUs} />)}</HeroShell> : inCard(<UsActivationCard spec={inKycCard} onCta={onActivateUs} />))
@@ -32078,6 +32343,10 @@ export function Home({ scrollTo = 'top', market = 'in', movers, onStock, onTab, 
               <div data-home="highlights"><Highlights /></div>
               <div data-home="more"><IdeaBaskets /></div>
               <Disclosure />
+            </Stack>
+          ) : usComingSoon ? (
+            <Stack key="us-soon" gap="32" data-market-part>
+              <UsComingSoon usState={usState} onActivate={onActivateUs} />
             </Stack>
           ) : f1 && version.usBody === 'classic' ? (
             // V18: V17's top over V14's US feed, with V17's round shortcuts in place of its strip (the hero has the card).

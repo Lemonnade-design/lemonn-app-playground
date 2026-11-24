@@ -421,6 +421,8 @@
     "src/flows/stocks/components/us/ThemeCard.tsx",
     "src/flows/stocks/components/us/TransferProgress.tsx",
     "src/flows/stocks/components/us/UsActivationCard.tsx",
+    "src/flows/stocks/components/us/UsComingSoon.module.css",
+    "src/flows/stocks/components/us/UsComingSoon.tsx",
     "src/flows/stocks/components/us/UsHero.tsx",
     "src/flows/stocks/components/us/UsHome.module.css",
     "src/flows/stocks/components/us/UsHome.tsx",
