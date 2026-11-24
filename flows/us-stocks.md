@@ -40795,6 +40795,8 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
             <span className={styles.contract} data-align="start">
               <span className={styles.contractName}>
                 <span className={styles.contractTitle}>{stockName}</span>
+                {/* V7, Indian pad: NSE ⇄ BSE right after the stock name, not in the bar's actions (24 Nov, user). */}
+                {tpslCard === 'v7' && exchangeSwitch}
               </span>
               <span className={styles.contractPrice}>
                 <PadAmount value={config.stock.price} />
@@ -40822,7 +40824,6 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
         tpslCard === 'v7' ? (
           // V7 (23 Nov, user): V4's top bar with a labelled L3 Switch in place of the settings button.
           <>
-            {exchangeSwitch}
             <label className={styles.slToggle}>
               <span>{(padVersion === 'india' ? TPSL_INDIA : TPSL_US).title}</span>
               <Switch size="sm" checked={slOn} onChange={(e) => setSlOn(e.target.checked)} />
@@ -41070,14 +41071,14 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
     <Stack gap="08" align="center">
       {/* V3: Amount / Shares and the validity sit together above the amount, each hugging its label (20 Nov, the user's
           call); when a label changes size the row re-centres with a slide (switchRowRef). */}
-      {validityPlace === 'v3' && (config.toggle || validity) && (
+      {validityPlace === 'v3' && ((config.toggle && !india) || validity) && (
         <Stack direction="horizontal" align="center" gap="12" className={styles.switchRow} ref={switchRowRef}>
-          {config.toggle && (
+          {config.toggle && !india && ( /* Indian stocks: shares only, no switch (24 Nov, user) */
             <Select size="sm" subtle icon="swap" onClick={switchMode} aria-label={switchLabel}>
               {unitLabel}
             </Select>
           )}
-          {config.toggle && validity && <span className={styles.trackDivider} aria-hidden />}
+          {config.toggle && !india && validity && <span className={styles.trackDivider} aria-hidden />}
           {validity && (
             <Select size="sm" subtle icon="swap" onClick={onValidity} aria-label={`Validity ${validityLabel}. Switch to ${validityNext}`}>
               {validityLabel}
