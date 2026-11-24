@@ -26918,12 +26918,32 @@ export const Flag = ({ code }: { code: FlagCode }) => (
 
 @keyframes navPop { 0% { transform: scale(.7); } 60% { transform: scale(1.12); } 100% { transform: scale(1); } }
 @keyframes navRise { from { opacity: 0; transform: translateY(var(--l3-spacing-04)); } to { opacity: 1; transform: none; } }
-@keyframes navFadeBack { from { color: var(--l3-content-primary); } to { color: var(--l3-content-secondary); } }
+@keyframes navFadeBack { from { color: var(--l3-content-primary); } to { color: var(--l3-content-tertiary); } }
 @keyframes navGlowIn { from { opacity: 0; } to { opacity: 1; } }
 
 @media (prefers-reduced-motion: reduce) {
   .glow { transition: none; }
   .frame .pill *, .frame .glow { animation: none !important; transition: none !important; }
+}
+
+/* V3 (24 Nov, user): 2 between the icon and its label, and the chosen tab's label in accent green, matching its
+   coloured icon. */
+.frame[data-glow-at='bottom'] .pill :is(button, a)[class] {
+  gap: var(--l3-spacing-02);
+}
+.frame[data-glow-at='bottom'] .pill :is(button, a)[data-selected] > span:last-child {
+  color: var(--l3-content-accent-success-default);
+}
+
+/* Inactive tabs (24 Nov, user): as light as the Mutual Fund / F&O navs' L3 icons (their 40 / 60 parts), and the label
+   the same colour as its icon in every nav — content/tertiary for both. (The L3 NavIcons in the sub-navs keep their
+   baked 40 / 60 shares.) A user call over the "no tertiary text" default. */
+.pill :is(button, a)[class]:not([data-selected]) {
+  color: var(--l3-content-tertiary);
+}
+/* …but the labels stay content/secondary (24 Nov, user: "labels back to secondary"); only the icons go lighter. */
+.pill :is(button, a)[class]:not([data-selected]) > span:last-child {
+  color: var(--l3-content-secondary);
 }
 ```
 

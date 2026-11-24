@@ -543,6 +543,7 @@ The source uses old D2 controls alongside L3; their code equivalents are L3 comp
 - Weekday result dots (Zing Trades): no L3 component; 16 circles on the up / down light surfaces.
 
 ### Changelog
+- 24 Nov: Equity shortcuts copy Figma 6754:62886 — Analysis · IPO · Watchlist · Referral, 40 discs (surface primary, 1px subtle edge, soft glow) with Figma's two-tone green icons (assets/shortcuts), no card round each. Commodities shortcuts back in one row of four (their own Inset + 4-column Grid). FLAG (L3 gap): the disc glow is raw; the two-tone icons are artwork, not L3 icons.
 - 23 Nov 2026 — F&O sub-nav (floating V2): the chosen F&O icon is black and white, like the main nav's.
 - 23 Nov 2026 — Home shortcuts (Trade Calls · Watchlist · Smart Invest · Referral) drawn as the Stocks Home's: 40 circles with a green-edged wash and green icons (lightbulb, bookmark, smart toy, redeem — Home's icons for these features), names in secondary text, via the new shared part src/shared/ui/ShortcutCircles. The old outlined tertiary buttons and their SVG art are no longer used (assets kept).
 
@@ -1660,6 +1661,60 @@ function useWidth(ref: React.RefObject<HTMLElement | null>, fallback: number) {
 <g id="score_24dp_E3E3E3_FILL0_wght300_GRAD0_opsz24">
 <path id="Vector" d="M4.09507 17.5C3.64934 17.5 3.27206 17.3456 2.96324 17.0368C2.65441 16.7279 2.5 16.3507 2.5 15.9049V4.09507C2.5 3.64934 2.65441 3.27206 2.96324 2.96324C3.27206 2.65441 3.64934 2.5 4.09507 2.5H15.9049C16.3507 2.5 16.7279 2.65441 17.0368 2.96324C17.3456 3.27206 17.5 3.64934 17.5 4.09507V15.9049C17.5 16.3507 17.3456 16.7279 17.0368 17.0368C16.7279 17.3456 16.3507 17.5 15.9049 17.5H4.09507ZM10.8824 14.3101L16.1765 9.01596V4.09507C16.1765 4.02713 16.1482 3.96493 16.0915 3.90846C16.0351 3.85184 15.9729 3.82353 15.9049 3.82353H4.09507C4.02713 3.82353 3.96493 3.85184 3.90846 3.90846C3.85184 3.96493 3.82353 4.02713 3.82353 4.09507V14.3101L6.79463 11.3387C6.95419 11.1793 7.14029 11.0996 7.35294 11.0996C7.56559 11.0996 7.75169 11.1793 7.91125 11.3387L10.8824 14.3101ZM7.35294 12.4774L3.82353 16.0068C3.82912 16.0351 3.85596 16.0704 3.90404 16.1129C3.95213 16.1553 4.01581 16.1765 4.09507 16.1765H15.9049C15.9729 16.1765 16.0351 16.1482 16.0915 16.0915C16.1482 16.0351 16.1765 15.9729 16.1765 15.9049V10.7127L11.4407 15.4485C11.2811 15.6081 11.095 15.6879 10.8824 15.6879C10.6697 15.6879 10.4836 15.6081 10.324 15.4485L7.35294 12.4774ZM3.82353 15.9049V16.1765V3.82353V15.9049Z" fill="white" style="fill:white;fill-opacity:1;"/>
 <path id="Vector_2" d="M9.03272 8.62368L7.79858 8.56247C7.66228 8.55572 7.56538 8.49097 7.50789 8.36825C7.45033 8.24559 7.46385 8.13082 7.54845 8.02394L10.3947 4.35662C10.4531 4.28357 10.5253 4.2352 10.6115 4.21154C10.6976 4.18794 10.7856 4.19466 10.8756 4.23169C10.9655 4.26865 11.0297 4.32747 11.0682 4.40816C11.1067 4.48884 11.1182 4.57426 11.1028 4.66443L10.6766 7.09345L12.19 7.1685C12.3346 7.17567 12.4333 7.2449 12.4863 7.3762C12.5392 7.50743 12.5159 7.62611 12.4163 7.73225L9.30455 11.0741C9.24237 11.1403 9.16839 11.1814 9.08259 11.1976C8.9968 11.2137 8.91452 11.2014 8.83574 11.1609C8.75696 11.1203 8.69719 11.0613 8.65643 10.9839C8.61568 10.9064 8.60302 10.8226 8.61848 10.7325L9.03272 8.62368Z" fill="white" style="fill:white;fill-opacity:1;"/>
+</g>
+</svg>
+```
+
+### `src/flows/fno/assets/shortcuts/analysis.svg`
+
+```tsx
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="19.8232" height="19.8213" viewBox="0 0 19.8232 19.8213" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="ai-smart-assistant-square--ai-smart-assistant-square-intelligence-helper">
+<path id="Subtract" d="M9.11459 3.48246C8.78715 3.9418 8.60119 4.5007 8.60119 5.0896C8.60119 6.14081 9.19585 7.09496 10.1246 7.5617L10.3144 7.6482L12.0847 8.37643C12.1507 8.4037 12.2061 8.4504 12.2452 8.50896L12.2786 8.57034L13.0069 10.3407C13.4337 11.3774 14.379 11.5777 15.5001 11.5777C16.0892 11.5777 16.1249 11.5777 16.3393 11.5777V17.7682C16.3393 18.5572 15.6997 19.1967 14.9107 19.1967H2.05357C1.26459 19.1967 0.625 18.5572 0.625 17.7682V4.91103C0.625 4.12206 1.26459 3.48246 2.05357 3.48246H9.11459Z" fill="#DEF4EA" style="fill:#DEF4EA;fill:color(display-p3 0.8706 0.9569 0.9176);fill-opacity:1;"/>
+<g id="Vector 6273">
+<path id="Vector 6269_3" d="M13.7585 2.55993L14.4872 0.790156C14.5284 0.690243 14.6258 0.625035 14.7338 0.625035C14.8418 0.625035 14.9392 0.690243 14.9804 0.790156L15.7091 2.55993C15.9992 3.26446 16.5587 3.82392 17.2632 4.11402L19.033 4.84276C19.133 4.88389 19.1981 4.98126 19.1981 5.08932C19.1981 5.19738 19.133 5.29475 19.033 5.33588L17.2632 6.06462C16.5587 6.35472 15.9992 6.91418 15.7091 7.61871L14.9804 9.38849C14.9392 9.48839 14.8418 9.55361 14.7338 9.55361C14.6258 9.55361 14.5284 9.48839 14.4872 9.38849L13.7585 7.61871C13.4684 6.91418 12.909 6.35472 12.2044 6.06462L10.4346 5.33588C10.3347 5.29475 10.2695 5.19738 10.2695 5.08932C10.2695 4.98126 10.3347 4.88389 10.4346 4.84276L12.2044 4.11402C12.909 3.82392 13.4684 3.26446 13.7585 2.55993Z" fill="#0F9958" style="fill:#0F9958;fill:color(display-p3 0.0588 0.6000 0.3451);fill-opacity:1;"/>
+</g>
+<g id="Vector 6270">
+<path id="Union" d="M8.66113 2.85742C9.00612 2.85765 9.28613 3.13738 9.28613 3.48242C9.28613 3.82746 9.00612 4.1072 8.66113 4.10742H2.05371C1.60991 4.10742 1.25 4.46733 1.25 4.91113V13.8379L3.38965 11.6689L3.39062 11.668C3.63619 11.4225 3.94341 11.3 4.2998 11.2998C4.65637 11.2999 4.9643 11.4224 5.20996 11.668L6.52344 12.9941L9.00684 10.5352H8.52246C8.32334 10.5351 8.14795 10.4662 8.00879 10.3271C7.86965 10.1879 7.79983 10.0127 7.7998 9.81348C7.7998 9.61419 7.86964 9.43905 8.00879 9.2998C8.14796 9.16072 8.3233 9.0909 8.52246 9.09082H10.7451C10.9441 9.09101 11.1197 9.16083 11.2588 9.2998C11.3978 9.43901 11.4668 9.61432 11.4668 9.81348V12.0352C11.4668 12.2342 11.3976 12.4096 11.2588 12.5488C11.1197 12.6878 10.9441 12.7576 10.7451 12.7578C10.546 12.7577 10.3696 12.6879 10.2305 12.5488C10.0916 12.4097 10.0225 12.2342 10.0225 12.0352V11.5488L7.43164 14.1396C7.18603 14.3851 6.87891 14.5077 6.52246 14.5078C6.16602 14.5077 5.8589 14.3851 5.61328 14.1396L4.2998 12.8262L1.47363 15.6533C1.40758 15.7193 1.3321 15.7682 1.25 15.8018V17.7686C1.25023 18.2122 1.61004 18.5713 2.05371 18.5713H14.9111C15.3546 18.5711 15.7136 18.212 15.7139 17.7686V11.9941C15.7139 11.6492 15.9939 11.3694 16.3389 11.3691C16.684 11.3691 16.9638 11.649 16.9639 11.9941V17.7686C16.9636 18.9024 16.045 19.8211 14.9111 19.8213H2.05371C0.9197 19.8213 0.00022674 18.9025 0 17.7686V4.91113C0 3.77697 0.919556 2.85742 2.05371 2.85742H8.66113ZM10.3486 12.4316C10.3733 12.4562 10.4004 12.4772 10.4277 12.4961C10.4005 12.4773 10.3741 12.4561 10.3496 12.4316C10.3252 12.4073 10.304 12.3806 10.2852 12.3535C10.3039 12.3806 10.3243 12.4073 10.3486 12.4316ZM14.7334 0C15.0494 0 15.3386 0.167004 15.498 0.432617L15.5586 0.551758L16.2871 2.32227C16.5138 2.8725 16.9507 3.30952 17.501 3.53613L19.2705 4.26465C19.605 4.4022 19.8231 4.72791 19.8232 5.08887C19.8232 5.44999 19.6051 5.77645 19.2705 5.91406L17.501 6.64258C16.9507 6.86921 16.5138 7.30617 16.2871 7.85645L15.5586 9.62598C15.421 9.9601 15.0946 10.1787 14.7334 10.1787C14.3724 10.1785 14.0467 9.95997 13.9092 9.62598L13.1807 7.85645C12.954 7.3062 12.517 6.86924 11.9668 6.64258L10.1963 5.91406C9.86231 5.77644 9.64453 5.45008 9.64453 5.08887C9.6447 4.72784 9.86246 4.40223 10.1963 4.26465L11.9668 3.53613C12.517 3.3095 12.954 2.87247 13.1807 2.32227L13.9092 0.551758L13.9697 0.432617C14.1291 0.167157 14.4175 0.000147311 14.7334 0ZM7.97656 9.92676C7.98238 9.95835 7.99195 9.98845 8.00293 10.0176C7.99127 9.98636 7.9817 9.95386 7.97559 9.91992L7.97656 9.92676ZM14.3369 2.79785C13.9834 3.65649 13.301 4.33882 12.4424 4.69238L11.4775 5.08887L12.4424 5.48633C13.301 5.83989 13.9834 6.52222 14.3369 7.38086L14.7334 8.34473L15.1309 7.38086C15.4845 6.52225 16.1667 5.83989 17.0254 5.48633L17.9893 5.08887L17.0254 4.69238C16.1667 4.33882 15.4845 3.65646 15.1309 2.79785L14.7334 1.83301L14.3369 2.79785Z" fill="#0F9958" style="fill:#0F9958;fill:color(display-p3 0.0588 0.6000 0.3451);fill-opacity:1;"/>
+</g>
+</g>
+</svg>
+```
+
+### `src/flows/fno/assets/shortcuts/ipo.svg`
+
+```tsx
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="19.999" height="19.9991" viewBox="0 0 19.999 19.9991" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="announcement-megaphone">
+<path id="Vector 3878" d="M0.713867 16.1284L10.3567 5.7998L15.3567 14.4569L1.59958 17.6427L0.713867 16.1284Z" fill="#0F9958" style="fill:#0F9958;fill:color(display-p3 0.0588 0.6000 0.3451);fill-opacity:1;"/>
+<g id="Union">
+</g>
+<path id="Union_2" d="M9.71193 4.67366C10.0533 4.47671 10.4901 4.59337 10.6875 4.9344L16.2705 14.6043C16.4675 14.9459 16.3502 15.3827 16.0088 15.5799C15.6672 15.7769 15.2304 15.6597 15.0332 15.3182L15.0039 15.2684L9.78713 16.4793C9.91962 16.9502 9.92929 17.4511 9.80275 17.9325C9.61582 18.6431 9.15429 19.2506 8.51955 19.6209C7.88487 19.9912 7.12889 20.0952 6.41799 19.908C5.70732 19.7211 5.09983 19.2594 4.72951 18.6248L4.72853 18.6219L4.23537 17.7684L1.75685 18.3446C1.45065 18.4156 1.13376 18.2779 0.976579 18.0057L0.0957194 16.4793C-0.0613575 16.2071 -0.0222558 15.8632 0.192399 15.6336L9.47951 5.69905L9.45119 5.64925C9.25427 5.30781 9.37074 4.87097 9.71193 4.67366ZM5.68947 17.4305L5.96291 17.9041C6.14232 18.2116 6.43714 18.4356 6.78127 18.5262L6.91213 18.5535C7.21686 18.6021 7.53077 18.5445 7.79982 18.3875C8.10725 18.2082 8.33131 17.9135 8.42189 17.5692C8.48876 17.3146 8.47797 17.0484 8.39552 16.8026L5.68947 17.4305ZM1.59572 16.2225L1.94826 16.8328L14.2578 13.9744L10.2266 6.99202L1.59572 16.2225Z" fill="#0F9958" style="fill:#0F9958;fill:color(display-p3 0.0588 0.6000 0.3451);fill-opacity:1;"/>
+<path id="Union_3" d="M2.63574 9.28516C3.03023 9.28516 3.35059 9.60453 3.35059 9.99902C3.35059 10.3935 3.03023 10.7129 2.63574 10.7129H0.713867C0.319378 10.7129 0 10.3935 0 9.99902C0 9.60453 0.319378 9.28516 0.713867 9.28516H2.63574ZM19.2842 9.28516C19.6787 9.28516 19.999 9.60453 19.999 9.99902C19.999 10.3935 19.6787 10.7129 19.2842 10.7129H17.3623C16.9678 10.7129 16.6484 10.3935 16.6484 9.99902C16.6484 9.60453 16.9678 9.28516 17.3623 9.28516H19.2842ZM2.92773 2.92773C3.20668 2.64879 3.65856 2.64879 3.9375 2.92773L5.29688 4.28613C5.57582 4.56508 5.57581 5.01793 5.29688 5.29688C5.01793 5.57582 4.56508 5.57582 4.28613 5.29688L2.92773 3.9375C2.64879 3.65855 2.64879 3.20668 2.92773 2.92773ZM16.0596 2.92773C16.3385 2.64879 16.7914 2.64879 17.0703 2.92773C17.349 3.20663 17.349 3.6586 17.0703 3.9375L15.7109 5.29688C15.432 5.57558 14.9801 5.57558 14.7012 5.29688C14.4222 5.01793 14.4222 4.56508 14.7012 4.28613L16.0596 2.92773ZM9.99902 0C10.3935 0 10.7129 0.319378 10.7129 0.713867V2.63574C10.7129 3.03023 10.3935 3.35059 9.99902 3.35059C9.60453 3.35059 9.28516 3.03023 9.28516 2.63574V0.713867C9.28516 0.319378 9.60453 0 9.99902 0Z" fill="#0F9958" style="fill:#0F9958;fill:color(display-p3 0.0588 0.6000 0.3451);fill-opacity:1;"/>
+</g>
+</svg>
+```
+
+### `src/flows/fno/assets/shortcuts/referral.svg`
+
+```tsx
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="18.3926" height="18.3926" viewBox="0 0 18.3926 18.3926" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="gift-2--reward-box-social-present-gift-media-rating-bow">
+<path id="Vector" d="M16.7337 16.3395V9.04297H1.66016V16.3395C1.66016 17.1285 2.29976 17.768 3.08873 17.768H15.3051C16.0941 17.768 16.7337 17.1285 16.7337 16.3395Z" fill="#DEF4EA" style="fill:#DEF4EA;fill:color(display-p3 0.8706 0.9569 0.9176);fill-opacity:1;"/>
+<path id="Vector_2" d="M17.7679 6.04165V7.61422C17.7679 8.40321 17.1283 9.04279 16.3393 9.04279H2.05363C1.26466 9.04279 0.625061 8.40321 0.625061 7.61422V6.04165C0.625061 5.25266 1.26466 4.61308 2.05363 4.61308H16.3393C17.1283 4.61308 17.7679 5.25266 17.7679 6.04165Z" fill="#0F9958" style="fill:#0F9958;fill:color(display-p3 0.0588 0.6000 0.3451);fill-opacity:1;"/>
+<path id="Union" d="M12.6846 0C13.657 0 14.4099 0.287715 14.8984 0.829102C15.3815 1.3647 15.5188 2.05189 15.4639 2.67383C15.4231 3.13433 15.276 3.59147 15.0527 3.98828H16.3389C17.473 3.98828 18.3926 4.90783 18.3926 6.04199V7.61426C18.3925 8.37684 17.9756 9.04034 17.3584 9.39453V16.3398C17.3582 17.4738 16.4387 18.3926 15.3047 18.3926H3.08887C1.95486 18.3926 1.03537 17.4739 1.03516 16.3398V9.39551C0.417362 9.04147 7.40396e-05 8.37728 0 7.61426V6.04199C0 4.90784 0.919594 3.98831 2.05371 3.98828H3.34082C3.11754 3.59149 2.97044 3.13438 2.92969 2.67383C2.87472 2.05188 3.01109 1.36471 3.49414 0.829102C3.98264 0.287562 4.73556 5.99149e-05 5.70801 0C7.04718 0 8.08333 0.886404 8.74512 1.80469C8.91192 2.03617 9.06313 2.28114 9.19629 2.53027C9.32936 2.28112 9.48065 2.03619 9.64746 1.80469C10.3092 0.886372 11.3454 0.000144661 12.6846 0ZM2.28516 16.3398C2.28537 16.7835 2.6452 17.1426 3.08887 17.1426H8.57031V9.66797H2.28516V16.3398ZM9.82031 17.1426H15.3047C15.7484 17.1426 16.1082 16.7835 16.1084 16.3398V9.66797H9.82031V17.1426ZM2.05371 5.23828C1.60994 5.23831 1.25 5.59821 1.25 6.04199V7.61426C1.25011 8.05795 1.61001 8.41794 2.05371 8.41797H16.3389C16.7826 8.41797 17.1425 8.05798 17.1426 7.61426V6.04199C17.1426 5.59818 16.7827 5.23828 16.3389 5.23828H2.05371ZM12.6846 1.25C11.9303 1.25015 11.2216 1.7597 10.6621 2.53613C10.307 3.02898 10.0649 3.55811 9.93457 3.98828H13.2197C13.3646 3.98828 13.5852 3.89269 13.8105 3.60449C14.0289 3.32521 14.1853 2.94106 14.2188 2.56348C14.2518 2.18879 14.1618 1.87897 13.9707 1.66699C13.7849 1.46092 13.415 1.25 12.6846 1.25ZM5.70801 1.25C4.9778 1.25006 4.60868 1.46095 4.42285 1.66699C4.23158 1.87907 4.14163 2.18945 4.1748 2.56445C4.20829 2.94173 4.36392 3.32536 4.58203 3.60449C4.8072 3.89245 5.02795 3.98812 5.17285 3.98828H8.45898C8.3286 3.5581 8.0865 3.02896 7.73145 2.53613C7.17187 1.75958 6.46244 1.25 5.70801 1.25Z" fill="#0F9958" style="fill:#0F9958;fill:color(display-p3 0.0588 0.6000 0.3451);fill-opacity:1;"/>
+</g>
+</svg>
+```
+
+### `src/flows/fno/assets/shortcuts/watchlist.svg`
+
+```tsx
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="19.8223" height="19.8221" viewBox="0 0 19.8223 19.8221" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="task-list-edit--task-list-edit-work">
+<path id="Subtract" d="M16.3392 6.93546C15.7591 6.98869 15.213 7.24336 14.7981 7.65912L8.08379 14.3877C7.70114 14.7711 7.45342 15.2685 7.37786 15.805L6.94929 18.8478C6.9329 18.9641 6.92485 19.0805 6.92483 19.1964H2.05353C1.67465 19.1964 1.31129 19.0458 1.04338 18.778C0.775469 18.5101 0.624959 18.1467 0.624959 17.7678V2.05353C0.624959 1.67465 0.775469 1.31129 1.04338 1.04338C1.31129 0.775469 1.67465 0.624959 2.05353 0.624959H11.3392L16.3392 5.62496V6.93546Z" fill-rule="evenodd" clip-rule="evenodd" fill="#DEF4EA" style="fill:#DEF4EA;fill:color(display-p3 0.8706 0.9569 0.9176);fill-opacity:1;"/>
+<path id="Vector" d="M19.1972 12.0544L12.4686 18.7829L9.42578 19.1972L9.85435 16.1543L16.5686 9.42578L19.1972 12.0544Z" fill="#0F9958" style="fill:#0F9958;fill:color(display-p3 0.0588 0.6000 0.3451);fill-opacity:1;"/>
+<path id="Union" d="M16.5684 8.80078C16.7341 8.80071 16.8935 8.86621 17.0107 8.9834L19.6387 11.6123C19.7559 11.7295 19.8223 11.8889 19.8223 12.0547C19.8222 12.2203 19.7558 12.379 19.6387 12.4961L12.9102 19.2246C12.8135 19.3212 12.6881 19.3839 12.5527 19.4023L9.50977 19.8164C9.31588 19.8427 9.12047 19.7764 8.98242 19.6377C8.84467 19.499 8.77949 19.3039 8.80664 19.1104L9.23535 16.0674L9.25781 15.9688C9.28769 15.8727 9.34038 15.7848 9.41211 15.7129L16.126 8.98438C16.2431 8.86696 16.4025 8.80087 16.5684 8.80078ZM11.3389 0C11.5045 1.07367e-05 11.6641 0.0655475 11.7812 0.182617L16.7812 5.18262C16.8984 5.29982 16.9639 5.45926 16.9639 5.625V6.33887C16.9638 6.68401 16.684 6.96385 16.3389 6.96387C15.9939 6.96364 15.7139 6.68389 15.7139 6.33887V5.88379L11.0801 1.25H2.05371C1.84059 1.25 1.63605 1.33465 1.48535 1.48535C1.33465 1.63605 1.25 1.84059 1.25 2.05371V17.7676C1.25001 17.9807 1.33474 18.1853 1.48535 18.3359C1.63611 18.4866 1.84067 18.5713 2.05371 18.5713H6.33887C6.68398 18.5713 6.96379 18.8512 6.96387 19.1963C6.96385 19.5414 6.68401 19.8213 6.33887 19.8213H2.05371C1.50902 19.8213 0.986615 19.6047 0.601562 19.2197C0.216455 18.8346 1.07878e-05 18.3121 0 17.7676V2.05371C0 1.50906 0.216446 0.986681 0.601562 0.601562C0.986681 0.216446 1.50906 0 2.05371 0H11.3389ZM10.4443 16.4473L10.1592 18.4658L12.1738 18.1924L18.3125 12.0537L16.5684 10.3096L10.4443 16.4473ZM6.90234 9.39062C7.10293 9.10981 7.49355 9.04465 7.77441 9.24512C8.05529 9.44574 8.12053 9.83631 7.91992 10.1172L5.58984 13.3789C5.48306 13.5283 5.31586 13.6235 5.13281 13.6387C4.94993 13.6537 4.76948 13.5877 4.63965 13.458L3.24121 12.0596C2.99748 11.8155 2.99743 11.4198 3.24121 11.1758C3.48529 10.9317 3.8819 10.9317 4.12598 11.1758L5.00195 12.0518L6.90234 9.39062ZM6.90234 3.58594C7.10293 3.30512 7.49355 3.23996 7.77441 3.44043C8.05529 3.64106 8.12053 4.03162 7.91992 4.3125L5.58984 7.57422C5.48306 7.72365 5.31586 7.81883 5.13281 7.83398C4.94993 7.84905 4.76948 7.78299 4.63965 7.65332L3.24121 6.25488C2.99748 6.01085 2.99743 5.61509 3.24121 5.37109C3.48529 5.12701 3.8819 5.12702 4.12598 5.37109L5.00195 6.24707L6.90234 3.58594Z" fill="#0F9958" style="fill:#0F9958;fill:color(display-p3 0.0588 0.6000 0.3451);fill-opacity:1;"/>
 </g>
 </svg>
 ```
@@ -2996,21 +3051,24 @@ export function CommodityHeatmap({ onOpen, onViewAll }: { onOpen: (name: string)
 
 ```tsx
 import { Button } from '@l3/components/Button'
+import { Grid } from '@l3/components/Grid'
+import { Inset } from '@l3/components/Inset'
 import { Stack } from '@l3/components/Stack'
 import { t } from '../../copy'
 import { commodities, type Commodity } from '../data'
 import parts from '../../components/HomeParts.module.css'
 import styles from './Commodities.module.css'
 
-/** Gold · Silver · Crude Oil · Natural Gas: artwork in a round Tertiary button, the name and the day's change under it. */
+/** Gold · Silver · Crude Oil · Natural Gas, four across: artwork in a round Tertiary button, the name and the day's change
+ *  under it. Its own 16-gutter 4-column Grid (24 Nov: the shared .shortcuts class lost its row when Equity moved to ShortcutCircles). */
 export function CommodityShortcuts({ onOpen }: { onOpen: (commodity: Commodity) => void }) {
-  return <div className={parts.shortcuts} role="list" aria-label={t('commodities.shortcuts')}>{commodities.map((commodity) => <Stack key={commodity.id} gap="08" align="center" role="listitem">
+  return <div className={parts.shortcuts}><Inset paddingInline="16" paddingBlock="00"><Grid columns={4} gap="08" role="list" aria-label={t('commodities.shortcuts')}>{commodities.map((commodity) => <Stack key={commodity.id} gap="08" align="center" role="listitem">
     <Button variant="tertiary" size="lg" className={styles.shortcut} aria-label={commodity.name} iconLeft={<img className={styles.shortcutArt} src={commodity.image} alt="" />} onClick={() => onOpen(commodity)} />
     <Stack gap="04" align="center">
       <span className={parts.secondaryLabel}>{commodity.name}</span>
       <span className={[styles.change, commodity.change < 0 ? parts.down : parts.up].join(' ')}>{commodity.change > 0 ? '+' : ''}{commodity.change.toFixed(2)}%</span>
     </Stack>
-  </Stack>)}</div>
+  </Stack>)}</Grid></Inset></div>
 }
 ```
 
@@ -5262,22 +5320,27 @@ import { Card } from '@l3/components/Card'
 import { Icon } from '@l3/components/Icon'
 import { SectionHeader } from '@l3/components/SectionHeader'
 import { Stack } from '@l3/components/Stack'
-import { msAdd, msBookmarkFill, msChevronRight, msLightbulbFill, msRedeem, msSmartToyFill } from '@l3/icons/material'
+import { msAdd, msChevronRight } from '@l3/icons/material'
 import { Rail } from '../../../shared/ui/Rail'
 import { ShortcutCircles } from '../../../shared/ui/ShortcutCircles'
+import analysisIcon from '../assets/shortcuts/analysis.svg'
+import ipoIcon from '../assets/shortcuts/ipo.svg'
+import watchlistIcon from '../assets/shortcuts/watchlist.svg'
+import referralIcon from '../assets/shortcuts/referral.svg'
 import { t } from '../copy'
 import type { Watchlist } from '../data'
 import styles from './HomeParts.module.css'
 
-/** F&O Home's shortcuts, drawn as the Stocks Home's (shared ShortcutCircles, 23 Nov — the user's call): Trade Calls ·
- *  Watchlist · Smart Invest · Referral, icons in the Indian markets' green (the same icons Home uses for these features). */
+/** F&O Home's shortcuts, Figma 6754:62886 (24 Nov, the user's call: "copy this exact design"): Analysis · IPO ·
+ *  Watchlist · Referral, each a 40 disc with Figma's two-tone green Streamline icon (assets/shortcuts) and its name under it.
+ *  Drawn with the shared ShortcutCircles. */
 export function Shortcuts({ onWatchlist, onDestination }: { onWatchlist: () => void; onDestination: (label: string) => void }) {
-  const icon = (glyph: string) => <Icon icon={glyph} size={24} />
+  const art = (src: string) => <img src={src} alt="" />
   const items = [
-    { id: 'calls', label: t('shortcut.calls'), icon: icon(msLightbulbFill) },
-    { id: 'watchlist', label: t('shortcut.watchlist'), icon: icon(msBookmarkFill) },
-    { id: 'invest', label: t('shortcut.invest'), icon: icon(msSmartToyFill) },
-    { id: 'referral', label: t('shortcut.referral'), icon: icon(msRedeem) },
+    { id: 'analysis', label: t('shortcut.analysis'), icon: art(analysisIcon) },
+    { id: 'ipo', label: t('shortcut.ipo'), icon: art(ipoIcon) },
+    { id: 'watchlist', label: t('shortcut.watchlist'), icon: art(watchlistIcon) },
+    { id: 'referral', label: t('shortcut.referral'), icon: art(referralIcon) },
   ]
   return (
     <div className={styles.shortcuts}>
@@ -6394,6 +6457,8 @@ function addMinutes(start: string, add: number) {
   "us.sub": "Buy Apple, NVIDIA & more",
   "shortcut.label": "Shortcuts",
   "shortcut.calls": "Trade Calls",
+  "shortcut.analysis": "Analysis",
+  "shortcut.ipo": "IPO",
   "shortcut.watchlist": "Watchlist",
   "shortcut.invest": "Smart Invest",
   "shortcut.referral": "Referral",
@@ -11722,12 +11787,32 @@ function Sparkler() {
 
 @keyframes navPop { 0% { transform: scale(.7); } 60% { transform: scale(1.12); } 100% { transform: scale(1); } }
 @keyframes navRise { from { opacity: 0; transform: translateY(var(--l3-spacing-04)); } to { opacity: 1; transform: none; } }
-@keyframes navFadeBack { from { color: var(--l3-content-primary); } to { color: var(--l3-content-secondary); } }
+@keyframes navFadeBack { from { color: var(--l3-content-primary); } to { color: var(--l3-content-tertiary); } }
 @keyframes navGlowIn { from { opacity: 0; } to { opacity: 1; } }
 
 @media (prefers-reduced-motion: reduce) {
   .glow { transition: none; }
   .frame .pill *, .frame .glow { animation: none !important; transition: none !important; }
+}
+
+/* V3 (24 Nov, user): 2 between the icon and its label, and the chosen tab's label in accent green, matching its
+   coloured icon. */
+.frame[data-glow-at='bottom'] .pill :is(button, a)[class] {
+  gap: var(--l3-spacing-02);
+}
+.frame[data-glow-at='bottom'] .pill :is(button, a)[data-selected] > span:last-child {
+  color: var(--l3-content-accent-success-default);
+}
+
+/* Inactive tabs (24 Nov, user): as light as the Mutual Fund / F&O navs' L3 icons (their 40 / 60 parts), and the label
+   the same colour as its icon in every nav — content/tertiary for both. (The L3 NavIcons in the sub-navs keep their
+   baked 40 / 60 shares.) A user call over the "no tertiary text" default. */
+.pill :is(button, a)[class]:not([data-selected]) {
+  color: var(--l3-content-tertiary);
+}
+/* …but the labels stay content/secondary (24 Nov, user: "labels back to secondary"); only the icons go lighter. */
+.pill :is(button, a)[class]:not([data-selected]) > span:last-child {
+  color: var(--l3-content-secondary);
 }
 ```
 
@@ -12266,9 +12351,12 @@ export function SheetHost({ container, children }: { container: HTMLElement | nu
   --ring: var(--l3-content-accent-success-default);
 }
 
-/* The whole cell is the tap target; rounded so its press layer isn't a hard box. */
-.tap.tap {
+/* The whole cell is the tap target: no card of its own (Figma 6754:62886 has none), rounded so its press layer isn't a hard box. */
+.cell > .tap.tap.tap.tap { /* beats F&O Home's .flatCards ring on clickable cards */
   border-radius: var(--l3-radius-12);
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
 }
 
 .body {
@@ -12281,43 +12369,39 @@ export function SheetHost({ container, children }: { container: HTMLElement | nu
 }
 
 .circle {
-  position: relative;
   display: inline-flex;
-  isolation: isolate;
 }
 
-/* The 1px edge outside the disc: the market's colour at 30% at the top, fading to the surface at the foot. */
-.circle::before {
-  content: '';
-  position: absolute;
-  z-index: -1;
-  inset: -1px; /* 1px edge */
-  border-radius: var(--l3-radius-full);
-  background: linear-gradient(to bottom, color-mix(in srgb, var(--ring) 30%, var(--l3-surface-primary)), var(--l3-surface-primary));
-}
-
+/* Figma 6754:62886 (24 Nov, user: "copy this exact design"): a 40 disc on surface-primary, a 1px subtle edge, a very
+   soft glow; the 20 icon centred. FLAG (L3 gap): the 16 glow is a raw value (L3 has no such elevation). */
 .disc.disc {
-  background:
-    linear-gradient(to bottom, transparent, color-mix(in srgb, var(--l3-border-light) 20%, transparent)),
-    var(--l3-surface-primary);
-  box-shadow: 0 4px 4px color-mix(in srgb, var(--ring) 4%, transparent);
+  background: var(--l3-surface-primary);
+  box-shadow: inset 0 0 0 1px var(--l3-border-light), 0 0 var(--l3-spacing-16) color-mix(in srgb, var(--l3-content-secondary) 6%, transparent);
 }
 
-/* The 24 icon centred in the 40 disc. L3 gap: Avatar's icon slot is fixed at 20 for a 40 avatar. */
+/* The 20 icon (Avatar's icon slot for a 40 avatar). */
 .disc.disc > * {
-  width: var(--l3-icon-size-24);
-  height: var(--l3-icon-size-24);
+  width: var(--l3-icon-size-20);
+  height: var(--l3-icon-size-20);
 }
 
-/* The icon's colour is set on its own wrapper: L3 Avatar colours its icon slot itself. */
+/* The icon's colour is set on its own wrapper: L3 Avatar colours its icon slot itself. Artwork (an img) keeps its own colours. */
 .icon {
   display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--l3-icon-size-20);
+  height: var(--l3-icon-size-20);
   color: var(--ring);
+}
+.icon > img {
+  display: block;
 }
 
 .label {
   font: var(--l3-text-label-12);
   color: var(--l3-content-secondary);
+  white-space: nowrap;
 }
 ```
 

@@ -199,6 +199,18 @@ Every tap he wired is kept. The main path: FTUX sheet → Activate → Declarati
 → Pay on bank → Money ready → Stock → Buy → Executed → Wallet → Withdraw.
 
 ### Changelog
+- 24 Nov: Portfolio Holdings — 12 (was 24) under the P&L cards, above the IN / US tabs.
+- 24 Nov: P&L card V2 — 6 between a returns amount and its (%) (8 less 2; Stack has no 06 step, set in CSS).
+- 24 Nov: P&L card V2 — 4 (was 8) between a returns amount and its (%).
+- 24 Nov: Portfolio — no grey top: the whole page is surface/default, the content under the cards square (no sheet).
+- 24 Nov: P&L card V2 — returns % shown in brackets after the amount, "(12.61%)", green / red. FLAG (L3 gap): PriceChange has no bracketed-% -only form.
+- 24 Nov: P&L card V2 — Invested, Total returns and Today's returns are one row each (label left, value right), Invested first; the line under the value says just Current value.
+- 24 Nov: Portfolio → Holdings P&L card V2 (setting Portfolio → "P&L card", V1 default since 24 Nov, V2 kept): flag + market name, current value as the one big number with Invested under it, Total and today's returns side by side (no hidden switch) with L3 PriceChange; an L3 clickable Card. HoldingsCardV2.tsx.
+- 24 Nov: Portfolio → Holdings — an Indian holding card is clickable and opens the Indian stock page (stocks-32) on that stock.
+- 24 Nov: Floating navbar — inactive labels back to content/secondary; only the inactive icons are content/tertiary.
+- 24 Nov: Floating navbar — inactive tabs (icon and label) in content/tertiary, as light as the Mutual Fund / F&O navs' icons, the label matching its icon in every nav.
+- 24 Nov: Bottom navbar V3 — 2 between each icon and its label; the chosen tab's label in accent green (shared FloatingNav).
+- 24 Nov: Indian order cards are L3 clickable Cards (the US cards' shadow) and open the new Indian Order Details (9001:69 · us-stocks-105): the US layout in ₹ with NSE, product, GTT validity, status timeline and dock by status; back lands on the IND side, same list. Orders pill row scrolls out to the screen's right edge (cut only at the rule on the left).
 - 24 Nov (bug): Limit / SL pads kept the $ default set at the market price (2 shares), so at the limit price it was 1.9x shares and Set SL said "not available on fractional shares". A whole share count now stays whole when the price per share changes (on opening the type, and when the limit is stepped).
 - 24 Nov: Price cards (trigger / limit, PriceField) padded 16 all round, 4 more than 12.
 - 24 Nov: Portfolio → Orders, Indian side gets the US filter row on Open / History: "All orders ⇕" steps All → Delivery → Intraday, Filters opens the same sheet with Indian groups (Side, Order type, Status on History), badge + "No orders match" empty state. OrderFilterSheet now takes `groups` / `empty` props.
@@ -22756,6 +22768,20 @@ export const usStocks: Flow = {
     { id: 'wallet', title: 'USD wallet' },
   ],
   options: [
+    // Portfolio → Holdings' P&L card (24 Nov, the user's call: "a V2 for better UX"): V2 · the market named with its flag,
+    // current value as the one big number, Total and today's returns side by side (no hidden switch), L3 PriceChange;
+    // V1 · the card as it was (IND / Invested side by side, a Total ⇄ 1D switch, the returns pill).
+    {
+      id: 'pnlCard',
+      group: 'Portfolio',
+      label: 'P&L card',
+      values: [
+        { value: 'v1', label: 'V1 · Total ⇄ 1D switch' },
+        { value: 'v2', label: 'V2 · both returns shown' },
+      ],
+      default: 'v1', // V1 by default (24 Nov, user)
+      floatOn: ['us-stocks-05'],
+    },
     // "Order pad" archived 19 Nov (the user's call): V2 · Minted layout kept; V1 · Commodity pad layout archived.
     // useOrderPadVersion() returns 'v2'; the V1 code stays in OrderPad.tsx / OrderResult.tsx.
     // "Validity switch" archived 23 Nov (the user's call): V3 · above the amount, with Amount / Shares kept; V1 · right
@@ -23186,6 +23212,7 @@ export const registry: UsScreenEntry[] = [
   { figma: '9001:48', id: 'us-stocks-87', badge: 'new', section: 'activated', name: "Order Details · Partly executed · Limit buy", note: "NVDA: 5 of 8 bought, the rest cancelled at the close (reason shown)." },
   { figma: '9001:49', id: 'us-stocks-88', badge: 'new', section: 'activated', name: "Order Details · Failed", note: "META: rejected — not enough USD balance. Retry." },
   { figma: '9001:50', id: 'us-stocks-89', badge: 'new', section: 'activated', name: "Order Details · Cancelled · Limit sell", note: "NVDA: a sell the user cancelled. Place again." },
+  { figma: '9001:69', id: 'us-stocks-105', badge: 'new', badgeNote: "Not in Figma: the US Order Details for Indian orders", section: 'activated', name: "Order Details · Indian", note: "An Indian order card in Portfolio → Orders (IND) opens this: the US Order Details layout in ₹ — the stock row (NSE), status line, the reason, the facts (order type, product, trigger / limit, avg, validity incl. GTT, placed on, NSE, order ID), the Order status timeline, and the dock by status (Cancel order + Modify, Repeat order, Retry, Place again). Back lands on the IND side, same list." },
   { figma: '9001:51', id: 'us-stocks-90', badge: 'new', section: 'activated', name: "Order Details · Expired", note: "GOOGL: a Day limit order that never reached its price. Place again." },
 ]
 
@@ -29416,6 +29443,100 @@ export function SpxIndexScreen() {
 }
 ```
 
+### `src/flows/us-stocks/screens/entry/components/HoldingsCardV2.tsx`
+
+```tsx
+// Portfolio → Holdings P&L card, V2 (24 Nov, user: "a V2 of the position card, for better UX"). What changed from V1:
+// - It says which market it is: the round flag and "Indian Stocks" / "US Stocks" on top (V1 only had "IND" in a label).
+// - Current value is the one big number.
+// - Invested, Total and today's returns are all shown, a row each under a hairline (label left, value right) — no
+//   hidden 1D / Total switch to find.
+// - Returns: the amount, then its % in brackets, "(12.61%)", in green / red — not V1's hand-made pill.
+// - The card is an L3 clickable Card (it picks its market, as the rail and the tabs below do).
+// Same carousel as V1 (HoldingsCards: the rail, the snap, the dots); this is only the card. Setting: Portfolio → "P&L card".
+import type { ReactNode } from 'react'
+import { Card } from '@l3/components/Card'
+import { Stack } from '@l3/components/Stack'
+import { Usd } from '../../../../../shared/money'
+import { Flag } from '../../../../../shared/ui/Flag'
+import type { HoldingsMarket, HoldingsSummary } from './HoldingsCards'
+import styles from './HoldingsCards.module.css'
+
+const NAME: Record<HoldingsMarket, string> = { in: 'Indian Stocks', us: 'US Stocks' }
+
+/** '₹1,500.25' -> 1500.25 */
+const amountOf = (text: string) => Number(text.replace(/[^0-9.]/g, '')) || 0
+/** The summary's currency sign ('₹' or '$'). */
+const currencyOf = (text: string) => text.replace(/[\d.,+\-−\s]/g, '') || '₹'
+
+export function HoldingsCardV2({ market, summary, onPick }: { market: HoldingsMarket; summary: HoldingsSummary; onPick: () => void }) {
+  const cur = currencyOf(summary.current)
+  const current = amountOf(summary.current)
+  const totalAmount = amountOf(summary.pnl) * (summary.up ? 1 : -1)
+  const totalPct = amountOf(summary.pct) * (summary.up ? 1 : -1)
+  // Today: the same sample as V1's 1D switch (1.24% of the current value).
+  const day = current * 0.0124
+  const dayPct = current ? (day / (current - day)) * 100 : 0
+  const money = (n: number) => `${n > 0 ? '+' : n < 0 ? '−' : ''}${cur}${Math.abs(n).toLocaleString(cur === '₹' ? 'en-IN' : 'en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+  return (
+    <Card className={`${styles.card} ${styles.v2}`} data-market={market} onClick={onPick} aria-label={`${NAME[market]} P&L`}>
+      <Stack gap="16">
+        <Stack gap="08">
+          <Stack direction="horizontal" align="center" gap="08">
+            <Flag code={market} />
+            <span className={styles.v2Market}>{NAME[market]}</span>
+          </Stack>
+          <Stack gap="04">
+            <span className={styles.v2Value}><Usd text={summary.current} /></span>
+            <span className={styles.v2Label}>Current value</span>
+          </Stack>
+        </Stack>
+        <span className={styles.v2Rule} aria-hidden="true" />
+        {/* One row per figure, label left and value right; Invested first (24 Nov, user). */}
+        <Stack gap="12">
+          <Row label="Invested"><span className={styles.v2Amount}><Usd text={summary.invested} align="end" /></span></Row>
+          <Row label="Total returns"><ReturnsValue text={money(totalAmount)} pct={totalPct} /></Row>
+          <Row label="Today's returns"><ReturnsValue text={money(current ? day : 0)} pct={dayPct} /></Row>
+        </Stack>
+      </Stack>
+    </Card>
+  )
+}
+
+function Row({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <Stack direction="horizontal" align="center" justify="between" gap="12">
+      <span className={styles.v2Label}>{label}</span>
+      {children}
+    </Stack>
+  )
+}
+
+function ReturnsValue({ text, pct }: { text: string; pct: number }) {
+  return (
+    <Stack direction="horizontal" align="center" gap="04" className={styles.v2Returns}>
+      <span className={styles.v2Amount}><Usd text={text} align="end" /></span>
+      <BracketPct pct={pct} />
+    </Stack>
+  )
+}
+
+/** The % in brackets after the amount, "(12.61%)", in the indicator green / red (24 Nov, user). As L3 PriceChange writes the
+ *  bracketed % (no sign: the amount carries it), but on its own, the amount staying content/primary.
+ *  FLAG (L3 gap): PriceChange has no "bracketed % only" form — it brackets the % only after a coloured amount. */
+function BracketPct({ pct }: { pct: number }) {
+  const rounded = Number(pct.toFixed(2))
+  const direction = rounded > 0 ? 'up' : rounded < 0 ? 'down' : 'flat'
+  const text = `(${Math.abs(rounded).toFixed(2)}%)`
+  return (
+    <span className={styles.v2Pct} data-direction={direction}>
+      <span aria-hidden="true">{text}</span>
+      <span className={styles.v2SrOnly}>{direction === 'flat' ? 'unchanged' : direction} {text}</span>
+    </span>
+  )
+}
+```
+
 ### `src/flows/us-stocks/screens/entry/components/HoldingsCards.module.css`
 
 ```css
@@ -29597,6 +29718,56 @@ export function SpxIndexScreen() {
   }
 
 }
+
+/* ---- V2 card (HoldingsCardV2, 24 Nov) — an L3 clickable Card in V1's carousel slot; the market glow kept. ---- */
+.card.v2.v2 { /* beats L3 Card's own fill and padding */
+  display: block;
+  padding: var(--l3-spacing-16);
+  border-radius: var(--l3-radius-16);
+  text-align: start;
+}
+.v2Market {
+  font: var(--l3-text-label-14);
+  color: var(--l3-content-primary);
+}
+.v2Value {
+  font: var(--l3-text-heading-24);
+  color: var(--l3-content-primary);
+  font-variant-numeric: tabular-nums;
+}
+.v2Label {
+  font: var(--l3-text-description-12);
+  color: var(--l3-content-secondary);
+}
+.v2Amount {
+  font: var(--l3-text-label-14);
+  color: var(--l3-content-primary);
+  font-variant-numeric: tabular-nums;
+}
+.v2Rule {
+  display: block;
+  height: 1px; /* 1px hairline */
+  background: var(--l3-border-light);
+}
+/* "(12.61%)" after a returns amount (BracketPct): L3 PriceChange's sm type and indicator colours. */
+.v2Pct {
+  font: var(--l3-text-label-12);
+  color: var(--l3-content-secondary);
+  font-variant-numeric: tabular-nums;
+}
+.v2Pct[data-direction='up'] { color: var(--l3-content-accent-indicator-up-default); }
+.v2Pct[data-direction='down'] { color: var(--l3-content-accent-indicator-down-default); }
+.v2SrOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* 6 between a returns amount and its (%) (24 Nov, user: 8 less 2). Stack has no 06 gap step — FLAG (L3 gap). */
+.v2Returns.v2Returns { gap: var(--l3-spacing-06); }
 ```
 
 ### `src/flows/us-stocks/screens/entry/components/HoldingsCards.tsx`
@@ -29609,6 +29780,8 @@ import { useEffect, useRef, useState } from 'react'
 import { Icon } from '@l3/components/Icon'
 import { lmSwitchArrowVertical } from '@l3/icons/lemonnade'
 import { Usd } from '../../../../../shared/money'
+import { useFlowOption } from '../../../../../shared/prototype'
+import { HoldingsCardV2 } from './HoldingsCardV2'
 import styles from './HoldingsCards.module.css'
 
 export type HoldingsMarket = 'in' | 'us'
@@ -29635,6 +29808,7 @@ export function HoldingsCards({
   const railRef = useRef<HTMLDivElement>(null)
   const scrollingToPick = useRef(false)
   const [oneDay, setOneDay] = useState(false)
+  const v2 = useFlowOption('us-stocks', 'pnlCard', 'v1') === 'v2' // Portfolio → "P&L card" (24 Nov, user)
 
   // bring the picked card into view
   useEffect(() => {
@@ -29665,6 +29839,7 @@ export function HoldingsCards({
       >
         {order.map((id) => {
           const summary = data[id]
+          if (v2) return <HoldingsCardV2 key={id} market={id} summary={summary} onPick={() => onMarket(id)} />
           const base = amountOf(summary.current)
           const day = base * 0.0124
           const returns = oneDay
@@ -29832,6 +30007,11 @@ export function MaskImg({ src, w, h = w, className }: { src: string; w: number; 
 .tabs {
   flex: 1;
   min-width: 0;
+  /* Pills that don't fit scroll out to the screen's right edge, not cut 16 short of it (24 Nov, user): the row runs
+     into the page's right inset and pads it back, so they're only cut on the left, at the rule. */
+  margin-right: calc(-1 * var(--l3-spacing-16));
+  padding-right: var(--l3-spacing-16);
+  scroll-padding-inline-end: var(--l3-spacing-16);
 }
 
 .stack {
@@ -29926,7 +30106,7 @@ export function MaskImg({ src, w, h = w, className }: { src: string; w: number; 
 // coming back from Order Details shows the same list. The Indian side starts on Open each time, as before.
 // "All orders ⇕" is an L3 action pill with the switch icon (AGENTS: a switcher beside order tabs), as Filters next to it.
 // FLAG: the IND / USD Select is restyled into an outlined pill and the Tabs row is custom-sized (see OrdersTab.module.css).
-import { useState, type ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { Badge } from '@l3/components/Badge'
 import { Button } from '@l3/components/Button'
 import { EmptyState } from '@l3/components/EmptyState'
@@ -29948,6 +30128,8 @@ import {
   inFilterGroups,
   inHistoryOrders,
   inOpenOrders,
+  inOrdersReturn,
+  openInOrder,
   inSips,
   nextInProduct,
   ofInProduct,
@@ -29982,8 +30164,11 @@ const EMPTY_KIND: Record<OrderKind, string> = { all: '', stock: ' of stocks', et
  * `initialMarket` opens the tab on the US side (e.g. from a US screen); the switcher still flips it.
  */
 export function OrdersTab({ banner, initialMarket = 'in' }: { banner?: ReactNode; initialMarket?: OrderMarket }) {
-  const [tab, setTab] = useState<OrderTab>(initialMarket === 'us' ? lastUsList : 'open')
-  const [market, setMarket] = useState<OrderMarket>(initialMarket)
+  // Back from Indian Order Details: the IND side and the list the order was in (read once, then cleared).
+  const [fromIn] = useState(() => inOrdersReturn.pending)
+  useEffect(() => { inOrdersReturn.pending = false }, [])
+  const [tab, setTab] = useState<OrderTab>(fromIn ? inOrdersReturn.list : initialMarket === 'us' ? lastUsList : 'open')
+  const [market, setMarket] = useState<OrderMarket>(fromIn ? 'in' : initialMarket)
   const [kind, setKindState] = useState<OrderKind>(lastKind)
   const [filters, setFiltersState] = useState<OrderFilters>(lastFilters)
   const setKind = (next: OrderKind) => {
@@ -30201,6 +30386,7 @@ function InOrders({
   filters: InFilters
   onFilters: (filters: InFilters) => void
 }) {
+  const { go } = useUsNav()
   const [open, setOpen] = useState(false)
   const [filterRun, setFilterRun] = useState(0)
   const narrowed = ofInProduct(orders, product)
@@ -30212,7 +30398,7 @@ function InOrders({
   if (shown.length) {
     content = (
       <Stack as="ul" gap="16" className={styles.list} aria-label={list === 'open' ? 'Open Indian orders' : 'Indian order history'}>
-        {shown.map((order) => <li key={order.id}><InOrderCard order={order} /></li>)}
+        {shown.map((order) => <li key={order.id}><InOrderCard order={order} onOpen={() => openInOrder(go, order)} /></li>)}
       </Stack>
     )
   } else if (narrowed.length && activeFilters) {
@@ -30886,7 +31072,7 @@ function Figure({ label, align = 'start', tone, children }: { label: string; ali
 
 /**
  * One holding (Indian or US): name, quantity and today's return (1D %) on top; current · invested · total returns
- * below. With `onOpen` (US) it's a clickable L3 Card that opens the stock's page; otherwise a static one.
+ * below. A clickable L3 Card that opens the stock page: the US stock page, or the Indian one (stocks-32, 24 Nov).
  */
 export function HoldingCard({ holding, onOpen }: { holding: Holding; onOpen?: () => void }) {
   const day = `${holding.day >= 0 ? '+' : '−'}${Math.abs(holding.day).toFixed(2)}%`
@@ -30926,6 +31112,7 @@ import { Tabs } from '@l3/components/Tabs'
 import { asset } from '../../../asset'
 import { openStock, stockFor } from '../../../data'
 import { useUsNav } from '../../../nav'
+import { openStock as openInStock } from '../../../../../shared/data/openStock'
 import { Flag } from '../../../../../shared/ui/Flag'
 import { useUsJourney, type UsJourney } from '../../../../../shared/userStatus'
 import { HoldingsCards, type HoldingsMarket } from '../components/HoldingsCards'
@@ -30971,7 +31158,7 @@ export function HoldingsTab({ market, onMarket, sort, onSort, sheetRef }: { mark
     <PortfolioPage
       sheetRef={sheetRef}
       top={
-        <Inset paddingInline="16" paddingBlock="24">
+        <Inset paddingInline="16" paddingBlock="24" className={styles.cardsInset}>
           <HoldingsCards market={market} onMarket={onMarket} data={holdsUs ? { ...holdingsSummary, us: us.summary } : holdingsSummary} />
         </Inset>
       }
@@ -31008,7 +31195,8 @@ export function HoldingsTab({ market, onMarket, sort, onSort, sheetRef }: { mark
             ) : (
               sortedHoldings(sort).map((holding) => (
                 <li key={holding.key}>
-                  <HoldingCard holding={holding} />
+                  {/* An Indian holding opens the Indian stock page (stocks-32) on that stock (24 Nov, user). */}
+                  <HoldingCard holding={holding} onOpen={() => { openInStock(holding.name); go('stocks-32') }} />
                 </li>
               ))
             )}
@@ -31026,16 +31214,17 @@ export function HoldingsTab({ market, onMarket, sort, onSort, sheetRef }: { mark
 /* Portfolio tab (PortfolioScreen + portfolio/*). Layout is L3 Stack / Section / Inset / Grid; this file only holds
    surfaces, type and the few things those blocks don't do. */
 
-/* Grey page under a white sheet, as on Stocks home. Fills the body so the sheet reaches the navbar. */
+/* One surface/default page, no grey top (24 Nov, user: "remove the gray bg, surface default in the whole screen"; it
+   was a white sheet over surface/secondary, as on Stocks home). Fills the body so the content reaches the navbar. */
 .page {
   min-height: 100%;
-  background: var(--l3-surface-secondary);
+  background: var(--l3-surface-default);
 }
 
-/* FLAG: the white sheet over the grey — surface default, 32 round top corners (L3 Section rounds all four corners). */
+/* The content under the cards: square, on the same surface/default (was a sheet with 32 round top corners). */
 .sheet {
   flex: 1;
-  border-radius: var(--l3-radius-32) var(--l3-radius-32) 0 0;
+  border-radius: 0;
   background: var(--l3-surface-default);
 }
 
@@ -31129,6 +31318,9 @@ export function HoldingsTab({ market, onMarket, sort, onSort, sheetRef }: { mark
 .list .holding:not([data-interactive]) {
   box-shadow: var(--card-border), var(--l3-shadow-elevation-soft);
 }
+
+/* Holdings: 12 (not 24) under the P&L cards, above the market tabs (24 Nov, user). Inset has one block padding. */
+.cardsInset.cardsInset { padding-bottom: var(--l3-spacing-12); }
 ```
 
 ### `src/flows/us-stocks/screens/entry/portfolio/PortfolioPage.tsx`
@@ -37086,8 +37278,9 @@ export function CancelOrderSheet({ open, order, onKeep, onCancel }: { open: bool
 
 ```tsx
 // One Indian order (or stock SIP) in Portfolio → Orders: the US OrderCard's layout in ₹ — type · product · validity,
-// status and side tags; the logo, symbol and quantity; the live LTP and the order's own price. A static L3 Card: Indian
-// orders have no Order Details page in the prototype yet (FLAG). Data: indianOrders.ts.
+// status and side tags; the logo, symbol and quantity; the live LTP and the order's own price. An order card is an L3
+// clickable Card (its raised shadow, as the US cards) that opens Indian Order Details (24 Nov); a SIP card stays a static
+// Card: SIPs have no page yet. Data: indianOrders.ts.
 import { Avatar } from '@l3/components/Avatar'
 import { Card } from '@l3/components/Card'
 import { Stack } from '@l3/components/Stack'
@@ -37120,14 +37313,14 @@ function orderPrice(o: InOrder): { label: string; value?: number } {
   return { label: 'Mkt' }
 }
 
-export function InOrderCard({ order }: { order: InOrder }) {
+export function InOrderCard({ order, onOpen }: { order: InOrder; onOpen: () => void }) {
   useMarketSnapshot() // re-render when prices tick (the LTP)
   const status = IN_STATUS_TAG[order.status]
   const price = orderPrice(order)
   const ltp = getCompany(order.sym)?.market?.price ?? 0
   const side = order.side === 'buy' ? 'Buy' : 'Sell'
   return (
-    <Card className={styles.card} aria-label={`${side} ${order.sym}, ${IN_TYPE_LABEL[order.type]} order, ${status.label}`}>
+    <Card className={styles.card} onClick={onOpen} aria-label={`${side} ${order.sym}, ${IN_TYPE_LABEL[order.type]} order, ${status.label}. Open order details`}>
       <Stack gap="08">
         <Stack direction="horizontal" align="center" justify="between" gap="08">
           <span className={styles.meta}>{IN_TYPE_LABEL[order.type]} · {order.product} · {order.validity}</span>
@@ -37181,6 +37374,200 @@ export function InSipCard({ sip }: { sip: InSip }) {
       </Stack>
     </Card>
   )
+}
+```
+
+### `src/flows/us-stocks/screens/orders/InOrderDetailsScreen.tsx`
+
+```tsx
+// 9001:69 · Order Details for an Indian order (24 Nov, the user's call: "we need the details page of the Indian stocks
+// also"). The US Order Details layout (OrderDetailsScreen.tsx) in ₹ with NSE: L3 Actionbar (back · "Order details") →
+// the stock row (logo, name, "RELIANCE · NSE", Buy / Sell tag) → status line (dot + status, "filled/qty shares") → why
+// (L3 Aerobar, when the order has a reason) → the facts (L3 KeyValueList: order type, product, trigger, limit, avg,
+// validity, placed on, exchange, order ID) → "Order status" (L3 Steps) → the dock (L3 ButtonGroup), by status:
+//   open / AMO / partly filled / trigger pending / GTT → Cancel order + Modify · executed / partly executed → Repeat
+//   order · rejected → Retry · cancelled / expired → Place again.
+// Cancel order asks first (L3 confirmation sheet) and goes back to Portfolio → Orders, IND side.
+// FLAG: Modify / Repeat / Retry / Place again open the Indian order pad, which shows its own sample stock (no per-stock
+// Indian pad in this flow yet). The stock row doesn't open a stock page: Indian stock pages live in another flow.
+// FLAG: copy not in copy.json yet (hard-coded, as the rest of the US Stocks flow).
+// FLAG / L3 gap: as on the US page — no status dot component, and Steps has no tone (the last dot is recoloured).
+import { useState } from 'react'
+import { Actionbar } from '@l3/components/Actionbar'
+import { Aerobar, type AerobarType } from '@l3/components/Aerobar'
+import { Avatar } from '@l3/components/Avatar'
+import { BottomSheet, BottomSheetHeader } from '@l3/components/BottomSheet'
+import { Button } from '@l3/components/Button'
+import { ButtonGroup } from '@l3/components/ButtonGroup'
+import { KeyValueList, KeyValueRow } from '@l3/components/KeyValueList'
+import { ListCell } from '@l3/components/ListCell'
+import { Section } from '@l3/components/Section'
+import { SectionHeader } from '@l3/components/SectionHeader'
+import { Stack } from '@l3/components/Stack'
+import { Steps, type StepItem } from '@l3/components/Steps'
+import { Tag } from '@l3/components/Tag'
+import { getCompany } from '../../../../shared/data/companies'
+import { formatInr } from '../../../../shared/money'
+import { setPadMarket } from '../../../../shared/padMarket'
+import { Phone, useSheetLayer } from '../../components/Phone'
+import { useUsNav } from '../../nav'
+import { BUY_PAD, SELL_PAD_HOLDING } from '../activation/ids'
+import { IN_OPEN_STATUSES, IN_STATUS_TAG, IN_TYPE_LABEL, getCurrentInOrder, inOrderById, inOrderId, inTimeline, type InOrder, type InOrderStatus } from './indianOrders'
+import styles from './OrderDetails.module.css'
+
+/** Portfolio on its Orders tab — where back and a confirmed cancel land (it opens on the IND side, inOrdersReturn). */
+const PORTFOLIO_ORDERS = '9001:31'
+/** Buy pads by order type (T01 Buy · Amount, T07 Buy · Limit, T08 Buy · SL); SL-M opens the SL pad. */
+const BUY_PAD_FOR = { market: BUY_PAD, limit: '5837:95972', sl: '5837:95888', 'sl-m': '5837:95888' } as const
+
+const REASON_BAR: Partial<Record<InOrderStatus, AerobarType>> = {
+  rejected: 'danger',
+  cancelled: 'primary',
+  expired: 'primary',
+  partial: 'discover',
+  'partial-executed': 'success',
+}
+
+function tone(o: InOrder): string {
+  const t = IN_STATUS_TAG[o.status].tone
+  return t === 'positive' ? 'success' : t === 'negative' ? 'error' : t
+}
+
+const inr = (n: number) => formatInr(n)
+
+export function InOrderDetailsScreen({ backdrop, order: given }: { backdrop?: boolean; order?: InOrder }) {
+  const { go, back } = useUsNav()
+  const order = given ?? getCurrentInOrder()
+  const [cancelOpen, setCancelOpen] = useState(false)
+  const company = getCompany(order.sym)
+  const status = IN_STATUS_TAG[order.status]
+  const sideLabel = order.side === 'buy' ? 'Buy' : 'Sell'
+  const open = IN_OPEN_STATUSES.includes(order.status)
+  const filledAny = order.filled > 0 && order.avgPrice !== undefined
+  const steps: StepItem[] = inTimeline(order).map((s, i, all) => ({
+    label: s.label,
+    description: s.time,
+    state: s.done && (i < all.length - 1 || order.status === 'executed') ? 'done' : 'current',
+  }))
+
+  const act = (fn: () => void) => () => { if (!backdrop) fn() }
+  const openPad = act(() => {
+    setPadMarket('india')
+    go(order.side === 'buy' ? BUY_PAD_FOR[order.type] : SELL_PAD_HOLDING)
+  })
+  const againLabel = order.status === 'rejected' ? 'Retry' : order.status === 'cancelled' || order.status === 'expired' ? 'Place again' : 'Repeat order'
+
+  const dock = open ? (
+    <ButtonGroup aria-label="Order actions" direction="horizontal">
+      <Button variant="secondary" size="lg" onClick={act(() => setCancelOpen(true))}>Cancel order</Button>
+      <Button variant="primary" size="lg" onClick={openPad}>Modify</Button>
+    </ButtonGroup>
+  ) : (
+    <ButtonGroup aria-label="Order actions">
+      <Button variant="primary" size="lg" fullWidth onClick={openPad}>{againLabel}</Button>
+    </ButtonGroup>
+  )
+
+  return (
+    <Phone
+      label={`Order details: ${sideLabel} ${order.sym}, ${status.label}`}
+      header={<Actionbar onBack={act(() => back(PORTFOLIO_ORDERS))} title="Order details" />}
+      footer={dock}
+      gesture="none"
+      topLine
+    >
+      <div inert={backdrop || undefined}>
+        <Section paddingBlock="08" gap="04">
+          <ListCell
+            density="breathable"
+            iconLeft={<Avatar src={company?.logoUrl} initials={company?.initials ?? order.sym.slice(0, 2)} size={40} />}
+            label={company?.name ?? order.sym}
+            description={`${order.sym} · NSE`}
+            trailing={<Tag variant="secondary" color={order.side === 'buy' ? 'profit' : 'loss'} size="sm">{sideLabel}</Tag>}
+          />
+          <Section paddingInline="16" paddingBlock="08" gap="12">
+            <Stack direction="horizontal" justify="between" align="center" gap="12">
+              <span className={styles.status} data-tone={status.tone}>
+                <span className={styles.statusDot} aria-hidden="true" />
+                {status.label}
+              </span>
+              <span className={styles.filled}>{order.filled}/{order.qty} shares</span>
+            </Stack>
+            {order.reason && <Aerobar type={REASON_BAR[order.status] ?? 'primary'} placement="inline" heading={order.reason} />}
+          </Section>
+        </Section>
+
+        <hr className={styles.rule} />
+
+        <Section paddingInline="16" paddingBlock="24">
+          <KeyValueList aria-label="Order details">
+            <KeyValueRow label="Order type" value={IN_TYPE_LABEL[order.type]} />
+            <KeyValueRow label="Product" value={order.product} />
+            {order.triggerPrice !== undefined && <KeyValueRow label="Trigger price" value={inr(order.triggerPrice)} />}
+            {order.limitPrice !== undefined && <KeyValueRow label="Limit price" value={inr(order.limitPrice)} />}
+            <KeyValueRow label="Avg. price" value={filledAny ? inr(order.avgPrice!) : '–'} />
+            <KeyValueRow label="Validity" value={order.validity === 'GTT' ? 'GTT · 1 year' : order.validity} />
+            <KeyValueRow label="Placed on" value={order.placedAt} />
+            <KeyValueRow label="Exchange" value="NSE" />
+            <KeyValueRow label="Order ID" value={inOrderId(order)} copy />
+          </KeyValueList>
+        </Section>
+
+        <hr className={styles.rule} />
+
+        <Section paddingInline="16" paddingBlock="24" gap="16" data-page-end>
+          <SectionHeader title="Order status" />
+          <div className={styles.timeline} data-tone={tone(order)}>
+            <Steps label="Order status" steps={steps} />
+          </div>
+        </Section>
+      </div>
+
+      {open && (
+        <InCancelSheet
+          open={cancelOpen}
+          order={order}
+          onKeep={() => setCancelOpen(false)}
+          onCancel={() => {
+            setCancelOpen(false)
+            back(PORTFOLIO_ORDERS) // prototype: the order isn't really removed from the Open list
+          }}
+        />
+      )}
+    </Phone>
+  )
+}
+
+/** "Cancel this order?" — the US confirmation sheet, for an Indian order. */
+function InCancelSheet({ open, order, onKeep, onCancel }: { open: boolean; order: InOrder; onKeep: () => void; onCancel: () => void }) {
+  const layer = useSheetLayer()
+  const price = order.limitPrice ?? order.triggerPrice
+  const summary = `${order.side === 'buy' ? 'Buy' : 'Sell'} ${order.qty} ${order.sym}${price !== undefined ? ` at ${inr(price)}` : ' at market price'}`
+  return (
+    <BottomSheet
+      open={open}
+      onClose={onKeep}
+      container={layer}
+      aria-labelledby="in-cancel-order-title"
+      header={<BottomSheetHeader size="sm" heading="Cancel this order?" headingId="in-cancel-order-title" description={summary} />}
+      footer={
+        <ButtonGroup aria-label="Cancel order" direction="horizontal">
+          <Button variant="secondary" size="lg" onClick={onKeep}>Keep order</Button>
+          <Button variant="primary" size="lg" onClick={onCancel}>Cancel order</Button>
+        </ButtonGroup>
+      }
+    >
+      <KeyValueList aria-label="The order">
+        <KeyValueRow label="Status" value={IN_STATUS_TAG[order.status].label} />
+        <KeyValueRow label="Shares left" value={`${order.qty - order.filled}`} />
+      </KeyValueList>
+    </BottomSheet>
+  )
+}
+
+/** The screen for one sample order (the preview's per-status entries). */
+export function InOrderDetailsFor({ id, backdrop }: { id: string; backdrop?: boolean }) {
+  return <InOrderDetailsScreen backdrop={backdrop} order={inOrderById(id)} />
 }
 ```
 
@@ -38640,6 +39027,8 @@ import type { UsScreenMap } from '../types'
 import { ORDER_DETAILS, POSITION_DETAILS } from './data'
 import { OrderDetailsFor, OrderDetailsScreen } from './OrderDetailsScreen'
 import { PositionDetailsScreen } from './PositionDetailsScreen'
+import { InOrderDetailsScreen } from './InOrderDetailsScreen'
+import { IN_ORDER_DETAILS } from './indianOrders'
 
 /** Order Details in each status, for the preview (figma id → sample order id in data.ts). */
 export const ORDER_STATE_SCREENS: Record<string, string> = {
@@ -38658,6 +39047,7 @@ export const ORDER_STATE_SCREENS: Record<string, string> = {
 export const screens: UsScreenMap = {
   [ORDER_DETAILS]: OrderDetailsScreen, // Order Details (every status)
   [POSITION_DETAILS]: PositionDetailsScreen, // Position Details
+  [IN_ORDER_DETAILS]: InOrderDetailsScreen, // Order Details · Indian (every status)
   ...Object.fromEntries(
     Object.entries(ORDER_STATE_SCREENS).map(([figma, id]) => [figma, ({ backdrop }: { backdrop?: boolean }) => <OrderDetailsFor id={id} backdrop={backdrop} />]),
   ),
@@ -38806,6 +39196,50 @@ export function applyInFilters(orders: InOrder[], f: InFilters, list: 'open' | '
       (list === 'open' || !f.status.length || f.status.includes(o.status)),
   )
 }
+
+// ── Order Details (24 Nov, the user's call: "we need the details page of the Indian stocks also") ───────────────────
+
+/** Order Details for an Indian order (one screen, every status; InOrderDetailsScreen.tsx). */
+export const IN_ORDER_DETAILS = '9001:69'
+
+/** The exchange's order number, made from the sample id so each order has its own. */
+export const inOrderId = (o: InOrder) => `25112400${String(o.id).replace(/\D/g, '').padStart(2, '0')}${o.side === 'buy' ? '41' : '73'}`
+
+/** One step of the "Order status" timeline: done, or where the order is now. */
+export type InStep = { label: string; time?: string; done: boolean }
+
+/** The timeline, from the status (the API would send it). Times are the order's own. */
+export function inTimeline(o: InOrder): InStep[] {
+  const time = o.placedAt.split(', ').pop()
+  const received = { label: 'Request received', time, done: true }
+  const placed = { label: 'Order placed with NSE', time, done: true }
+  const price = o.limitPrice ?? o.triggerPrice
+  switch (o.status) {
+    case 'open': return [received, placed, { label: `Waiting for ₹${price?.toLocaleString('en-IN', { minimumFractionDigits: 2 })} or ${o.side === 'buy' ? 'lower' : 'higher'}`, done: false }]
+    case 'amo': return [received, { label: 'Sent to NSE when the market opens at 9:15 AM', done: false }]
+    case 'partial': return [received, placed, { label: `${o.filled} of ${o.qty} shares filled, the rest waiting`, done: false }]
+    case 'trigger-pending': return [received, placed, { label: `Waiting for the trigger at ₹${o.triggerPrice?.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`, done: false }]
+    case 'gtt': return [received, { label: 'GTT active: placed with NSE when the trigger is hit, for up to a year', done: false }]
+    case 'executed': return [received, placed, { label: 'Executed', time, done: true }]
+    case 'partial-executed': return [received, placed, { label: `${o.filled} of ${o.qty} shares executed, the rest cancelled at 3:30 PM`, done: false }]
+    case 'rejected': return [received, { label: 'Rejected', time, done: false }]
+    case 'cancelled': return [received, placed, { label: 'Cancelled by you', done: false }]
+    case 'expired': return [received, { label: 'Expired after a year', done: false }]
+  }
+}
+
+// The order Order Details shows (set by the card that opens it). Portfolio comes back on the Indian side, same list.
+let currentInOrder: InOrder = inOpenOrders[0]
+export const getCurrentInOrder = () => currentInOrder
+/** Back on Portfolio → Orders after Indian Order Details: the IND side and the list the user was on. */
+export const inOrdersReturn: { pending: boolean; list: 'open' | 'history' } = { pending: false, list: 'open' }
+export function openInOrder(go: (figma: string) => void, order: InOrder) {
+  currentInOrder = order
+  inOrdersReturn.pending = true
+  inOrdersReturn.list = IN_OPEN_STATUSES.includes(order.status) ? 'open' : 'history'
+  go(IN_ORDER_DETAILS)
+}
+export const inOrderById = (id: string) => [...inOpenOrders, ...inHistoryOrders].find((o) => o.id === id)
 ```
 
 ### `src/flows/us-stocks/screens/trade/FeeBreakdown.module.css`
@@ -62440,6 +62874,35 @@ export function useLiveQuote(key: string, price: number, changePct: number): Liv
 }
 ```
 
+### `src/shared/data/openStock.ts`
+
+```ts
+// Which stock the stock page shows: the one tapped last anywhere in the app (a Market row, a Top movers card …).
+// A flow that lists stocks calls `openStock(symbol)` and then goes to the stock page (stocks-32); the stock page reads
+// it with `useOpenStock()`. Prototype state only — a real app passes the symbol in the route.
+import { useSyncExternalStore } from 'react'
+
+/** What the stock page shows before anything is tapped (and on the board): Bharat Electronics. */
+export const DEFAULT_STOCK = 'BEL'
+
+let current = DEFAULT_STOCK
+const listeners = new Set<() => void>()
+
+/** Remember the tapped stock (NSE symbol) for the stock page. */
+export function openStock(symbol: string) {
+  current = symbol
+  listeners.forEach((l) => l())
+}
+
+/** The NSE symbol of the stock to show. */
+export function useOpenStock(): string {
+  return useSyncExternalStore(
+    (l) => { listeners.add(l); return () => listeners.delete(l) },
+    () => current,
+  )
+}
+```
+
 ### `src/shared/data/us-market-snapshot.json`
 
 ```json
@@ -72987,12 +73450,32 @@ export const Flag = ({ code }: { code: FlagCode }) => (
 
 @keyframes navPop { 0% { transform: scale(.7); } 60% { transform: scale(1.12); } 100% { transform: scale(1); } }
 @keyframes navRise { from { opacity: 0; transform: translateY(var(--l3-spacing-04)); } to { opacity: 1; transform: none; } }
-@keyframes navFadeBack { from { color: var(--l3-content-primary); } to { color: var(--l3-content-secondary); } }
+@keyframes navFadeBack { from { color: var(--l3-content-primary); } to { color: var(--l3-content-tertiary); } }
 @keyframes navGlowIn { from { opacity: 0; } to { opacity: 1; } }
 
 @media (prefers-reduced-motion: reduce) {
   .glow { transition: none; }
   .frame .pill *, .frame .glow { animation: none !important; transition: none !important; }
+}
+
+/* V3 (24 Nov, user): 2 between the icon and its label, and the chosen tab's label in accent green, matching its
+   coloured icon. */
+.frame[data-glow-at='bottom'] .pill :is(button, a)[class] {
+  gap: var(--l3-spacing-02);
+}
+.frame[data-glow-at='bottom'] .pill :is(button, a)[data-selected] > span:last-child {
+  color: var(--l3-content-accent-success-default);
+}
+
+/* Inactive tabs (24 Nov, user): as light as the Mutual Fund / F&O navs' L3 icons (their 40 / 60 parts), and the label
+   the same colour as its icon in every nav — content/tertiary for both. (The L3 NavIcons in the sub-navs keep their
+   baked 40 / 60 shares.) A user call over the "no tertiary text" default. */
+.pill :is(button, a)[class]:not([data-selected]) {
+  color: var(--l3-content-tertiary);
+}
+/* …but the labels stay content/secondary (24 Nov, user: "labels back to secondary"); only the icons go lighter. */
+.pill :is(button, a)[class]:not([data-selected]) > span:last-child {
+  color: var(--l3-content-secondary);
 }
 ```
 

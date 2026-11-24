@@ -433,6 +433,7 @@ lower on the page is scrolled into view first). `components/MarketSwitchGuide.ts
   16 / 24 icon or an Avatar only — event rows are plain buttons laid out with Stack.
 
 ### Changelog
+- 24 Nov: Stock page (stocks-32) back returns to the page that opened it (e.g. Portfolio → Holdings), Home if none.
 - 2026-11-24 — US coming soon: the status line wraps to two lines instead of being cut (L3 gap: ListCell truncates labels).
 - 2026-11-24 — US coming soon: the ready / in-review card is one line, no description ("All set! We'll notify you at launch" / "Verification in progress"), 8 more above it.
 - 2026-11-24 — US coming soon: the ready / in-review row has 12 above and below (ListCell md's 8 + 4).
@@ -30429,6 +30430,7 @@ import { openStock } from '../../shared/data/openStock'
 import { SplashScreen } from '../../shared/ui/Splash'
 import { Glossary } from './screens/Glossary'
 import { StockPage } from './screens/StockPage'
+import { usePreview } from '../../shared/prototype'
 import type { Go } from '../types'
 import { Home, markUsIntroSeen } from './screens/Home'
 import { t } from './copy'
@@ -30448,6 +30450,13 @@ const usNav = (go: Go) => ({ onActivateUs: () => go('us-stocks-94'), onUsStock: 
 /** The top bar and navbar taps every Home screen shares. */
 /** Search from the Home field: the Stocks tab on IND, the US tab on US (search-29). */
 const searchFor = (market: 'in' | 'us') => (market === 'us' ? 'search-29' : 'search-01')
+
+/** The stock page's back: to the page it was opened from (Portfolio's holdings, Market, Search …), else Home (24 Nov,
+ * user: an Indian holding opens it, and back should return there). */
+function StockPageFromAnywhere({ onBack, ...props }: ComponentProps<typeof StockPage> & { onBack: () => void }) {
+  const preview = usePreview()
+  return <StockPage {...props} onBack={() => { if (!preview.back?.()) onBack() }} />
+}
 
 const chrome = (go: Go) => ({ onStock: (sym: string) => { openStock(sym); go('stocks-32') }, onTab: (t: Parameters<typeof goToTab>[1]) => goToTab(go, t), onSearch: (m: 'in' | 'us') => go(searchFor(m)), onProfile: () => go('profile-01'), onCommodities: () => go('fno-08'), onAddMoney: () => go('deposit-01') })
 
@@ -30589,7 +30598,7 @@ export const stocks: Flow = {
     })),
     // The Indian stock page (main, 2026-11-02): any Indian stock tapped in the app (Market, Top movers) — the board shows
     // Bharat Electronics. Renumbered stocks-32 … 39 when merged with the US Stocks work (its Home states own 09 … 31).
-    { id: 'stocks-32', name: 'Stock · Overview', figma: '', badge: 'new', note: 'Rebuilt from the live app (ADB, 2026-11-02). The top part follows the US stock page: change over the chart range, NSE / BSE switch, line chart, ranges.', render: (go) => <StockPage {...indianPad(go)} onBack={() => go('stocks-01')} onGlossary={(k) => go(k === 'performance' ? 'stocks-38' : 'stocks-39')} /> },
+    { id: 'stocks-32', name: 'Stock · Overview', figma: '', badge: 'new', note: 'Rebuilt from the live app (ADB, 2026-11-02). The top part follows the US stock page: change over the chart range, NSE / BSE switch, line chart, ranges.', render: (go) => <StockPageFromAnywhere {...indianPad(go)} onBack={() => go('stocks-01')} onGlossary={(k) => go(k === 'performance' ? 'stocks-38' : 'stocks-39')} /> },
     { id: 'stocks-33', name: 'Stock · depth & about', figma: '', badge: 'new', note: 'Scrolled: the Actionbar shows symbol + price, the tabs stick under it. About Company opened (Read more).', render: (go) => <StockPage {...indianPad(go)} scrollTo="depth" aboutOpen onBack={() => go('stocks-01')} onGlossary={(k) => go(k === 'performance' ? 'stocks-38' : 'stocks-39')} /> },
     { id: 'stocks-34', name: 'Stock · shareholding & financials', figma: '', badge: 'new', note: 'Quarter chips change the bars; Quarterly ⇅ switches the Financials to yearly; Revenue / Profit / Networth.', render: (go) => <StockPage {...indianPad(go)} scrollTo="shareholding" onBack={() => go('stocks-01')} onGlossary={(k) => go(k === 'performance' ? 'stocks-38' : 'stocks-39')} /> },
     { id: 'stocks-35', name: 'Stock · Events', figma: '', badge: 'new', note: 'Events by year, latest first; Filters on the first year; View more lists older years.', render: (go) => <StockPage {...indianPad(go)} tab="events" onBack={() => go('stocks-01')} onGlossary={(k) => go(k === 'performance' ? 'stocks-38' : 'stocks-39')} /> },
@@ -59863,12 +59872,32 @@ export const Flag = ({ code }: { code: FlagCode }) => (
 
 @keyframes navPop { 0% { transform: scale(.7); } 60% { transform: scale(1.12); } 100% { transform: scale(1); } }
 @keyframes navRise { from { opacity: 0; transform: translateY(var(--l3-spacing-04)); } to { opacity: 1; transform: none; } }
-@keyframes navFadeBack { from { color: var(--l3-content-primary); } to { color: var(--l3-content-secondary); } }
+@keyframes navFadeBack { from { color: var(--l3-content-primary); } to { color: var(--l3-content-tertiary); } }
 @keyframes navGlowIn { from { opacity: 0; } to { opacity: 1; } }
 
 @media (prefers-reduced-motion: reduce) {
   .glow { transition: none; }
   .frame .pill *, .frame .glow { animation: none !important; transition: none !important; }
+}
+
+/* V3 (24 Nov, user): 2 between the icon and its label, and the chosen tab's label in accent green, matching its
+   coloured icon. */
+.frame[data-glow-at='bottom'] .pill :is(button, a)[class] {
+  gap: var(--l3-spacing-02);
+}
+.frame[data-glow-at='bottom'] .pill :is(button, a)[data-selected] > span:last-child {
+  color: var(--l3-content-accent-success-default);
+}
+
+/* Inactive tabs (24 Nov, user): as light as the Mutual Fund / F&O navs' L3 icons (their 40 / 60 parts), and the label
+   the same colour as its icon in every nav — content/tertiary for both. (The L3 NavIcons in the sub-navs keep their
+   baked 40 / 60 shares.) A user call over the "no tertiary text" default. */
+.pill :is(button, a)[class]:not([data-selected]) {
+  color: var(--l3-content-tertiary);
+}
+/* …but the labels stay content/secondary (24 Nov, user: "labels back to secondary"); only the icons go lighter. */
+.pill :is(button, a)[class]:not([data-selected]) > span:last-child {
+  color: var(--l3-content-secondary);
 }
 ```
 
