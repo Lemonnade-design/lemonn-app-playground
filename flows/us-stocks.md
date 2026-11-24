@@ -39629,6 +39629,12 @@ function OrderPadV1({ config, backdrop, sheet }: OrderPadProps) {
 
 /* V8: the Set TP/SL pill keeps its width; on a narrow phone the chips beside it scroll instead (23 Nov). */
 .tpslPill { flex-shrink: 0; }
+/* Its label and + in discover blue (24 Nov, user), the action colour; L3 gap: pill chips have no discover tone. */
+.tpslPill [role='tab'] { --tab-content: var(--l3-content-accent-discover-default); }
+/* V8: the chips 6 apart (2 under L3's 8 for a chip row, 24 Nov, user). L3 gap: no tighter chip-row gap. */
+.cardChips.cardChips { gap: calc(var(--l3-spacing-08) - 2px); }
+/* V8 chips at least 40 wide, not L3's 48 pill minimum (24 Nov, user). L3 gap: no smaller pill minimum. */
+.cardChips.cardChips [role='tab'][data-appearance='pill']:not([data-icon-only]) { min-width: var(--l3-size-40); }
 ```
 
 ### `src/flows/us-stocks/screens/trade/OrderPadV2.tsx`
@@ -39661,6 +39667,7 @@ import { Stack } from '@l3/components/Stack'
 import { Icon } from '@l3/components/Icon'
 import { Switch } from '@l3/components/Switch'
 import { Tab, Tabs } from '@l3/components/Tabs'
+import { msAdd } from '@l3/icons/material'
 import { Tooltip } from '@l3/components/Tooltip'
 import { lmAutoTpSl, lmSwitchArrowVertical } from '@l3/icons/lemonnade' // lmAutoTpSl: the V3 / V4 TP/SL button, not a gear (23 Nov, user)
 import { Keyboard, KeypadSlide, keypadFieldProps, typeKey } from '../../../../shared/ui/Keyboard'
@@ -39688,6 +39695,8 @@ import styles from './OrderPadV2.module.css'
 const SHARE_CHIPS: PadChip[] = [1, 5, 10, 20].map((n) => ({ label: `+${n}`, apply: (value: number) => value + n }))
 /** Buy, amount mode on a pad that starts in shares: +$10, +$50, +$100. */
 const addAmountChip = (n: number): PadChip => ({ label: (fmt) => `+${fmt(n, { decimals: 0 })}`, apply: (value) => value + n })
+// Chip labels in thousands as K: +₹1,000 → +₹1K, +₹10,000 → +₹10K (24 Nov, user). Other labels stay as they are.
+const inK = (label: string) => label.replace(/(\d{1,3}(?:,\d{2,3})*),000\b/, (_, n: string) => `${n.replace(/,/g, '')}K`)
 
 const ORDER_TYPES: { value: OrderType; label: string }[] = [
   { value: 'market', label: 'Market' },
@@ -39780,6 +39789,7 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
   const tpslCard = useTpslCard()
   const amountBox = useAmountBox() // V5 / V6: the amount section in a bounding box
   const amountCard = useAmountCard() // V8: the amount in a card, its label and switch at the left
+  const [tpslSet, setTpslSet] = useState(false) // V8: the Set TP/SL pill hides once TP/SL is set (the card below shows it, 24 Nov, user)
   const orderTypesLeft = useOrderTypesLeft() // V5: order types on the left, the TP/SL button on the right
   const amountGlow = useAmountGlow() // flow option "Amount box gradient"
   const amountSize = useAmountSize() // flow option "Amount size" (36 = L3 Heading/36)
@@ -39789,7 +39799,8 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
   // V7 (23 Nov, user): the top bar's Stop loss switch; on → the stop loss card in the pad (TpslControl `on`).
   const [slOn, setSlOn] = useState(false)
   // The unit the field is showing; `value` is always kept in the config's own unit (config.mode).
-  const [mode, setMode] = useState<PadMode>(config.mode)
+  // Indian stocks: quantity only — the pad shows shares, no Amount / Shares switch (24 Nov, user).
+  const [mode, setMode] = useState<PadMode>(india ? 'shares' : config.mode)
   const [value, setValue] = useState(config.value)
   const [amountText, setAmountText] = useState(config.value ? String(Number(config.value.toFixed(4))) : '')
   const [pcts, setPcts] = useState(() => (config.prices ?? []).map((price) => price.pct))
@@ -39915,6 +39926,8 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
       if (keypadRef.current && field?.isConnected && !(document.activeElement instanceof HTMLInputElement)) field.focus({ preventScroll: true })
     })
   }
+  // An Indian pad kept in ₹ opens on its share count (the field's text was the ₹ amount).
+  useEffect(() => { if (india && config.mode === 'amount') setAmountText(textOf(current)) }, [])
   const applyChip = (apply: (current: number) => number) => {
     const next = mode === 'shares' && india ? Math.floor(apply(current)) : Number(apply(current).toFixed(mode === 'amount' ? 2 : 4))
     setShown(next)
@@ -40235,7 +40248,7 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
         </Stack>
       )}
       {amountField}
-      {config.toggle && validityPlace !== 'v3' && (
+      {config.toggle && !india && validityPlace !== 'v3' && (
         <Select size="sm" subtle icon="swap" onClick={switchMode} aria-label={switchLabel}>
           {unitLabel}
         </Select>
@@ -40246,9 +40259,10 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
       <Tabs
         appearance="pill"
         size={amountCard ? 'sm' : 'md'} // V8: small pills, left in the card (23 Nov, user)
+        className={amountCard ? styles.cardChips : undefined}
         behavior="filter"
         aria-label={mode === 'amount' ? 'Add amount' : config.side === 'sell' ? 'Shares to sell' : 'Add shares'}
-        items={chips.map((chip, i) => ({ value: String(i), label: typeof chip.label === 'function' ? chip.label(money) : chip.label }))}
+        items={chips.map((chip, i) => ({ value: String(i), label: inK(typeof chip.label === 'function' ? chip.label(money) : chip.label) }))}
         value=""
         onChange={(label) => {
           const chip = chips[Number(label)]
@@ -40293,7 +40307,8 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
               {orderTypeTabs}
               {/* TP/SL card V3: a round outline icon button (L3 tertiary, md = the tab track's 40) at the row's right edge, out of the
                   flow, so Market / Limit / SL stays as small and centred as in V2 (23 Nov, the user's call). */}
-              {tpslCard === 'v3' && (
+              {/* V8 has no settings button: its Set TP/SL pill in the amount card opens the sheet (24 Nov, user). */}
+              {tpslCard === 'v3' && !amountCard && (
                 <Button size="md" variant="tertiary" raised="none" className={styles.tpslSettings} iconLeft={<Icon icon={lmAutoTpSl} />} aria-label={(padVersion === 'india' ? TPSL_INDIA : TPSL_US).title} onClick={() => tpslOpen.current?.()} />
               )}
               {validity && validityPlace === 'v1' && (
@@ -40317,12 +40332,12 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
                     <span className={styles.qtyLabel}>Quantity</span>
                     {/* Amount / Shares and the validity side by side, a divider between (23 Nov, user). */}
                     <Stack direction="horizontal" align="center" gap="12">
-                      {config.toggle && (
+                      {config.toggle && !india && (
                         <Select size="sm" subtle icon="swap" onClick={switchMode} aria-label={switchLabel}>
                           {unitLabel}
                         </Select>
                       )}
-                      {config.toggle && validity && validityPlace === 'v3' && <span className={styles.trackDivider} aria-hidden />}
+                      {config.toggle && !india && validity && validityPlace === 'v3' && <span className={styles.trackDivider} aria-hidden />}
                       {validity && validityPlace === 'v3' && ( /* V1 / V2 keep it by the order types */
                         <Select size="sm" subtle icon="swap" onClick={onValidity} aria-label={`Validity ${validityLabel}. Switch to ${validityNext}`}>
                           {validityLabel}
@@ -40335,16 +40350,16 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
                 {/* The chips at the left, a "Set TP/SL" pill like them at the far right, under the amount (23 Nov, user). */}
                 <Stack direction="horizontal" align="center" justify="between" gap="08">
                   {chipTabs}
-                  <Tabs
+                  {!tpslSet && (<Tabs
                     appearance="pill"
                     size="sm"
                     behavior="filter"
                     className={styles.tpslPill}
                     aria-label={(padVersion === 'india' ? TPSL_INDIA : TPSL_US).title}
-                    items={[{ value: 'tpsl', label: (padVersion === 'india' ? TPSL_INDIA : TPSL_US).setLabel }]}
+                    items={[{ value: 'tpsl', label: (padVersion === 'india' ? TPSL_INDIA : TPSL_US).setLabel, iconLeft: <Icon icon={msAdd} size={16} /> }]} // + before the label (24 Nov, user)
                     value=""
                     onChange={() => tpslOpen.current?.()}
-                  />
+                  />)}
                 </Stack>
               </Stack>
             </PriceFieldBox>
@@ -40382,6 +40397,7 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
             openRef={tpslOpen}
             on={tpslCard === 'v7' ? slOn : undefined}
             onOnChange={setSlOn}
+            onSetChange={setTpslSet}
           />
         </Stack>
           </Stack>
@@ -41461,7 +41477,7 @@ const convertTrail = (v: number, to: Unit, ltp: number) =>
 
 /** The off card (name + Switch) until TP/SL is set, then the summary card; both open the sheet. `features`: what this
  *  market offers (TPSL_INDIA / TPSL_US); `fractional`: the order's quantity isn't whole. */
-export function TpslControl({ order, features = TPSL_INDIA, fractional = false, openRef, on, onOnChange }: {
+export function TpslControl({ order, features = TPSL_INDIA, fractional = false, openRef, on, onOnChange, onSetChange }: {
   order: TpslOrder
   features?: TpslFeatures
   fractional?: boolean
@@ -41470,6 +41486,8 @@ export function TpslControl({ order, features = TPSL_INDIA, fractional = false, 
   /** V7: the top bar's switch. On → a card with a "Set SL" link (nothing applied until the sheet is saved); off → cleared. */
   on?: boolean
   onOnChange?: (on: boolean) => void
+  /** Called when TP/SL becomes set or cleared (V8 hides its Set TP/SL pill while it's set). */
+  onSetChange?: (set: boolean) => void
 }) {
   const ltp = order.ltp
   const [tpsl, setTpsl] = useState<Tpsl | null>(null)
@@ -41481,6 +41499,7 @@ export function TpslControl({ order, features = TPSL_INDIA, fractional = false, 
   // V3 / V4: no card on the pad; a settings button elsewhere (by the order types / in the top bar) opens the sheet.
   const viaSettings = cardVersion === 'v3' || cardVersion === 'v4' || cardVersion === 'v7'
   const set = tpsl && ((tpsl.tp.on && tpsl.tp.trigger !== null) || (tpsl.sl.on && tpsl.sl.trigger !== null)) ? tpsl : null
+  useEffect(() => { onSetChange?.(!!set) }, [!!set]) // eslint-disable-line react-hooks/exhaustive-deps
   // Whole shares only (US): "Not on fractional shares" in red under the card (no toast, 19 Nov, the user's call) in
   // place of the sheet, until the quantity is whole again.
   const noFractions = features.wholeShares && fractional
