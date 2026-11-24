@@ -103,6 +103,17 @@
   ],
   "files": [
     "src/flows/nudges/README.md",
+    "src/flows/nudges/assets/protect/arrow-up.svg",
+    "src/flows/nudges/assets/protect/calendar.png",
+    "src/flows/nudges/assets/protect/candles.png",
+    "src/flows/nudges/assets/protect/pnl-protect.svg",
+    "src/flows/nudges/assets/protect/shield.svg",
+    "src/flows/nudges/assets/protect/tpsl-candle.svg",
+    "src/flows/nudges/assets/protect/tpsl-sl.svg",
+    "src/flows/nudges/assets/protect/tpsl-tp.svg",
+    "src/flows/nudges/assets/protect/trend-down.svg",
+    "src/flows/nudges/assets/protect/warning-glyph.svg",
+    "src/flows/nudges/assets/protect/warning.png",
     "src/flows/nudges/components/SheetSwitcher.module.css",
     "src/flows/nudges/components/SheetSwitcher.tsx",
     "src/flows/nudges/copy.json",
@@ -122,6 +133,8 @@
     "src/flows/nudges/sheets/NudgeSheet.tsx",
     "src/flows/nudges/sheets/SoftDial.module.css",
     "src/flows/nudges/sheets/SoftDial.tsx",
+    "src/flows/nudges/sheets/TradeProtectSheet.module.css",
+    "src/flows/nudges/sheets/TradeProtectSheet.tsx",
     "src/flows/nudges/sheets/gaugeArt.ts"
   ],
   "shared": [
