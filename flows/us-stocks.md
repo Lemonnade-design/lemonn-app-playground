@@ -199,6 +199,8 @@ Every tap he wired is kept. The main path: FTUX sheet → Activate → Declarati
 → Pay on bank → Money ready → Stock → Buy → Executed → Wallet → Withdraw.
 
 ### Changelog
+- 24 Nov (bug): Limit / SL pads kept the $ default set at the market price (2 shares), so at the limit price it was 1.9x shares and Set SL said "not available on fractional shares". A whole share count now stays whole when the price per share changes (on opening the type, and when the limit is stepped).
+- 24 Nov: Price cards (trigger / limit, PriceField) padded 16 all round, 4 more than 12.
 - 24 Nov: Portfolio → Orders, Indian side gets the US filter row on Open / History: "All orders ⇕" steps All → Delivery → Intraday, Filters opens the same sheet with Indian groups (Side, Order type, Status on History), badge + "No orders match" empty state. OrderFilterSheet now takes `groups` / `empty` props.
 - 2026-11-24 — Order pad: Market / Limit / SL centred in every TP/SL card version (was left-aligned in V5 / V8 / V9).
 - 2026-11-24 — Portfolio → Orders: Indian sample orders for every state (indianOrders.ts, InOrderCard.tsx) — Open (Open, Partly filled, Trigger pending, AMO, GTT active), SIP (Active, Paused), History (Executed buy / sell, Partly executed, Rejected, Cancelled, Expired). US samples show for any active US account (was holders only). Order pills at hug width, 12 each side (8 + 4).
@@ -40315,6 +40317,21 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
   }
   // An Indian pad kept in ₹ opens on its share count (the field's text was the ₹ amount).
   useEffect(() => { if (india && config.mode === 'amount') setAmountText(textOf(current)) }, [])
+  // A whole number of shares stays whole when the price per share changes (Market → Limit / SL, or the limit stepped):
+  // a US pad kept in $ opens on 2 shares at the market price ($312.28 of NVDA); at a $160 limit that is 1.95 shares, which
+  // blocked Set SL as "fractional" though the user never picked a fraction (24 Nov bug). So the amount follows the price.
+  // Starts at the market price: each order type is its own screen, and its default amount was set at the market price.
+  const lastUnit = useRef(config.stock.price)
+  useLayoutEffect(() => {
+    const before = lastUnit.current
+    lastUnit.current = unitPrice
+    if (india || config.mode !== 'amount' || !before || before === unitPrice) return
+    const shares = Number((value / before).toFixed(4))
+    if (shares <= 0 || !Number.isInteger(shares)) return
+    const next = Number((shares * unitPrice).toFixed(2))
+    setValue(next)
+    if (mode === 'amount') setAmountText(textOf(next))
+  }, [unitPrice])
   const applyChip = (apply: (current: number) => number) => {
     const next = mode === 'shares' && india ? Math.floor(apply(current)) : Number(apply(current).toFixed(mode === 'amount' ? 2 : 4))
     setShown(next)
@@ -41426,18 +41443,19 @@ export const padCard = { head: styles.head, title: styles.title }
 ### `src/flows/us-stocks/screens/trade/PriceField.module.css`
 
 ```css
-/* Price field (PriceField.tsx): one box, rows 12 padded all round, a hairline between rows. */
+/* Price field (PriceField.tsx): one box, rows 16 padded all round (12 + 4, 24 Nov, user), a hairline between rows. */
+.box { --pf-pad: var(--l3-spacing-16); }
 
 /* L3 Card (padding none: the rows bring the 12), its own 8 gap off — the hairline separates rows. */
 .box { gap: 0; }
 /* With an error the border is red. L3 gap: Card has no error state — its border variable is set here. */
 .boxError.boxError { --card-border: inset 0 0 0 1px var(--l3-border-accent-error-default); }
 
-.row { padding: var(--l3-spacing-12); }
+.row { padding: var(--pf-pad); }
 .row + .row { border-top: 1px solid var(--l3-border-light); } /* 1px hairline */
 
 /* The tap target for typing: the left part of the row, out to the box's left, top and bottom edges. */
-.text { flex: 1; min-width: 0; align-self: stretch; margin: calc(-1 * var(--l3-spacing-12)) 0 calc(-1 * var(--l3-spacing-12)) calc(-1 * var(--l3-spacing-12)); padding: var(--l3-spacing-12) 0 var(--l3-spacing-12) var(--l3-spacing-12); cursor: text; }
+.text { flex: 1; min-width: 0; align-self: stretch; margin: calc(-1 * var(--pf-pad)) 0 calc(-1 * var(--pf-pad)) calc(-1 * var(--pf-pad)); padding: var(--pf-pad) 0 var(--pf-pad) var(--pf-pad); cursor: text; }
 .label { font: var(--l3-text-description-12); color: var(--l3-content-secondary); }
 .hint { font: var(--l3-text-description-14); color: var(--l3-content-secondary); }
 .value { display: flex; align-items: center; font: var(--l3-text-heading-16); color: var(--l3-content-primary); }
