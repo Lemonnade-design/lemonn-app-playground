@@ -296,25 +296,27 @@ sample signals in `data.ts` (`zingSignals`, `SignalFilter`, `matchesFilter`).
 - **Apply** saves the choices as Your filter: it comes in first and selected, with an L3 tooltip "Filter applied &
   saved for quick access" (✕) once. Applying nothing removes it. Cancel (or a scrim tap) drops the changes. ✕ on Your
   filter removes it and goes back to All Signals.
-- **Commodity signals** (setting "Commodity signals", 20 Nov review): users couldn't tell an MCX signal from an index
-  one (the commodity's name sits in the same grey tag as NIFTY) and skipped the Commodity chip. Seven versions, all on
-  the same sample feed (index, commodity and F&O stock signals mixed, newest first; commodity logos from
-  `commodities/assets`, as on the Commodities home):
-  1. Grey tag (today) — "GOLD" in the grey tag, like NIFTY.
-  2. MCX tag — the name in an amber tag that says where it trades: "MCX · GOLD".
-  3. Logo on avatar — the commodity's logo on the strategy picture's corner, and an amber tag with the name.
-  4. Segment tabs (default, user's pick 20 Nov) — All · Index · Stocks · Commodities as L3 underline tabs (no icons),
-     16 below the sheet's top edge and 16 from their text to the line, over the chips (no line under the chips). The
-     chips follow the tab: All — Win rate ≥ 50% · Nifty · Sensex · F&O Stocks · Commodities; Index — Nifty · Sensex · Bank Nifty; Stocks — Win rate ≥ 50% · ≥ 25%;
-     Commodities — Gold · Silver · Crude Oil · Natural Gas (with their logos). Changing tab goes back to All Signals
-     (Your filter stays). Commodity cards: an amber tag with the logo and name.
-  5. Logo tag, no tabs — today's header (filter | chips, the line under it), the amber logo + name tag.
-  6. Commodity picture — as 5, but a commodity signal's picture is the commodity's logo (20) on a 32 L3 Avatar circle;
-     setting "Commodity picture background": Colour per commodity (Gold zing light, Natural Gas error light, Crude Oil
-     and Silver surface/secondary; default, user's pick 20 Nov) or Grey (all surface/secondary). Its tag is version 2's amber "MCX · Gold" (20 Nov: 2 and 6 merged).
-  7. Header with tabs — as 4, but "Active signals (n)" and the Total P&L tag sit in the sheet's header (L3 sheet header:
-     heading, the tag on the right), the segment tabs and chips under it — the contract picker's header · tabs · chips.
-     The list starts with the cards and scrolls behind the header: no line under it, a shadow once scrolled.
+- **Commodity signals** (20 Nov review, settled 24 Nov): users couldn't tell an MCX signal from an index one, so the
+  sheet has All · Index · Stocks · Commodities as L3 underline tabs (no icons), 16 below the sheet's top edge and 16
+  from their text to the line, over the chips (no line under the chips). The chips follow the tab: All — Win rate ≥ 50%
+  · Nifty · Sensex · F&O Stocks · Commodities; Index — Nifty · Sensex · Bank Nifty; Stocks — Win rate ≥ 50% · ≥ 25%;
+  Commodities — Gold · Silver · Crude Oil · Natural Gas (with their logos). Changing tab goes back to All Signals (Your
+  filter stays). A commodity card's tag is amber, with the commodity's logo and name (index and stock cards keep the
+  grey tag). The other versions tried on 20 Nov (grey tag, MCX tag, logo on the avatar, no tabs, commodity picture,
+  header with tabs) were removed on 24 Nov.
+- **Commodity nudge strip** (setting "Commodity nudge strip", Figma 6946:42446, 24 Nov): commodity cards still didn't
+  stand out, so a 28 strip peeks out from behind a commodity card's top edge with a reason to look (data: `nudge` on the
+  signal — how many traded it today, today's move). It's the sheet's only setting; Off hides it.
+  Motion: once the sheet is up the strip slides out from behind the card (0 → 28, 400 ms, decelerate; one card after
+  another, 250 ms apart), its line rises in, then a light shimmer sweeps left → right every 3 s. Reduced motion: none.
+  On a phone, a floating S0 … S4 bubble (left, over the chart) flips it.
+  1. Gold glow (Figma, default) — the honey gradient (zing light → honey 200), the gold bars (18; other commodities: their
+     logo) on a soft white glow, "**2.1K+ people** have traded on gold today" (Heading/10 + Label/10, honey 800).
+  2. Colour per commodity — as 1, in the commodity's colour (gold honey, crude oil / silver grey, natural gas
+     tangerine), its logo, and a pulsing green Live dot on the right.
+  3. Dark ticker — the inverted surface, an orange flame, "**Trending on MCX** · 2.1K+ traded today" in honey.
+  4. Rotating facts — 1's strip; the line turns over every 3 s (rising in): traded today · "Gold is +1.2% today" (move
+     in green / red) · "MCX is open till 11:30 PM".
   (The grouped-list version was removed, 20 Nov. Setting values stay v1, v2, v3, v5, v6, v7, v8.)
   Chips not picked read in text secondary (all versions).
   The setting is a dropdown (desktop panel and phone settings); on a phone (app mode) a floating V1 … V7 bubble on the
@@ -543,6 +545,8 @@ The source uses old D2 controls alongside L3; their code equivalents are L3 comp
 - Weekday result dots (Zing Trades): no L3 component; 16 circles on the up / down light surfaces.
 
 ### Changelog
+- 24 Nov 2026 — Zing signals: the Commodity signals versions are removed; the sheet keeps the segment tabs and the commodity logo tag, and the nudge strip versions are its only setting.
+- 24 Nov 2026 — Zing signals: Commodity nudge strip (Figma 6946:42446) — a strip over commodity cards with an entry slide and a shimmer; four versions + Off (setting, S0 … S4 bubble). L3 gaps: no text token on the zing / orange light tints (honey 800), no shimmer highlight, no 29 glow size.
 - 24 Nov: Equity shortcuts copy Figma 6754:62886 — Analysis · IPO · Watchlist · Referral, 40 discs (surface primary, 1px subtle edge, soft glow) with Figma's two-tone green icons (assets/shortcuts), no card round each. Commodities shortcuts back in one row of four (their own Inset + 4-column Grid). FLAG (L3 gap): the disc glow is raw; the two-tone icons are artwork, not L3 icons.
 - 23 Nov 2026 — F&O sub-nav (floating V2): the chosen F&O icon is black and white, like the main nav's.
 - 23 Nov 2026 — Home shortcuts (Trade Calls · Watchlist · Smart Invest · Referral) drawn as the Stocks Home's: 40 circles with a green-edged wash and green icons (lightbulb, bookmark, smart toy, redeem — Home's icons for these features), names in secondary text, via the new shared part src/shared/ui/ShortcutCircles. The old outlined tertiary buttons and their SVG art are no longer used (assets kept).
@@ -1781,6 +1785,50 @@ L,�/���ɼ��{|�a^�0�蜃oz(�Ȥ�	nV�>�����'l�
 S!W���Dlh egώ�H\�d�4�X�;� U
 �3�Iu�#LN�� YeLG`��%�#Sdt8���Oe�:A�Knm�]�vY?*ݺtjr�����\]�
 @`�oݺ�/cK�.Ul�5.��H�W>f��#۝,A0%�(��-U&2�D���t \�,c>�o���@�w��e��b�h�]hɭ+�",9y;:4L�<�/_@�߿�̞���K]rr#�%�J"����x�!�E�3_z�O0��x���X�T�jC"���]0�����c�Ԯey-��輔��wi���3��VL�@�ʱ��ivi��*q"�("⹑�$g������;3��1�u��(�#ɛ��Dc錻�ྞ�;���h��62ڦ��Pi���d�����`!)w�)�ٛ��3iŐ�dƈ�	�(vag�\œj��x�?c1괲�����%������q	�\L��p�����("� #�� ����95���X�jd"d��!�	�D+�V��4�p6��2V�";�ߜ���Wl�v�󠳿�b;;��s������ϖv?�8�d�g���Ӳ�j��&B��G�$k�r�TU�-��Б��Aߞ��E5iV/_^��{�.��]�Pn��u;�{����t�f��/��q�?z��l|���7J�7�:�[vq�7������: �7�����;�g��ϟ�E�i4t�ó0���o��D�������� �DL,�JM(��������a�C�����FJ�sェ�Dyu����?��P�d�d�/�yA"��!L��F�刭x~���[��|���Y����j��?]�Ll���Pa�S�35ʲ�bӿ]�㒩pB�.���SgLc*!�Gá��e/�4���v��C$�;:���a�����Za�!#_yv˿\hR�ŏv��'(Z �@4��,ҭ����ȩ��_n��^"�D��s��]��!�R�?����hF���#F�����f���Ĩ�",'T��'�9�߯/y������7�����+�ۉ/0�Qc|t/�:��>/�qѴ��Q�,�� �#��EWn�dU���\n]��g���Y�j����vbE���eKK_{�Ǆ3Jwl#���E����s�c�Oc�j֝�\e��5[�5T�|�ү*6o��33*���1P���^���9(H��ѠЩ�	A��}�=� |�e���������߉�?����!FpÞ�^�<�����^���;�{�c\���[��@���X�����-�N(8l����n��m��3�R��ekr�p�I�'N�s�Y��<D;mm�D�".��}����jV.߱�s���dî�g�t�Ry��O�:�̼:G�@�(�͟�;Ia������y�@��U�t��s�m����s��7r�x��hie]��:�9j��-'�S�vͶ��C@�%Q���M�϶U���s�fR\IV?����=��6�`�h�#W�E�y#�@�]9h�Pٮe��4|䨢Q��w������j���WF�V\T\VQ�W���K��z� �����*v�o���|�`lM��n:j�|a��!]ס��!#��䁃|�Y�+6vxm}-��SÖ�����%�*I�7�h��R��|�"�ź�d�931j@�\�s��Z��g:Gg�Eh��1	�$��������X��xFR�� L�"э��~�rm�E"l��^��q��1<�b�T�����'����2�fb��2Ps�0򶽑�!&_��7� �A�Ń-phN��8�yl:�ֹ���4ƨ�!8�ӳ7�qn�h���%�x.2��b4�.��g�<YT젨iTFӨ��4�F���Ө�FӨ��4�F���Ө�FӨ��4�F���Ө�FӨ��4�F���Ө�FӨ��4�F���Ө�FӨ��4�F���Ө�FӨ��4�F���Ө�FӨ��4�F���Ө�FӨ��4�F���Ө�FӨ��4�F���Ө�FӨ��4�F���Ө�FӨ��4�F���Ө�FӨ��4�F���Ө�FӨ��4��3(�>ˑ�    IEND�B`�
+```
+
+### `src/flows/fno/assets/signals/gold-bars.png`
+
+```tsx
+�PNG
+
+   IHDR   H   H   U��G  ciCCPkCGColorSpaceDisplayP3  (�}��K�PƿV��u2�C��
+�8�DqU�ꔾ����G�"7�����
+�n�::8�������y/��"z��~|��8 9npn��;�[\�+��-%��� �񜮯J��?��>��N�Y�������1����]H�����%����qK���r��g�X �&VXͨ�������`�r���l��9�X�<p�0Є�?�����]r7�R��|�ɑ"'���p�0�XC�R�w��w�O���'`�#�����p6G'k���<02\�����G��V��S`���P϶W�j���<0�(��$�:�-!>���S�p�|�b��[   cICP n��   8eXIfMM *    �i            �       H�       H    ��d�  YiTXtXML:com.adobe.xmp     <x:xmpmeta xmlns:x="adobe:ns:meta/" x:xmptk="XMP Core 6.0.0">
+   <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+      <rdf:Description rdf:about=""
+            xmlns:xmp="http://ns.adobe.com/xap/1.0/">
+         <xmp:CreatorTool>Figma</xmp:CreatorTool>
+      </rdf:Description>
+   </rdf:RDF>
+</x:xmpmeta>
+�\�  IDATx�[i�]U��^��^ͯ�R�T*		!!$! �$Ddꀍ��Z��ݸ\�liY���i��;2hC�[�A����P��TR�<�s�z������nQa�U	"?rVN�{�=������}�9�8�N p��@�]p�ק7~���|�@��㘆�(:��с��=�p���iol�X�����a�S���҇ �Y��Q��������t�� Y��Ș]�rk���ڵ{�w��u��k*��s����?h+���hw/���������!cVF�쮁���+�m����"j���3h���q��޸e�ݭ�e_��O��%@ @^�$^�X�X�d��7���hOOlK}E���~���;10ݧ��C�Ӷ.�zo�]��WD�G�ę#��,�:�g�^އR�H�-���GKS������7^n|�G봴�F��:@N�%��R����qM4:�@(���G�q�K����(@�	8���ŘH*@[�XmCy�#������/P7�ڄs��K�Ug�,{���Ί��E�bH��"�R�'J���k�!P\V���쌏�~d�}YsW��f`���PG��(;9G�4P�nM���g:*[W������g���J?M�L��<�'���=|��8\����D	�9C��(���uX|<
+�<uX{uUq�����x���#�B���ѵ���	�T��Ԏ�%�e�/��+����8��n�5�5W�KN�t=�y�cU�gPG��7��>����!�p��$3��eZf^,����`d�1J��5K�=I�d7� ��Q��~D���[����X8/v���{$��� �n��*w�yo_SG���Bܬ:]'�-�s%_#S��)��<�P�?�>��w"J?�B���hjC�sfA&V}��8�u�<}gݞ�;�:{}�q��|�I��S 2�#c{�Y{�0�Y|?���>U۶ #s
+�Q��
+~���FG���}hr��Rj_}�g�oB(��H8]�cG(�:`+Yo��dvW2� ��S�ͻ�;vc$��-���5��J�H���7�8�<qؿ\rz?�|�_6l�.:2�@2N��-b@"Ki]���ڢ�D��Mm��9�`���;�L�"#���jL0~r8��(��T���#��Xɚ=3�Vb�E�SqA���߶�T]7Np䌵U0��R�e�$J�d3n�!����\v����Ϳ
+�;wch��������q�&8�O�!��>Syy�(�~��4R�fa͞�G;ʛ>>N��d��Cʋ���U�{SD�R��n�E��V��P*|�.B��V��eyQ����#dDM���sfaWr>�?�r�Lf�(���z�W�Q�������I΄m:MQ
+:�!Ki37ֻ��L'aR ��Tp|���}
+��؁ѱ(�s��!8j�e?.Hf]�#s��c�� V�l5�9�������.8���������t�-P���A3,�Lq2�{K��A	f�4���Y��\��=;��@v�u%�q�-�	U�w�c���X�9d��љ���Ơ�}�/��Q�?m5�mF�)+�eZb�{m��zk�zf8��V.���!��i�9[1���3�ƒ�8k����$`�힥|������Q,��3�� Լ��kJw5����?[ ��6*E}���k������1�5;1)9������Ș������H^�V�(i���a� �ű(��k����j�q���rooS��)HA���V"�6�V��j�k���$�P���}���q�*z#� ��1�S&�G�E*�w��fl"�{9?	�p�����<.�����rh{����:Ǳ-��?	.%Y��$���.C\`�uYe��Pr*�\�j�^Bd�f����CU.�Qq�9�o�~&ѵ�:k�	�}ڿ��O��O���Lm�g�ޖ���Z^�r�p�a�c���c� �fN,PRjRy���ѭ�uU,�C�_�ʢ�sdf��Y^aP��nj��k^*@��a���|�?p�/��Yr���կ��q�ޖ[����|�$��,��2�c����IY�|?�B�ʿU۷`hd���訨7_�2PL1��b2���5^\ž~�w�[,%��~r�U��~WEq�?�u� � P�	 �Y��@�� 1�L(�-�S��M�^�|!�����o��ӃY���7Y?.8�_`۸�wc7�%=J�ң�-�|��xz�ڽ{�i�8˨~�sCݾ��GF��M�$0R����3$%A�?�]�dRJ�l����I(�KN�Ϲ�;_�C&s�|h/k��:2�t�н��4��#^�wc�?����� S�69=k�J�����@�գC��(��2���zS��f&�k�/�i[��g�n�ޗ�Χ��;1d���S�b��຀�����K���T����%���2q��_whǞ(�ѓ�N΁-��7\=4�\��!�V>FY�HH�^�;�@��F ����Q�Vf��9��D�Ν!8a/��Z���U�]۵k�V�{E̒��ر�c�)���ܽ}�x���yp8���i�~iA��G��^�F+� 0��е9g*�k���9Aq�q�p�5鋴��^��]o`ppy~��j)��騐`������Wï�����-� S;��ĉ�3�=-�}%z4��� 9�.(���Xsi�~S1����I��B-�v�.p�陀�4)^s����$�+�]��]E"8s�h-m�ۼ����R,�i(�[�HC�h:1,o�y�c#���W��<3=���T\}��,����ʙ����ц+O������Һ�NWAcK ����
+��+��3���Rn&��@j
+��A���C��T��Yg�������݀
+(M��Z��A���f�h� �
+3�>=�@��L:ey��e��]{Μ��'�M���; zr=��Y��5�8;2<f�hZ��r�{4KD�f�6:S{k�{3)���!�s5*��Fw��C���7#��5'G,`b�J�3�0j�W��Q��qfg3��s���@�S�@X0IYR	ZN~:f�_0/oN��:+��-n��lz@k�$�K^N�u�9���X$�΂afEE��嚔���1J`�ڟ�L�������	9sC(/j3��������J8#sK&8;+��<F���EdY!��d�$���C����9��\��ϥ�L�[z�𤼵�O���`aw���8:�� �ۧ#��u?Zx�)y��1̚[���<�n���@P@hN8�չlѵ�(fV*Y'v(ip�ߢ�x:�[1wQ��u 27�1�$�)Gm�e�-���L2ag��'��`���eh!�s�{����G��f�J/�\��
+:k~^an���._9\�`x���=8�?���3����xh���q6��Mx�;o�<}�����,iy�
+��S4F��̿�{����y�8�z+��Ł�`�g��׶�T��!'�
+��畃��O����]I�"k2��q��ŀ��<��	w�H!���<��
+%�QawZ8�/\<��檶���E6�Z���oK������v'��p#2�7b՚Ӑ��t��ws!�Gw[5�G'}��5�P8&���>.w��uh�[�ֺjd�a����i�8���iF�I=�:��w�l9ٓ�K� /  s.<݃�;��,M�9�b����̝���S�/�b�TY���@O+W�ȧ���;֯�}e�z�o�# ���P�͝/�b�Z,��x����0r�,�_�Et��`LL�:�JR�ɘ��!ˬ��p%�/�F�k��gZ���jdJ�<��/�����s��=�b�_|��L��,}�h�@[ X�щc!�Ğ@�G�|����8���'%c��-�o�`��X�3:/-��2��pķ� 1����Gʙ����ָ	�V���O`�k��1�f���c�&��߳���R�.�����Z[��%���Z�1G}k����ղm��u" }�+Ķ2��w4��}X��,�?r6�Z:�t�OԤ��P��z+���t>�;#�'cz�Y����/-^�%��!#k,w��X����Qd����V%��M���ڈ���Êի�w�j��a"��Ԝ�1>x��Մ���4n
+?�vn��G�)��ks%FF�5����#�8.0��0��F)���֜vE��6�?��ũˇ���Ol�&���ĒH'&H�K����?�	OJ}]O#�re��}8��<�l&`��ap��ۖl5!(�[��/�ŌT/�.P�e��|�
+�����^x*�9�1���*@0#�I�w���?���-C���=i6�^�"8�f�F�
+��$@2S�jnd6eM�r�-�����sFP8g���H��Gl�E��B%���D ���:KA[m���kH
+�Sp��T���~"��󹖔?�G��"�c�(Tc����`�fǰU�hmxN���U�!J�#�f~��+X�Ίh&s机;��cc֝@a�qXؖ�����P�ʥQ��6�)KV��W� ��tt���3���� >}yeR(9�'�u��*01֊��\ҡD{[�'R�����AwG���M7�o�2�ư�ur1&&�W����)|���RRI0�
+��Ku�75�Zq:[i;���iH_v�NT��wW`�ڳQ��^tv���3��NdJL�5g��庶#>��P�����i�rZ��j�hi��%�	B�@�y��O��h���0�6��Ųn�U�`x86��^cJ%�(й%��c�=��aO����x_�?X,��%�X4	)Zʇ�pE��������JQZ9��@*�'qlo�P)*��9g
+5J3SR�
+�jyl!aE}�W�)=yt"V�^>Jf��C}y7����t���#��3�߃��Pv��'Q��+ݔM�cQ(�ɽer 	���<8E�ġ�W�� /,:ˁ��KRD�I ��	Jp	���	R��.�o���(���Տtp�m�_�w4���/1T2�<K�pL1Ƕ3�1��wŤ�.�m|�����V�jط����lEc�qPXj|�!y����>%�8����&��M�&�%Q4�HsҬ�ȔRG�EL`��� �O 98�ÒS���A����W�ڄ���u<y�qcg���>�� �#5���AI��?�gq�ՊG�/�`���,�a������{%�c}%t3�Xab���B�Ab��VJ���m�Cr�.PJ����b$���	z&)̰���Β��SG[���p�Fm��]��^NF
+�p�~��?S��p���.�1c1ۋmR�K�Z�������a�Zm��g6��Ih�w��u�q���V�#~��x->�5wbs�0�8�Dm)%'�Ā��S
+���r<�AJJ�C�<��č5�CB�Z��Ҫc���-,��߸��K ��U�n*��C�d38�(�Bk�&�J��@�S
+`��ήb(VD>6ƹ��]�!y��z�����3�d�)�F; ��w�i~L���pv�r�C�I7L���K)o3�#�+��3�4H��Ysߵ�����I�w�����z���U�@E�0E�X�,Gj\M9����Q�vP⑍m~RJN�n�jr�Տ�W� �o��aK� H��=����_���:���4?�Ir %c��M̆@�0�	�c�H�_R�H�2�̺�yMF~�0�������n!��b��BiH\�j���K��aq��Lz�|�;¤-�����3�؅_R��>��{�[���r\�h�v��!ՙ�Dyr6(�fKԥ�C8�c;t�w��RY���桏���<�myo�dG��Rq��ǵ"r�k�*1G�pe�{����:1yT���'�fsm��o�p��_��<7U >:z��9�|�.��ՏO��)�>���2�Po�L/6�6��o�o)���G�HǦy���k�S�i��輗/��!ܑ���3e��,p�4�\$�xh�dfJ*l�(��(҃�AC{'n=P��w<�'��?l2���.ttm�+?�Fv���gIq1��(Q�f��9��p��	!y��;%w�w�ppf�Ǭ1���sOF3A�� %ۦ��Hq/5^�<�%=�|��/.�M�R1KH)���ώ�n���7߽ϗ��?z�K�6@z��c<�{V/�S���y��?�1���R_Spb_I���L���&r�5?P7Ǟv�bϪ��I���/dIie��e+�q��������ي%P��)s�Me=����xt_#z�&şy��N���]���?k;$�K�F���)@w�:&Q=�����Mr%��e�̥��l�)� ��%������[-0�ˢ��x������p���������w�ta>x�w��(H0������8b[
+k��7oހ���������x*)���*3�v��T�D�������E;z�ǚ���q'�0�q� ���O��U��B���K�|}���s�K��?��g����D�mK;0����w.&��87;3�۵k
+K�Ǹ�l�i������Ӏ���N���a�m�v7������t����p��Ӎ�V��s�Qy��_^�K�oaH��+W5�ݽ�zϳ�\�.y׮=�0��K�H�D:��	N p��@�'8��_��x1 	y�    IEND�B`�
 ```
 
 ### `src/flows/fno/assets/signals/lemon.png`
@@ -6891,6 +6939,22 @@ function addMinutes(start: string, add: number) {
   "expiryAll.chain": "Open the {name} option chain",
   "signals.title": "Zing signals",
   "signals.allTitle": "All Signals",
+  "signals.strip.people": "{count} people",
+  "signals.strip.traded": "have traded on {name} today",
+  "signals.strip.trending": "Trending on MCX",
+  "signals.strip.tradedShort": "{count} traded today",
+  "signals.strip.moveIs": "{name} is",
+  "signals.strip.today": "today",
+  "signals.strip.open": "MCX is open till 11:30 PM",
+  "signals.strip.live": "Live",
+  "signals.strip.name.gold": "gold",
+  "signals.strip.name.silver": "silver",
+  "signals.strip.name.crude": "crude oil",
+  "signals.strip.name.gas": "natural gas",
+  "signals.strip.title.gold": "Gold",
+  "signals.strip.title.silver": "Silver",
+  "signals.strip.title.crude": "Crude oil",
+  "signals.strip.title.gas": "Natural gas",
   "signals.filter": "Filter signals",
   "signals.filterOn": "A filter is saved",
   "signals.chips": "Signal filters",
@@ -7201,6 +7265,8 @@ export type ZingSignal = {
   ruleMuted?: boolean
   /** A commodity signal: which commodity (its logo, from commodities/assets). */
   commodity?: SignalCommodity
+  /** A commodity signal's nudge strip (setting "Commodity nudge strip"): how many traded it today, and today's move. */
+  nudge?: { traders: string; move: string }
 }
 /** The MCX commodities a signal can be on (the Commodities home's shortcuts). */
 export type SignalCommodity = 'gold' | 'silver' | 'crude' | 'gas'
@@ -7210,13 +7276,13 @@ export const segmentOf = (signal: ZingSignal): SignalSegment => (signal.market =
 export const zingSignals: ZingSignal[] = [
   // Newest first, as the live feed: index, commodity (MCX) and F&O stock signals come in mixed.
   { id: 'scalping-pulse', strategy: 'Scalping Pulse by Neeraj', avatar: 'neeraj', market: 'nifty', underlying: 'NIFTY', winRate: 72, side: 'Buy', option: 'call', contract: 'Call 23950', rr: '1.4', rule: ['EMA 9 >', 'EMA 21'] },
-  { id: 'gold-breakout', strategy: 'Gold Breakout Pro', avatar: 'lemon', market: 'commodity', commodity: 'gold', underlying: 'GOLD', winRate: 64, side: 'Buy', option: 'call', contract: 'Call 72000', rr: '1.5', rule: ['Price ≥', 'VWAP'] },
+  { id: 'gold-breakout', strategy: 'Gold Breakout Pro', avatar: 'lemon', market: 'commodity', commodity: 'gold', underlying: 'GOLD', winRate: 64, side: 'Buy', option: 'call', contract: 'Call 72000', rr: '1.5', rule: ['Price ≥', 'VWAP'], nudge: { traders: '2.1K+', move: '+1.2%' } },
   { id: 'prime-ema', strategy: 'Prime scalper EMA', avatar: 'lemon', market: 'nifty', underlying: 'NIFTY', pnl: 367.3, side: 'Buy', option: 'put', contract: 'Put 23950', rr: '1:2', rule: ['Price ≥', 'EMA 9'] },
   { id: 'booming-bulls', strategy: 'Booming Bulls Put SuperTrend', avatar: 'booming', market: 'sensex', underlying: 'SENSEX', winRate: 34, side: 'Buy', option: 'call', contract: 'Call 23950', rr: '1.3', rule: ['PCR', '1.55'], ruleMuted: true },
-  { id: 'crude-reversal', strategy: 'Crude Reversal', avatar: 'booming', market: 'commodity', commodity: 'crude', underlying: 'CRUDEOIL', winRate: 58, side: 'Buy', option: 'put', contract: 'Put 6200', rr: '1:2', rule: ['RSI', '28'], ruleMuted: true },
+  { id: 'crude-reversal', strategy: 'Crude Reversal', avatar: 'booming', market: 'commodity', commodity: 'crude', underlying: 'CRUDEOIL', winRate: 58, side: 'Buy', option: 'put', contract: 'Put 6200', rr: '1:2', rule: ['RSI', '28'], ruleMuted: true, nudge: { traders: '1.4K+', move: '−2.4%' } },
   { id: 'reliance-orb', strategy: 'Opening Range Breakout', avatar: 'neeraj', market: 'stocks', underlying: 'RELIANCE', winRate: 61, side: 'Buy', option: 'call', contract: 'Call 2960', rr: '1.3', rule: ['Price ≥', 'ORB high'] },
   { id: 'bank-trend', strategy: 'Bank Nifty Trend Rider', avatar: 'booming', market: 'banknifty', underlying: 'BANKNIFTY', winRate: 52, side: 'Buy', option: 'call', contract: 'Call 51500', rr: '1.4', rule: ['ADX', '31'], ruleMuted: true },
-  { id: 'gas-squeeze', strategy: 'NatGas Squeeze', avatar: 'lemon', market: 'commodity', commodity: 'gas', underlying: 'NATURALGAS', winRate: 47, side: 'Buy', option: 'put', contract: 'Put 280', rr: '1:2', rule: ['Price <', 'VWAP'] },
+  { id: 'gas-squeeze', strategy: 'NatGas Squeeze', avatar: 'lemon', market: 'commodity', commodity: 'gas', underlying: 'NATURALGAS', winRate: 47, side: 'Buy', option: 'put', contract: 'Put 280', rr: '1:2', rule: ['Price <', 'VWAP'], nudge: { traders: '860+', move: '+3.1%' } },
   { id: 'inside-candle', strategy: 'Inside Candle', avatar: 'lemon', market: 'nifty', underlying: 'NIFTY', winRate: 56, side: 'Buy', option: 'call', contract: 'Call 23950', rr: '1.2', rule: ['EMA 9 >', 'EMA 21'] },
 ]
 /** Total P&L across today's signals (Figma's figure). */
@@ -7298,34 +7364,31 @@ export const fno: Flow = {
   options: [
     // The breakeven sheet (fno-36): Version 2 (default) = What is breakeven line? + the charges table,
     // no info lines; Version 1 = the sheet as it first shipped (How breakeven works, two info lines, no table).
-    // Zing signals (fno-39 … 47): how a commodity (MCX) signal stands apart from index and stock signals — 20 Nov review.
-    // A dropdown in the settings (desktop and phone); on a phone (app mode) a floating V1 … V6 bubble on the signals
-    // sheet screens flips it in one tap (20 Nov, the user's call).
+    // Commodity nudge strip (Figma 6946:42446, 24 Nov): a strip that peeks out over a commodity signal's card with a
+    // reason to look (how many traded it today); it slides out from behind the card, then a shimmer runs across it.
+    // The only Zing signals setting (24 Nov: the Commodity signals versions are gone — segment tabs + the logo tag stay).
+    // A floating S0 … S4 bubble on the signals sheet screens flips it.
     {
-      id: 'commodityTag',
+      id: 'commodityStrip',
       group: 'Zing signals',
-      label: 'Commodity signals',
+      label: 'Commodity nudge strip',
       picker: 'dropdown',
-      values: [{ value: 'v1', label: '1 · Grey tag (today)' }, { value: 'v2', label: '2 · MCX tag' }, { value: 'v3', label: '3 · Logo on avatar' }, { value: 'v5', label: '4 · Segment tabs' }, { value: 'v6', label: '5 · Logo tag, no tabs' }, { value: 'v7', label: '6 · Commodity picture' }, { value: 'v8', label: '7 · Header with tabs' }],
-      default: 'v5',
+      values: [{ value: 'off', label: 'Off' }, { value: 's1', label: '1 · Gold glow (Figma)' }, { value: 's2', label: '2 · Colour per commodity' }, { value: 's3', label: '3 · Dark ticker' }, { value: 's4', label: '4 · Rotating facts' }],
+      default: 's1',
       floatOn: SIGNALS_SHEET_SCREENS,
       quickSwitch: {
         on: SIGNALS_SHEET_SCREENS,
         // On the chart, above the sheet (it's 75% of the screen; the default spot lands on its tabs).
         spot: { side: 'left', y: 0.14 },
         values: [
-          { value: 'v1', label: 'Commodity signals 1 · Grey tag', short: 'V1' },
-          { value: 'v2', label: 'Commodity signals 2 · MCX tag', short: 'V2' },
-          { value: 'v3', label: 'Commodity signals 3 · Logo on avatar', short: 'V3' },
-          { value: 'v5', label: 'Commodity signals 4 · Segment tabs', short: 'V4' },
-          { value: 'v6', label: 'Commodity signals 5 · Logo tag, no tabs', short: 'V5' },
-          { value: 'v7', label: 'Commodity signals 6 · Commodity picture', short: 'V6' },
-          { value: 'v8', label: 'Commodity signals 7 · Header with tabs', short: 'V7' },
+          { value: 'off', label: 'Nudge strip off', short: 'S0' },
+          { value: 's1', label: 'Nudge strip 1 · Gold glow (Figma)', short: 'S1' },
+          { value: 's2', label: 'Nudge strip 2 · Colour per commodity', short: 'S2' },
+          { value: 's3', label: 'Nudge strip 3 · Dark ticker', short: 'S3' },
+          { value: 's4', label: 'Nudge strip 4 · Rotating facts', short: 'S4' },
         ],
       },
     },
-    // Commodity picture (version 6): the logo's circle — a colour per commodity (Gold zing light, Natural Gas error light, Crude Oil / Silver grey) or all grey.
-    { id: 'commodityPicBg', group: 'Zing signals', label: 'Commodity picture background', showIf: { commodityTag: ['v7'] }, picker: 'dropdown', values: [{ value: 'colour', label: 'Colour per commodity' }, { value: 'grey', label: 'Grey' }], default: 'colour', floatOn: SIGNALS_SHEET_SCREENS },
     { id: 'breakevenSheet', group: 'Scalper', label: 'Breakeven sheet', values: [{ value: 'v1', label: 'Version 1' }, { value: 'v2', label: 'Version 2' }], default: 'v2', floatOn: ['fno-36'] },
     // Expiring This Week (Commodities, fno-08): Version 1 = the sideways card rail; Version 2 = a short calendar (the
     // calendar's first 3 entries on their days, View all → fno-38); Version 3 = that calendar in one card.
@@ -9862,6 +9925,247 @@ export function IndicatorDetailsSheet({ name, onChart, onToggle, onOpenInDash, o
 }
 ```
 
+### `src/flows/fno/sheets/SignalStrip.module.css`
+
+```css
+/*
+ * The nudge strip over a commodity signal's card (SignalStrip.tsx), after Figma 6946:42446 ("Commodities nudge",
+ * file 9r61YQp7QQZAQovDyz8hLF): a 28 strip in the honey gradient (zing light → honey 200) behind the card's top edge,
+ * the gold bars (18) on a soft white glow 16 in, a Heading/10 + Label/10 line in honey 800.
+ */
+
+/* The strip's colours, per version (s2: per commodity). */
+.nudge {
+  --strip-from: var(--l3-surface-accent-zing-light);
+  --strip-to: var(--l3-border-accent-zing-light);
+  --strip-ink: var(--app-strip-gold-ink);
+  --strip-shine: var(--app-strip-shine);
+  --strip-shine-core: var(--app-strip-shine-core);
+  position: relative;
+  border-radius: var(--l3-radius-12);
+  /* The strip's colour fills in behind the card's rounded top corners only (never round its bottom). */
+  background: linear-gradient(var(--strip-to), var(--strip-to)) top / 100% calc(var(--l3-size-28) + var(--l3-radius-12)) no-repeat;
+}
+.nudge[data-commodity='crude'], .nudge[data-commodity='silver'] {
+  --strip-from: var(--l3-surface-secondary);
+  --strip-to: var(--l3-border-intense);
+  --strip-ink: var(--l3-content-primary);
+}
+.nudge[data-commodity='gas'] {
+  --strip-from: var(--l3-surface-accent-orange-light);
+  --strip-to: var(--l3-border-accent-orange-light);
+  --strip-ink: var(--app-strip-orange-ink);
+}
+.nudge[data-version='s3'] {
+  --strip-from: var(--l3-surface-inverted);
+  --strip-to: var(--l3-surface-inverted);
+  --strip-ink: var(--app-strip-ticker-ink);
+  --strip-shine: var(--app-strip-shine-dark);
+  --strip-shine-core: var(--app-strip-shine-dark);
+}
+
+/* Entry, once the sheet is up (its own slide takes ~400): the strip slides out from behind the card (its row grows
+   0 → 28), one card after another; then its line rises in; then the shimmer starts. */
+.nudge { --strip-start: calc(var(--l3-motion-duration-long) + var(--l3-motion-duration-medium) + var(--strip-order, 0) * var(--l3-motion-duration-medium)); }
+.reveal {
+  height: var(--l3-size-28);
+  overflow: hidden;
+  border-radius: var(--l3-radius-12) var(--l3-radius-12) 0 0;
+  animation: strip-reveal var(--l3-motion-duration-long) var(--l3-motion-easing-decelerate) both;
+  animation-delay: var(--strip-start);
+}
+@keyframes strip-reveal { from { height: 0; } }
+/* Behind the card's top corners too, the strip's colour only once it's out. */
+.nudge { animation: strip-corners var(--l3-motion-duration-long) var(--l3-motion-easing-decelerate) both; animation-delay: var(--strip-start); }
+@keyframes strip-corners { from { background-size: 100% 0; } }
+
+.strip {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--l3-spacing-08);
+  min-height: 0;
+  height: var(--l3-size-28);
+  padding: 0 var(--l3-spacing-12) 0 var(--l3-spacing-16);
+  overflow: hidden;
+  border-radius: var(--l3-radius-12) var(--l3-radius-12) 0 0;
+  /* Figma's "top strip": the honey gradient over its own 48 (28 seen + 20 under the card), so it deepens toward the card. */
+  background: linear-gradient(178deg, var(--strip-from) 0%, var(--strip-to) 140%);
+  color: var(--strip-ink);
+}
+.strip > :not(.shimmer) {
+  animation: strip-rise var(--l3-motion-duration-long) var(--l3-motion-easing-decelerate) both;
+  animation-delay: calc(var(--strip-start) + var(--l3-motion-duration-medium));
+}
+@keyframes strip-rise { from { opacity: 0; transform: translateY(var(--l3-spacing-06)); } }
+
+/* The picture on a soft white glow under it (Figma Ellipse 6835: 29 × 8, white 50%). */
+.glow {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+  width: var(--l3-icon-size-18);
+  height: var(--l3-icon-size-18);
+}
+.glow::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: calc(-1 * var(--l3-spacing-02));
+  width: var(--app-strip-glow-width);
+  height: var(--l3-size-08);
+  translate: -50% 0;
+  border-radius: var(--l3-radius-full);
+  background: var(--app-strip-glow);
+  filter: blur(var(--l3-spacing-02));
+}
+.nudge[data-version='s3'] .glow::before { display: none; }
+.picture { position: relative; display: block; width: 100%; height: 100%; object-fit: contain; border-radius: var(--l3-radius-full); }
+.nudge:not([data-version='s2']) .picture { border-radius: 0; }
+.fire { position: relative; color: var(--l3-content-accent-orange-default); }
+
+.text {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  font: var(--l3-text-label-10);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.text b { font-weight: var(--l3-text-heading-10-weight); }
+
+/* s2: a pulsing Live dot on the right. */
+.live {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--l3-spacing-04);
+  flex: none;
+  font: var(--l3-text-heading-10);
+}
+.liveDot {
+  position: relative;
+  width: var(--l3-spacing-06);
+  height: var(--l3-spacing-06);
+  border-radius: var(--l3-radius-full);
+  background: var(--l3-content-accent-indicator-up-default);
+}
+.liveDot::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: inherit;
+  animation: strip-pulse 1.6s var(--l3-motion-easing-decelerate) infinite;
+}
+@keyframes strip-pulse { to { transform: scale(2.6); opacity: 0; } }
+
+/* s4: one line at a time, the next rising from below. */
+.rotor { display: block; overflow: hidden; }
+.rotorLine { display: block; overflow: hidden; text-overflow: ellipsis; animation: strip-rise var(--l3-motion-duration-long) var(--l3-motion-easing-decelerate) both; }
+.move { color: var(--l3-content-accent-indicator-down-default); }
+.move[data-up='true'] { color: var(--l3-content-accent-indicator-up-default); }
+
+/* The shimmer: a soft light band sweeping left → right across the strip, every 3 s once it's out. */
+.shimmer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(105deg, transparent 36%, var(--strip-shine) 46%, var(--strip-shine-core) 50%, var(--strip-shine) 54%, transparent 64%);
+  background-size: 300% 100%;
+  background-repeat: no-repeat;
+  background-position: 100% 0;
+  animation: strip-shimmer 3s var(--l3-motion-easing-standard) infinite;
+  animation-delay: calc(var(--strip-start) + var(--l3-motion-duration-long) * 2);
+}
+@keyframes strip-shimmer {
+  0% { background-position: 100% 0; }
+  40%, 100% { background-position: 0% 0; }
+}
+
+/* The card sits on the strip's lower part, as in Figma (it covers the gradient's last 21). */
+.nudge > :last-child { position: relative; }
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal, .strip > *, .rotorLine, .shimmer, .liveDot::after { animation: none; }
+}
+```
+
+### `src/flows/fno/sheets/SignalStrip.tsx`
+
+```tsx
+import { useEffect, useState, type CSSProperties, type ReactNode } from 'react'
+import { Icon } from '@l3/components/Icon'
+import { msLocalFireDepartmentFill } from '@l3/icons/material'
+import { t } from '../copy'
+import type { ZingSignal } from '../data'
+import goldBars from '../assets/signals/gold-bars.png'
+import styles from './SignalStrip.module.css'
+
+/**
+ * The nudge strip over a commodity signal's card (setting "Commodity nudge strip", Figma 6946:42446, 24 Nov): the
+ * commodity cards didn't stand out enough among index and stock signals, so a strip peeks out from behind the card's
+ * top edge with a reason to look — how many traded it today. It slides out from behind the card when the sheet opens,
+ * then a shimmer runs across it every few seconds.
+ * - s1 Gold glow (Figma): the honey gradient strip, the gold bars on a soft white glow, "2.1K+ people have traded on
+ *   gold today" in honey 800.
+ * - s2 Colour per commodity: as s1, but the strip takes the commodity's colour (gold honey, crude oil slate, natural gas
+ *   tangerine), its logo, and a pulsing Live dot on the right.
+ * - s3 Dark ticker: the strip in the inverted surface, a flame, "Trending on MCX · 2.1K+ traded today" in honey.
+ * - s4 Rotating facts: s1's strip; its line turns over every 3 s — traded today · today's move · MCX hours.
+ */
+export type StripVersion = 'off' | 's1' | 's2' | 's3' | 's4'
+
+export function SignalStrip({ signal, version, logo, order, children }: { signal: ZingSignal; version: StripVersion; logo: string; order: number; children: ReactNode }) {
+  const nudge = signal.nudge
+  const commodity = signal.commodity
+  if (version === 'off' || !nudge || !commodity) return <>{children}</>
+  const name = t(`signals.strip.name.${commodity}`)
+  const people = t('signals.strip.people', { count: nudge.traders })
+  const traded = <><b>{people}</b> {t('signals.strip.traded', { name })}</>
+
+  const picture = version === 's3'
+    ? <Icon icon={msLocalFireDepartmentFill} size={16} className={styles.fire} />
+    : <img src={version === 's2' || commodity !== 'gold' ? logo : goldBars} alt="" className={styles.picture} />
+
+  const line = version === 's3'
+    ? <><b>{t('signals.strip.trending')}</b> · {t('signals.strip.tradedShort', { count: nudge.traders })}</>
+    : version === 's4'
+      ? <Rotating lines={[
+          traded,
+          <>{t('signals.strip.moveIs', { name: t(`signals.strip.title.${commodity}`) })} <b className={styles.move} data-up={!nudge.move.startsWith('−')}>{nudge.move}</b> {t('signals.strip.today')}</>,
+          <>{t('signals.strip.open')}</>,
+        ]} />
+      : traded
+
+  return (
+    <div className={styles.nudge} data-version={version} data-commodity={version === 's2' ? commodity : undefined} style={{ '--strip-order': order } as CSSProperties}>
+      <div className={styles.reveal}>
+        <div className={styles.strip}>
+          <span className={styles.glow} aria-hidden="true">{picture}</span>
+          <p className={styles.text}>{line}</p>
+          {version === 's2' && <span className={styles.live}><span className={styles.liveDot} aria-hidden="true" />{t('signals.strip.live')}</span>}
+          <span className={styles.shimmer} aria-hidden="true" />
+        </div>
+      </div>
+      {children}
+    </div>
+  )
+}
+
+/** s4: one line at a time, the next rolling up from below every 3 s. */
+function Rotating({ lines }: { lines: ReactNode[] }) {
+  const [index, setIndex] = useState(0)
+  useEffect(() => {
+    const id = window.setInterval(() => setIndex((i) => (i + 1) % lines.length), 3000)
+    return () => window.clearInterval(id)
+  }, [lines.length])
+  return <span className={styles.rotor} aria-live="polite">
+    <span key={index} className={styles.rotorLine}>{lines[index]}</span>
+  </span>
+}
+```
+
 ### `src/flows/fno/sheets/SignalsSheet.module.css`
 
 ```css
@@ -10022,57 +10326,21 @@ export function IndicatorDetailsSheet({ name, onChart, onToggle, onOpenInDash, o
   white-space: nowrap;
 }
 
-/* ---- Commodity signals versions (setting "Commodity signals") ---- */
+/* ---- Commodity signals ---- */
 /* Logos in tags: the tag's 12 icon slot (L3 Tag sm). */
 .tagLogo { display: block; width: 100%; height: 100%; border-radius: var(--l3-radius-full); object-fit: cover; }
-/* v3: the commodity logo on the strategy picture's bottom-right corner, 16 with a ring in the card's colour. */
-.avatarWrap { position: relative; display: inline-flex; flex: none; }
-.avatarBadge {
-  position: absolute;
-  right: calc(-1 * var(--l3-spacing-04));
-  bottom: calc(-1 * var(--l3-spacing-04));
-  width: var(--l3-size-16);
-  height: var(--l3-size-16);
-  border-radius: var(--l3-radius-full);
-  box-shadow: 0 0 0 var(--l3-spacing-02) var(--l3-surface-primary);
-  background: var(--l3-surface-primary);
-  object-fit: cover;
-}
-/* v5: 16 above the segment tabs, 16 from their text down to the line and the selected bar (user, 20 Nov; L3's 40 tall
+/* The segment tabs: 16 above them, 16 from their text down to the line and the selected bar (user, 20 Nov; L3's 40 tall
    underline tab puts 10 either side); no line under the chips. */
 .segmented { padding-top: var(--l3-spacing-16); }
-.segmented.segmented .segments [role='tab'],
-.headerTabs.headerTabs .segments [role='tab'] { height: auto; padding-top: 0; padding-bottom: var(--l3-spacing-16); }
-/* v8: the tabs and chips in the sheet header's bottom slot (as the contract picker's), no line under the chips — the
-   header draws its own. */
-.headerTabs .chipBar { box-shadow: none; }
-/* v8: no line under the header; the list scrolls behind it, and once it has, the header lifts with a shadow over it
-   (elevation medium). */
-.signalsHeader.signalsHeader.signalsHeader {
-  position: relative;
-  z-index: 1; /* over the list that scrolls under it — stacking order isn't a design token */
-  box-shadow: none;
-  transition: box-shadow var(--l3-motion-duration-short) var(--l3-motion-easing-standard);
-}
-.signalsHeader.signalsHeader.signalsHeader.headerScrolled { box-shadow: var(--l3-shadow-elevation-medium); }
+.segmented.segmented .segments [role='tab'] { height: auto; padding-top: 0; padding-bottom: var(--l3-spacing-16); }
 .segments { box-shadow: inset 0 -1px 0 var(--l3-border-light); /* 1px: Figma stroke weight has no variable */ }
 .segmented .chipBar { box-shadow: none; }
-/*
- * v7: the commodity's logo on a circle like the other pictures (L3 Avatar, icon type: surface/secondary), the logo 20.
- * Setting "Commodity picture background" → Colour: Gold on zing light, Natural Gas on error light, Crude Oil and Silver
- * on surface/secondary (user, 20 Nov).
- */
-.commodityPic.commodityPic { --av-icon: var(--l3-icon-size-20); }
-.picLogo { display: block; width: 100%; height: 100%; object-fit: contain; }
-.pic_gold.pic_gold { background: var(--l3-surface-accent-zing-light); }
-.pic_gas.pic_gas { background: var(--l3-surface-accent-error-light); }
-.pic_crude.pic_crude, .pic_silver.pic_silver { background: var(--l3-surface-secondary); }
 ```
 
 ### `src/flows/fno/sheets/SignalsSheet.tsx`
 
 ```tsx
-import { useEffect, useState, type MouseEvent, type ReactNode } from 'react'
+import { useState, type MouseEvent, type ReactNode } from 'react'
 import { Avatar } from '@l3/components/Avatar'
 import { Badge } from '@l3/components/Badge'
 import { BottomSheetHeader } from '@l3/components/BottomSheet'
@@ -10102,6 +10370,7 @@ import neeraj from '../assets/signals/neeraj.png'
 import lemon from '../assets/signals/lemon.png'
 import booming from '../assets/signals/booming.png'
 import zingMark from '../assets/signals/zing-mark.svg'
+import { SignalStrip, type StripVersion } from './SignalStrip'
 import styles from './SignalsSheet.module.css'
 import tools from './ChartToolsSheet.module.css'
 
@@ -10130,23 +10399,12 @@ const avatars: Record<SignalAvatar, string> = { neeraj, lemon, booming }
 const commodityLogos: Record<SignalCommodity, string> = { gold: goldLogo, silver: silverLogo, crude: crudeLogo, gas: gasLogo }
 
 /**
- * How a commodity signal stands out from index and stock signals (setting "Commodity signals", 20 Nov review — users
- * couldn't tell MCX signals apart, and skipped the Commodity chip):
- * - v1 Grey tag (today): the commodity's name in the same grey tag as NIFTY.
- * - v2 MCX tag: the name in an amber tag that says where it trades ("MCX · GOLD").
- * - v3 Logo on avatar: the commodity's logo on the strategy picture's corner + an amber tag with its name.
- * - v5 Segment tabs (default): All · Index · Stocks · Commodities tabs over the chips; the chips follow the tab (All: Win
- *   rate ≥ 50% · Nifty · Sensex · F&O Stocks · Commodities; Index:
- *   Nifty · Sensex · Bank Nifty; Stocks: Win rate ≥ 50% · ≥ 25%; Commodities: Gold · Silver · Crude Oil · Natural Gas);
- *   commodity cards with an amber tag with the commodity's logo and name.
- * - v6 Logo tag, no tabs: today's header (filter | chips, a line under it), the amber logo + name tag.
- * - v7 Commodity picture: as v6, but a commodity signal's picture is the commodity's logo on a circle (setting
- *   "Commodity picture background": a colour per commodity, or grey), and its tag is the name alone.
- * - v8 Header with tabs: as v5, but "Active signals (n)" and the Total P&L sit in the sheet's header (L3 sheet header:
- *   heading, the tag on the right), the segment tabs and chips under it — like the contract picker's header · tabs ·
- *   chips. The list starts with the cards and scrolls behind the header: no line under it, a shadow once scrolled.
+ * How a commodity signal stands out from index and stock signals (24 Nov, the user's call — the earlier versions are
+ * gone): All · Index · Stocks · Commodities tabs over the chips (the chips follow the tab: All — Win rate ≥ 50% · Nifty ·
+ * Sensex · F&O Stocks · Commodities; Index — Nifty · Sensex · Bank Nifty; Stocks — Win rate ≥ 50% · ≥ 25%;
+ * Commodities — Gold · Silver · Crude Oil · Natural Gas), commodity cards with an amber tag with the commodity's logo
+ * and name, and the nudge strip over them (setting "Commodity nudge strip", SignalStrip.tsx).
  */
-export type CommodityVersion = 'v1' | 'v2' | 'v3' | 'v5' | 'v6' | 'v7' | 'v8'
 const marketLabel = (market: SignalMarket) => t(`signals.market.${market}`)
 const quick: Record<Exclude<SignalsChip, 'yours'>, (s: ZingSignal) => boolean> = {
   all: () => true,
@@ -10206,27 +10464,24 @@ export function SignalsSheet({ initial = {}, onClose }: { initial?: SignalsSheet
     e.preventDefault()
     removeSaved()
   }
-  const version = useFlowOption('fno', 'commodityTag', 'v5') as CommodityVersion
-  /** v5: the segment tab (All · Index · Stocks · Commodities). */
+  const strip = useFlowOption('fno', 'commodityStrip', 's1') as StripVersion
+  /** The segment tab (All · Index · Stocks · Commodities). */
   const [segment, setSegment] = useState<'all' | SignalSegment>('all')
-  // v5 and v8 have the segment tabs.
-  const segmented = version === 'v5' || version === 'v8'
-  const inSegment = (s: ZingSignal) => !segmented || segment === 'all' || segmentOf(s) === segment
+  const inSegment = (s: ZingSignal) => segment === 'all' || segmentOf(s) === segment
   const inChip = (c: SignalsChip) => zingSignals.filter((s) => (c === 'yours' ? saved !== null && matchesFilter(s, saved) : quick[c](s)))
   const shown = inChip(chip).filter(inSegment)
   const count = (c: SignalsChip) => inChip(c).filter(inSegment).length
 
-  // v5: the chips follow the segment tab; every other version keeps today's row.
-  const segmentChips: Exclude<SignalsChip, 'yours' | 'all'>[] = !segmented ? ['win50', 'commodity', 'nifty', 'sensex']
-    : segment === 'index' ? ['nifty', 'sensex', 'banknifty']
+  // The chips follow the segment tab.
+  const segmentChips: Exclude<SignalsChip, 'yours' | 'all'>[] = segment === 'index' ? ['nifty', 'sensex', 'banknifty']
     : segment === 'stocks' ? ['win50', 'win25']
     : segment === 'commodity' ? ['gold', 'silver', 'crude', 'gas']
     : ['win50', 'nifty', 'sensex', 'stocks', 'commodity']
   const chipItem = (c: Exclude<SignalsChip, 'yours' | 'all'>): { value: SignalsChip; label: string; iconLeft?: ReactNode } => {
     if (c === 'win50' || c === 'win25') return { value: c, label: t(`signals.${c}`, { count: count(c) }), iconLeft: <Icon icon={msLocalFireDepartmentFill} className={styles.fire} /> }
     if (c === 'gold' || c === 'silver' || c === 'crude' || c === 'gas') return { value: c, label: t(`signals.commodity.${c}`), iconLeft: <img src={commodityLogos[c]} alt="" className={styles.chipLogo} /> }
-    // Under the tabs' All: "Commodities", like the tab; today's row (no tabs) keeps Figma's "Commodity".
-    if (c === 'commodity') return { value: c, label: t(segmented ? 'signals.segment.commodity' : 'signals.market.commodity') }
+    // Under the tabs' All: "Commodities", like the tab.
+    if (c === 'commodity') return { value: c, label: t('signals.segment.commodity') }
     if (c === 'stocks') return { value: c, label: t('signals.market.stocks') }
     return { value: c, label: t(`signals.${c}`) }
   }
@@ -10284,28 +10539,13 @@ export function SignalsSheet({ initial = {}, onClose }: { initial?: SignalsSheet
     </Tag>
   )
   const activeTitle = t('signals.active', { count: shown.length })
-  // v8: the header gets a shadow once the list has scrolled under it (the sheet's content slot is the scroller).
-  const [list, setList] = useState<HTMLElement | null>(null)
-  const [scrolled, setScrolled] = useState(false)
-  useEffect(() => {
-    const scroller = list?.closest<HTMLElement>('[data-sheet-content]')
-    if (!scroller) return
-    const update = () => setScrolled(scroller.scrollTop > 0)
-    update()
-    scroller.addEventListener('scroll', update, { passive: true })
-    return () => scroller.removeEventListener('scroll', update)
-  }, [list])
-
   // The plain "All Signals" look (Figma's last frame): a heading over every signal.
   const plain = Boolean(initial.plain) && !saved
   const header = plain ? (
     <BottomSheetHeader heading={t('signals.allTitle')} />
-  ) : version === 'v8' ? (
-    // v8: header · tabs · chips, like the contract picker — "Active signals (n)" with the Total P&L on the right.
-    <BottomSheetHeader heading={activeTitle} trailing={totalTag} bottom={<div className={styles.headerTabs}>{segmentTabs}{chipBar}</div>} className={`${styles.signalsHeader} ${scrolled ? styles.headerScrolled : ''}`} />
   ) : (
-    <div className={version === 'v5' ? styles.segmented : undefined}>
-      {version === 'v5' && segmentTabs}
+    <div className={styles.segmented}>
+      {segmentTabs}
       {chipBar}
     </div>
   )
@@ -10322,19 +10562,17 @@ export function SignalsSheet({ initial = {}, onClose }: { initial?: SignalsSheet
 
   return (
     <Sheet label={t('signals.title')} onClose={onClose} header={header} className={styles.sheet}>
-      <div ref={setList} className={styles.body}>
+      <div className={styles.body}>
         {plain ? (
-          <Stack gap="16">{zingSignals.map((s) => <SignalCard key={s.id} signal={s} version={version} />)}</Stack>
+          <Stack gap="16">{zingSignals.map((s) => <SignalCard key={`${s.id}-${strip}`} signal={s} strip={strip} order={stripOrder(zingSignals, s)} />)}</Stack>
         ) : (
           <Stack gap="16">
-            {version !== 'v8' && (
-              <Stack direction="horizontal" align="center" justify="between" gap="12">
-                <h2 className={styles.heading}>{activeTitle}</h2>
-                {totalTag}
-              </Stack>
-            )}
+            <Stack direction="horizontal" align="center" justify="between" gap="12">
+              <h2 className={styles.heading}>{activeTitle}</h2>
+              {totalTag}
+            </Stack>
             {shown.length ? (
-              <Stack gap="16">{shown.map((s) => <SignalCard key={s.id} signal={s} version={version} />)}</Stack>
+              <Stack gap="16">{shown.map((s) => <SignalCard key={`${s.id}-${strip}`} signal={s} strip={strip} order={stripOrder(shown, s)} />)}</Stack>
             ) : (
               <EmptyState title={t('signals.none')} description={t('signals.noneHint')} />
             )}
@@ -10345,45 +10583,28 @@ export function SignalsSheet({ initial = {}, onClose }: { initial?: SignalsSheet
   )
 }
 
-/** The card's market tag, by version: grey (v1), amber "MCX · GOLD" (v2), amber name (v3), the logo + name (v5, v6), grey name (v7). */
-function MarketTags({ signal, version }: { signal: ZingSignal; version: CommodityVersion }) {
+/** The card's market tag: grey for an index or stock (NIFTY); for a commodity, an amber tag with its logo and name. */
+function MarketTags({ signal }: { signal: ZingSignal }) {
   const commodity = signal.commodity
-  if (!commodity || version === 'v1') return <Tag size="sm" variant="tertiary" color="neutral" className={styles.greyTag}>{signal.underlying}</Tag>
-  // v2, and v7 (20 Nov, user: version 6 = the commodity picture + version 2's tag): the amber "MCX · Gold" tag.
-  if (version === 'v2' || version === 'v7') return <Tag size="sm" variant="secondary" color="warning">{t('signals.mcx', { name: signal.underlying })}</Tag>
-  // v3: the logo is on the picture's corner, so the tag is the name alone.
-  if (version === 'v3') return <Tag size="sm" variant="tertiary" color="warning">{t(`signals.commodity.${commodity}`)}</Tag>
+  if (!commodity) return <Tag size="sm" variant="tertiary" color="neutral" className={styles.greyTag}>{signal.underlying}</Tag>
   return <Tag size="sm" variant="tertiary" color="warning" iconLeft={<img src={commodityLogos[commodity]} alt="" className={styles.tagLogo} />}>{t(`signals.commodity.${commodity}`)}</Tag>
 }
 
 /** One signal: who sent it, where and how good it is, View; the trade under a line. */
-function SignalCard({ signal, version }: { signal: ZingSignal; version: CommodityVersion }) {
-  const badge = version === 'v3' && signal.commodity
-  // v7: a commodity signal's picture is the commodity's logo, on a circle (a colour per commodity, or grey).
-  const commodityPicture = version === 'v7' ? signal.commodity : undefined
-  const pictureBg = useFlowOption('fno', 'commodityPicBg', 'colour')
+function SignalCard({ signal, strip = 'off', order = 0 }: { signal: ZingSignal; strip?: StripVersion; order?: number }) {
   return (
+    <SignalStrip signal={signal} version={strip} logo={signal.commodity ? commodityLogos[signal.commodity] : ''} order={order}>
     <Card className={styles.signalCard}>
       <Stack gap="12">
         <Stack direction="horizontal" align="center" justify="between" gap="12">
           <Stack direction="horizontal" align="center" gap="12" className={styles.who}>
-            {badge ? (
-              // v3: the commodity's logo on the picture's corner.
-              <span className={styles.avatarWrap}>
-                <Avatar src={avatars[signal.avatar]} size={32} />
-                <img src={commodityLogos[badge]} alt="" className={styles.avatarBadge} />
-              </span>
-            ) : commodityPicture ? (
-              <Avatar size={32} icon={<img src={commodityLogos[commodityPicture]} alt="" className={styles.picLogo} />} className={`${styles.commodityPic} ${pictureBg === 'colour' ? styles[`pic_${commodityPicture}`] : ''}`} />
-            ) : (
-              <Avatar src={avatars[signal.avatar]} size={32} />
-            )}
+            <Avatar src={avatars[signal.avatar]} size={32} />
             <Stack gap="04" className={styles.who}>
               <p className={styles.name}>{signal.strategy}</p>
               <Stack direction="horizontal" gap="08" align="center">
                 {signal.winRate !== undefined ? (
                   <>
-                    <MarketTags signal={signal} version={version} />
+                    <MarketTags signal={signal} />
                     <Tag size="sm" variant="tertiary" color="neutral" className={styles.greyTag}>{t('signals.winRate')} <b className={styles.up}>{t('signals.percent', { value: signal.winRate })}</b></Tag>
                   </>
                 ) : (
@@ -10403,8 +10624,12 @@ function SignalCard({ signal, version }: { signal: ZingSignal; version: Commodit
         </div>
       </Stack>
     </Card>
+    </SignalStrip>
   )
 }
+
+/** Where a card's strip comes in the stagger: the strips slide out one after another, top down. */
+const stripOrder = (list: ZingSignal[], signal: ZingSignal) => list.filter((s) => s.nudge).indexOf(signal)
 
 type FilterProps = { draft: SignalFilter; onDraft: (draft: SignalFilter) => void }
 
