@@ -20,6 +20,13 @@ Prototype: https://lemonnade-design.github.io/lemonn-app-prototype/#/market · m
 | `market-08` | Market · filters applied | — | `search-24`, `us-stocks-13`, `stocks-32` | The title reads "Filtered stocks (n)"; the filter button gets a red dot. |
 | `market-09` | Market · US stocks | — | `search-24`, `us-stocks-13`, `stocks-32` | The picker left of the tabs is on US: $ prices, US logos; tapping a stock opens its US stock page (us-stocks-13, which follows the user status). |
 | `market-10` | Market · US · S&P 500 filter | — | `search-24`, `us-stocks-13`, `stocks-32` | US list with the S&P 500 index applied (the US Stocks flow\ |
+| `market-11` | Watchlist | — | — | An L2 page built like Market: the IN / US picker at the left of pill tabs, one per watchlist (each market has its own). Opens on the market of the Home tab it was opened from (IND → Indian lists, US → US lists). "+ New" opens Create watchlist; a swipe or a tab moves between lists. |
+| `market-12` | Watchlist · US | — | — | Opened from Home\ |
+| `market-13` | Watchlist · another list | — | — | The second tab (Banking Giants) picked. |
+| `market-14` | Create watchlist | — | — | From "+ New": the name field (typing, keyboard up) and Create, off until something is typed. Create adds the list as the last tab and opens it. |
+| `market-15` | Sort by | — | — | From the header\ |
+| `market-16` | Edit watchlist | — | `market-11` | From the header\ |
+| `market-17` | Edit · delete watchlist | — | `market-11` | Delete watchlist asks first: a sheet with Cancel · Delete. |
 
 ## Spec (README.md)
 
@@ -155,6 +162,23 @@ card is used by every stock list in the app.
 - **List divider** — ListCell has no divider option; the stock rows draw their own 1px hairline (`StockListCard` `look="list"`).
 
 ### Changelog
+- Edit watchlist: the star is a Large ghost button, so it really draws at 24 (Small ghost forced its icon to 16).
+- Edit watchlist: an "All stocks" SectionHeader (heading 16, FLAG L3 gap) above the stocks; 24 between the name field and the stocks (was 16).
+- Edit watchlist: Save returns to Watchlist with a floating success Aerobar "Watchlist updated" (3 s). The Delete sheet uses the large header with a bin Spot (error tone).
+- Edit watchlist: the ⊗ / bin / tap-again tooltip is replaced by the stock page's watchlist star (filled, 24). A tap unfills it and the stock stays on the page; Save drops the unstarred stocks.
+- 2026-11-24 · Edit watchlist: the "Tap again to remove" tooltip shows on the first arm only (a first-time hint), not on every tap.
+- 2026-11-24 · Edit watchlist: remove / bin icons at 24.
+- 2026-11-24 · Edit watchlist: after the first tap on remove, an L3 Tooltip says "Tap again to remove"; with no second tap in 3 s the bin turns back into ⊗.
+- 2026-11-24 · Edit watchlist: the remove button has no border (L3 ghost, the user's call) and takes two taps — the first turns ⊗ into a bin, the second removes the stock.
+- 2026-11-24 · Sort by sheet: 12 above and below the Radio rows.
+- 2026-11-24 · Sort by sheet: the sheet content's padding removed; the Radio rows keep their own 16 (FLAG L3 gap).
+- 2026-11-24 · Watchlist Sort and Edit, from the live app's designs redone in L3. Sort by sheet (market-15): Radio rows As added (default) · Market price · Day change % · Stock name, Apply; a dot on Sort while it isn't As added. Edit watchlist page (market-16): name field, stocks as flat cards with a round remove button, dock Delete watchlist · Save; Delete asks first (market-17). Edit is hidden on All.
+- 2026-11-24 · Watchlist: Market's filter-bar header under the tabs — the list's name and count ("Momentum Plays (6)") with round Edit and Sort buttons (no destination yet); replaces the "6 stocks" line. Pill row back to Market's 8 / 8.
+- 2026-11-24 · Watchlist: an empty list's empty state is centred vertically in the page below the tabs.
+- 2026-11-24 · Create watchlist sheet: the field takes only the sheet's own padding (its extra 16 / 24 padding removed).
+- 2026-11-24 · Watchlist: an "All" tab leads the list tabs and is where the page opens — every stock on the market's lists, once each, in list order.
+- 2026-11-24 · Watchlist: the picker + list tabs row has 12 below it (8 above, as on Market).
+- 2026-11-24 · New Watchlist page (market-11 IN, market-12 US, market-13 Banking Giants, market-14 Create sheet): IN/US picker opening on the Home tab's market, one pill tab per watchlist, swipe between lists, "+ New" creates a list. FLAG (L3 gap): hand-made swipe, as on Market.
 - 2026-11-19 — Market opens on the market Home was last on: Home on the US Stocks tab → Market with the US Stocks pill selected (a hand-over such as Home's "View all" or a screen's own market still wins; before Home has opened, India). Filter bar fade: the 80% stop moved from 50% to just under the title (40 of the 56 row), so the title stays readable over the list.
 - 2026-11-19 — Filter bar: the title names the list and its count — the tab, "All (56)" / "Top gainers (20)" — or, once filters are applied, "Filtered stocks (11)" (was "Apply filters", then the applied filters as removable chips; the chips are gone, the filters live in the sheet). The filter button's red dot says filters are on. The title stays visible while the list scrolls (it used to fade out).
 - 2026-11-18 — Filter bar: “Apply filters” is Heading 14 (was 16).
@@ -396,7 +420,44 @@ export function StockRow({ stock, onOpen }: { stock: MarketStock; onOpen?: (symb
   "sheet.oneStock": "1 stock",
   "sheet.stocks": "{count} stocks",
   "sheet.showOne": "Show 1 stock",
-  "sheet.show": "Show {count} stocks"
+  "sheet.show": "Show {count} stocks",
+  "watchlist.title": "Watchlist",
+  "watchlist.back": "Back",
+  "watchlist.new": "New",
+  "watchlist.newLabel": "Create a new watchlist",
+  "watchlist.tabsLabel": "Your watchlists",
+  "watchlist.empty.title": "No stocks in {name} yet",
+  "watchlist.empty.description": "Search for a stock and tap its bookmark to add it here.",
+  "watchlist.empty.action": "Add stocks",
+  "watchlist.create.title": "Create watchlist",
+  "watchlist.create.field": "Watchlist name",
+  "watchlist.create.placeholder": "e.g. Dividend stocks",
+  "watchlist.create.button": "Create",
+  "watchlist.all": "All",
+  "watchlist.heading": "{name} ({count})",
+  "watchlist.editLabel": "Edit watchlist",
+  "watchlist.sortLabel": "Sort stocks",
+  "watchlist.sort.title": "Sort by",
+  "watchlist.sort.added": "As added",
+  "watchlist.sort.default": "Default",
+  "watchlist.sort.price": "Market price",
+  "watchlist.sort.change": "Day change %",
+  "watchlist.sort.name": "Stock name",
+  "watchlist.sort.apply": "Apply",
+  "watchlist.sort.on": "Sorted",
+  "watchlist.edit.title": "Edit watchlist",
+  "watchlist.edit.stocks": "Stocks in this watchlist",
+  "watchlist.updated": "Watchlist updated",
+  "watchlist.edit.allStocks": "All stocks",
+  "watchlist.edit.star": "{symbol} on this watchlist",
+  "watchlist.edit.delete": "Delete watchlist",
+  "watchlist.edit.save": "Save",
+  "watchlist.edit.emptyTitle": "No stocks left",
+  "watchlist.edit.emptyDescription": "Save to keep this watchlist empty, or go back to undo.",
+  "watchlist.delete.title": "Delete {name}?",
+  "watchlist.delete.description": "The watchlist and its stocks go. The stocks stay in your other watchlists.",
+  "watchlist.delete.cancel": "Cancel",
+  "watchlist.delete.confirm": "Delete"
 }
 ```
 
@@ -683,6 +744,100 @@ export function applyFilters(list: MarketStock[], filters: Filters, market: Mark
   }
   return filters.sort ? [...result].sort(by[filters.sort]) : result
 }
+
+/**
+ * Watchlists (24 Nov) — the user's own lists of stocks, one set per market: the IN picker shows the Indian lists,
+ * US the US ones. Each list is a name and the symbols in it, in the order the user added them; the rows show live
+ * prices from the same universe as the Market lists. API: GET /watchlists?market=in|us → Watchlist[];
+ * POST /watchlists { market, name } → the new, empty Watchlist.
+ */
+export type Watchlist = { id: string; name: string; symbols: string[] }
+
+export const sampleWatchlists: Record<Market, Watchlist[]> = {
+  in: [
+    { id: 'in-momentum', name: 'Momentum Plays', symbols: ['RELIANCE', 'BHARTIARTL', 'HAL', 'BEL', 'TATASTEEL', 'ETERNAL'] },
+    { id: 'in-banks', name: 'Banking Giants', symbols: ['HDFCBANK', 'ICICIBANK', 'SBIN', 'KOTAKBANK', 'AXISBANK'] },
+    { id: 'in-long', name: 'Long Term Bets', symbols: ['TCS', 'INFY', 'ITC', 'HINDUNILVR', 'TITAN', 'ASIANPAINT', 'LT'] },
+  ],
+  us: [
+    { id: 'us-ai', name: 'AI & Tech', symbols: ['NVDA', 'MSFT', 'GOOGL', 'META', 'AMD', 'AVGO'] },
+    { id: 'us-brands', name: 'Brands I Use', symbols: ['AAPL', 'AMZN', 'NFLX', 'NKE', 'SBUX', 'KO'] },
+    { id: 'us-long', name: 'Long Term Bets', symbols: ['V', 'JPM', 'MCD', 'TSLA'] },
+  ],
+}
+
+/** Lists created in this prototype session (kept while the app is open, so going back and in again still shows them). */
+const createdWatchlists: Record<Market, Watchlist[]> = { in: [], us: [] }
+
+export const watchlistsFor = (market: Market): Watchlist[] => [...sampleWatchlists[market], ...createdWatchlists[market]]
+
+/** Adds an empty list and returns it. */
+export function createWatchlist(market: Market, name: string): Watchlist {
+  const list: Watchlist = { id: `${market}-new-${createdWatchlists[market].length + 1}`, name, symbols: [] }
+  createdWatchlists[market].push(list)
+  return list
+}
+
+/** A list's stocks, in its order, from the market's universe (live prices like the Market lists). */
+export const watchlistStocks = (list: Watchlist, market: Market): MarketStock[] => {
+  const all = market === 'us' ? usUniverse : indiaUniverse()
+  return list.symbols.flatMap((symbol) => all.filter((x) => x.symbol === symbol))
+}
+
+/**
+ * Editing a list (Edit watchlist page). API: PATCH /watchlists/:id { name, symbols } → Watchlist;
+ * DELETE /watchlists/:id. In the prototype the lists above change in place, for as long as the app is open.
+ */
+const findWatchlist = (id: string): { market: Market; list: Watchlist } | undefined => {
+  for (const market of ['in', 'us'] as const) {
+    const list = watchlistsFor(market).find((l) => l.id === id)
+    if (list) return { market, list }
+  }
+  return undefined
+}
+
+/** Saves a list's new name and stocks (removed ones gone, order kept). */
+export function saveWatchlist(id: string, name: string, symbols: string[]) {
+  const found = findWatchlist(id)
+  if (!found) return
+  found.list.name = name
+  found.list.symbols = symbols
+}
+
+/** Deletes a list. */
+export function deleteWatchlist(id: string) {
+  for (const market of ['in', 'us'] as const) {
+    for (const lists of [sampleWatchlists[market], createdWatchlists[market]]) {
+      const at = lists.findIndex((l) => l.id === id)
+      if (at >= 0) lists.splice(at, 1)
+    }
+  }
+}
+
+/** The list the Edit page is open on (set by the Watchlist page's Edit; defaults to the first Indian list). */
+let editing = sampleWatchlists.in[0].id
+export const editWatchlist = (id: string) => { editing = id }
+export const editingWatchlist = () => findWatchlist(editing)
+
+/** Where the Watchlist page reopens after Edit (Save: that list; Delete: All), read once. */
+let returnTo: { market: Market; list?: string; saved?: boolean } | null = null
+/** `saved`: back from Save, so the Watchlist page shows the "Watchlist updated" toast. */
+export const returnToWatchlist = (to: { market: Market; list?: string; saved?: boolean }) => { returnTo = to }
+export const takeWatchlistReturn = () => { const to = returnTo; returnTo = null; return to }
+
+/** How the Sort sheet orders a list's stocks. As added is the list's own order. */
+export type WatchlistSort = 'added' | 'price' | 'change' | 'name'
+export const watchlistSorts: WatchlistSort[] = ['added', 'price', 'change', 'name']
+
+/** Price and day change: highest first. Name: A → Z by symbol. */
+export function sortWatchlistStocks(stocks: MarketStock[], sort: WatchlistSort): MarketStock[] {
+  if (sort === 'added') return stocks
+  const sorted = [...stocks]
+  if (sort === 'price') sorted.sort((a, b) => b.price - a.price)
+  if (sort === 'change') sorted.sort((a, b) => b.changePct - a.changePct)
+  if (sort === 'name') sorted.sort((a, b) => a.symbol.localeCompare(b.symbol))
+  return sorted
+}
 ```
 
 ### `src/flows/market/index.tsx`
@@ -693,12 +848,22 @@ import { viewUsStock } from '../../shared/data/usStocks'
 import { goToTab } from '../../shared/ui/MainNav'
 import type { Flow } from '../types'
 import { Market } from './screens/Market'
+import { Watchlist } from './screens/Watchlist'
+import { EditWatchlist } from './screens/EditWatchlist'
+import { usePreview } from '../../shared/prototype'
+import type { Go } from '../types'
 
 /**
  * Market — the Market tab: lists of Indian or US stocks (IN / US picker; All, Top gainers, Top losers, Under ₹100 / $100, Under ₹500 / $500), all with the same
  * layout, and Filters (quick filters, indices, market cap, sectors, sort). Built from the live app's screenshots
  * (shared 2026-10-17; no Figma yet), with the filter sheet redesigned in L3.
  */
+/** Back from Watchlist: wherever it was opened from (Home's IND / US tab), else the Stocks home. */
+function WatchlistPage({ go, ...props }: { go: Go } & Omit<Parameters<typeof Watchlist>[0], 'onBack' | 'onEdit' | 'onAddStocks' | 'onOpenUs' | 'onOpenStock'>) {
+  const { back } = usePreview()
+  return <Watchlist {...props} onEdit={() => go('market-16')} onBack={() => { if (!back?.()) go('stocks-01') }} onAddStocks={(m) => go(m === 'us' ? 'search-29' : 'search-01')} onOpenUs={(sym) => { viewUsStock(sym); go('us-stocks-13') }} onOpenStock={(s) => { openStock(s); go('stocks-32') }} />
+}
+
 export const market: Flow = {
   id: 'market',
   title: 'Market',
@@ -707,6 +872,7 @@ export const market: Flow = {
   sections: [
     { id: 'lists', title: 'Lists' },
     { id: 'filters', title: 'Filters' },
+    { id: 'watchlist', title: 'Watchlist' },
   ],
   // Archived 18 Nov (the user's call): "Tabs" (V1 underline · V2 pill chips) and "Picker" (V1 "IN" / "US" · V2 "IN Stocks" /
   // "US Stocks"). V2 of both is kept, hard-coded in Market.tsx (PILL_TABS, LONG_PICKER); the V1 code stays there.
@@ -722,7 +888,151 @@ export const market: Flow = {
     { id: 'market-08', section: 'filters', name: 'Market · filters applied', figma: '', note: 'The title reads "Filtered stocks (n)"; the filter button gets a red dot.', tab: true, render: (go) => <Market filters={{ sort: 'price-desc', index: 'nifty-500', sector: ['banking', 'it'] }} onTab={(t) => goToTab(go, t)} onSearch={() => go('search-24')} onOpenUs={(sym) => { viewUsStock(sym); go('us-stocks-13') }} onOpenStock={(s) => { openStock(s); go('stocks-32') }} /> },
     { id: 'market-09', section: 'lists', name: 'Market · US stocks', figma: '', note: 'The picker left of the tabs is on US: $ prices, US logos; tapping a stock opens its US stock page (us-stocks-13, which follows the user status).', tab: true, render: (go) => <Market market="us" tab="all" onTab={(t) => goToTab(go, t)} onSearch={() => go('search-24')} onOpenUs={(sym) => { viewUsStock(sym); go('us-stocks-13') }} onOpenStock={(s) => { openStock(s); go('stocks-32') }} /> },
     { id: 'market-10', section: 'lists', name: 'Market · US · S&P 500 filter', figma: '', note: 'US list with the S&P 500 index applied (the US Stocks flow\'s E3 entry point). Filter options are the US ones.', tab: true, render: (go) => <Market market="us" filters={{ index: 'sp-500' }} onTab={(t) => goToTab(go, t)} onSearch={() => go('search-24')} onOpenUs={(sym) => { viewUsStock(sym); go('us-stocks-13') }} onOpenStock={(s) => { openStock(s); go('stocks-32') }} /> },
+    // ---- Watchlist (24 Nov, the user's brief; no Figma yet): Home's Watchlist shortcut opens it.
+    { id: 'market-11', section: 'watchlist', name: 'Watchlist', badge: 'new', figma: '', note: 'An L2 page built like Market: the IN / US picker at the left of pill tabs, one per watchlist (each market has its own). Opens on the market of the Home tab it was opened from (IND → Indian lists, US → US lists). "+ New" opens Create watchlist; a swipe or a tab moves between lists.', render: (go) => <WatchlistPage go={go} /> },
+    { id: 'market-12', section: 'watchlist', name: 'Watchlist · US', badge: 'new', figma: '', note: 'Opened from Home\'s US tab: the US watchlists, $ prices, US logos.', render: (go) => <WatchlistPage go={go} market="us" /> },
+    { id: 'market-13', section: 'watchlist', name: 'Watchlist · another list', badge: 'new', figma: '', note: 'The second tab (Banking Giants) picked.', render: (go) => <WatchlistPage go={go} market="in" list="in-banks" /> },
+    { id: 'market-14', section: 'watchlist', name: 'Create watchlist', badge: 'new', figma: '', note: 'From "+ New": the name field (typing, keyboard up) and Create, off until something is typed. Create adds the list as the last tab and opens it.', render: (go) => <WatchlistPage go={go} market="in" creating="Dividend stocks" /> },
+    { id: 'market-15', section: 'watchlist', name: 'Sort by', badge: 'new', figma: '', note: 'From the header\'s Sort: one choice as L3 Radio rows — As added (default), Market price, Day change % (highest first), Stock name (A → Z). Apply sorts every list on the page; a dot on Sort while it isn\'t As added.', render: (go) => <WatchlistPage go={go} market="in" list="in-momentum" sorting /> },
+    { id: 'market-16', section: 'watchlist', name: 'Edit watchlist', badge: 'new', figma: '', note: 'From the header\'s Edit (not on All): the name in an L3 TextField, the stocks as flat cards with a round ⊗ to remove each. Dock: Delete watchlist (asks first) · Save (off until something changed). Back to the list after Save, to All after Delete.', render: (go) => <EditWatchlist onBack={() => go('market-11')} /> },
+    { id: 'market-17', section: 'watchlist', name: 'Edit · delete watchlist', badge: 'new', figma: '', note: 'Delete watchlist asks first: a sheet with Cancel · Delete.', render: (go) => <EditWatchlist confirmingDelete onBack={() => go('market-11')} /> },
   ],
+}
+```
+
+### `src/flows/market/screens/EditWatchlist.module.css`
+
+```css
+/* Section headings at 16 (the user's rule). FLAG (L3 gap): SectionHeader has no size prop, its title is heading 14. */
+.heading h2 {
+  font: var(--l3-text-heading-16);
+}
+```
+
+### `src/flows/market/screens/EditWatchlist.tsx`
+
+```tsx
+import { useId, useState } from 'react'
+import { Actionbar } from '@l3/components/Actionbar'
+import { Avatar } from '@l3/components/Avatar'
+import { BottomSheetHeader } from '@l3/components/BottomSheet'
+import { Button } from '@l3/components/Button'
+import { ButtonGroup } from '@l3/components/ButtonGroup'
+import { EmptyState } from '@l3/components/EmptyState'
+import { Icon } from '@l3/components/Icon'
+import { Inset } from '@l3/components/Inset'
+import { ListCell } from '@l3/components/ListCell'
+import { SectionHeader } from '@l3/components/SectionHeader'
+import { Stack } from '@l3/components/Stack'
+import { TextField } from '@l3/components/TextField'
+import { msDelete, msStar, msStarFill } from '@l3/icons/material'
+import { Spot } from '../../../shared/ui/Spot'
+import { Screen } from '../../../shared/ui/Screen'
+import { Sheet } from '../../../shared/ui/Sheet'
+import { deleteWatchlist, editingWatchlist, returnToWatchlist, saveWatchlist, watchlistStocks } from '../data'
+import { t } from '../copy'
+import styles from './EditWatchlist.module.css'
+
+type Props = {
+  /** Open with the Delete confirmation up (board frame). */
+  confirmingDelete?: boolean
+  /** Back without saving, and back after Save / Delete (the Watchlist page). */
+  onBack?: () => void
+}
+
+/**
+ * market-16 · Edit watchlist — from the Watchlist header's Edit (the live app's Edit page, redone in L3). The list's
+ * name in an L3 TextField, then its stocks as flat cards, each with the stock page's watchlist star (filled = on the
+ * list). A tap unfills it but the stock stays in place, so a second tap puts it back; only Save takes the unstarred
+ * stocks off. Dock: Delete watchlist (asks first, in a sheet) · Save (off until something changed).
+ */
+export function EditWatchlist({ confirmingDelete = false, onBack }: Props) {
+  const found = editingWatchlist()
+  const [name, setName] = useState(found?.list.name ?? '')
+  const [confirming, setConfirming] = useState(confirmingDelete)
+  // Stocks unstarred on this page: still shown (hollow star), dropped from the list only on Save.
+  const [unstarred, setUnstarred] = useState<string[]>([])
+  const headingId = useId()
+  if (!found) return null
+  const { market, list } = found
+  const stocks = watchlistStocks(list, market)
+  const changed = name.trim() !== list.name || unstarred.length > 0
+  const toggle = (symbol: string) => setUnstarred((u) => (u.includes(symbol) ? u.filter((x) => x !== symbol) : [...u, symbol]))
+  const save = () => {
+    saveWatchlist(list.id, name.trim(), list.symbols.filter((x) => !unstarred.includes(x)))
+    returnToWatchlist({ market, list: list.id, saved: true })
+    onBack?.()
+  }
+  const back = () => {
+    returnToWatchlist({ market, list: list.id })
+    onBack?.()
+  }
+  const remove = () => {
+    deleteWatchlist(list.id)
+    returnToWatchlist({ market })
+    onBack?.()
+  }
+
+  return (
+    <Screen
+      top={<Actionbar title={t('watchlist.edit.title')} onBack={back} backLabel={t('watchlist.back')} />}
+      bottom={
+        <ButtonGroup aria-label={t('watchlist.edit.title')} direction="horizontal">
+          <Button variant="secondary" size="lg" onClick={() => setConfirming(true)}>{t('watchlist.edit.delete')}</Button>
+          <Button size="lg" disabled={!changed || !name.trim()} onClick={save}>{t('watchlist.edit.save')}</Button>
+        </ButtonGroup>
+      }
+      sheet={confirming ? (
+        <Sheet
+          labelledBy={headingId}
+          onClose={() => setConfirming(false)}
+          header={<BottomSheetHeader size="lg" headingId={headingId} icon={<Spot icon={msDelete} tone="error" size="md" />} heading={t('watchlist.delete.title', { name: list.name })} description={t('watchlist.delete.description')} />}
+          footer={
+            <ButtonGroup aria-label={t('watchlist.delete.title', { name: list.name })} direction="horizontal">
+              <Button variant="secondary" size="lg" onClick={() => setConfirming(false)}>{t('watchlist.delete.cancel')}</Button>
+              <Button size="lg" onClick={remove}>{t('watchlist.delete.confirm')}</Button>
+            </ButtonGroup>
+          }
+        />
+      ) : undefined}
+    >
+      <Inset paddingInline="16" paddingBlock="16">
+        <Stack gap="24">
+          <TextField label={t('watchlist.create.field')} value={name} placeholder={t('watchlist.create.placeholder')} onChange={(e) => setName(e.target.value)} />
+          {stocks.length ? (
+            <Stack gap="12">
+            <SectionHeader className={styles.heading} title={t('watchlist.edit.allStocks')} />
+            <Stack as="ul" gap="12" aria-label={t('watchlist.edit.stocks')}>
+              {stocks.map((stock) => (
+                <li key={stock.symbol}>
+                  <ListCell
+                    variant="card"
+                    labelSize="14"
+                    iconLeft={<Avatar initials={stock.initials ?? stock.symbol.slice(0, 1)} src={stock.logoUrl} size={40} label={stock.name} />}
+                    label={stock.symbol}
+                    description={stock.name}
+                    trailing={
+                      <Button
+                        variant="ghost"
+                        size="lg"
+                        iconLeft={<Icon icon={unstarred.includes(stock.symbol) ? msStar : msStarFill} size={24} />}
+                        aria-label={t('watchlist.edit.star', { symbol: stock.symbol })}
+                        aria-pressed={!unstarred.includes(stock.symbol)}
+                        onClick={() => toggle(stock.symbol)}
+                      />
+                    }
+                  />
+                </li>
+              ))}
+            </Stack>
+            </Stack>
+          ) : (
+            <EmptyState title={t('watchlist.edit.emptyTitle')} description={t('watchlist.edit.emptyDescription')} />
+          )}
+        </Stack>
+      </Inset>
+    </Screen>
+  )
 }
 ```
 
@@ -1105,6 +1415,322 @@ export function Market({ market: initialMarket, tab: initialTab = 'all', filters
 }
 ```
 
+### `src/flows/market/screens/Watchlist.module.css`
+
+```css
+/* Watchlist — Market's picker, tabs and swipe track (Market.module.css) with these few extras. */
+
+/* An empty list: the L3 empty state centred in what's left of the page. The viewport, track and current panel are
+   columns that stretch to the page's height, so the empty block can fill it and centre its content. */
+.fill {
+  display: flex;
+  flex-direction: column;
+}
+.fill > *,
+.fill > * > [data-side='current'] {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+.empty {
+  display: grid;
+  flex: 1;
+  place-items: center;
+  padding-top: calc(var(--l3-spacing-12) * 2 + var(--l3-size-32)); /* under the list's header row, as Market's .page */
+}
+```
+
+### `src/flows/market/screens/Watchlist.tsx`
+
+```tsx
+import { useLayoutEffect, useRef, useState } from 'react'
+import { Actionbar } from '@l3/components/Actionbar'
+import { Aerobar } from '@l3/components/Aerobar'
+import { Badge } from '@l3/components/Badge'
+import { Button } from '@l3/components/Button'
+import { EmptyState } from '@l3/components/EmptyState'
+import { Icon } from '@l3/components/Icon'
+import { Inset } from '@l3/components/Inset'
+import { Section } from '@l3/components/Section'
+import { Stack } from '@l3/components/Stack'
+import { Tabs } from '@l3/components/Tabs'
+import { msAdd, msCheckCircle, msEdit, msSort } from '@l3/icons/material'
+import { lmSwitchArrowVertical } from '@l3/icons/lemonnade'
+import { lastStocksMarket } from '../../../shared/ui/MainNav'
+import { Screen } from '../../../shared/ui/Screen'
+import { CenteredTabs } from '../../../shared/ui/CenteredTabs'
+import { Flag } from '../../../shared/ui/Flag'
+import { neighbour, useSwipeBetween } from '../../../shared/ui/useSwipeBetween'
+import { useMarketSnapshot } from '../../../shared/data/companies'
+import { StockRow } from '../components/StockRow'
+import { createWatchlist, editWatchlist, sortWatchlistStocks, takeWatchlistReturn, watchlistStocks, watchlistsFor, type Market as MarketId, type Watchlist as List, type WatchlistSort } from '../data'
+import { CreateWatchlistSheet } from '../sheets/CreateWatchlistSheet'
+import { SortWatchlistSheet } from '../sheets/SortWatchlistSheet'
+import { t } from '../copy'
+import marketStyles from './Market.module.css'
+import styles from './Watchlist.module.css'
+
+/** The "All" tab's id for a market. */
+const allId = (market: MarketId) => `${market}-all`
+
+type Props = {
+  /** Which market's watchlists it opens on. Left out: the IND / US tab the Stocks home was last on (where it was opened from). */
+  market?: MarketId
+  /** The list to open on (its id). Left out: All. */
+  list?: string
+  /** Open with the Create watchlist sheet up, the field holding this text (board frame). */
+  creating?: string
+  /** Open with the Sort by sheet up (board frame). */
+  sorting?: boolean
+  /** Edit (the header's pencil): the Edit watchlist page, open on the list on screen. */
+  onEdit?: () => void
+  onBack?: () => void
+  /** An empty list's "Add stocks": Search, to find a stock and bookmark it. */
+  onAddStocks?: (market: MarketId) => void
+  onOpenUs?: (symbol: string) => void
+  onOpenStock?: (symbol: string) => void
+}
+
+/**
+ * market-11 … 15 · Watchlist — an L2 page (Home's Watchlist shortcut opens it). Built like the Market tab: the same IN /
+ * US picker at the left of a row of pill tabs, but the tabs are the user's watchlists (each market has its own); the
+ * list under them is that watchlist's stocks, the same live rows as Market. "+ New" in the top bar opens Create
+ * watchlist; the new, empty list becomes the last tab and opens. A swipe moves between lists, as on Market.
+ */
+export function Watchlist({ market: initialMarket, list: initialList, creating, sorting = false, onEdit, onBack, onAddStocks, onOpenUs, onOpenStock }: Props) {
+  // Back from Edit: the market and list it was editing (or All, after Delete).
+  const [returned] = useState(takeWatchlistReturn)
+  const [market, setMarket] = useState<MarketId>(returned?.market ?? initialMarket ?? lastStocksMarket() ?? 'in')
+  const [lists, setLists] = useState<List[]>(() => watchlistsFor(market))
+  const startOn = returned?.list ?? initialList
+  const [listId, setListId] = useState<string>(() => (startOn && lists.some((l) => l.id === startOn) ? startOn : allId(market)))
+  const [sheet, setSheet] = useState<string | null>(creating ?? null)
+  const [sortOpen, setSortOpen] = useState(sorting)
+  const [sort, setSort] = useState<WatchlistSort>('added')
+  // Back from Edit's Save: a "Watchlist updated" toast, gone after 3 s.
+  const [savedToast, setSavedToast] = useState(Boolean(returned?.saved))
+  useMarketSnapshot() // re-render when fresher Indian prices arrive
+
+  // "All" leads the tabs: every stock on any of this market's lists, once each, in list order.
+  const all: List = { id: allId(market), name: t('watchlist.all'), symbols: [...new Set(lists.flatMap((l) => l.symbols))] }
+  const tabs = [all, ...lists]
+  const ids = tabs.map((l) => l.id)
+  const other: MarketId = market === 'in' ? 'us' : 'in'
+  /** The picker flips IN ⇄ US: that market's watchlists, opening on its first. */
+  const switchMarket = () => {
+    const next = watchlistsFor(other)
+    setMarket(other)
+    setLists(next)
+    setListId(allId(other))
+  }
+  const create = (name: string) => {
+    const made = createWatchlist(market, name)
+    setLists(watchlistsFor(market))
+    setSheet(null)
+    comingFrom.current = 1
+    setListId(made.id)
+  }
+
+  // Lists as pages side by side, as on Market: a swipe drags the list and brings the next one in; a tap on a tab
+  // slides it in the same way. FLAG: hand-made swipe (shared/ui/useSwipeBetween) — L3 has no swipeable pages.
+  const [tapped, setTapped] = useState<string | null>(null)
+  const track = useRef<HTMLDivElement>(null)
+  const comingFrom = useRef<1 | -1 | 0>(0)
+  const scroller = () => {
+    for (let el = track.current?.parentElement; el; el = el.parentElement) {
+      const overflow = getComputedStyle(el).overflowY
+      if (overflow === 'auto' || overflow === 'scroll') return el
+    }
+    return null
+  }
+  const peek = () => track.current?.style.setProperty('--market-peek-top', `${scroller()?.scrollTop ?? 0}px`)
+  const show = (next: string) => { setListId(next); setTapped(null) }
+  const swipe = useSwipeBetween({
+    page: listId,
+    canGo: (direction) => neighbour(ids, listId, direction) !== null,
+    onSwitch: (direction) => { const next = neighbour(ids, listId, direction); if (next) show(next) },
+    slides: () => (track.current ? [track.current] : []),
+    fades: () => [],
+  })
+  const pick = (next: string) => {
+    const step = ids.indexOf(next) - ids.indexOf(listId)
+    if (!step || next === tapped) return
+    setTapped(next)
+    peek()
+    if (Math.abs(step) === 1) return swipe.go(step as 1 | -1, () => show(next))
+    comingFrom.current = step > 0 ? 1 : -1
+    show(next)
+  }
+  // A list opens at its top; one further than next door (or a new list) glides in from its side.
+  useLayoutEffect(() => {
+    const box = scroller()
+    if (box) box.scrollTop = 0
+    const from = comingFrom.current
+    comingFrom.current = 0
+    const el = track.current
+    if (!from || !el || matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    el.animate([{ translate: `${from * el.offsetWidth}px 0` }, { translate: '0 0' }], { duration: 280, easing: 'cubic-bezier(0.2, 0, 0, 1)' })
+  }, [listId, market])
+
+  /** One watchlist's page: how many stocks, then the rows — or, empty, a nudge to add some. */
+  const page = (id: string) => {
+    const list = tabs.find((l) => l.id === id)
+    if (!list) return null
+    const stocks = sortWatchlistStocks(watchlistStocks(list, market), sort)
+    if (!stocks.length) {
+      return (
+        <div className={styles.empty}>
+          <EmptyState
+            title={t('watchlist.empty.title', { name: list.name })}
+            description={t('watchlist.empty.description')}
+            action={<Button variant="secondary" size="sm" iconLeft={<Icon icon={msAdd} />} onClick={() => onAddStocks?.(market)}>{t('watchlist.empty.action')}</Button>}
+          />
+        </div>
+      )
+    }
+    return (
+      <Stack className={marketStyles.page}>
+        <Section as="ul" aria-label={list.name}>
+          {stocks.map((stock) => <li key={stock.symbol}><StockRow stock={stock} onOpen={stock.market === 'us' ? onOpenUs : onOpenStock} /></li>)}
+        </Section>
+      </Stack>
+    )
+  }
+
+  const current = tabs.find((l) => l.id === (tapped ?? listId)) ?? all
+  const shown = watchlistStocks(current, market).length
+
+  return (
+    <Screen
+      top={
+        <Actionbar
+          className={marketStyles.barFade}
+          title={t('watchlist.title')}
+          onBack={onBack}
+          backLabel={t('watchlist.back')}
+          actions={<Button variant="tertiary" size="sm" iconLeft={<Icon icon={msAdd} />} aria-label={t('watchlist.newLabel')} onClick={() => setSheet('')}>{t('watchlist.new')}</Button>}
+          bottom={
+            // Sticky: the picker and the watchlist tabs, then the list's header — they stay put while the list scrolls
+            // or slides to another list.
+            <Stack>
+              <Stack direction="horizontal" align="center" className={marketStyles.pillRow}>
+                {/* The IN / US picker, exactly as on Market: one pill, the whole block around it takes the tap. */}
+                <div className={marketStyles.picker} onClick={switchMarket}>
+                  <Inset paddingInline="16" paddingBlock="00">
+                    <Tabs
+                      appearance="pill"
+                      size="md"
+                      aria-label={t('picker.label', { market: t(`picker.${market}`), other: t(`picker.${other}`) })}
+                      items={[{ value: market, label: t(`pickerLong.${market}`), iconLeft: <Flag code={market === 'in' ? 'in' : 'us'} />, iconRight: <Icon icon={lmSwitchArrowVertical} size={14} /> }]}
+                      value={market}
+                      onChange={() => {}}
+                    />
+                  </Inset>
+                </div>
+                <span className={marketStyles.divider} aria-hidden="true" />
+                <div className={marketStyles.tabs}>
+                  <CenteredTabs appearance="pill" emphasis="secondary" aria-label={t('watchlist.tabsLabel')} items={tabs.map((l) => ({ value: l.id, label: l.name }))} value={tapped ?? listId} onChange={(v) => pick(v)} />
+                </div>
+              </Stack>
+              {/* The list's header, as Market's filter bar: its name and count — "Momentum Plays (6)" — then Edit and
+                  Sort. It hangs under the top bar on the same fade; the list starts its height lower (.page). */}
+              <div className={marketStyles.filterRow}>
+                <Inset paddingInline="16" paddingBlock="12">
+                  <Stack direction="horizontal" align="center" gap="08">
+                    <p className={marketStyles.filterHint} aria-live="polite">{t('watchlist.heading', { name: current.name, count: shown })}</p>
+                    {/* All is every list at once, not a list of its own: nothing to edit there. */}
+                    {current.id !== all.id && (
+                      <span className={marketStyles.filterButton}>
+                        <Button variant="tertiary" size="sm" iconLeft={<Icon icon={msEdit} />} aria-label={t('watchlist.editLabel')} onClick={() => { editWatchlist(current.id); onEdit?.() }} />
+                      </span>
+                    )}
+                    <span className={marketStyles.filterButton}>
+                      <Badge dot={sort !== 'added'} label={t('watchlist.sort.on')}>
+                        <Button variant="tertiary" size="sm" iconLeft={<Icon icon={msSort} />} aria-label={t('watchlist.sortLabel')} onClick={() => setSortOpen(true)} />
+                      </Badge>
+                    </span>
+                  </Stack>
+                </Inset>
+              </div>
+            </Stack>
+          }
+        />
+      }
+      toast={savedToast && <Aerobar type="success" floating icon={<Icon icon={msCheckCircle} />} heading={t('watchlist.updated')} duration={3000} onDismiss={() => setSavedToast(false)} />}
+      sheet={
+        sheet !== null ? <CreateWatchlistSheet name={sheet} onCreate={create} onClose={() => setSheet(null)} />
+          : sortOpen ? <SortWatchlistSheet value={sort} onApply={(next) => { setSort(next); setSortOpen(false) }} onClose={() => setSortOpen(false)} />
+            : undefined
+      }
+    >
+      <div className={`${marketStyles.viewport} ${styles.fill}`}>
+        <div ref={(el) => { track.current = el; swipe.bind(el) }} className={marketStyles.track} onPointerDownCapture={peek}>
+          {[neighbour(ids, listId, -1), listId, neighbour(ids, listId, 1)].map((id, at) => id && (
+            <div key={`${market}-${id}`} className={marketStyles.panel} data-side={['before', 'current', 'after'][at]} inert={at !== 1} aria-hidden={at !== 1 || undefined}>
+              {page(id)}
+            </div>
+          ))}
+        </div>
+      </div>
+    </Screen>
+  )
+}
+```
+
+### `src/flows/market/sheets/CreateWatchlistSheet.module.css`
+
+```css
+/* No padding of its own: the L3 sheet's content area already brings the 16 margin (a second layer doubled it). */
+.form {
+  display: block;
+}
+```
+
+### `src/flows/market/sheets/CreateWatchlistSheet.tsx`
+
+```tsx
+import { useId, useState } from 'react'
+import { BottomSheetHeader } from '@l3/components/BottomSheet'
+import { Button } from '@l3/components/Button'
+import { ButtonGroup } from '@l3/components/ButtonGroup'
+import { TextField } from '@l3/components/TextField'
+import { usePreview } from '../../../shared/prototype'
+import { Sheet } from '../../../shared/ui/Sheet'
+import { TextKeyboard, typeText } from '../../../shared/ui/TextKeyboard'
+import { t } from '../copy'
+import styles from './CreateWatchlistSheet.module.css'
+
+/**
+ * Create watchlist — from the Watchlist page's "+ New". One field (Watchlist name, typing) and Create, off until
+ * something is typed; the phone keyboard sits under the dock while typing. The same sheet as Search's "Create
+ * watchlist" (search-22), so the two read alike.
+ */
+export function CreateWatchlistSheet({ name: initialName = '', onCreate, onClose }: { name?: string; onCreate?: (name: string) => void; onClose?: () => void }) {
+  const id = useId()
+  const { interactive } = usePreview()
+  const [name, setName] = useState(initialName)
+  return (
+    <Sheet
+      labelledBy={id}
+      onClose={onClose}
+      header={<BottomSheetHeader headingId={id} heading={t('watchlist.create.title')} />}
+      footer={
+        <>
+          <ButtonGroup aria-label={t('watchlist.create.title')}>
+            <Button size="lg" disabled={!name.trim()} onClick={() => onCreate?.(name.trim())}>{t('watchlist.create.button')}</Button>
+          </ButtonGroup>
+          <TextKeyboard onKey={(k) => setName((n) => typeText(n, k))} />
+        </>
+      }
+    >
+      <div className={styles.form}>
+        <TextField label={t('watchlist.create.field')} value={name} placeholder={t('watchlist.create.placeholder')} autoFocus={interactive} onChange={(e) => setName(e.target.value)} />
+      </div>
+    </Sheet>
+  )
+}
+```
+
 ### `src/flows/market/sheets/FilterSheet.module.css`
 
 ```css
@@ -1239,6 +1865,71 @@ export function FilterSheet({ market = 'in', initial, section, resultCount, onAp
             })}
           </div>
         </div>
+      </div>
+    </Sheet>
+  )
+}
+```
+
+### `src/flows/market/sheets/SortWatchlistSheet.module.css`
+
+```css
+/* The Radio rows keep their own 16 side padding (plain ListCell), so the sheet content's padding goes — one level of
+   padding, not two (the user's call, 24 Nov). FLAG (L3 gap): BottomSheet has no option to drop its content padding. */
+.sheet > [data-sheet-content] {
+  padding: 0;
+}
+
+/* The Radio rows: 12 above and below inside the sheet (the user's call, 24 Nov). */
+.list {
+  padding-block: var(--l3-spacing-12);
+}
+```
+
+### `src/flows/market/sheets/SortWatchlistSheet.tsx`
+
+```tsx
+import { useId, useState } from 'react'
+import { BottomSheetHeader } from '@l3/components/BottomSheet'
+import { Button } from '@l3/components/Button'
+import { ButtonGroup } from '@l3/components/ButtonGroup'
+import { Radio } from '@l3/components/Checkbox'
+import { ListCell } from '@l3/components/ListCell'
+import { Sheet } from '../../../shared/ui/Sheet'
+import { watchlistSorts, type WatchlistSort } from '../data'
+import { t } from '../copy'
+import styles from './SortWatchlistSheet.module.css'
+
+/**
+ * Sort by — from the Watchlist header's Sort button (the live app's sheet, redone in L3). One choice, as L3 Radio
+ * rows: As added (the default, the list's own order), Market price and Day change % (highest first), Stock name (A → Z).
+ * Apply sorts every list on the page; the Sort button's dot says a sort other than As added is on.
+ */
+export function SortWatchlistSheet({ value, onApply, onClose }: { value: WatchlistSort; onApply: (sort: WatchlistSort) => void; onClose: () => void }) {
+  const id = useId()
+  const [draft, setDraft] = useState(value)
+  return (
+    <Sheet
+      className={styles.sheet}
+      labelledBy={id}
+      onClose={onClose}
+      header={<BottomSheetHeader headingId={id} heading={t('watchlist.sort.title')} />}
+      footer={
+        <ButtonGroup aria-label={t('watchlist.sort.title')}>
+          <Button size="lg" onClick={() => onApply(draft)}>{t('watchlist.sort.apply')}</Button>
+        </ButtonGroup>
+      }
+    >
+      <div className={styles.list} role="radiogroup" aria-label={t('watchlist.sort.title')}>
+        {watchlistSorts.map((sort) => (
+          <ListCell
+            key={sort}
+            as="label"
+            label={t(`watchlist.sort.${sort}`)}
+            description={sort === 'added' ? t('watchlist.sort.default') : undefined}
+            trailing={<Radio name={`${id}-sort`} checked={draft === sort} onChange={() => setDraft(sort)} />}
+          />
+        ))}
       </div>
     </Sheet>
   )
@@ -26822,17 +27513,11 @@ export const Flag = ({ code }: { code: FlagCode }) => (
   display: none;
 }
 
-/* V3 (23 Nov, user): each tab full height, 74 × 56, the pill hugging them, centred — not end to end. */
+/* V3 (23 Nov, user): each tab full height, 56. */
+/* 24 Nov, user: full width again — 16 in from each side, the five tabs sharing it equally, so they grow and shrink
+   with the device width (no fixed 74). */
 .frame[data-glow-at='bottom'] .pill {
-  right: 0;
-  left: 0;
-  width: max-content;
-  margin-inline: auto;
   padding: 0;
-}
-.frame[data-glow-at='bottom'] .pill > nav > ul > li {
-  flex: 0 0 var(--app-fnav-tab-width);
-  width: var(--app-fnav-tab-width); /* 74 wide × 56 tall (23 Nov, user) */
 }
 .frame[data-glow-at='bottom'] .pill :is(button, a)[class] {
   height: var(--l3-size-56);
@@ -27420,6 +28105,84 @@ export function SheetHost({ container, children }: { container: HTMLElement | nu
 }
 ```
 
+### `src/shared/ui/Spot.module.css`
+
+```css
+/*
+ * Illustration slot: a large icon on a soft accent disc with a faint outer ring. Stands in for artwork L3 doesn't have
+ * yet (lemon mascot, PAN card, bank, coin …) — swap the whole <Spot> for the illustration when it exists.
+ */
+.spot {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--l3-radius-full);
+  background: var(--spot-surface);
+  color: var(--spot-content);
+}
+
+.spot[data-size='md'] {
+  width: var(--l3-size-64);
+  height: var(--l3-size-64);
+}
+
+.spot[data-size='lg'] {
+  width: var(--l3-size-96);
+  height: var(--l3-size-96);
+}
+
+/* The halo: one hairline ring 12 outside the disc, in the same accent (lg only — the hero moments). */
+.spot[data-size='lg']::after {
+  content: '';
+  position: absolute;
+  inset: calc(-1 * var(--l3-spacing-12));
+  border: 1px solid var(--spot-surface);
+  border-radius: var(--l3-radius-full);
+}
+
+.glyph {
+  width: var(--l3-size-32);
+  height: var(--l3-size-32);
+}
+
+.spot[data-size='lg'] .glyph {
+  width: var(--l3-size-48);
+  height: var(--l3-size-48);
+}
+
+.spot[data-tone='brand'] { --spot-surface: var(--l3-surface-accent-brand-light); --spot-content: var(--l3-content-primary); }
+.spot[data-tone='discover'] { --spot-surface: var(--l3-surface-accent-discover-light); --spot-content: var(--l3-content-accent-discover-default); }
+.spot[data-tone='success'] { --spot-surface: var(--l3-surface-accent-success-light); --spot-content: var(--l3-content-accent-success-default); }
+.spot[data-tone='warning'] { --spot-surface: var(--l3-surface-accent-warning-light); --spot-content: var(--l3-content-accent-warning-default); }
+.spot[data-tone='error'] { --spot-surface: var(--l3-surface-accent-error-light); --spot-content: var(--l3-content-accent-error-default); }
+.spot[data-tone='plain'] { --spot-surface: var(--l3-surface-default); --spot-content: var(--l3-content-primary); }
+.spot[data-tone='neutral'] { --spot-surface: var(--l3-surface-secondary); --spot-content: var(--l3-content-primary); }
+```
+
+### `src/shared/ui/Spot.tsx`
+
+```tsx
+import { Icon } from '@l3/components/Icon'
+import styles from './Spot.module.css'
+
+export type SpotTone = 'brand' | 'discover' | 'success' | 'warning' | 'error' | 'neutral' | 'plain'
+
+/**
+ * ILLUSTRATION SLOT — a large icon on a soft accent disc (md 64 / lg 96 with a halo). Used where the app has artwork
+ * (mascot, PAN card, bank, coin) until L3 has an illustration set; replace the <Spot> with the artwork 1:1.
+ * Tone by meaning: brand = welcome moments, plain = on a brand panel, discover = info / in progress, success / warning / error = outcomes.
+ */
+export function Spot({ icon, tone = 'brand', size = 'lg' }: { icon: string; tone?: SpotTone; size?: 'md' | 'lg' }) {
+  return (
+    <span className={styles.spot} data-tone={tone} data-size={size} aria-hidden="true" data-illustration-slot="">
+      <Icon icon={icon} className={styles.glyph} />
+    </span>
+  )
+}
+```
+
 ### `src/shared/ui/StockListCard.module.css`
 
 ```css
@@ -27544,6 +28307,224 @@ export function StockListCard({ symbol, name, logoUrl, initials, logo, tag, pric
       aria-label={rest['aria-label']}
     />
   )
+}
+```
+
+### `src/shared/ui/TextKeyboard.module.css`
+
+```css
+/* OS text keyboard mock (Figma "L3: System keyboard", 260 tall at 360): 5 rows of 40 tall keys on a grey tray. */
+.keyboard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--l3-spacing-08);
+  padding: var(--l3-spacing-12) var(--l3-spacing-06) var(--l3-spacing-16);
+  /* On a real phone, clear the home indicator (like the L3 button dock does). */
+  padding-bottom: calc(var(--l3-spacing-16) + env(safe-area-inset-bottom, var(--l3-spacing-00)));
+  background: var(--l3-surface-secondary);
+}
+
+.row {
+  display: flex;
+  gap: var(--l3-spacing-04);
+}
+
+/* The A–L row is inset by about half a key, like a phone keyboard. */
+.row[data-row='2'] {
+  padding-inline: var(--l3-spacing-16);
+}
+
+.key {
+  display: flex;
+  flex: 1 1 0;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  height: var(--l3-size-40);
+  padding: 0;
+  border: 0;
+  border-radius: var(--l3-radius-08);
+  background: var(--l3-surface-primary);
+  color: var(--l3-content-primary);
+  font: var(--l3-text-description-18);
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.key[data-wide] {
+  flex-grow: 1.5;
+}
+
+.key[data-kind='space'] {
+  flex-grow: 5;
+  font: var(--l3-text-label-12);
+}
+
+.key[data-kind='fn'] {
+  background: var(--l3-surface-tertiary);
+  font: var(--l3-text-label-14);
+}
+
+/* The keyboard's action key (Search) — the phone's own accent, not an app colour. */
+.key[data-kind='go'] {
+  background: var(--l3-surface-accent-discover-default);
+  color: var(--l3-content-inverted);
+}
+
+.key :is(svg, span):not(.popup) {
+  width: var(--l3-icon-size-20);
+  height: var(--l3-icon-size-20);
+}
+
+/* Function keys (Shift, Delete, ?123, Space, Enter): pressed, they darken and give a little. */
+.key:not([data-kind='letter'])[data-held] {
+  background-image: linear-gradient(var(--l3-state-layer-dark-pressed), var(--l3-state-layer-dark-pressed));
+  transform: scale(var(--l3-motion-scale-press-default));
+}
+
+/*
+ * Letter keys: while held, a magnified bubble of the key pops up above it (Gboard / iPhone): the key's width plus a
+ * little, two keys tall, the character large near its top; it grows out of the key (120 ms). The key itself dims under
+ * it. Keys at a row's ends keep the bubble inside the keyboard's edge.
+ */
+.key {
+  position: relative;
+}
+
+.key[data-kind='letter'][data-held] {
+  background: var(--l3-surface-tertiary);
+}
+
+.popup {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  box-sizing: border-box;
+  width: calc(100% + var(--l3-spacing-12));
+  height: calc(var(--l3-size-40) * 2 + var(--l3-spacing-08));
+  padding-top: var(--l3-spacing-06);
+  border-radius: var(--l3-radius-12);
+  background: var(--l3-surface-primary);
+  box-shadow: var(--l3-shadow-elevation-high);
+  color: var(--l3-content-primary);
+  font: var(--l3-text-heading-28);
+  pointer-events: none;
+  transform: translateX(-50%);
+  transform-origin: 50% 100%;
+  animation: key-pop var(--l3-motion-duration-short) var(--l3-motion-easing-decelerate) both;
+}
+
+.key[data-edge='start'] .popup {
+  left: 0;
+  transform: none;
+  transform-origin: 0 100%;
+}
+
+.key[data-edge='end'] .popup {
+  right: 0;
+  left: auto;
+  transform: none;
+  transform-origin: 100% 100%;
+}
+
+@keyframes key-pop {
+  from {
+    opacity: 0;
+    scale: 0.6;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .key:not([data-kind='letter'])[data-held] {
+    transform: none;
+  }
+
+  .popup {
+    animation: none;
+  }
+}
+```
+
+### `src/shared/ui/TextKeyboard.tsx`
+
+```tsx
+import { useState, type PointerEvent } from 'react'
+import { Icon } from '@l3/components/Icon'
+import { msArrowUpward, msBackspace, msKeyboardTab } from '@l3/icons/material'
+import styles from './TextKeyboard.module.css'
+
+type Key = { key: string; label?: string; kind?: 'letter' | 'fn' | 'space' | 'go'; wide?: boolean }
+
+const ROWS: Key[][] = [
+  '1234567890'.split('').map((k) => ({ key: k })),
+  'QWERTYUIOP'.split('').map((k) => ({ key: k })),
+  'ASDFGHJKL'.split('').map((k) => ({ key: k })),
+  [{ key: 'Shift', kind: 'fn', wide: true }, ...'ZXCVBNM'.split('').map((k) => ({ key: k })), { key: 'Backspace', kind: 'fn', wide: true }],
+  [{ key: '?123', kind: 'fn', wide: true }, { key: ',' }, { key: ' ', label: 'EN • LV', kind: 'space' }, { key: '.' }, { key: 'Enter', kind: 'go', wide: true }],
+]
+
+/**
+ * The phone's own text keyboard (OS chrome, NOT part of the app or L3 — Figma "L3: System keyboard", isNumeric =
+ * False). Drawn so search screens read like the phone; in the prototype the keys type into the screen. Real apps get the
+ * system keyboard by focusing the text field (search: `enterKeyHint="search"`). `data-surface` tells the OS navigation
+ * bar below it to take the keyboard's grey.
+ */
+export function TextKeyboard({ onKey }: { onKey?: (key: string) => void }) {
+  // The key being held: a letter / digit / punctuation key shows its pop-up (a magnified bubble above it, like Gboard and
+  // the iPhone keyboard) until the finger lifts; function keys just darken.
+  const [held, setHeld] = useState<string | null>(null)
+  const release = () => setHeld(null)
+  return (
+    <div className={styles.keyboard} role="group" aria-label="Keyboard" data-surface="secondary">
+      {ROWS.map((row, i) => (
+        <div key={i} className={styles.row} data-row={i}>
+          {row.map((k, j) => (
+            <button
+              key={k.key}
+              type="button"
+              className={styles.key}
+              data-kind={k.kind ?? 'letter'}
+              data-wide={k.wide || undefined}
+              data-held={held === k.key || undefined}
+              data-edge={j === 0 ? 'start' : j === row.length - 1 ? 'end' : undefined}
+              aria-label={label(k)}
+              onPointerDown={(e) => {
+                keepFocus(e)
+                setHeld(k.key)
+              }}
+              onPointerUp={release}
+              onPointerLeave={release}
+              onPointerCancel={release}
+              onClick={() => onKey?.(k.key)}
+            >
+              {k.key === 'Shift' ? <Icon icon={msArrowUpward} /> : k.key === 'Backspace' ? <Icon icon={msBackspace} /> : k.key === 'Enter' ? <Icon icon={msKeyboardTab} /> : (k.label ?? k.key)}
+              {(k.kind ?? 'letter') === 'letter' && held === k.key && (
+                <span className={styles.popup} aria-hidden="true">{k.label ?? k.key}</span>
+              )}
+            </button>
+          ))}
+        </div>
+      ))}
+    </div>
+  )
+}
+
+const label = (k: Key) =>
+  ({ Shift: 'Shift', Backspace: 'Delete', Enter: 'Search', ' ': 'Space', '?123': 'Numbers and symbols' } as Record<string, string>)[k.key]
+
+/** Like the OS keyboard, a key press doesn't take focus: the field being typed into keeps its Typing state. */
+const keepFocus = (e: PointerEvent) => e.preventDefault()
+
+/** Apply a keyboard key to a text value: letters, digits, space, comma, full stop and delete (Shift / ?123 do nothing here). */
+export const typeText = (value: string, key: string) => {
+  if (key === 'Backspace') return value.slice(0, -1)
+  if (key.length !== 1) return value
+  // Like a phone keyboard: the first letter is a capital, the rest lower case.
+  return value + (value === '' ? key.toUpperCase() : key.toLowerCase())
 }
 ```
 

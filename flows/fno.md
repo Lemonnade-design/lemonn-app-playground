@@ -11975,17 +11975,11 @@ function Sparkler() {
   display: none;
 }
 
-/* V3 (23 Nov, user): each tab full height, 74 × 56, the pill hugging them, centred — not end to end. */
+/* V3 (23 Nov, user): each tab full height, 56. */
+/* 24 Nov, user: full width again — 16 in from each side, the five tabs sharing it equally, so they grow and shrink
+   with the device width (no fixed 74). */
 .frame[data-glow-at='bottom'] .pill {
-  right: 0;
-  left: 0;
-  width: max-content;
-  margin-inline: auto;
   padding: 0;
-}
-.frame[data-glow-at='bottom'] .pill > nav > ul > li {
-  flex: 0 0 var(--app-fnav-tab-width);
-  width: var(--app-fnav-tab-width); /* 74 wide × 56 tall (23 Nov, user) */
 }
 .frame[data-glow-at='bottom'] .pill :is(button, a)[class] {
   height: var(--l3-size-56);

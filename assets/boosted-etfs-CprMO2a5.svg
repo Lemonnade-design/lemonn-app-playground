@@ -6,8 +6,8 @@
 </g>
 <defs>
 <linearGradient id="paint0_linear_boosted" x1="4.81588" y1="7.61861" x2="15.7153" y2="18.5181" gradientUnits="userSpaceOnUse">
-<stop stop-color="#3A64B8"/>
-<stop offset="1" stop-color="#1C3670"/>
+<stop stop-color="#256FEF" stop-opacity="0.07"/>
+<stop offset="1" stop-color="#256FEF" stop-opacity="0.2"/>
 </linearGradient>
 <linearGradient id="paint1_linear_boosted" x1="13.3021" y1="3.84103" x2="19.495" y2="10.0339" gradientUnits="userSpaceOnUse">
 <stop stop-color="#81ABF6"/>
@@ -18,7 +18,7 @@
 <stop offset="1" stop-color="#2360D9"/>
 </linearGradient>
 <clipPath id="clip0_boosted">
-<rect width="19.4444" height="19.4444" fill="#181818" transform="translate(1.94531 1.94444)"/>
+<rect width="19.4444" height="19.4444" fill="white" transform="translate(1.94531 1.94444)"/>
 </clipPath>
 </defs>
 </svg>

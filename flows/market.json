@@ -131,6 +131,66 @@
         "stocks-32"
       ],
       "figmaUrl": ""
+    },
+    {
+      "id": "market-11",
+      "name": "Watchlist",
+      "figma": "",
+      "note": "An L2 page built like Market: the IN / US picker at the left of pill tabs, one per watchlist (each market has its own). Opens on the market of the Home tab it was opened from (IND → Indian lists, US → US lists). \"+ New\" opens Create watchlist; a swipe or a tab moves between lists.",
+      "goesTo": [],
+      "figmaUrl": ""
+    },
+    {
+      "id": "market-12",
+      "name": "Watchlist · US",
+      "figma": "",
+      "note": "Opened from Home\\",
+      "goesTo": [],
+      "figmaUrl": ""
+    },
+    {
+      "id": "market-13",
+      "name": "Watchlist · another list",
+      "figma": "",
+      "note": "The second tab (Banking Giants) picked.",
+      "goesTo": [],
+      "figmaUrl": ""
+    },
+    {
+      "id": "market-14",
+      "name": "Create watchlist",
+      "figma": "",
+      "note": "From \"+ New\": the name field (typing, keyboard up) and Create, off until something is typed. Create adds the list as the last tab and opens it.",
+      "goesTo": [],
+      "figmaUrl": ""
+    },
+    {
+      "id": "market-15",
+      "name": "Sort by",
+      "figma": "",
+      "note": "From the header\\",
+      "goesTo": [],
+      "figmaUrl": ""
+    },
+    {
+      "id": "market-16",
+      "name": "Edit watchlist",
+      "figma": "",
+      "note": "From the header\\",
+      "goesTo": [
+        "market-11"
+      ],
+      "figmaUrl": ""
+    },
+    {
+      "id": "market-17",
+      "name": "Edit · delete watchlist",
+      "figma": "",
+      "note": "Delete watchlist asks first: a sheet with Cancel · Delete.",
+      "goesTo": [
+        "market-11"
+      ],
+      "figmaUrl": ""
     }
   ],
   "files": [
@@ -142,10 +202,18 @@
     "src/flows/market/copy.ts",
     "src/flows/market/data.ts",
     "src/flows/market/index.tsx",
+    "src/flows/market/screens/EditWatchlist.module.css",
+    "src/flows/market/screens/EditWatchlist.tsx",
     "src/flows/market/screens/Market.module.css",
     "src/flows/market/screens/Market.tsx",
+    "src/flows/market/screens/Watchlist.module.css",
+    "src/flows/market/screens/Watchlist.tsx",
+    "src/flows/market/sheets/CreateWatchlistSheet.module.css",
+    "src/flows/market/sheets/CreateWatchlistSheet.tsx",
     "src/flows/market/sheets/FilterSheet.module.css",
-    "src/flows/market/sheets/FilterSheet.tsx"
+    "src/flows/market/sheets/FilterSheet.tsx",
+    "src/flows/market/sheets/SortWatchlistSheet.module.css",
+    "src/flows/market/sheets/SortWatchlistSheet.tsx"
   ],
   "shared": [
     "src/shared/assets/logos/asahiindia.png",
@@ -183,8 +251,12 @@
     "src/shared/ui/Screen.tsx",
     "src/shared/ui/Sheet.module.css",
     "src/shared/ui/Sheet.tsx",
+    "src/shared/ui/Spot.module.css",
+    "src/shared/ui/Spot.tsx",
     "src/shared/ui/StockListCard.module.css",
     "src/shared/ui/StockListCard.tsx",
+    "src/shared/ui/TextKeyboard.module.css",
+    "src/shared/ui/TextKeyboard.tsx",
     "src/shared/ui/TopBarAction.module.css",
     "src/shared/ui/TopBarAction.tsx",
     "src/shared/ui/assets/floating-nav/fno-selected.svg",

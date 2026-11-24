@@ -202,6 +202,7 @@ any screen ─back─▶ where Search was opened from (stocks-01 / market-01)
 - Product rule: illiquid applies to commodity contracts only; equity / index contracts never carry the tag.
 
 ### Changelog
+- 2026-11-24 · Add to watchlist / Create watchlist sheets: one layer of padding — the sheet's content slot adds none, the list (16 / 24, rows edge to edge) and the form keep theirs. FLAG (L3 gap): BottomSheet has no prop to drop its content padding.
 - 23 Nov 2026 — Search, US tab: the Collections tiles are hidden for now (SHOW_US_COLLECTIONS in Search.tsx); the data stays.
 
 - 2026-11-04 — **Real Indian stocks and contracts.** Stocks tab chips and results come from the shared company catalogue (real names, design-system logos, snapshot prices); "Bank" now finds the 7 catalogue banks (Bank of Baroda, PNB, AU and Federal aren't in it), State Bank of India is the pre-saved one. F&O: contracts show the underlying's logo, strikes sit near today's prices / index levels, expiry 24NOV2026; Smart Futures list is on catalogue stocks. Gold (MCX) contracts unchanged.
@@ -1527,6 +1528,14 @@ export function Signals({ scope: initialScope = 'indices', category = 'Top Trade
 /* The field inside the 16 page margin (16 / 24 above and below, so not an Inset). */
 .form {
   padding: var(--l3-spacing-16) var(--l3-spacing-16) var(--l3-spacing-24);
+}
+
+/* The L3 sheet's content slot pads 16 / 16 / 24 itself, which doubled the padding above (the user's call, 24 Nov: keep
+   only the inner one). With the list or the form inside, the slot adds none.
+   FLAG (L3 gap): BottomSheet has no prop to turn off the content slot's padding. */
+[data-sheet-content]:has(> .lists),
+[data-sheet-content]:has(> .form) {
+  padding: 0;
 }
 ```
 

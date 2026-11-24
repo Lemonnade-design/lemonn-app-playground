@@ -1163,7 +1163,8 @@ export function Intro({ title, description, art, align = 'start', children }: {
 ### `src/shared/ui/Keyboard.module.css`
 
 ```css
-/* OS number keypad mock: 3 × 4 keys on a grey tray. */
+/* OS number keypad mock: 3 × 4 keys on a tray the colour of the button dock above it, so the two read as one
+   (24 Nov, the user's call); the keys take the grey. */
 .keyboard {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -1171,7 +1172,8 @@ export function Intro({ title, description, art, align = 'start', children }: {
   padding: var(--l3-spacing-12) var(--l3-spacing-12) var(--l3-spacing-24);
   /* On a real phone, clear the home indicator (like the L3 button dock does). */
   padding-bottom: calc(var(--l3-spacing-24) + env(safe-area-inset-bottom, var(--l3-spacing-00)));
-  background: var(--l3-surface-secondary);
+  /* The dock above sets --app-dock-surface when it isn't on surface-default (the order pads' dock is surface-primary). */
+  background: var(--app-dock-surface, var(--l3-surface-default));
 }
 
 .key {
@@ -1182,7 +1184,7 @@ export function Intro({ title, description, art, align = 'start', children }: {
   height: var(--app-size-key);
   border: 0;
   border-radius: var(--l3-radius-08);
-  background: var(--l3-surface-primary);
+  background: var(--l3-surface-secondary);
   color: var(--l3-content-primary);
   font: var(--l3-text-description-18);
   cursor: pointer;
@@ -1217,12 +1219,12 @@ const KEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', 'Backspace']
 /**
  * The phone's own number keypad (OS chrome, NOT part of the app or L3 — real apps get the system keyboard by setting
  * the field's input type to number). Drawn so the phone / OTP / PIN screens read like the phone. In the prototype the
- * keys type into the screen. `data-surface` tells the OS navigation bar below it to take the keypad's grey.
+ * keys type into the screen. `data-surface` tells the OS navigation bar below it to take the keypad's colour (the dock's).
  */
 export function Keyboard({ onKey, decimal }: { onKey?: (key: string) => void; /** Show "." in the bottom-left key (amounts in $, fractional shares). */ decimal?: boolean }) {
   const keys = decimal ? KEYS.map((k) => (k === '' ? '.' : k)) : KEYS
   return (
-    <div className={styles.keyboard} role="group" aria-label="Number keypad" data-surface="secondary">
+    <div className={styles.keyboard} role="group" aria-label="Number keypad" data-surface="default">
       {keys.map((k) =>
         k === '' ? <span key="blank" /> : (
           <button key={k} type="button" className={styles.key} data-kind={k === 'Backspace' ? 'fn' : 'digit'} aria-label={k === 'Backspace' ? 'Delete' : k === '.' ? 'Decimal point' : undefined} onPointerDown={keepFocus} onClick={() => onKey?.(k)}>

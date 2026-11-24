@@ -199,6 +199,25 @@ Every tap he wired is kept. The main path: FTUX sheet → Activate → Declarati
 → Pay on bank → Money ready → Stock → Buy → Executed → Wallet → Withdraw.
 
 ### Changelog
+- 2026-11-24 · Portfolio holdings, IN card for a user with MTF (option "MTF holdings", default Has MTF): "IN Holdings ⇅" is a switch like Total Returns — IN Holdings (total) → Stocks → MTF — and the card's current, invested and returns follow it (one card in place of the live app's three). Data: `inHoldingsSplit` (portfolioData.ts), stocks + MTF = the total. V1 card only.
+- 2026-11-24 · Portfolio holdings cards: the market glow is back in the bottom-right corner (IN green, US blue), over surface/default; still no shadow.
+- 2026-11-24 · Portfolio holdings cards: the Total Returns switch icon is 14 (was 16).
+- 2026-11-24 · Portfolio holdings cards: flat — no shadow, no corner glow; background L3 surface/default with the light border.
+- 2026-11-24 · Portfolio holdings cards: the first fact reads "IN Holdings" / "US Holdings" (was "IND / US Current Value").
+- 24 Nov: Bottom navbar V3 goes full width — the pill 16 in from each side, five equal tabs that follow the device width (was 74-wide tabs hugged in the middle).
+- 24 Nov: Activate leverage — the "Don’t show this again" row is 24 tall (the 48 tap target kept), 20 above Confirm.
+- 24 Nov: Activate leverage sheet — "Don’t show this again" moved into the button dock, just above Confirm.
+- 24 Nov: V7 Stop loss switch on fractional shares (US) — the switch stays off and only the red line shows and shakes; the card no longer flashes in first.
+- 24 Nov: Amount size archived — 44 is final on every pad; 36 / 40 / 48 / 56 no longer offered.
+- 24 Nov: Amount box gradient archived — Off is final; the grey wash (On) no longer offered.
+- 24 Nov: TP/SL sheet archived — B (one price card per leg) is final; A · box inside each leg card no longer offered.
+- 24 Nov: Market / Limit / SL pills all one width (the widest label's), not each hugging its label.
+- 24 Nov: Price cards archived — Merged (one card, a line between) is final; Separate · a card per price no longer offered.
+- 24 Nov: Number keypad (shared/ui/Keyboard) blends with the button dock — tray takes the dock's colour (--app-dock-surface; surface-default, or surface-primary on the order pads), keys on surface-secondary, fn key tertiary.
+- 24 Nov: Raised look is final — Minted · toned down app-wide (tint, no ring); the App settings → Look → Raised look switch is archived (L3 bevel & Minted with ring no longer offered).
+- 24 Nov: V7 stop loss guide — the blue L3 Tooltip (V4's hint) above the lit card, "Tap here to set your stop loss", no button; tapping the card ends it.
+- 24 Nov: Price cards (PriceField) back to 12 padding (the 16 reached every pad, US and Indian). V7 Stop loss switch: the whole pill is the tap target; turning it on closes the keypad and, the first time, a torch guide (SlGuide) dims the pad and lights the stop loss card with an L3 CoachMark above it (tap the card → the SL sheet). FLAG (L3 gap): no spotlight overlay in L3.
+- 24 Nov: Orderpad version archived — V7 (stop loss switch in the top bar) is final; V1, V2, V4, V5, V6, V8, V9 archived (setting removed; their code stays, unused).
 - 24 Nov: Portfolio Holdings — 12 (was 24) under the P&L cards, above the IN / US tabs.
 - 24 Nov: P&L card V2 — 6 between a returns amount and its (%) (8 less 2; Stack has no 06 step, set in CSS).
 - 24 Nov: P&L card V2 — 4 (was 8) between a returns amount and its (%).
@@ -22782,52 +22801,28 @@ export const usStocks: Flow = {
       default: 'v1', // V1 by default (24 Nov, user)
       floatOn: ['us-stocks-05'],
     },
+    // Portfolio → Holdings, a user with MTF holdings (24 Nov, the user's call): the IN card's "IN Holdings" label becomes a
+    // switch — IN Holdings (total) ⇄ Stocks ⇄ MTF — one card in place of the three cards the live app shows.
+    {
+      id: 'inMtf',
+      group: 'Portfolio',
+      label: 'MTF holdings',
+      values: [
+        { value: 'yes', label: 'Has MTF · Holdings ⇄ Stocks ⇄ MTF' },
+        { value: 'no', label: 'No MTF' },
+      ],
+      default: 'yes',
+      floatOn: ['us-stocks-05'],
+    },
     // "Order pad" archived 19 Nov (the user's call): V2 · Minted layout kept; V1 · Commodity pad layout archived.
     // useOrderPadVersion() returns 'v2'; the V1 code stays in OrderPad.tsx / OrderResult.tsx.
     // "Validity switch" archived 23 Nov (the user's call): V3 · above the amount, with Amount / Shares kept; V1 · right
     // edge and V2 · in the order type track archived. useValidityPlace() returns 'v3'; the V1 / V2 code stays in OrderPadV2.
-    // The V2 order pad's price cards (18 Nov): merged (one card, a line between the prices) or separate (a card each).
-    {
-      id: 'priceCards',
-      group: 'Trade',
-      label: 'Price cards',
-      picker: 'dropdown',
-      values: [
-        { value: 'merged', label: 'Merged · one card, a line between' },
-        { value: 'separate', label: 'Separate · a card per price' },
-      ],
-      default: 'merged',
-      floatOn: ORDER_PAD_SCREEN_IDS, // every pad screen: Market, Limit and SL keep the same settings (23 Nov, user)
-    },
-    // The amount's text size on the pad (23 Nov, the user's call: "give a dropdown for testing different font sizes").
-    {
-      id: 'amountSize',
-      group: 'Trade',
-      label: 'Amount size',
-      picker: 'dropdown',
-      values: [
-        { value: '36', label: '36 · L3 Heading/36' },
-        { value: '40', label: '40' },
-        { value: '44', label: '44' },
-        { value: '48', label: '48' },
-        { value: '56', label: '56' },
-      ],
-      default: '36',
-      floatOn: ORDER_PAD_SCREEN_IDS,
-      floatPicker: 'dropdown', // beside the phone as a dropdown, not pills (23 Nov, user)
-    },
-    // A soft grey wash in the amount box (V5 / V6), the Boosted ETF strip's grey fading out (23 Nov, the user's call).
-    {
-      id: 'amountGlow',
-      group: 'Trade',
-      label: 'Amount box gradient',
-      values: [
-        { value: 'off', label: 'Off' },
-        { value: 'on', label: 'On' },
-      ],
-      default: 'off',
-      floatOn: ORDER_PAD_SCREEN_IDS,
-    },
+    // "Price cards" archived 24 Nov (the user's call): Merged · one card, a line between kept; Separate · a card per price
+    // archived. usePriceCards() returns 'merged'; the separate code stays in OrderPadV2.
+    // "Amount size" archived 24 Nov (the user's call): 44 kept; 36 / 40 / 48 / 56 archived. useAmountSize() returns '44'.
+    // "Amount box gradient" archived 24 Nov (the user's call): Off kept; On (a soft grey wash in the amount box) archived.
+    // useAmountGlow() returns false; the wash's CSS stays in OrderPadV2.
     // Order pad version (19 Nov, the user's call): US · stop loss only (no take profit, no trailing, no SL on fractional
     // shares) and no leverage card; Indian (the default) · the pad as Indian stocks will have it: the leverage card on
     // Market and TP + SL + trailing (Tpsl.tsx, kept as it was).
@@ -22851,59 +22846,15 @@ export const usStocks: Flow = {
         ],
       },
     },
-    // The TP/SL sheet, an A/B test (19 Nov, the user's call: "keep this version intact for AB testing"): B · A's layout, each
-    // leg one pad-style price card, no box inside a box (TpslSheetB); A · a card per leg with a box inside (TpslSheet).
-    // Shows on the Indian pad.
-    {
-      id: 'tpslSheet',
-      group: 'Trade',
-      label: 'TP/SL sheet',
-      picker: 'dropdown',
-      values: [
-        { value: 'b', label: 'B · one price card per leg' },
-        { value: 'a', label: 'A · box inside each leg card' },
-      ],
-      default: 'b',
-      floatOn: ORDER_PAD_SCREEN_IDS, // every pad screen: Market, Limit and SL keep the same settings (23 Nov, user)
-    },
+    // "TP/SL sheet" archived 24 Nov (the user's call): B · one price card per leg kept (TpslSheetB); A · box inside each
+    // leg card archived. useTpslSheet() returns 'b'; A's code stays in TpslSheet.
     // The TP/SL card while nothing is set (23 Nov, the user's call): V1 · the leverage card's look, a tile, the name and a
     // Switch; V2 · a borderless pill with the Add Circle
     // icon, centred, 32 tall; V3 · no card: Market / Limit / SL full width with a grey settings button on the right that
     // opens the sheet (23 Nov); V4 · as V3, the settings button at the top bar's right (Indian pad: NSE / BSE moves next to
     // the stock name). All open the same sheet; once set, all show the saved card.
-    {
-      id: 'tpslCard',
-      group: 'Trade',
-      label: 'Orderpad version', // was "TP/SL card"; it now holds every pad version (23 Nov, user)
-      picker: 'dropdown',
-      values: [
-        { value: 'v1', label: 'V1 · card with a switch' },
-        { value: 'v2', label: 'V2 · borderless pill' },
-        // V3 hidden (23 Nov, user): its settings button lives on in V5; a saved V3 falls back to V2.
-        { value: 'v4', label: 'V4 · settings button in the top bar' },
-        { value: 'v5', label: 'V5 · settings button, amount in a box' }, // V3's settings button, order types left, amount boxed (23 Nov, user)
-        { value: 'v6', label: 'V6 · amount in a box, TP/SL pill below' }, // V5's box, V2's centred tabs + pill (23 Nov, user)
-        { value: 'v7', label: 'V7 · stop loss switch in the top bar' }, // V4 with a switch in place of its button; on → the card in the pad (23 Nov, user)
-        { value: 'v8', label: 'V8 · settings button, amount in a card' }, // Quantity + Amount / Shares left, the amount right (23 Nov, user)
-        { value: 'v9', label: 'V9 · amount card, label on top' }, // label (= the switch) + validity, amount + Set TP/SL, chips (24 Nov, user)
-      ],
-      default: 'v2', // V2 by default (23 Nov, the user's call)
-      floatOn: ORDER_PAD_SCREEN_IDS, // every pad screen: Market, Limit and SL keep the same settings (23 Nov, user)
-      // Phone (app mode): a floating V1–V4 button on every order pad screen steps through the versions (23 Nov, user).
-      quickSwitch: {
-        on: ORDER_PAD_SCREEN_IDS,
-        values: [
-          { value: 'v1', label: 'V1 · card with a switch', short: 'V1' },
-          { value: 'v2', label: 'V2 · borderless pill', short: 'V2' },
-          { value: 'v4', label: 'V4 · settings button in the top bar', short: 'V4' },
-          { value: 'v5', label: 'V5 · settings button, amount in a box', short: 'V5' },
-          { value: 'v6', label: 'V6 · amount in a box, TP/SL pill below', short: 'V6' },
-          { value: 'v7', label: 'V7 · stop loss switch in the top bar', short: 'V7' },
-          { value: 'v8', label: 'V8 · settings button, amount in a card', short: 'V8' },
-          { value: 'v9', label: 'V9 · amount card, label on top', short: 'V9' },
-        ],
-      },
-    },
+    // "Orderpad version" archived 24 Nov (the user's call): V7 · stop loss switch in the top bar kept; V1, V2, V4, V5,
+    // V6, V8, V9 archived. useTpslCard() returns 'v7' (screens/trade/version.ts); the other versions' code stays unused.
     // The processing screen's loader (19 Nov, from Minted): glass ring (default) or Minted's other processing animations.
     {
       id: 'procAnim',
@@ -29570,15 +29521,16 @@ function BracketPct({ pct }: { pct: number }) {
 }
 
 /* FLAG: hand-made carousel card — use L3 Card. As wide as leaves 32 of the next card in view (rail width − 16 start
-   padding − 12 gap − 32), with 12 padding on every side. The market's glow sits in the bottom-right corner. */
+   padding − 12 gap − 32), with 12 padding on every side. No shadow; the market's glow sits in the bottom-right corner. */
 .card {
   gap: var(--l3-spacing-28);
   width: calc(100% + var(--l3-spacing-16) - var(--l3-spacing-12) - var(--l3-spacing-32));
   padding: var(--l3-spacing-12);
   border: 1px solid var(--l3-border-light);
   border-radius: var(--l3-radius-16);
-  box-shadow: var(--l3-shadow-elevation-soft); /* a clickable card: L3's soft shadow, as a clickable L3 Card */
-  background: radial-gradient(80% 70% at 100% 100%, color-mix(in srgb, var(--glow) 16%, transparent) 0%, transparent 72%), var(--l3-surface-primary);
+  /* No shadow (the user's call, 24 Nov); L3 surface/default with the market's glow in the bottom-right corner (IN brand
+     green, US blue). FLAG: the glow is a raw radial-gradient mix — L3 has no glow token. */
+  background: radial-gradient(80% 70% at 100% 100%, color-mix(in srgb, var(--glow) 16%, transparent) 0%, transparent 72%), var(--l3-surface-default);
   --glow: var(--l3-surface-accent-brand-default);
   scroll-snap-align: start;
   cursor: pointer;
@@ -29781,6 +29733,7 @@ import { Icon } from '@l3/components/Icon'
 import { lmSwitchArrowVertical } from '@l3/icons/lemonnade'
 import { Usd } from '../../../../../shared/money'
 import { useFlowOption } from '../../../../../shared/prototype'
+import { inHoldingsSplit } from '../portfolioData'
 import { HoldingsCardV2 } from './HoldingsCardV2'
 import styles from './HoldingsCards.module.css'
 
@@ -29789,9 +29742,14 @@ export type HoldingsSummary = { pnl: string; pct: string; up: boolean; invested:
 
 const order: HoldingsMarket[] = ['in', 'us']
 const labels: Record<HoldingsMarket, { title: string; short: string; code: string }> = {
-  in: { title: 'Indian Stocks P&L', short: 'Indian Stocks', code: 'IND' },
+  in: { title: 'Indian Stocks P&L', short: 'Indian Stocks', code: 'IN' },
   us: { title: 'US Stocks P&L', short: 'US Stocks', code: 'US' },
 }
+
+/** A user with MTF holdings: the IN card's first label switches what the card shows, in this order. */
+type InView = 'all' | 'stocks' | 'mtf'
+const inViews: InView[] = ['all', 'stocks', 'mtf']
+const inViewLabel: Record<InView, string> = { all: 'IN Holdings', stocks: 'Stocks', mtf: 'MTF' }
 
 /** '₹1,500.25' -> 1500.25 */
 const amountOf = (text: string) => Number(text.replace(/[^0-9.]/g, '')) || 0
@@ -29809,6 +29767,8 @@ export function HoldingsCards({
   const scrollingToPick = useRef(false)
   const [oneDay, setOneDay] = useState(false)
   const v2 = useFlowOption('us-stocks', 'pnlCard', 'v1') === 'v2' // Portfolio → "P&L card" (24 Nov, user)
+  const hasMtf = useFlowOption('us-stocks', 'inMtf', 'yes') === 'yes' // Portfolio → "MTF holdings" (24 Nov, user)
+  const [inView, setInView] = useState<InView>('all')
 
   // bring the picked card into view
   useEffect(() => {
@@ -29838,7 +29798,9 @@ export function HoldingsCards({
         }}
       >
         {order.map((id) => {
-          const summary = data[id]
+          // IN with MTF: the card shows the total, the delivery stocks or the MTF part, as its label's switch picks.
+          const split = id === 'in' && hasMtf
+          const summary = split && inView !== 'all' ? inHoldingsSplit[inView] : data[id]
           if (v2) return <HoldingsCardV2 key={id} market={id} summary={summary} onPick={() => onMarket(id)} />
           const base = amountOf(summary.current)
           const day = base * 0.0124
@@ -29852,12 +29814,28 @@ export function HoldingsCards({
             <section key={id} className={styles.card} data-market={id} aria-label={labels[id].title} onClick={() => onMarket(id)}>
               <span className={styles.facts}>
                 <span className={styles.fact}>
-                  <span className={styles.factLabel}>{labels[id].code} Current Value</span>
-                  <span className={styles.factValue}><Usd text={summary.current} /></span>
+                  {split ? (
+                    // The same switch as Total Returns: a tap moves to the next view (IN Holdings → Stocks → MTF → …).
+                    <button
+                      type="button"
+                      className={`${styles.factLabel} ${styles.factSwitch}`}
+                      aria-label={`Showing ${inViewLabel[inView]}. Switch to ${inViewLabel[inViews[(inViews.indexOf(inView) + 1) % inViews.length]]}`}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setInView((v) => inViews[(inViews.indexOf(v) + 1) % inViews.length])
+                      }}
+                    >
+                      <span className={styles.swap} key={inView}>{inViewLabel[inView]}</span>
+                      <Icon icon={lmSwitchArrowVertical} size={14} />
+                    </button>
+                  ) : (
+                    <span className={styles.factLabel}>{labels[id].code} Holdings</span>
+                  )}
+                  <span className={`${styles.factValue} ${styles.swap}`} key={split ? inView : undefined}><Usd text={summary.current} /></span>
                 </span>
                 <span className={styles.fact} data-end="">
                   <span className={styles.factLabel}>Invested Value</span>
-                  <span className={styles.factValue}><Usd text={summary.invested} align="end" /></span>
+                  <span className={`${styles.factValue} ${styles.swap}`} key={split ? inView : undefined}><Usd text={summary.invested} align="end" /></span>
                 </span>
               </span>
               <span className={styles.fact}>
@@ -29870,9 +29848,9 @@ export function HoldingsCards({
                   }}
                 >
                   <span className={styles.swap} key={String(oneDay)}>{oneDay ? '1D Returns' : 'Total Returns'}</span>
-                  <Icon icon={lmSwitchArrowVertical} size={16} />
+                  <Icon icon={lmSwitchArrowVertical} size={14} />
                 </button>
-                <span className={`${styles.returns} ${styles.swap}`} key={String(oneDay)}>
+                <span className={`${styles.returns} ${styles.swap}`} key={`${oneDay}-${split ? inView : ''}`}>
                   <span className={styles.pill} data-up={summary.up || undefined}>
                     {/^[+\-−]/.test(returns.pct) ? returns.pct : `${summary.up ? '+' : '−'}${returns.pct}`}
                   </span>
@@ -31498,6 +31476,13 @@ export const sortedHoldings = (sort: SortValue): Holding[] =>
 export const holdingsSummary: Record<HoldingsMarket, HoldingsSummary> = {
   in: { pnl: '+₹168.05', pct: '12.61%', up: true, invested: '₹1,332.20', current: '₹1,500.25' },
   us: { pnl: '$0.00', pct: '0.00%', up: true, invested: '$0.00', current: '$0.00' },
+}
+
+/** A user who bought on MTF (margin): the IN card's total split into delivery stocks and MTF, the two adding up to
+ * holdingsSummary.in. API: GET /portfolio/holdings/summary?market=in → { total, stocks, mtf }. */
+export const inHoldingsSplit: { stocks: HoldingsSummary; mtf: HoldingsSummary } = {
+  stocks: { pnl: '+₹100.05', pct: '10.53%', up: true, invested: '₹950.20', current: '₹1,050.25' },
+  mtf: { pnl: '+₹68.00', pct: '17.80%', up: true, invested: '₹382.00', current: '₹450.00' },
 }
 
 /** The one US holding in the "holding" status: NVDA_HOLDING (data.ts) at today's price — the same numbers as the stock
@@ -39463,12 +39448,12 @@ export function LeverageCard() {
 .up { color: var(--l3-content-accent-success-default); }
 .down { color: var(--l3-content-accent-error-default); }
 
-/* The row is the checkbox's 48 tap target tall, so its invisible input (48 around the 24 box) stays inside the sheet's
-   content — otherwise it overflows 12, the content scrolls, and ticking it scrolls the sheet. Pulled up 12 so the
-   gap above still reads as 16. */
+/* In the dock above Confirm (24 Nov, the user's call): the row is 24 tall, the box's own height, so it sits the dock's 12
+   gap above the button (a 48 row read as extra space), plus 8: 20 to Confirm (24 Nov, user). The checkbox's 48 tap
+   target still reaches past the row. */
 .dontShow {
-  min-height: var(--l3-size-tap-target);
-  margin-top: calc(-1 * var(--l3-spacing-12));
+  height: var(--l3-spacing-24);
+  margin-bottom: var(--l3-spacing-08);
   display: flex;
   align-items: center;
   gap: var(--l3-spacing-08);
@@ -39548,7 +39533,12 @@ export function LeverageSheet({ open, onClose, onConfirm, mode = 'activate' }: {
       aria-labelledby={headingId}
       header={<BottomSheetHeader size="sm" heading={explain ? 'How leverage works' : 'Activate leverage'} headingId={headingId} description="Leverage multiplies your gains and your losses." />}
       footer={
-        <ButtonGroup>
+        <ButtonGroup aria-label="Leverage">
+          {/* In the dock, just above Confirm (24 Nov, the user's call): a non-button child takes a full row of its own. */}
+          {!explain && <label className={styles.dontShow}>
+            <Checkbox checked={dontShow} onChange={(e) => setDontShow(e.target.checked)} />
+            Don’t show this again
+          </label>}
           {explain
             ? <Button size="lg" onClick={onClose}>Got it</Button>
             : <Button size="lg" onClick={confirm}>Confirm</Button>}
@@ -39572,10 +39562,6 @@ export function LeverageSheet({ open, onClose, onConfirm, mode = 'activate' }: {
             </Grid>
           ))}
         </div>
-        {!explain && <label className={styles.dontShow}>
-          <Checkbox checked={dontShow} onChange={(e) => setDontShow(e.target.checked)} />
-          Don’t show this again
-        </label>}
       </Stack>
     </BottomSheet>
   )
@@ -40046,7 +40032,7 @@ function GlassRing({ frozen }: { frozen: boolean }) {
 .error { margin: 0; font: var(--l3-text-label-12); color: var(--l3-content-accent-error-default); }
 
 /* Dock: optional note, then Avail. · Req. and the action. */
-.dock { background: var(--l3-surface-primary); }
+.dock { --app-dock-surface: var(--l3-surface-primary); background: var(--app-dock-surface); }
 .note { margin: 0; padding: var(--l3-spacing-12) var(--l3-spacing-16); font: var(--l3-text-label-12); color: var(--l3-content-secondary); text-align: center; }
 .dockBody { display: flex; flex-direction: column; gap: var(--l3-spacing-12); padding: var(--l3-spacing-12) var(--l3-spacing-16) var(--l3-spacing-16); border-top: 1px solid var(--l3-border-light); }
 .funds { display: flex; justify-content: space-between; font: var(--l3-text-label-12); }
@@ -40344,7 +40330,7 @@ function OrderPadV1({ config, backdrop, sheet }: OrderPadProps) {
 
 /* Dock: the note strip, Balance · Approx. req., the main button, then the keypad. The note sits above the dock's
    hairline (on the page, outside the button dock); the hairline opens the dock itself. */
-.dock { background: var(--l3-surface-primary); }
+.dock { --app-dock-surface: var(--l3-surface-primary); background: var(--app-dock-surface); }
 .note { margin: 0; padding: var(--l3-spacing-08) var(--l3-spacing-16); font: var(--l3-text-label-12); color: var(--l3-content-secondary); text-align: center; }
 .dockBody { padding: var(--l3-spacing-12) var(--l3-spacing-16); border-top: 1px solid var(--l3-border-light); }
 .funds { font: var(--l3-text-label-12); }
@@ -40365,8 +40351,7 @@ function OrderPadV1({ config, backdrop, sheet }: OrderPadProps) {
 /* Indian pad's Day / Year switch: at the row's right edge, out of the flow, so Market / Limit / SL stays centred. */
 .validity { position: absolute; inset-inline-end: 0; top: 50%; transform: translateY(-50%); }
 .orderTypes.orderTypes { display: inline-grid; grid-auto-flow: column; grid-auto-columns: 1fr; width: fit-content; }
-/* V3: each pill as wide as its label. */
-.orderTypes.orderTypes[data-width='hug'] { grid-auto-columns: auto; }
+/* Every pill the same width, the widest label's (24 Nov, the user's call; was each pill as wide as its label). */
 /* 32 wider than the labels need (23 Nov, the user's call): the 32 is shared by the three pills' six sides. */
 .orderTypes.orderTypes[data-width='hug'] [role='tab'] { --tab-padding-inline: calc(var(--l3-spacing-08) + var(--l3-spacing-32) / 6); }
 .tpslSettings.tpslSettings { position: absolute; inset-inline-end: 0; inset-block: 0; margin-block: auto; } /* no transform: the press scale uses it */
@@ -40437,6 +40422,18 @@ function OrderPadV1({ config, backdrop, sheet }: OrderPadProps) {
 
 /* V7's top-bar switch (23 Nov, user): the label then an L3 Switch, one tap target, in the Actionbar actions slot. */
 .slToggle { display: inline-flex; align-items: center; gap: var(--l3-spacing-08); font: var(--l3-text-label-14); color: var(--l3-content-primary); cursor: pointer; }
+/* The whole pill is the tap target (24 Nov, user): 8 of room round the text and switch (40 tall), the same 8 taken back
+   outside so the top bar doesn't move; a grey press state over all of it. */
+.slToggle {
+  min-height: var(--l3-size-40);
+  padding: var(--l3-spacing-04) var(--l3-spacing-08) var(--l3-spacing-04) var(--l3-spacing-12);
+  margin: calc(-1 * var(--l3-spacing-04)) calc(-1 * var(--l3-spacing-08)) calc(-1 * var(--l3-spacing-04)) calc(-1 * var(--l3-spacing-12));
+  border-radius: var(--l3-radius-full);
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+.slToggle:active { background: var(--l3-surface-secondary); }
 
 /* V8: the amount card's left label ("Quantity"), over the Amount / Shares switch. */
 .qtyLabel { font: var(--l3-text-label-14); color: var(--l3-content-primary); }
@@ -40492,6 +40489,7 @@ import { Tab, Tabs } from '@l3/components/Tabs'
 import { msAdd } from '@l3/icons/material'
 import { Tooltip } from '@l3/components/Tooltip'
 import { lmAutoTpSl, lmSwitchArrowVertical } from '@l3/icons/lemonnade' // lmAutoTpSl: the V3 / V4 TP/SL button, not a gear (23 Nov, user)
+import { SlGuide } from './SlGuide'
 import { Keyboard, KeypadSlide, keypadFieldProps, typeKey } from '../../../../shared/ui/Keyboard'
 import { Phone } from '../../components/Phone'
 import { currentStock, logoFor } from '../../data'
@@ -40532,6 +40530,8 @@ let shownPad: { type: OrderType; closedAt: number | null } | null = null
 const padSwitchedFrom = () => (shownPad && (shownPad.closedAt === null || performance.now() - shownPad.closedAt < 500) ? shownPad : undefined)
 /** The keypad as it was when Market / Limit / SL was tapped: the next pad takes it over (read once). */
 let keypadOnSwitch: boolean | null = null
+/** V7's stop loss guide shows once per session (prototype). */
+let slGuideSeen = false
 
 const MAX_DIGITS = 7
 
@@ -40621,6 +40621,19 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
   const tpslOpen = useRef<(() => void) | null>(null)
   // V7 (23 Nov, user): the top bar's Stop loss switch; on → the stop loss card in the pad (TpslControl `on`).
   const [slOn, setSlOn] = useState(false)
+  // Turning it on (24 Nov, user): the keypad closes (the card would sit behind the dock), and the first time the guide
+  // (SlGuide) lights the new stop loss card, which the user must tap to set it.
+  const [slGuide, setSlGuide] = useState(false)
+  const tpslBlock = useRef<(() => void) | null>(null)
+  const turnSl = (on: boolean) => {
+    // US, fractional shares: no stop loss. The switch stays off and only the red line shows, shaking (24 Nov, user).
+    if (on && tpslFeatures.wholeShares && tpslFractional) return tpslBlock.current?.()
+    setSlOn(on)
+    if (!on) return
+    showKeypad(false)
+    if (document.activeElement instanceof HTMLElement) document.activeElement.blur()
+    if (!slGuideSeen) { slGuideSeen = true; setSlGuide(true) }
+  }
   // The unit the field is showing; `value` is always kept in the config's own unit (config.mode).
   // Indian stocks: quantity only — the pad shows shares, no Amount / Shares switch (24 Nov, user).
   const [mode, setMode] = useState<PadMode>(india ? 'shares' : config.mode)
@@ -40657,7 +40670,9 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
   const current = shown(mode)
   const setShown = (next: number) => setValue(mode === config.mode ? next : config.mode === 'amount' ? next * unitPrice : next / unitPrice)
 
+  const tpslFeatures = padVersion === 'india' ? TPSL_INDIA : TPSL_US
   const tpslOrder = { symbol: config.stock.symbol, ltp: config.stock.price, change: config.stock.change, qty: config.mode === 'shares' ? value : unitPrice ? value / unitPrice : 0, entry: unitPrice }
+  const tpslFractional = tpslOrder.qty > 0 && !Number.isInteger(Number(tpslOrder.qty.toFixed(4)))
   const derived: Derived = config.derive(value, prices, mode, { usd: money, inr: (n) => inr(n) })
   // What the order is worth in the pad's currency (the field is kept in the config's unit), for the ₹ on the Buy / Sell button.
   const orderValue = config.mode === 'amount' ? value : value * unitPrice
@@ -40824,9 +40839,10 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
         tpslCard === 'v7' ? (
           // V7 (23 Nov, user): V4's top bar with a labelled L3 Switch in place of the settings button.
           <>
+            {/* The whole pill (text, switch and the room round them) is the tap target (24 Nov, user). */}
             <label className={styles.slToggle}>
               <span>{(padVersion === 'india' ? TPSL_INDIA : TPSL_US).title}</span>
-              <Switch size="sm" checked={slOn} onChange={(e) => setSlOn(e.target.checked)} />
+              <Switch size="sm" checked={slOn} onChange={(e) => turnSl(e.target.checked)} />
             </label>
           </>
         ) : tpslCard === 'v4' ? (
@@ -41124,7 +41140,9 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
   )
 
   return (
-    <Phone label={forCurrentStock(config.label)} header={header} footer={footer} gesture="none" topLine>
+    <Phone label={forCurrentStock(config.label)} header={header} footer={footer} gesture="none" topLine
+      // V7's first-time stop loss guide: over the whole page (top bar and dock too).
+      overlay={slGuide ? <SlGuide title={(padVersion === 'india' ? TPSL_INDIA : TPSL_US).title} onClose={() => setSlGuide(false)} /> : undefined}>
       <Stack
         gap="16"
         align="center"
@@ -41266,10 +41284,11 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
           <TpslControl
             order={tpslOrder}
             features={padVersion === 'india' ? TPSL_INDIA : TPSL_US}
-            fractional={tpslOrder.qty > 0 && !Number.isInteger(Number(tpslOrder.qty.toFixed(4)))}
+            fractional={tpslFractional}
             openRef={tpslOpen}
             on={tpslCard === 'v7' ? slOn : undefined}
             onOnChange={setSlOn}
+            blockRef={tpslBlock}
             onSetChange={setTpslSet}
           />
         </Stack>
@@ -41879,7 +41898,7 @@ export const padCard = { head: styles.head, title: styles.title }
 
 ```css
 /* Price field (PriceField.tsx): one box, rows 16 padded all round (12 + 4, 24 Nov, user), a hairline between rows. */
-.box { --pf-pad: var(--l3-spacing-16); }
+.box { --pf-pad: var(--l3-spacing-12); } /* back to 12 (24 Nov, user): the 16 had reached every pad, not just the new version */
 
 /* L3 Card (padding none: the rows bring the 12), its own 8 gap off — the hairline separates rows. */
 .box { gap: 0; }
@@ -42040,6 +42059,151 @@ export function PriceField({ label, unit, price, stepper, fixed }: PriceFieldPro
       </Stack>
       {stepperEl}
     </Stack>
+  )
+}
+```
+
+### `src/flows/us-stocks/screens/trade/SlGuide.module.css`
+
+```css
+/* V7's stop loss guide (SlGuide.tsx): the screen dims except a torch hole over the stop loss card. The hole is a box over
+   the card whose huge spread shadow is the scrim (L3 surface/overlay), so the real card shows through it. */
+.guide {
+  position: absolute;
+  inset: 0;
+  z-index: 30; /* over the top bar, the dock and the OS bar's surface */
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Until the card is found: a plain scrim, so the screen never flashes undimmed. */
+.guide:not([data-ready]) {
+  background: var(--l3-surface-overlay);
+}
+
+.spot {
+  position: absolute;
+  top: var(--spot-y);
+  left: var(--spot-x);
+  width: var(--spot-w);
+  height: var(--spot-h);
+  border-radius: var(--l3-radius-16);
+  box-shadow: 0 0 0 200vmax var(--l3-surface-overlay); /* the scrim around the hole */
+  animation: sl-guide-in var(--l3-motion-duration-medium) var(--l3-motion-easing-decelerate) both;
+}
+
+/* The torch: a white ring that keeps pulsing out from the card, so the eye lands on it. */
+.spot::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: var(--l3-spacing-02) solid var(--l3-static-white);
+  border-radius: inherit;
+  pointer-events: none;
+  animation: sl-guide-pulse calc(var(--l3-motion-duration-long) * 4) var(--l3-motion-easing-decelerate) var(--l3-motion-duration-medium) infinite;
+}
+
+/* The blue hint: L3 Tooltip in the discover blue, as V4's first-time hint (OrderPadV2.module.css .tpslHint). */
+.anchor [role='tooltip'] {
+  --tt-surface: var(--l3-surface-accent-discover-default);
+  color: var(--l3-static-white);
+}
+
+/* The Tooltip's anchor fills the hole, so the hint floats just above the card, its arrow on it. */
+.anchor.anchor {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+.fill {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+@keyframes sl-guide-in { from { opacity: 0; } }
+@keyframes sl-guide-pulse {
+  0% { opacity: 1; transform: scale(1); }
+  70%, 100% { opacity: 0; transform: scale(1.08); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spot, .spot::after { animation: none; }
+}
+```
+
+### `src/flows/us-stocks/screens/trade/SlGuide.tsx`
+
+```tsx
+// V7's stop loss guide (24 Nov, the user's call): turning the top bar's Stop loss switch on only adds a card to the pad —
+// the user still has to tap it to set the stop loss, and could miss that. So, the first time (once per session in the
+// prototype), the pad closes the keypad (the card would sit behind the dock) and this torch guide lights the card: the
+// whole screen dims (surface/overlay) except a hole over the card, with a pulsing ring, and the blue L3 Tooltip (V4's hint) floats just
+// above it — one line, no button (24 Nov, user). Tapping the lit card opens the stop loss sheet and ends the guide. Tapping the dim does
+// nothing, so a mis-tap can't lose it. The card is found by `data-sl-card` (Tpsl.tsx).
+// FLAG (L3 gap): L3 has no spotlight / torch overlay; the hole is local (its scrim is surface/overlay, as L3 Overlay).
+import { useLayoutEffect, useRef, useState, type CSSProperties, type MouseEvent } from 'react'
+import { Tooltip } from '@l3/components/Tooltip'
+import styles from './SlGuide.module.css'
+
+type Spot = { x: number; y: number; w: number; h: number }
+/** Room around the card inside the lit hole. */
+const PAD = 4
+
+export function SlGuide({ title, onClose }: { title: string; onClose: () => void }) {
+  const root = useRef<HTMLDivElement>(null)
+  const [spot, setSpot] = useState<Spot | null>(null)
+
+  useLayoutEffect(() => {
+    const measure = () => {
+      const el = root.current
+      const card = el?.parentElement?.querySelector<HTMLElement>('[data-sl-card]')
+      if (!el || !card) return
+      const box = el.getBoundingClientRect()
+      // Behind the dock or below the fold: bring it into view first.
+      const r0 = card.getBoundingClientRect()
+      if (r0.bottom > box.bottom - box.height / 3 || r0.top < box.top) card.scrollIntoView({ block: 'center' })
+      const r = card.getBoundingClientRect()
+      // The preview scales the phone: screen px → this layer's own CSS px.
+      const scale = box.width / el.offsetWidth || 1
+      setSpot({ x: (r.left - box.left) / scale - PAD, y: (r.top - box.top) / scale - PAD, w: r.width / scale + PAD * 2, h: r.height / scale + PAD * 2 })
+    }
+    // The keypad slides away first and the card moves with the page: measure again once it has settled.
+    const timers = [0, 150, 400].map((ms) => window.setTimeout(measure, ms))
+    window.addEventListener('resize', measure)
+    return () => {
+      timers.forEach((id) => window.clearTimeout(id))
+      window.removeEventListener('resize', measure)
+    }
+  }, [])
+
+  const onTap = (e: MouseEvent<HTMLDivElement>) => {
+    const el = root.current
+    if (!el || !spot) return
+    const box = el.getBoundingClientRect()
+    const scale = box.width / el.offsetWidth || 1
+    const x = (e.clientX - box.left) / scale
+    const y = (e.clientY - box.top) / scale
+    if (x < spot.x || x > spot.x + spot.w || y < spot.y || y > spot.y + spot.h) return
+    // Hand the tap to the card under the hole (it opens the stop loss sheet), then end the guide.
+    el.style.visibility = 'hidden'
+    ;(document.elementFromPoint(e.clientX, e.clientY) as HTMLElement | null)?.click()
+    onClose()
+  }
+
+  const style = spot && ({ '--spot-x': `${spot.x}px`, '--spot-y': `${spot.y}px`, '--spot-w': `${spot.w}px`, '--spot-h': `${spot.h}px` } as CSSProperties)
+
+  return (
+    <div ref={root} className={styles.guide} data-ready={spot ? '' : undefined} style={style ?? undefined} onClick={onTap}>
+      {spot && (
+        <div className={styles.spot}>
+          {/* The blue hint (as V4's "You can set SL from here"): one line, no button; it goes when the card is tapped. */}
+          <Tooltip open placement="top" content={`Tap here to set your ${title === title.toUpperCase() ? title : title.toLowerCase()}`} className={styles.anchor}>
+            <span className={styles.fill} />
+          </Tooltip>
+        </div>
+      )}
+    </div>
   )
 }
 ```
@@ -42351,7 +42515,7 @@ const convertTrail = (v: number, to: Unit, ltp: number) =>
 
 /** The off card (name + Switch) until TP/SL is set, then the summary card; both open the sheet. `features`: what this
  *  market offers (TPSL_INDIA / TPSL_US); `fractional`: the order's quantity isn't whole. */
-export function TpslControl({ order, features = TPSL_INDIA, fractional = false, openRef, on, onOnChange, onSetChange }: {
+export function TpslControl({ order, features = TPSL_INDIA, fractional = false, openRef, on, onOnChange, blockRef, onSetChange }: {
   order: TpslOrder
   features?: TpslFeatures
   fractional?: boolean
@@ -42360,6 +42524,9 @@ export function TpslControl({ order, features = TPSL_INDIA, fractional = false, 
   /** V7: the top bar's switch. On → a card with a "Set SL" link (nothing applied until the sheet is saved); off → cleared. */
   on?: boolean
   onOnChange?: (on: boolean) => void
+  /** V7: the pad calls this when the switch is tapped on fractional shares — the switch stays off, the red line shows
+   *  and shakes (no card in between). */
+  blockRef?: MutableRefObject<(() => void) | null>
   /** Called when TP/SL becomes set or cleared (V8 hides its Set TP/SL pill while it's set). */
   onSetChange?: (set: boolean) => void
 }) {
@@ -42393,8 +42560,13 @@ export function TpslControl({ order, features = TPSL_INDIA, fractional = false, 
     setSheetOpen(true)
   }
   if (openRef) openRef.current = open
-  // V7: the switch shows or clears the card. On fractional shares it can't turn on: the switch goes back off and the
-  // red line says why (V1's line, under where the card would be).
+  // V7: the switch shows or clears the card. On fractional shares it can't turn on: the pad never turns it on (24 Nov,
+  // the user's call: the card flashed in before the switch went back off) and calls blockRef — only the red line, which
+  // shakes on every tap. The effect's check below stays as a fallback.
+  if (blockRef) blockRef.current = () => {
+    setShake((s) => ({ count: s.count + 1, afterOpen: !(blocked && noFractions) }))
+    setBlocked(true)
+  }
   const v7 = cardVersion === 'v7' && on !== undefined
   useEffect(() => {
     if (!v7) return
@@ -42431,6 +42603,8 @@ export function TpslControl({ order, features = TPSL_INDIA, fractional = false, 
       ) : v7 && on ? (
         // V7, switched on but not set yet: the set card's head (tile, name) with a "Set SL ›" text action in the edit
         // button's place, and no targets yet (23 Nov, the user's call). It opens the sheet; the whole row is the tap target.
+        // data-sl-card: V7's first-time guide (SlGuide.tsx) lights this card.
+        <div data-sl-card="">
         <PadCard aria-label={features.title}>
           <div className={padCard.head} onClick={open}>
             <PadCardTile icon={lmAutoTpSl} tone="discover" />
@@ -42440,6 +42614,7 @@ export function TpslControl({ order, features = TPSL_INDIA, fractional = false, 
             </Button>
           </div>
         </PadCard>
+        </div>
       ) : viaSettings ? null /* V3 / V4: nothing here until set; the settings button opens the sheet */ : cardVersion === 'v2' ? (
         // V2 (flow option "TP/SL card", 23 Nov, the user's call): an L3 action pill (md, 32 tall, the chips' size) with the
         // Add Circle (filled) icon, centred, no border and no fill: transparent, grey only on hover / press (L3's state
@@ -44034,22 +44209,18 @@ export const DEFAULT_ORDER_PAD_VERSION: OrderPadVersion = 'v2'
 // The "Order pad" option was archived 19 Nov (the user's call): V2 only. V1's code is kept, unused.
 export const useOrderPadVersion = (): OrderPadVersion => DEFAULT_ORDER_PAD_VERSION
 
-// The V2 pad's price cards (flow option "Price cards", group Trade): merged · every price in one card, a line between
-// (the default since 18 Nov); separate · a card per price (the earlier design, kept for A/B testing).
+// The V2 pad's price cards: merged · every price in one card, a line between. The "Price cards" option was archived
+// 24 Nov (the user's call); separate · a card per price is kept in OrderPadV2, unused.
 export type PriceCards = 'merged' | 'separate'
-export const usePriceCards = (): PriceCards =>
-  useFlowOption('us-stocks', 'priceCards', 'merged') === 'separate' ? 'separate' : 'merged'
+export const usePriceCards = (): PriceCards => 'merged'
 
-// The amount's text size on the pad (flow option "Amount size", group Trade, 23 Nov — for testing, the user's call): 36 is
-// L3 Heading/36 (the default); 40–56 are local tokens (L3 has no heading over 36).
+// The amount's text size on the pad: 44, a local token (L3 has no heading over 36; FLAG L3 gap). The "Amount size" option
+// (36 · L3 Heading/36, 40, 44, 48, 56) was archived 24 Nov (the user's call); the other sizes' CSS stays, unused.
 export type AmountSize = '36' | '40' | '44' | '48' | '56'
-export const useAmountSize = (): AmountSize => {
-  const v = useFlowOption('us-stocks', 'amountSize', '36')
-  return v === '40' || v === '44' || v === '48' || v === '56' ? v : '36'
-}
+export const useAmountSize = (): AmountSize => '44'
 
-// A soft grey wash in the amount box (flow option "Amount box gradient", group Trade, 23 Nov): off by default.
-export const useAmountGlow = (): boolean => useFlowOption('us-stocks', 'amountGlow', 'off') === 'on'
+// A soft grey wash in the amount box: the "Amount box gradient" option was archived 24 Nov (the user's call) — off.
+export const useAmountGlow = (): boolean => false
 
 // The V2 processing screen's loader (flow option "Processing animation", group Trade), imported from Minted 19 Nov
 // (OrderLoader.tsx): glass · the glass ring that turns into the tick (the default); radar · pulses round the logo that
@@ -44075,34 +44246,20 @@ export type TpslSheetVersion = 'a' | 'b'
 // The TP/SL card while nothing is set (flow option "TP/SL card", group Trade, 23 Nov, the user's call): v1 · a pad card
 // with a Switch (the leverage card's look); v2 · a borderless pill (Add Circle icon, the name), centred.
 export type TpslCardVersion = 'v1' | 'v2' | 'v3' | 'v4' | 'v7'
-export const useTpslCard = (): TpslCardVersion => {
-  const v = useFlowOption('us-stocks', 'tpslCard', 'v2')
-  if (v === 'v5') return 'v3' // V5 (23 Nov, user): V3's TP/SL settings button at the order types' right
-  if (v === 'v8' || v === 'v9') return 'v3' // V8 (23 Nov, user): V5's row — order types left, the stop loss button at their right — with the amount in a card
-  return v === 'v1' || v === 'v4' || v === 'v7' ? v : 'v2' // V3 is hidden from the picker (23 Nov): a saved V3 shows V2
-}
-/** Orderpad version V5 (23 Nov, user): V3's pad (TP/SL settings button), Market / Limit / SL left-aligned, and the amount section — Amount / Shares, the amount and its chips — in
- * one bounding box. */
-export const useAmountBox = (): boolean => {
-  const v = useFlowOption('us-stocks', 'tpslCard', 'v2')
-  return v === 'v5' || v === 'v6' // V6 (23 Nov, user): the box too, with V2's centred order types and TP/SL pill
-}
-/** Orderpad version V8 (23 Nov, user): V5's row (order types left, stop loss button right), with the amount in a card — "Quantity" and the Amount / Shares switch on the
- * left, the amount (same size) on the right, so both sides read label-then-value. The chips sit in the card, under that row. */
-export const useAmountCard = (): boolean => {
-  const v = useFlowOption('us-stocks', 'tpslCard', 'v2')
-  return v === 'v8' || v === 'v9'
-}
-/** Orderpad version V9 (24 Nov, user): V8's card, laid out top to bottom like a balance card — the label (it is the Amount ⇄ Quantity
- * switch) with the validity at the top right, the amount under it, then the chips with Set TP/SL at their far right. */
-export const useAmountCardStacked = (): boolean => useFlowOption('us-stocks', 'tpslCard', 'v2') === 'v9'
-/** V5 and V8: Market / Limit / SL left-aligned (V6 keeps them centred). */
-export const useOrderTypesLeft = (): boolean => {
-  const v = useFlowOption('us-stocks', 'tpslCard', 'v2')
-  return v === 'v5' || v === 'v8' || v === 'v9' // V8 and V9 copy V5's row (23 Nov, user)
-}
+// "Orderpad version" archived 24 Nov (the user's call): V7 · stop loss switch in the top bar is final; V1, V2, V4, V5,
+// V6, V8 and V9 archived. The hooks below return V7's answers; the other versions' code stays in OrderPadV2 / Tpsl, unused.
+export const useTpslCard = (): TpslCardVersion => 'v7'
+/** Archived (V5 / V6's amount box): off in V7. */
+export const useAmountBox = (): boolean => false
+/** Archived (V8 / V9's amount card): off in V7. */
+export const useAmountCard = (): boolean => false
+/** Archived (V9's stacked amount card): off in V7. */
+export const useAmountCardStacked = (): boolean => false
+/** Archived (V5 / V8 / V9's left-aligned order types): V7 keeps them centred. */
+export const useOrderTypesLeft = (): boolean => false
 
-export const useTpslSheet = (): TpslSheetVersion => (useFlowOption('us-stocks', 'tpslSheet', 'b') === 'a' ? 'a' : 'b')
+/** Archived 24 Nov (the user's call): B · one price card per leg. A's sheet (TpslSheet) is kept, unused. */
+export const useTpslSheet = (): TpslSheetVersion => 'b'
 
 // The Indian pad's validity switch (flow option "Validity switch", group Trade, 20 Nov — an A/B test, the user's call):
 // v2 · inside the Market / Limit / SL track after a short divider; v1 · alone at the row's right edge;
@@ -73355,17 +73512,11 @@ export const Flag = ({ code }: { code: FlagCode }) => (
   display: none;
 }
 
-/* V3 (23 Nov, user): each tab full height, 74 × 56, the pill hugging them, centred — not end to end. */
+/* V3 (23 Nov, user): each tab full height, 56. */
+/* 24 Nov, user: full width again — 16 in from each side, the five tabs sharing it equally, so they grow and shrink
+   with the device width (no fixed 74). */
 .frame[data-glow-at='bottom'] .pill {
-  right: 0;
-  left: 0;
-  width: max-content;
-  margin-inline: auto;
   padding: 0;
-}
-.frame[data-glow-at='bottom'] .pill > nav > ul > li {
-  flex: 0 0 var(--app-fnav-tab-width);
-  width: var(--app-fnav-tab-width); /* 74 wide × 56 tall (23 Nov, user) */
 }
 .frame[data-glow-at='bottom'] .pill :is(button, a)[class] {
   height: var(--l3-size-56);
@@ -73598,7 +73749,8 @@ export function FloatingNav({ children }: { children: ReactNode }) {
 ### `src/shared/ui/Keyboard.module.css`
 
 ```css
-/* OS number keypad mock: 3 × 4 keys on a grey tray. */
+/* OS number keypad mock: 3 × 4 keys on a tray the colour of the button dock above it, so the two read as one
+   (24 Nov, the user's call); the keys take the grey. */
 .keyboard {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -73606,7 +73758,8 @@ export function FloatingNav({ children }: { children: ReactNode }) {
   padding: var(--l3-spacing-12) var(--l3-spacing-12) var(--l3-spacing-24);
   /* On a real phone, clear the home indicator (like the L3 button dock does). */
   padding-bottom: calc(var(--l3-spacing-24) + env(safe-area-inset-bottom, var(--l3-spacing-00)));
-  background: var(--l3-surface-secondary);
+  /* The dock above sets --app-dock-surface when it isn't on surface-default (the order pads' dock is surface-primary). */
+  background: var(--app-dock-surface, var(--l3-surface-default));
 }
 
 .key {
@@ -73617,7 +73770,7 @@ export function FloatingNav({ children }: { children: ReactNode }) {
   height: var(--app-size-key);
   border: 0;
   border-radius: var(--l3-radius-08);
-  background: var(--l3-surface-primary);
+  background: var(--l3-surface-secondary);
   color: var(--l3-content-primary);
   font: var(--l3-text-description-18);
   cursor: pointer;
@@ -73652,12 +73805,12 @@ const KEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', 'Backspace']
 /**
  * The phone's own number keypad (OS chrome, NOT part of the app or L3 — real apps get the system keyboard by setting
  * the field's input type to number). Drawn so the phone / OTP / PIN screens read like the phone. In the prototype the
- * keys type into the screen. `data-surface` tells the OS navigation bar below it to take the keypad's grey.
+ * keys type into the screen. `data-surface` tells the OS navigation bar below it to take the keypad's colour (the dock's).
  */
 export function Keyboard({ onKey, decimal }: { onKey?: (key: string) => void; /** Show "." in the bottom-left key (amounts in $, fractional shares). */ decimal?: boolean }) {
   const keys = decimal ? KEYS.map((k) => (k === '' ? '.' : k)) : KEYS
   return (
-    <div className={styles.keyboard} role="group" aria-label="Number keypad" data-surface="secondary">
+    <div className={styles.keyboard} role="group" aria-label="Number keypad" data-surface="default">
       {keys.map((k) =>
         k === '' ? <span key="blank" /> : (
           <button key={k} type="button" className={styles.key} data-kind={k === 'Backspace' ? 'fn' : 'digit'} aria-label={k === 'Backspace' ? 'Delete' : k === '.' ? 'Decimal point' : undefined} onPointerDown={keepFocus} onClick={() => onKey?.(k)}>

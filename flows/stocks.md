@@ -433,6 +433,13 @@ lower on the page is scrolled into view first). `components/MarketSwitchGuide.ts
   16 / 24 icon or an Avatar only — event rows are plain buttons laid out with Stack.
 
 ### Changelog
+- 2026-11-24 · Home IN shortcuts: Smart Invest takes the lightbulb icon; Trade Ideas takes the Boosted ETFs icon, recoloured green for IN.
+- 2026-11-24 · Home IN shortcuts: Smart Invest is the fifth shortcut (first of row 2), so the grid is a full 4 × 2; it scrolls down to the Smart Invest section, as its chip does.
+- 2026-11-24 · Shortcut tags ("New", "5 New") are centred over the circle's top edge and no longer cut off by the cell's clip; they take the market's colour: IN green (L3 Tag success), US blue (L3 Tag discover), in every look.
+- 2026-11-24 · Watchlist shortcut (IN row 2, US shortcuts, Watchlists card) opens Market's Watchlist page (market-11).
+- 2026-11-24 · Home IN shortcuts: IPO carries a "5 New" tag (L3 Tag, zing, sm) on the circle's top-right; count from `newIpoCount` (data.ts). Instruments gains `tag`, shown in every look incl. mini.
+- 24 Nov: Home shortcut icons (IN and US) built like the Figma set (LM → Stocks Playground 6780:8646): the filled part is a see-through tint of the line colour (7% → 20%), not opaque white → mint / blue, so they blend into the card in light and dark. The -dark files are now the same as the light ones.
+- 24 Nov: Home Instruments (IN) go two rows — second row Trade ideas, Referral, Watchlist, with new gradient art in the instrument style (assets/in/instruments). Taps not wired yet.
 - 24 Nov: Stock page (stocks-32) back returns to the page that opened it (e.g. Portfolio → Holdings), Home if none.
 - 2026-11-24 — US coming soon: the status line wraps to two lines instead of being cut (L3 gap: ListCell truncates labels).
 - 2026-11-24 — US coming soon: the ready / in-review card is one line, no description ("All set! We'll notify you at launch" / "Verification in progress"), 8 more above it.
@@ -1233,8 +1240,8 @@ D�W�k��&�� �?��DQ�y�� !i� ���n]�G��FS�
 <path d="M18.6 2.6L19.25 4.35L21 5L19.25 5.65L18.6 7.4L17.95 5.65L16.2 5L17.95 4.35L18.6 2.6Z" fill="url(#line_commodities)"/>
 <defs>
 <linearGradient id="fill_commodities" x1="6" y1="6" x2="18" y2="20" gradientUnits="userSpaceOnUse">
-<stop stop-color="#23885A"/>
-<stop offset="1" stop-color="#0E4A2E"/>
+<stop stop-color="#0C8A4F" stop-opacity="0.07"/>
+<stop offset="1" stop-color="#0C8A4F" stop-opacity="0.2"/>
 </linearGradient>
 <linearGradient id="line_commodities" x1="5" y1="5" x2="19" y2="19" gradientUnits="userSpaceOnUse">
 <stop stop-color="#6FCB9F"/>
@@ -1254,8 +1261,8 @@ D�W�k��&�� �?��DQ�y�� !i� ���n]�G��FS�
 <path d="M18.6 2.6L19.25 4.35L21 5L19.25 5.65L18.6 7.4L17.95 5.65L16.2 5L17.95 4.35L18.6 2.6Z" fill="url(#line_commodities)"/>
 <defs>
 <linearGradient id="fill_commodities" x1="6" y1="6" x2="18" y2="20" gradientUnits="userSpaceOnUse">
-<stop stop-color="white"/>
-<stop offset="1" stop-color="#CDEEDD"/>
+<stop stop-color="#0C8A4F" stop-opacity="0.07"/>
+<stop offset="1" stop-color="#0C8A4F" stop-opacity="0.2"/>
 </linearGradient>
 <linearGradient id="line_commodities" x1="5" y1="5" x2="19" y2="19" gradientUnits="userSpaceOnUse">
 <stop stop-color="#6FCB9F"/>
@@ -1275,8 +1282,8 @@ D�W�k��&�� �?��DQ�y�� !i� ���n]�G��FS�
 <rect x="13.3" y="5.3" width="6.4" height="9.4" rx="1.6" fill="url(#line_fno)"/>
 <defs>
 <linearGradient id="fill_fno" x1="6" y1="6" x2="18" y2="20" gradientUnits="userSpaceOnUse">
-<stop stop-color="#23885A"/>
-<stop offset="1" stop-color="#0E4A2E"/>
+<stop stop-color="#0C8A4F" stop-opacity="0.07"/>
+<stop offset="1" stop-color="#0C8A4F" stop-opacity="0.2"/>
 </linearGradient>
 <linearGradient id="line_fno" x1="5" y1="5" x2="19" y2="19" gradientUnits="userSpaceOnUse">
 <stop stop-color="#6FCB9F"/>
@@ -1296,8 +1303,8 @@ D�W�k��&�� �?��DQ�y�� !i� ���n]�G��FS�
 <rect x="13.3" y="5.3" width="6.4" height="9.4" rx="1.6" fill="url(#line_fno)"/>
 <defs>
 <linearGradient id="fill_fno" x1="6" y1="6" x2="18" y2="20" gradientUnits="userSpaceOnUse">
-<stop stop-color="white"/>
-<stop offset="1" stop-color="#CDEEDD"/>
+<stop stop-color="#0C8A4F" stop-opacity="0.07"/>
+<stop offset="1" stop-color="#0C8A4F" stop-opacity="0.2"/>
 </linearGradient>
 <linearGradient id="line_fno" x1="5" y1="5" x2="19" y2="19" gradientUnits="userSpaceOnUse">
 <stop stop-color="#6FCB9F"/>
@@ -1318,8 +1325,8 @@ D�W�k��&�� �?��DQ�y�� !i� ���n]�G��FS�
 <path d="M10.2 17.8H13.8L12 21.6L10.2 17.8Z" fill="url(#line_ipo)" stroke="url(#line_ipo)" stroke-width="1.2" stroke-linejoin="round"/>
 <defs>
 <linearGradient id="fill_ipo" x1="6" y1="6" x2="18" y2="20" gradientUnits="userSpaceOnUse">
-<stop stop-color="#23885A"/>
-<stop offset="1" stop-color="#0E4A2E"/>
+<stop stop-color="#0C8A4F" stop-opacity="0.07"/>
+<stop offset="1" stop-color="#0C8A4F" stop-opacity="0.2"/>
 </linearGradient>
 <linearGradient id="line_ipo" x1="5" y1="5" x2="19" y2="19" gradientUnits="userSpaceOnUse">
 <stop stop-color="#6FCB9F"/>
@@ -1340,8 +1347,8 @@ D�W�k��&�� �?��DQ�y�� !i� ���n]�G��FS�
 <path d="M10.2 17.8H13.8L12 21.6L10.2 17.8Z" fill="url(#line_ipo)" stroke="url(#line_ipo)" stroke-width="1.2" stroke-linejoin="round"/>
 <defs>
 <linearGradient id="fill_ipo" x1="6" y1="6" x2="18" y2="20" gradientUnits="userSpaceOnUse">
-<stop stop-color="white"/>
-<stop offset="1" stop-color="#CDEEDD"/>
+<stop stop-color="#0C8A4F" stop-opacity="0.07"/>
+<stop offset="1" stop-color="#0C8A4F" stop-opacity="0.2"/>
 </linearGradient>
 <linearGradient id="line_ipo" x1="5" y1="5" x2="19" y2="19" gradientUnits="userSpaceOnUse">
 <stop stop-color="#6FCB9F"/>
@@ -1356,12 +1363,12 @@ D�W�k��&�� �?��DQ�y�� !i� ���n]�G��FS�
 ```tsx
 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M12 12.4V3.2A9.2 9.2 0 1 0 21.2 12.4H12Z" transform="translate(-1.2 1.2) scale(0.94)" fill="url(#fill_mutual-funds)" stroke="url(#line_mutual-funds)" stroke-width="1.5" stroke-linejoin="round"/>
-<circle cx="10.1" cy="12.9" r="3.1" fill="#181818" stroke="url(#line_mutual-funds)" stroke-width="1.4"/>
+<circle cx="10.1" cy="12.9" r="3.1" fill="none" stroke="url(#line_mutual-funds)" stroke-width="1.4"/>
 <path d="M13.6 10.2V2.8A7.4 7.4 0 0 1 21 10.2H13.6Z" fill="url(#line_mutual-funds)"/>
 <defs>
 <linearGradient id="fill_mutual-funds" x1="6" y1="6" x2="18" y2="20" gradientUnits="userSpaceOnUse">
-<stop stop-color="#23885A"/>
-<stop offset="1" stop-color="#0E4A2E"/>
+<stop stop-color="#0C8A4F" stop-opacity="0.07"/>
+<stop offset="1" stop-color="#0C8A4F" stop-opacity="0.2"/>
 </linearGradient>
 <linearGradient id="line_mutual-funds" x1="5" y1="5" x2="19" y2="19" gradientUnits="userSpaceOnUse">
 <stop stop-color="#6FCB9F"/>
@@ -1376,14 +1383,192 @@ D�W�k��&�� �?��DQ�y�� !i� ���n]�G��FS�
 ```tsx
 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M12 12.4V3.2A9.2 9.2 0 1 0 21.2 12.4H12Z" transform="translate(-1.2 1.2) scale(0.94)" fill="url(#fill_mutual-funds)" stroke="url(#line_mutual-funds)" stroke-width="1.5" stroke-linejoin="round"/>
-<circle cx="10.1" cy="12.9" r="3.1" fill="white" stroke="url(#line_mutual-funds)" stroke-width="1.4"/>
+<circle cx="10.1" cy="12.9" r="3.1" fill="none" stroke="url(#line_mutual-funds)" stroke-width="1.4"/>
 <path d="M13.6 10.2V2.8A7.4 7.4 0 0 1 21 10.2H13.6Z" fill="url(#line_mutual-funds)"/>
 <defs>
 <linearGradient id="fill_mutual-funds" x1="6" y1="6" x2="18" y2="20" gradientUnits="userSpaceOnUse">
-<stop stop-color="white"/>
-<stop offset="1" stop-color="#CDEEDD"/>
+<stop stop-color="#0C8A4F" stop-opacity="0.07"/>
+<stop offset="1" stop-color="#0C8A4F" stop-opacity="0.2"/>
 </linearGradient>
 <linearGradient id="line_mutual-funds" x1="5" y1="5" x2="19" y2="19" gradientUnits="userSpaceOnUse">
+<stop stop-color="#6FCB9F"/>
+<stop offset="1" stop-color="#0C8A4F"/>
+</linearGradient>
+</defs>
+</svg>
+```
+
+### `src/flows/stocks/assets/in/instruments/referral-dark.svg`
+
+```tsx
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect x="5" y="11" width="14" height="9.6" rx="1.4" fill="url(#fill_referral)" stroke="url(#line_referral)" stroke-width="1.4" stroke-linejoin="round"/>
+<rect x="3.8" y="7.4" width="16.4" height="3.8" rx="1.1" fill="url(#line_referral)"/>
+<rect x="11.1" y="11" width="1.8" height="9.6" fill="url(#line_referral)"/>
+<path d="M12 7.4C10.9 4.9 7.9 4.2 7.7 6.1c-.2 1.4 2.3 1.3 4.3 1.3Zm0 0c1.1-2.5 4.1-3.2 4.3-1.3.2 1.4-2.3 1.3-4.3 1.3Z" fill="url(#fill_referral)" stroke="url(#line_referral)" stroke-width="1.2" stroke-linejoin="round"/>
+<defs>
+<linearGradient id="fill_referral" x1="6" y1="6" x2="18" y2="20" gradientUnits="userSpaceOnUse">
+<stop stop-color="#0C8A4F" stop-opacity="0.07"/>
+<stop offset="1" stop-color="#0C8A4F" stop-opacity="0.2"/>
+</linearGradient>
+<linearGradient id="line_referral" x1="5" y1="5" x2="19" y2="19" gradientUnits="userSpaceOnUse">
+<stop stop-color="#6FCB9F"/>
+<stop offset="1" stop-color="#0C8A4F"/>
+</linearGradient>
+</defs>
+</svg>
+```
+
+### `src/flows/stocks/assets/in/instruments/referral.svg`
+
+```tsx
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect x="5" y="11" width="14" height="9.6" rx="1.4" fill="url(#fill_referral)" stroke="url(#line_referral)" stroke-width="1.4" stroke-linejoin="round"/>
+<rect x="3.8" y="7.4" width="16.4" height="3.8" rx="1.1" fill="url(#line_referral)"/>
+<rect x="11.1" y="11" width="1.8" height="9.6" fill="url(#line_referral)"/>
+<path d="M12 7.4C10.9 4.9 7.9 4.2 7.7 6.1c-.2 1.4 2.3 1.3 4.3 1.3Zm0 0c1.1-2.5 4.1-3.2 4.3-1.3.2 1.4-2.3 1.3-4.3 1.3Z" fill="url(#fill_referral)" stroke="url(#line_referral)" stroke-width="1.2" stroke-linejoin="round"/>
+<defs>
+<linearGradient id="fill_referral" x1="6" y1="6" x2="18" y2="20" gradientUnits="userSpaceOnUse">
+<stop stop-color="#0C8A4F" stop-opacity="0.07"/>
+<stop offset="1" stop-color="#0C8A4F" stop-opacity="0.2"/>
+</linearGradient>
+<linearGradient id="line_referral" x1="5" y1="5" x2="19" y2="19" gradientUnits="userSpaceOnUse">
+<stop stop-color="#6FCB9F"/>
+<stop offset="1" stop-color="#0C8A4F"/>
+</linearGradient>
+</defs>
+</svg>
+```
+
+### `src/flows/stocks/assets/in/instruments/smart-invest-dark.svg`
+
+```tsx
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M12 2.8A6.2 6.2 0 0 0 8.3 14c.6.5 1 1.2 1 2v.8h5.4V16c0-.8.4-1.5 1-2A6.2 6.2 0 0 0 12 2.8Z" fill="url(#fill_smart_invest)" stroke="url(#line_smart_invest)" stroke-width="1.4" stroke-linejoin="round"/>
+<path d="M10.4 10.6 12 12.4l1.6-1.8M12 12.4v4.4" stroke="url(#line_smart_invest)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="9.3" y="18.2" width="5.4" height="2.8" rx="1.4" fill="url(#line_smart_invest)"/>
+<defs>
+<linearGradient id="fill_smart_invest" x1="6" y1="6" x2="18" y2="20" gradientUnits="userSpaceOnUse">
+<stop stop-color="#0C8A4F" stop-opacity="0.07"/>
+<stop offset="1" stop-color="#0C8A4F" stop-opacity="0.2"/>
+</linearGradient>
+<linearGradient id="line_smart_invest" x1="5" y1="5" x2="19" y2="19" gradientUnits="userSpaceOnUse">
+<stop stop-color="#6FCB9F"/>
+<stop offset="1" stop-color="#0C8A4F"/>
+</linearGradient>
+</defs>
+</svg>
+```
+
+### `src/flows/stocks/assets/in/instruments/smart-invest.svg`
+
+```tsx
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M12 2.8A6.2 6.2 0 0 0 8.3 14c.6.5 1 1.2 1 2v.8h5.4V16c0-.8.4-1.5 1-2A6.2 6.2 0 0 0 12 2.8Z" fill="url(#fill_smart_invest)" stroke="url(#line_smart_invest)" stroke-width="1.4" stroke-linejoin="round"/>
+<path d="M10.4 10.6 12 12.4l1.6-1.8M12 12.4v4.4" stroke="url(#line_smart_invest)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="9.3" y="18.2" width="5.4" height="2.8" rx="1.4" fill="url(#line_smart_invest)"/>
+<defs>
+<linearGradient id="fill_smart_invest" x1="6" y1="6" x2="18" y2="20" gradientUnits="userSpaceOnUse">
+<stop stop-color="#0C8A4F" stop-opacity="0.07"/>
+<stop offset="1" stop-color="#0C8A4F" stop-opacity="0.2"/>
+</linearGradient>
+<linearGradient id="line_smart_invest" x1="5" y1="5" x2="19" y2="19" gradientUnits="userSpaceOnUse">
+<stop stop-color="#6FCB9F"/>
+<stop offset="1" stop-color="#0C8A4F"/>
+</linearGradient>
+</defs>
+</svg>
+```
+
+### `src/flows/stocks/assets/in/instruments/trade-ideas-dark.svg`
+
+```tsx
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_trade_ideas)">
+<path d="M10.886 5.36133C10.5648 5.8119 10.3824 6.36012 10.3824 6.93777C10.3824 7.96889 10.9657 8.90481 11.8767 9.36263L12.0629 9.44748L13.7993 10.1618C13.8641 10.1885 13.9184 10.2344 13.9568 10.2918L13.9895 10.352L14.7039 12.0885C15.1226 13.1054 16.0498 13.3019 17.1495 13.3019C17.7273 13.3019 17.7623 13.3019 17.9726 13.3019V19.3741C17.9726 20.148 17.3453 20.7753 16.5713 20.7753H3.95987C3.18596 20.7753 2.55859 20.148 2.55859 19.3741V6.76261C2.55859 5.98871 3.18596 5.36133 3.95987 5.36133H10.886Z" fill="url(#paint0_linear_trade_ideas)"/>
+<path d="M15.4419 4.45641L16.1566 2.72045C16.1971 2.62245 16.2926 2.55849 16.3985 2.55849C16.5045 2.55849 16.6 2.62245 16.6404 2.72045L17.3552 4.45641C17.6398 5.14748 18.1886 5.69625 18.8796 5.98081L20.6156 6.69563C20.7137 6.73597 20.7775 6.83148 20.7775 6.93747C20.7775 7.04347 20.7137 7.13898 20.6156 7.17932L18.8796 7.89414C18.1886 8.1787 17.6398 8.72747 17.3552 9.41854L16.6404 11.1545C16.6 11.2525 16.5045 11.3165 16.3985 11.3165C16.2926 11.3165 16.1971 11.2525 16.1566 11.1545L15.4419 9.41854C15.1573 8.72747 14.6086 8.1787 13.9175 7.89414L12.1815 7.17932C12.0835 7.13898 12.0195 7.04347 12.0195 6.93747C12.0195 6.83148 12.0835 6.73597 12.1815 6.69563L13.9175 5.98081C14.6086 5.69625 15.1573 5.14748 15.4419 4.45641Z" fill="url(#paint1_linear_trade_ideas)"/>
+<path d="M10.441 4.74837C10.7794 4.74859 11.054 5.02298 11.054 5.36142C11.054 5.69987 10.7794 5.97427 10.441 5.97448H3.95978C3.52446 5.97448 3.17143 6.32752 3.17143 6.76284V15.519L5.2702 13.3915L5.27115 13.3906C5.51213 13.1496 5.81317 13.0295 6.16296 13.0294C6.51291 13.0294 6.81467 13.1495 7.05573 13.3906L8.34411 14.6914L10.7801 12.2794H10.3049C10.1094 12.2794 9.93768 12.212 9.80108 12.0753C9.66449 11.9388 9.59611 11.767 9.59609 11.5715C9.59609 11.376 9.66449 11.2043 9.80108 11.0677C9.93769 10.9311 10.1094 10.8627 10.3049 10.8627H12.4851C12.6805 10.8628 12.8525 10.9312 12.989 11.0677C13.1254 11.2042 13.193 11.3761 13.193 11.5715V13.7508C13.193 13.9461 13.1253 14.118 12.989 14.2546C12.8525 14.3911 12.6805 14.4595 12.4851 14.4596C12.2896 14.4596 12.1169 14.3912 11.9803 14.2546C11.844 14.118 11.7763 13.9461 11.7763 13.7508V13.2737L9.23496 15.815C8.99394 16.056 8.69299 16.1761 8.34315 16.1761C7.99332 16.1761 7.69236 16.0559 7.45134 15.815L6.16296 14.5267L3.39079 17.2998C3.32591 17.3647 3.25207 17.4126 3.17143 17.4454V19.3746C3.17165 19.8098 3.52459 20.162 3.95978 20.162H16.5715C17.0065 20.1618 17.3587 19.8096 17.359 19.3746V13.7105C17.359 13.3722 17.6336 13.0977 17.972 13.0974C18.3105 13.0974 18.585 13.372 18.5851 13.7105V19.3746C18.5848 20.4868 17.6837 21.3879 16.5715 21.3881H3.95978C2.84744 21.3881 1.94553 20.4869 1.94531 19.3746V6.76284C1.94531 5.65035 2.8473 4.74837 3.95978 4.74837H10.441ZM7.63622 15.7643C7.6383 15.766 7.64083 15.7673 7.64292 15.7691C7.61679 15.7472 7.59102 15.7239 7.56629 15.6991L7.63622 15.7643ZM16.3972 1.94554C16.7072 1.94554 16.9908 2.10935 17.1472 2.36989L17.2066 2.48676L17.9212 4.22344C18.1436 4.76316 18.5721 5.19183 19.1119 5.41411L20.8476 6.12871C21.1757 6.26363 21.3897 6.58312 21.3898 6.93718C21.3898 7.2914 21.1758 7.61162 20.8476 7.7466L19.1119 8.4612C18.5721 8.6835 18.1436 9.11211 17.9212 9.65188L17.2066 11.3876C17.0717 11.7153 16.7515 11.9298 16.3972 11.9298C16.0431 11.9296 15.7236 11.7152 15.5888 11.3876L14.8742 9.65188C14.6518 9.11214 14.2232 8.68353 13.6835 8.4612L11.9468 7.7466C11.6192 7.61161 11.4056 7.29149 11.4056 6.93718C11.4057 6.58305 11.6193 6.26366 11.9468 6.12871L13.6835 5.41411C14.2232 5.19181 14.6518 4.76313 14.8742 4.22344L15.5888 2.48676L15.6481 2.36989C15.8045 2.1095 16.0873 1.94569 16.3972 1.94554ZM9.78959 11.7603C9.79152 11.7658 9.79418 11.7711 9.7963 11.7765C9.78475 11.7465 9.77548 11.7153 9.76947 11.6826L9.78959 11.7603ZM13.0292 11.5715L13.0234 11.4872C13.0228 11.4827 13.0213 11.4783 13.0206 11.4738C13.0256 11.5052 13.0292 11.5377 13.0292 11.5715ZM9.8097 11.334C9.80722 11.3393 9.80529 11.3448 9.803 11.3502C9.81545 11.3209 9.83012 11.2927 9.84802 11.2659L9.8097 11.334ZM12.8731 11.1836L12.8117 11.1299C12.8069 11.1263 12.8014 11.1238 12.7964 11.1203C12.823 11.1388 12.8491 11.1596 12.8731 11.1836ZM12.4841 11.0265C12.5578 11.0265 12.626 11.0391 12.6882 11.0629C12.6587 11.0515 12.6282 11.042 12.5962 11.036C12.5608 11.0295 12.5237 11.0265 12.4851 11.0265H12.4841ZM16.0083 4.68993C15.6615 5.53217 14.9922 6.20146 14.15 6.54827L13.2035 6.93718L14.15 7.32705C14.9922 7.67385 15.6615 8.34314 16.0083 9.18538L16.3972 10.1308L16.7871 9.18538C17.134 8.34317 17.8031 7.67385 18.6454 7.32705L19.5909 6.93718L18.6454 6.54827C17.8031 6.20146 17.134 5.53214 16.7871 4.68993L16.3972 3.74353L16.0083 4.68993Z" fill="url(#paint2_linear_trade_ideas)"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear_trade_ideas" x1="4.81588" y1="7.61861" x2="15.7153" y2="18.5181" gradientUnits="userSpaceOnUse">
+<stop stop-color="#0C8A4F" stop-opacity="0.07"/>
+<stop offset="1" stop-color="#0C8A4F" stop-opacity="0.2"/>
+</linearGradient>
+<linearGradient id="paint1_linear_trade_ideas" x1="13.3021" y1="3.84103" x2="19.495" y2="10.0339" gradientUnits="userSpaceOnUse">
+<stop stop-color="#6FCB9F"/>
+<stop offset="1" stop-color="#0C8A4F"/>
+</linearGradient>
+<linearGradient id="paint2_linear_trade_ideas" x1="4.79282" y1="4.79278" x2="18.5409" y2="18.5422" gradientUnits="userSpaceOnUse">
+<stop stop-color="#6FCB9F"/>
+<stop offset="1" stop-color="#0C8A4F"/>
+</linearGradient>
+<clipPath id="clip0_trade_ideas">
+<rect width="19.4444" height="19.4444" fill="white" transform="translate(1.94531 1.94444)"/>
+</clipPath>
+</defs>
+</svg>
+```
+
+### `src/flows/stocks/assets/in/instruments/trade-ideas.svg`
+
+```tsx
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_trade_ideas)">
+<path d="M10.886 5.36133C10.5648 5.8119 10.3824 6.36012 10.3824 6.93777C10.3824 7.96889 10.9657 8.90481 11.8767 9.36263L12.0629 9.44748L13.7993 10.1618C13.8641 10.1885 13.9184 10.2344 13.9568 10.2918L13.9895 10.352L14.7039 12.0885C15.1226 13.1054 16.0498 13.3019 17.1495 13.3019C17.7273 13.3019 17.7623 13.3019 17.9726 13.3019V19.3741C17.9726 20.148 17.3453 20.7753 16.5713 20.7753H3.95987C3.18596 20.7753 2.55859 20.148 2.55859 19.3741V6.76261C2.55859 5.98871 3.18596 5.36133 3.95987 5.36133H10.886Z" fill="url(#paint0_linear_trade_ideas)"/>
+<path d="M15.4419 4.45641L16.1566 2.72045C16.1971 2.62245 16.2926 2.55849 16.3985 2.55849C16.5045 2.55849 16.6 2.62245 16.6404 2.72045L17.3552 4.45641C17.6398 5.14748 18.1886 5.69625 18.8796 5.98081L20.6156 6.69563C20.7137 6.73597 20.7775 6.83148 20.7775 6.93747C20.7775 7.04347 20.7137 7.13898 20.6156 7.17932L18.8796 7.89414C18.1886 8.1787 17.6398 8.72747 17.3552 9.41854L16.6404 11.1545C16.6 11.2525 16.5045 11.3165 16.3985 11.3165C16.2926 11.3165 16.1971 11.2525 16.1566 11.1545L15.4419 9.41854C15.1573 8.72747 14.6086 8.1787 13.9175 7.89414L12.1815 7.17932C12.0835 7.13898 12.0195 7.04347 12.0195 6.93747C12.0195 6.83148 12.0835 6.73597 12.1815 6.69563L13.9175 5.98081C14.6086 5.69625 15.1573 5.14748 15.4419 4.45641Z" fill="url(#paint1_linear_trade_ideas)"/>
+<path d="M10.441 4.74837C10.7794 4.74859 11.054 5.02298 11.054 5.36142C11.054 5.69987 10.7794 5.97427 10.441 5.97448H3.95978C3.52446 5.97448 3.17143 6.32752 3.17143 6.76284V15.519L5.2702 13.3915L5.27115 13.3906C5.51213 13.1496 5.81317 13.0295 6.16296 13.0294C6.51291 13.0294 6.81467 13.1495 7.05573 13.3906L8.34411 14.6914L10.7801 12.2794H10.3049C10.1094 12.2794 9.93768 12.212 9.80108 12.0753C9.66449 11.9388 9.59611 11.767 9.59609 11.5715C9.59609 11.376 9.66449 11.2043 9.80108 11.0677C9.93769 10.9311 10.1094 10.8627 10.3049 10.8627H12.4851C12.6805 10.8628 12.8525 10.9312 12.989 11.0677C13.1254 11.2042 13.193 11.3761 13.193 11.5715V13.7508C13.193 13.9461 13.1253 14.118 12.989 14.2546C12.8525 14.3911 12.6805 14.4595 12.4851 14.4596C12.2896 14.4596 12.1169 14.3912 11.9803 14.2546C11.844 14.118 11.7763 13.9461 11.7763 13.7508V13.2737L9.23496 15.815C8.99394 16.056 8.69299 16.1761 8.34315 16.1761C7.99332 16.1761 7.69236 16.0559 7.45134 15.815L6.16296 14.5267L3.39079 17.2998C3.32591 17.3647 3.25207 17.4126 3.17143 17.4454V19.3746C3.17165 19.8098 3.52459 20.162 3.95978 20.162H16.5715C17.0065 20.1618 17.3587 19.8096 17.359 19.3746V13.7105C17.359 13.3722 17.6336 13.0977 17.972 13.0974C18.3105 13.0974 18.585 13.372 18.5851 13.7105V19.3746C18.5848 20.4868 17.6837 21.3879 16.5715 21.3881H3.95978C2.84744 21.3881 1.94553 20.4869 1.94531 19.3746V6.76284C1.94531 5.65035 2.8473 4.74837 3.95978 4.74837H10.441ZM7.63622 15.7643C7.6383 15.766 7.64083 15.7673 7.64292 15.7691C7.61679 15.7472 7.59102 15.7239 7.56629 15.6991L7.63622 15.7643ZM16.3972 1.94554C16.7072 1.94554 16.9908 2.10935 17.1472 2.36989L17.2066 2.48676L17.9212 4.22344C18.1436 4.76316 18.5721 5.19183 19.1119 5.41411L20.8476 6.12871C21.1757 6.26363 21.3897 6.58312 21.3898 6.93718C21.3898 7.2914 21.1758 7.61162 20.8476 7.7466L19.1119 8.4612C18.5721 8.6835 18.1436 9.11211 17.9212 9.65188L17.2066 11.3876C17.0717 11.7153 16.7515 11.9298 16.3972 11.9298C16.0431 11.9296 15.7236 11.7152 15.5888 11.3876L14.8742 9.65188C14.6518 9.11214 14.2232 8.68353 13.6835 8.4612L11.9468 7.7466C11.6192 7.61161 11.4056 7.29149 11.4056 6.93718C11.4057 6.58305 11.6193 6.26366 11.9468 6.12871L13.6835 5.41411C14.2232 5.19181 14.6518 4.76313 14.8742 4.22344L15.5888 2.48676L15.6481 2.36989C15.8045 2.1095 16.0873 1.94569 16.3972 1.94554ZM9.78959 11.7603C9.79152 11.7658 9.79418 11.7711 9.7963 11.7765C9.78475 11.7465 9.77548 11.7153 9.76947 11.6826L9.78959 11.7603ZM13.0292 11.5715L13.0234 11.4872C13.0228 11.4827 13.0213 11.4783 13.0206 11.4738C13.0256 11.5052 13.0292 11.5377 13.0292 11.5715ZM9.8097 11.334C9.80722 11.3393 9.80529 11.3448 9.803 11.3502C9.81545 11.3209 9.83012 11.2927 9.84802 11.2659L9.8097 11.334ZM12.8731 11.1836L12.8117 11.1299C12.8069 11.1263 12.8014 11.1238 12.7964 11.1203C12.823 11.1388 12.8491 11.1596 12.8731 11.1836ZM12.4841 11.0265C12.5578 11.0265 12.626 11.0391 12.6882 11.0629C12.6587 11.0515 12.6282 11.042 12.5962 11.036C12.5608 11.0295 12.5237 11.0265 12.4851 11.0265H12.4841ZM16.0083 4.68993C15.6615 5.53217 14.9922 6.20146 14.15 6.54827L13.2035 6.93718L14.15 7.32705C14.9922 7.67385 15.6615 8.34314 16.0083 9.18538L16.3972 10.1308L16.7871 9.18538C17.134 8.34317 17.8031 7.67385 18.6454 7.32705L19.5909 6.93718L18.6454 6.54827C17.8031 6.20146 17.134 5.53214 16.7871 4.68993L16.3972 3.74353L16.0083 4.68993Z" fill="url(#paint2_linear_trade_ideas)"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear_trade_ideas" x1="4.81588" y1="7.61861" x2="15.7153" y2="18.5181" gradientUnits="userSpaceOnUse">
+<stop stop-color="#0C8A4F" stop-opacity="0.07"/>
+<stop offset="1" stop-color="#0C8A4F" stop-opacity="0.2"/>
+</linearGradient>
+<linearGradient id="paint1_linear_trade_ideas" x1="13.3021" y1="3.84103" x2="19.495" y2="10.0339" gradientUnits="userSpaceOnUse">
+<stop stop-color="#6FCB9F"/>
+<stop offset="1" stop-color="#0C8A4F"/>
+</linearGradient>
+<linearGradient id="paint2_linear_trade_ideas" x1="4.79282" y1="4.79278" x2="18.5409" y2="18.5422" gradientUnits="userSpaceOnUse">
+<stop stop-color="#6FCB9F"/>
+<stop offset="1" stop-color="#0C8A4F"/>
+</linearGradient>
+<clipPath id="clip0_trade_ideas">
+<rect width="19.4444" height="19.4444" fill="white" transform="translate(1.94531 1.94444)"/>
+</clipPath>
+</defs>
+</svg>
+```
+
+### `src/flows/stocks/assets/in/instruments/watchlist-dark.svg`
+
+```tsx
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M7.2 3.6h9.6a1.2 1.2 0 0 1 1.2 1.2v15.8l-6-3.9-6 3.9V4.8a1.2 1.2 0 0 1 1.2-1.2Z" fill="url(#fill_watchlist)" stroke="url(#line_watchlist)" stroke-width="1.4" stroke-linejoin="round"/>
+<path d="m12 6.8 1 2 2.2.3-1.6 1.5.4 2.2-2-1-2 1 .4-2.2-1.6-1.5 2.2-.3Z" fill="url(#line_watchlist)" stroke="url(#line_watchlist)" stroke-width="0.8" stroke-linejoin="round"/>
+<defs>
+<linearGradient id="fill_watchlist" x1="6" y1="6" x2="18" y2="20" gradientUnits="userSpaceOnUse">
+<stop stop-color="#0C8A4F" stop-opacity="0.07"/>
+<stop offset="1" stop-color="#0C8A4F" stop-opacity="0.2"/>
+</linearGradient>
+<linearGradient id="line_watchlist" x1="5" y1="5" x2="19" y2="19" gradientUnits="userSpaceOnUse">
+<stop stop-color="#6FCB9F"/>
+<stop offset="1" stop-color="#0C8A4F"/>
+</linearGradient>
+</defs>
+</svg>
+```
+
+### `src/flows/stocks/assets/in/instruments/watchlist.svg`
+
+```tsx
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M7.2 3.6h9.6a1.2 1.2 0 0 1 1.2 1.2v15.8l-6-3.9-6 3.9V4.8a1.2 1.2 0 0 1 1.2-1.2Z" fill="url(#fill_watchlist)" stroke="url(#line_watchlist)" stroke-width="1.4" stroke-linejoin="round"/>
+<path d="m12 6.8 1 2 2.2.3-1.6 1.5.4 2.2-2-1-2 1 .4-2.2-1.6-1.5 2.2-.3Z" fill="url(#line_watchlist)" stroke="url(#line_watchlist)" stroke-width="0.8" stroke-linejoin="round"/>
+<defs>
+<linearGradient id="fill_watchlist" x1="6" y1="6" x2="18" y2="20" gradientUnits="userSpaceOnUse">
+<stop stop-color="#0C8A4F" stop-opacity="0.07"/>
+<stop offset="1" stop-color="#0C8A4F" stop-opacity="0.2"/>
+</linearGradient>
+<linearGradient id="line_watchlist" x1="5" y1="5" x2="19" y2="19" gradientUnits="userSpaceOnUse">
 <stop stop-color="#6FCB9F"/>
 <stop offset="1" stop-color="#0C8A4F"/>
 </linearGradient>
@@ -20390,8 +20575,8 @@ h��ha�E�  @����=O������S��m���㡦8�
 </g>
 <defs>
 <linearGradient id="paint0_linear_boosted" x1="4.81588" y1="7.61861" x2="15.7153" y2="18.5181" gradientUnits="userSpaceOnUse">
-<stop stop-color="#3A64B8"/>
-<stop offset="1" stop-color="#1C3670"/>
+<stop stop-color="#256FEF" stop-opacity="0.07"/>
+<stop offset="1" stop-color="#256FEF" stop-opacity="0.2"/>
 </linearGradient>
 <linearGradient id="paint1_linear_boosted" x1="13.3021" y1="3.84103" x2="19.495" y2="10.0339" gradientUnits="userSpaceOnUse">
 <stop stop-color="#81ABF6"/>
@@ -20402,7 +20587,7 @@ h��ha�E�  @����=O������S��m���㡦8�
 <stop offset="1" stop-color="#2360D9"/>
 </linearGradient>
 <clipPath id="clip0_boosted">
-<rect width="19.4444" height="19.4444" fill="#181818" transform="translate(1.94531 1.94444)"/>
+<rect width="19.4444" height="19.4444" fill="white" transform="translate(1.94531 1.94444)"/>
 </clipPath>
 </defs>
 </svg>
@@ -20419,8 +20604,8 @@ h��ha�E�  @����=O������S��m���㡦8�
 </g>
 <defs>
 <linearGradient id="paint0_linear_boosted" x1="4.81588" y1="7.61861" x2="15.7153" y2="18.5181" gradientUnits="userSpaceOnUse">
-<stop stop-color="white"/>
-<stop offset="1" stop-color="#CCDEFF"/>
+<stop stop-color="#256FEF" stop-opacity="0.07"/>
+<stop offset="1" stop-color="#256FEF" stop-opacity="0.2"/>
 </linearGradient>
 <linearGradient id="paint1_linear_boosted" x1="13.3021" y1="3.84103" x2="19.495" y2="10.0339" gradientUnits="userSpaceOnUse">
 <stop stop-color="#81ABF6"/>
@@ -20446,8 +20631,8 @@ h��ha�E�  @����=O������S��m���㡦8�
 <path d="M12.6406 10.6944V3.40277C13.5982 3.40277 14.5464 3.59137 15.431 3.95781C16.3157 4.32425 17.1195 4.86135 17.7966 5.53845C18.4737 6.21554 19.0108 7.01937 19.3772 7.90403C19.7437 8.7887 19.9323 9.73688 19.9323 10.6944H12.6406Z" fill="url(#paint3_linear_etfs)"/>
 <defs>
 <linearGradient id="paint0_linear_etfs" x1="5.53993" y1="7.48283" x2="15.852" y2="17.7949" gradientUnits="userSpaceOnUse">
-<stop stop-color="#3A64B8"/>
-<stop offset="1" stop-color="#1C3670"/>
+<stop stop-color="#256FEF" stop-opacity="0.07"/>
+<stop offset="1" stop-color="#256FEF" stop-opacity="0.2"/>
 </linearGradient>
 <linearGradient id="paint1_linear_etfs" x1="5.53993" y1="7.48283" x2="15.852" y2="17.7949" gradientUnits="userSpaceOnUse">
 <stop stop-color="#81ABF6"/>
@@ -20474,8 +20659,8 @@ h��ha�E�  @����=O������S��m���㡦8�
 <path d="M12.6406 10.6944V3.40277C13.5982 3.40277 14.5464 3.59137 15.431 3.95781C16.3157 4.32425 17.1195 4.86135 17.7966 5.53845C18.4737 6.21554 19.0108 7.01937 19.3772 7.90403C19.7437 8.7887 19.9323 9.73688 19.9323 10.6944H12.6406Z" fill="url(#paint3_linear_etfs)"/>
 <defs>
 <linearGradient id="paint0_linear_etfs" x1="5.53993" y1="7.48283" x2="15.852" y2="17.7949" gradientUnits="userSpaceOnUse">
-<stop stop-color="white"/>
-<stop offset="1" stop-color="#CCDEFF"/>
+<stop stop-color="#256FEF" stop-opacity="0.07"/>
+<stop offset="1" stop-color="#256FEF" stop-opacity="0.2"/>
 </linearGradient>
 <linearGradient id="paint1_linear_etfs" x1="5.53993" y1="7.48283" x2="15.852" y2="17.7949" gradientUnits="userSpaceOnUse">
 <stop stop-color="#81ABF6"/>
@@ -20499,11 +20684,11 @@ h��ha�E�  @����=O������S��m���㡦8�
 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <rect x="3" y="5.6" width="15.4" height="15.4" rx="3" fill="url(#fill_fractional)" stroke="url(#line_fractional)" stroke-width="1.4" stroke-linejoin="round"/>
 <path d="M10.7 5.6V21M3 13.3H18.4" stroke="url(#line_fractional)" stroke-width="1.4" stroke-linecap="round"/>
-<rect x="12.3" y="2.3" width="9.4" height="9.4" rx="2.6" fill="url(#line_fractional)" stroke="#181818" stroke-width="1.4"/>
+<rect x="12.3" y="2.3" width="9.4" height="9.4" rx="2.6" fill="url(#line_fractional)" stroke="white" stroke-width="1.4"/>
 <defs>
 <linearGradient id="fill_fractional" x1="5" y1="7.5" x2="16.5" y2="19" gradientUnits="userSpaceOnUse">
-<stop stop-color="#3A64B8"/>
-<stop offset="1" stop-color="#1C3670"/>
+<stop stop-color="#256FEF" stop-opacity="0.07"/>
+<stop offset="1" stop-color="#256FEF" stop-opacity="0.2"/>
 </linearGradient>
 <linearGradient id="line_fractional" x1="4.8" y1="4.8" x2="18.5" y2="18.5" gradientUnits="userSpaceOnUse">
 <stop stop-color="#81ABF6"/>
@@ -20522,8 +20707,8 @@ h��ha�E�  @����=O������S��m���㡦8�
 <rect x="12.3" y="2.3" width="9.4" height="9.4" rx="2.6" fill="url(#line_fractional)" stroke="white" stroke-width="1.4"/>
 <defs>
 <linearGradient id="fill_fractional" x1="5" y1="7.5" x2="16.5" y2="19" gradientUnits="userSpaceOnUse">
-<stop stop-color="white"/>
-<stop offset="1" stop-color="#CCDEFF"/>
+<stop stop-color="#256FEF" stop-opacity="0.07"/>
+<stop offset="1" stop-color="#256FEF" stop-opacity="0.2"/>
 </linearGradient>
 <linearGradient id="line_fractional" x1="4.8" y1="4.8" x2="18.5" y2="18.5" gradientUnits="userSpaceOnUse">
 <stop stop-color="#81ABF6"/>
@@ -20539,11 +20724,11 @@ h��ha�E�  @����=O������S��m���㡦8�
 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M3.6 15.9L12 20.5L20.4 15.9" stroke="url(#line_themes)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M3.6 11.9L12 16.5L20.4 11.9L12 7.3L3.6 11.9Z" fill="url(#fill_themes)" stroke="url(#line_themes)" stroke-width="1.4" stroke-linejoin="round"/>
-<path d="M3.6 7.9L12 12.5L20.4 7.9L12 3.3L3.6 7.9Z" fill="url(#line_themes)" stroke="#181818" stroke-width="1.2" stroke-linejoin="round"/>
+<path d="M3.6 7.9L12 12.5L20.4 7.9L12 3.3L3.6 7.9Z" fill="url(#line_themes)" stroke="white" stroke-width="1.2" stroke-linejoin="round"/>
 <defs>
 <linearGradient id="fill_themes" x1="5" y1="6" x2="17" y2="19" gradientUnits="userSpaceOnUse">
-<stop stop-color="#3A64B8"/>
-<stop offset="1" stop-color="#1C3670"/>
+<stop stop-color="#256FEF" stop-opacity="0.07"/>
+<stop offset="1" stop-color="#256FEF" stop-opacity="0.2"/>
 </linearGradient>
 <linearGradient id="line_themes" x1="4.8" y1="4.8" x2="18.5" y2="18.5" gradientUnits="userSpaceOnUse">
 <stop stop-color="#81ABF6"/>
@@ -20562,8 +20747,8 @@ h��ha�E�  @����=O������S��m���㡦8�
 <path d="M3.6 7.9L12 12.5L20.4 7.9L12 3.3L3.6 7.9Z" fill="url(#line_themes)" stroke="white" stroke-width="1.2" stroke-linejoin="round"/>
 <defs>
 <linearGradient id="fill_themes" x1="5" y1="6" x2="17" y2="19" gradientUnits="userSpaceOnUse">
-<stop stop-color="white"/>
-<stop offset="1" stop-color="#CCDEFF"/>
+<stop stop-color="#256FEF" stop-opacity="0.07"/>
+<stop offset="1" stop-color="#256FEF" stop-opacity="0.2"/>
 </linearGradient>
 <linearGradient id="line_themes" x1="4.8" y1="4.8" x2="18.5" y2="18.5" gradientUnits="userSpaceOnUse">
 <stop stop-color="#81ABF6"/>
@@ -21866,11 +22051,14 @@ export function HeroButtons({ buy, add }: HeroButtonsProps) {
   color: var(--l3-content-accent-success-default);
 }
 
-/* "New" sits on the circle's top-right edge, overlapping it. */
+/* The tag ("New", "5 New") sits centred over the circle's top edge, in the market's colour (IN green, US blue — L3 Tag
+   success / discover). Its top lines up with the cell's top (the body's 4 padding), so the Card's rounded clip never cuts it. */
 .instrumentNew {
   position: absolute;
-  top: calc(-1 * var(--l3-spacing-06));
-  right: calc(-1 * var(--l3-spacing-12));
+  top: calc(-1 * var(--l3-spacing-04));
+  left: 50%;
+  translate: -50% 0;
+  white-space: nowrap;
   display: inline-flex;
 }
 
@@ -22750,7 +22938,7 @@ import { Tag } from '@l3/components/Tag'
 import { t } from '../copy'
 import styles from './Home.module.css'
 
-export type Instrument = { id: string; label: string; icon: ReactNode; /** A small "New" tag on the circle's top-right edge. */ isNew?: boolean }
+export type Instrument = { id: string; label: string; icon: ReactNode; /** A small "New" tag on the circle's top-right edge. */ isNew?: boolean; /** A tag with its own text on the same spot, shown in every look (e.g. IPO's "5 New"). */ tag?: string }
 export type FeatureChip = { id: string; label: string; /** A small (16) icon before the label — the "Ringed" look. */ icon?: ReactNode }
 /** `solid` (V3): a disc in the market's colour, white icon. `ring` (V4): a neutral disc in a raised white ring, the icon in the market's colour.
  * `soft` (V5, Figma 6635:19626): a white disc with a faint wash of the market's colour, a hairline edge and a soft shadow; the icon in the market's colour, "New" in red.
@@ -22768,7 +22956,7 @@ export function InstrumentRow({ items, tone, label, onOpen, look = 'solid' }: { 
               <span className={styles.instrumentBody}>
                 <span className={styles.instrumentCircle}>
                   <Avatar size={look === 'mini' ? 40 : 48} className={styles.instrumentDisc} icon={<span className={styles.instrumentIcon}>{item.icon}</span>} />
-                  {item.isNew && look !== 'mini' && <span className={styles.instrumentNew}><Tag color={look === 'soft' ? 'loss' : 'zing'} variant="primary" size="sm">{t('products.new')}</Tag></span>}
+                  {(item.tag || (item.isNew && look !== 'mini')) && <span className={styles.instrumentNew}><Tag color={tone === 'in' ? 'success' : 'discover'} variant="primary" size="sm">{item.tag ?? t('products.new')}</Tag></span>}
                 </span>
                 <span className={styles.instrumentLabel}>{item.label}</span>
               </span>
@@ -27077,6 +27265,8 @@ import { useLiveHeatmap } from './useLiveHeatmap'
 import styles from './UsHome.module.css'
 
 type UsHomeProps = {
+  /** The Watchlists rail (a list or View all): the Watchlist page. */
+  onWatchlist?: () => void
   /** Where the user is with US Stocks: picks the card on top (none for 'holding'). */
   usState?: UsState
   /** The card's button: Activate / Retry / Add money / Explore (which one depends on the state). */
@@ -27108,7 +27298,7 @@ const PICKS_VIEW: 'list' | 'cards' = 'list'
 // Archived 18 Nov: the V1 chips rows (hand-made switcher). Set true to see them.
 const US_CHIPS_V1: boolean = false
 
-export function UsHome({ usState = 'activate', onActivate, onStock, onMarket, onTheme, onEtfs, onEtf, onPicks, onBrands, card = true, shortcuts }: UsHomeProps) {
+export function UsHome({ usState = 'activate', onActivate, onStock, onMarket, onTheme, onEtfs, onEtf, onPicks, onBrands, onWatchlist, card = true, shortcuts }: UsHomeProps) {
   const [filter, setFilter] = useState<MoverFilter>('gainers')
   const [cap, setCap] = useState<CapValue>('mega')
   // Top analyst picks: a list (default, so it doesn't read as a second Top Movers rail) or the cards (prototype option).
@@ -27182,7 +27372,7 @@ export function UsHome({ usState = 'activate', onActivate, onStock, onMarket, on
         )}
       </Stack>
 
-      <Watchlists lists={usWatchlists} />
+      <Watchlists lists={usWatchlists} onOpen={() => onWatchlist?.()} onViewAll={() => onWatchlist?.()} />
 
       <Stack as="section" gap="16" aria-label={t('us.brands.title')}>
         <Inset paddingInline="16" paddingBlock="00"><SectionHeader title={t('us.brands.title')} action={{ type: 'view-all', onClick: () => onBrands?.() }} /></Inset>
@@ -30075,7 +30265,8 @@ export function useLiveHeatmap(symbols: string[] = heatSymbols): HeatValue[] {
   "us.soon.cta": "Activate US Stocks in advance",
   "us.soon.note": "Free to activate · No money needed now",
   "us.soon.review.title": "Verification in progress",
-  "us.soon.ready.title": "All set! We'll notify you at launch"
+  "us.soon.ready.title": "All set! We'll notify you at launch",
+  "f3.in.ipoNew": "{count} New"
 }
 ```
 
@@ -30416,6 +30607,9 @@ export function priceSeries(page: StockPageData, range: ChartRange, price: numbe
   const start = price / (1 + (0.12 + wiggle(seed, years) * 0.5) * years)
   return walk(120, start, price * 0.12)
 }
+
+/** IPOs open or opening soon: the count on Home's IPO shortcut tag ("5 New"). API: GET /ipos?status=open,upcoming → its length. */
+export const newIpoCount = 5
 ```
 
 ### `src/flows/stocks/index.tsx`
@@ -30458,7 +30652,7 @@ function StockPageFromAnywhere({ onBack, ...props }: ComponentProps<typeof Stock
   return <StockPage {...props} onBack={() => { if (!preview.back?.()) onBack() }} />
 }
 
-const chrome = (go: Go) => ({ onStock: (sym: string) => { openStock(sym); go('stocks-32') }, onTab: (t: Parameters<typeof goToTab>[1]) => goToTab(go, t), onSearch: (m: 'in' | 'us') => go(searchFor(m)), onProfile: () => go('profile-01'), onCommodities: () => go('fno-08'), onAddMoney: () => go('deposit-01') })
+const chrome = (go: Go) => ({ onStock: (sym: string) => { openStock(sym); go('stocks-32') }, onTab: (t: Parameters<typeof goToTab>[1]) => goToTab(go, t), onSearch: (m: 'in' | 'us') => go(searchFor(m)), onProfile: () => go('profile-01'), onWatchlist: () => go('market-11'), onCommodities: () => go('fno-08'), onAddMoney: () => go('deposit-01') })
 
 /** Wallet icon on the US tab, by where the user is (screens of the US Stocks flow): Indian wallet · under review · failed · $0 · funded. */
 // The Indian stock page's Buy / Sell open the shared order pad (US Stocks flow) in its Indian version (23 Nov, the
@@ -31588,6 +31782,14 @@ import inCommoditiesArt from '../assets/in/instruments/commodities.svg'
 import inCommoditiesArtDark from '../assets/in/instruments/commodities-dark.svg'
 import inIpoArt from '../assets/in/instruments/ipo.svg'
 import inIpoArtDark from '../assets/in/instruments/ipo-dark.svg'
+import inSmartInvestArt from '../assets/in/instruments/smart-invest.svg'
+import inSmartInvestArtDark from '../assets/in/instruments/smart-invest-dark.svg'
+import inTradeIdeasArt from '../assets/in/instruments/trade-ideas.svg'
+import inTradeIdeasArtDark from '../assets/in/instruments/trade-ideas-dark.svg'
+import inReferralArt from '../assets/in/instruments/referral.svg'
+import inReferralArtDark from '../assets/in/instruments/referral-dark.svg'
+import inWatchlistArt from '../assets/in/instruments/watchlist.svg'
+import inWatchlistArtDark from '../assets/in/instruments/watchlist-dark.svg'
 import etfsArt from '../assets/us/instruments/etfs.svg'
 import etfsArtDark from '../assets/us/instruments/etfs-dark.svg'
 import boostedEtfsArt from '../assets/us/instruments/boosted-etfs.svg'
@@ -31609,7 +31811,7 @@ import { neighbour, useSwipeBetween } from '../../../shared/ui/useSwipeBetween'
 import { UsComingSoon } from '../components/us/UsComingSoon'
 import { DEFAULT_SHORTCUTS, Shortcuts, TopMovers, Watchlists } from '../components/Discover'
 import { FeatureChips, InstrumentRow, type FeatureChip, type Instrument } from '../components/Instruments'
-import { productsClassic, products, productsF1, productsF1Us, productsWithInvest, productsWithUs, type MoverList } from '../data'
+import { productsClassic, products, productsF1, productsF1Us, productsWithInvest, productsWithUs, newIpoCount, type MoverList } from '../data'
 import { t } from '../copy'
 import styles from './Home.module.css'
 
@@ -31634,6 +31836,8 @@ type Props = {
   /** Tapping the search field opens the Search screen (search-01), where the typing happens. */
   /** The search field: opens Search on the tab matching the market shown (IND → Stocks, US → US). */
   onSearch?: (market: Market) => void
+  /** The Watchlist shortcut: the Watchlist page (market-11), on this tab's market. */
+  onWatchlist?: () => void
   /** The profile icon opens Profile & settings (profile-01). */
   onProfile?: () => void
   /** The wallet icon in the top bar. */
@@ -31720,7 +31924,7 @@ const riskAgreedThisSession = () => {
   try { return sessionStorage.getItem(RISK_AGREED_KEY) === '1' } catch { return false }
 }
 
-export function Home({ scrollTo = 'top', market = 'in', movers, onStock, onTab, onSearch, onProfile, onWallet, onCommodities, onAddMoney, usState = 'activate', onActivateUs, onUsAddMoney, onUsHoldings, onInHoldings, onUsStock, onUsMarket, onUsTheme, onUsEtfs, onUsFractional, onUsEtf, onUsPicks, onUsBrands, autoNext, sheet, introOnOpen = false }: Props) {
+export function Home({ scrollTo = 'top', market = 'in', movers, onStock, onTab, onSearch, onWatchlist, onProfile, onWallet, onCommodities, onAddMoney, usState = 'activate', onActivateUs, onUsAddMoney, onUsHoldings, onInHoldings, onUsStock, onUsMarket, onUsTheme, onUsEtfs, onUsFractional, onUsEtf, onUsPicks, onUsBrands, autoNext, sheet, introOnOpen = false }: Props) {
   // Money on the way: its card opens the deposit explainer over Home (the timed move to "money ready" waits while it's open).
   const [explaining, setExplaining] = useState(false)
   const depositsOnTheWay = useDepositsOnTheWay()
@@ -32104,16 +32308,19 @@ export function Home({ scrollTo = 'top', market = 'in', movers, onStock, onTab, 
   const oneCard = heroCards && !!version.oneCard
   // V19's US card: Boosted ETFs · Themes · Fractional over ETFs · Analyst picks · Watchlist · Referral.
   // Shortcuts V2 on the US tab (Figma 6662:8516, 19 Nov): the card's shortcuts row alone — ETFs · Analyst picks · Watchlist · Referral.
-  const usShortcutsRow = <InAllShortcuts market="us" rows="shortcuts" onShortcut={(id) => { if (id === 'etfs') onUsEtfs?.(); else if (id === 'picks') onUsPicks?.() }} />
-  const usShortcutsCard = <InAllShortcuts market="us" onProduct={(id) => onRowProduct(id)} onShortcut={(id) => { if (id === 'etfs') onUsEtfs?.(); else if (id === 'picks') onUsPicks?.() }} />
+  const usShortcutsRow = <InAllShortcuts market="us" rows="shortcuts" onShortcut={(id) => { if (id === 'etfs') onUsEtfs?.(); else if (id === 'picks') onUsPicks?.(); else if (id === 'watchlist') onWatchlist?.() }} />
+  const usShortcutsCard = <InAllShortcuts market="us" onProduct={(id) => onRowProduct(id)} onShortcut={(id) => { if (id === 'etfs') onUsEtfs?.(); else if (id === 'picks') onUsPicks?.(); else if (id === 'watchlist') onWatchlist?.() }} />
   const onRowProduct = (id: string) => {
     if (id === 'mutual-funds') onTab?.('mutualFund')
     else if (id === 'fno') onTab?.('fno')
     else if (id === 'commodities') onCommodities?.()
+    else if (id === 'smart-invest') onProduct(id)
     else if (id === 'etfs') onUsEtfs?.()
     // Themes: the prototype has no list of themes, so the first one (AI). Fractional: its own page (us-stocks-99).
     else if (id === 'themes') onUsTheme?.('ai')
     else if (id === 'fractional') onUsFractional?.()
+    // Watchlist (24 Nov): its own page, on the market of the tab it was tapped on (Watchlist reads lastStocksMarket).
+    else if (id === 'watchlist') onWatchlist?.()
     else if (id === 'boosted-etfs') {
       // The ETF list opens on its Boosted tab (its sessionStorage hand-off, EtfListScreen).
       try { sessionStorage.setItem('etf:tab', 'leveraged') } catch { /* storage off: the Regular tab */ }
@@ -32141,7 +32348,12 @@ export function Home({ scrollTo = 'top', market = 'in', movers, onStock, onTab, 
       { id: 'mutual-funds', label: t('f1.in.mutualFunds'), icon: art(dark ? inMutualFundsArtDark : inMutualFundsArt, msPieChartFill, 1.5) },
       { id: 'fno', label: t('f3.in.fno'), icon: art(dark ? inFnoArtDark : inFnoArt, msCandlestickChartFill) },
       { id: 'commodities', label: t('f1.in.commodities'), icon: art(dark ? inCommoditiesArtDark : inCommoditiesArt, msOilBarrelFill, 0.5, -1) },
-      { id: 'ipo', label: t('f3.in.ipo'), icon: art(dark ? inIpoArtDark : inIpoArt, msRocketLaunchFill) },
+      { id: 'ipo', label: t('f3.in.ipo'), icon: art(dark ? inIpoArtDark : inIpoArt, msRocketLaunchFill), tag: t('f3.in.ipoNew', { count: newIpoCount }) },
+      // Second row (the user's call, 24 Nov): features that were chips — the 4-column grid wraps them.
+      { id: 'smart-invest', label: t('f3.chips.smartInvest'), icon: art(dark ? inSmartInvestArtDark : inSmartInvestArt, msLightbulbFill) },
+      { id: 'trade-ideas', label: t('f3.chips.tradeIdeas'), icon: art(dark ? inTradeIdeasArtDark : inTradeIdeasArt, msBoltFill, 1) },
+      { id: 'referral', label: t('f1.shortcuts.referral'), icon: art(dark ? inReferralArtDark : inReferralArt, msRedeem) },
+      { id: 'watchlist', label: t('f1.shortcuts.watchlist'), icon: art(dark ? inWatchlistArtDark : inWatchlistArt, msBookmarkFill) },
     ],
     us: [
       { id: 'etfs', label: t('f1.shortcuts.etfs'), icon: art(dark ? etfsArtDark : etfsArt, msPieChartFill, 1) },
@@ -32171,6 +32383,7 @@ export function Home({ scrollTo = 'top', market = 'in', movers, onStock, onTab, 
   const onFeature = (id: string) => {
     if (id === 'picks') onUsPicks?.()
     else if (id === 'smart-invest') onProduct(id)
+    else if (id === 'watchlist') onWatchlist?.()
   }
   const shortcutsBlock = (m: Market) => (
     <Stack gap="16">
@@ -32358,7 +32571,7 @@ export function Home({ scrollTo = 'top', market = 'in', movers, onStock, onTab, 
                   ? <InShortcutsF1 onMutualFunds={() => onTab?.('mutualFund')} onFno={() => onTab?.('fno')} onCommodities={onCommodities} />
                   : shortcutsV3 ? shortcutsBlock('in') : shortcutsLook === 'v2' ? <InAllShortcuts items={instruments.in} onProduct={onRowProduct} /> : <Shortcuts />}
               <div data-home="movers"><TopMovers initial={movers} onStock={onStock} /></div>
-              <Watchlists />
+              <Watchlists onOpen={() => onWatchlist?.()} onViewAll={() => onWatchlist?.()} />
               <Section paddingBlock="24" className={styles.tinted} data-tint="brand" data-home="invest"><SmartInvest /></Section>
               <Announcement />
               <div data-home="sectors"><Sectors /></div>
@@ -32373,7 +32586,7 @@ export function Home({ scrollTo = 'top', market = 'in', movers, onStock, onTab, 
           ) : f1 && version.usBody === 'classic' ? (
             // V18: V17's top over V14's US feed, with V17's round shortcuts in place of its strip (the hero has the card).
             <Stack key="us" gap="32" data-market-part>
-              <UsHome card={false} shortcuts={oneCard ? usShortcutsCard : shortcutsV3 ? shortcutsBlock('us') : shortcutsLook === 'v2' ? usShortcutsRow : <UsRoundShortcuts onEtfs={onUsEtfs} onPicks={onUsPicks} />} usState={usState} onActivate={onActivateUs} onStock={onUsStock} onMarket={onUsMarket} onTheme={onUsTheme} onEtfs={onUsEtfs} onEtf={onUsEtf} onPicks={onUsPicks} onBrands={onUsBrands} />
+              <UsHome onWatchlist={onWatchlist} card={false} shortcuts={oneCard ? usShortcutsCard : shortcutsV3 ? shortcutsBlock('us') : shortcutsLook === 'v2' ? usShortcutsRow : <UsRoundShortcuts onEtfs={onUsEtfs} onPicks={onUsPicks} />} usState={usState} onActivate={onActivateUs} onStock={onUsStock} onMarket={onUsMarket} onTheme={onUsTheme} onEtfs={onUsEtfs} onEtf={onUsEtf} onPicks={onUsPicks} onBrands={onUsBrands} />
             </Stack>
           ) : f1 ? (
             <Stack key="us-f1" gap="32" data-market-part>
@@ -32381,7 +32594,7 @@ export function Home({ scrollTo = 'top', market = 'in', movers, onStock, onTab, 
             </Stack>
           ) : (
             <Stack key="us" gap="32" data-market-part>
-              <UsHome card={feedTabs && !hub && usState !== 'kyc'} usState={usState} onActivate={onActivateUs} onStock={onUsStock} onMarket={onUsMarket} onTheme={onUsTheme} onEtfs={onUsEtfs} onEtf={onUsEtf} onPicks={onUsPicks} onBrands={onUsBrands} />
+              <UsHome onWatchlist={onWatchlist} card={feedTabs && !hub && usState !== 'kyc'} usState={usState} onActivate={onActivateUs} onStock={onUsStock} onMarket={onUsMarket} onTheme={onUsTheme} onEtfs={onUsEtfs} onEtf={onUsEtf} onPicks={onUsPicks} onBrands={onUsBrands} />
             </Stack>
           )}
         </div>
@@ -59776,17 +59989,11 @@ export const Flag = ({ code }: { code: FlagCode }) => (
   display: none;
 }
 
-/* V3 (23 Nov, user): each tab full height, 74 × 56, the pill hugging them, centred — not end to end. */
+/* V3 (23 Nov, user): each tab full height, 56. */
+/* 24 Nov, user: full width again — 16 in from each side, the five tabs sharing it equally, so they grow and shrink
+   with the device width (no fixed 74). */
 .frame[data-glow-at='bottom'] .pill {
-  right: 0;
-  left: 0;
-  width: max-content;
-  margin-inline: auto;
   padding: 0;
-}
-.frame[data-glow-at='bottom'] .pill > nav > ul > li {
-  flex: 0 0 var(--app-fnav-tab-width);
-  width: var(--app-fnav-tab-width); /* 74 wide × 56 tall (23 Nov, user) */
 }
 .frame[data-glow-at='bottom'] .pill :is(button, a)[class] {
   height: var(--l3-size-56);

@@ -278,6 +278,8 @@
     "src/flows/us-stocks/screens/trade/PadCard.tsx",
     "src/flows/us-stocks/screens/trade/PriceField.module.css",
     "src/flows/us-stocks/screens/trade/PriceField.tsx",
+    "src/flows/us-stocks/screens/trade/SlGuide.module.css",
+    "src/flows/us-stocks/screens/trade/SlGuide.tsx",
     "src/flows/us-stocks/screens/trade/Tpsl.module.css",
     "src/flows/us-stocks/screens/trade/Tpsl.tsx",
     "src/flows/us-stocks/screens/trade/TpslSheetB.module.css",
