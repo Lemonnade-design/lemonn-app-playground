@@ -11,7 +11,7 @@ Prototype: https://lemonnade-design.github.io/lemonn-app-prototype/#/nudges · m
 | Id | Screen | Figma | Taps go to | Note |
 |---|---|---|---|---|
 | `nudges-01` | Order pad · silent help | [8671:18433]() | — | The default — no interruption. The F&O commodity order pad (fno-25) as it is, plus silent help: “Set TPSL” becomes a TP/SL row, pre-filled and on (Target +20% · Stop-loss −10%); “Set a loss limit for today” is the first line of the dock. Buy fires the nudge picked in the settings (Case, Data state), once: the shared cap is 1 per session. |
-| `nudges-02` | Nudge · from settings | — | — | The one nudge sheet — the risk meter — filled by the case and data state picked in the settings. Pills on the floating switcher: Meter (4f Soft dial · 4g Blocks), Risk level, Meter layout, Meter fill, Case, State. |
+| `nudges-02` | Nudge · from settings | — | — | The one nudge sheet — the risk meter, the speedometer · Low–High — filled by the case and data state picked in the settings. Pills on the floating switcher: Risk level, Case, State. |
 | `nudges-03` | Nudge · generic | — | — | Fires on Positions with the revenge flag when no single behaviour stands out, or the trader is too new to compare (state D). The meter and its own fact under it. Dismiss says just “Not now” (no order in hand). |
 | `nudges-04` | Nudge · size-up · A (own loss) | — | — | Size-up after a loss, own history and last loss (A): the meter at high risk, “You are placing a bigger order right after a loss”. |
 | `nudges-05` | Nudge · orders today · B | — | — | Orders today, own history (B): the meter, and the fact “3X more orders than usual today” under it. |
@@ -69,58 +69,37 @@ nudges-01 ──Buy (again)──▶ order placed (cap: 1 nudge per session, 2 p
 
 ### The nudge sheet — the risk meter (one template, every case)
 
-Cut down on 19 Nov to the versions in use: Layouts 1 (bars) and 5 (risk bar, 5a–5g) and meters 4a–4e are removed (in
-git history). It opens on a trader who is mid-order and stressed: what this is, a meter that shows how far from his
-usual he is, one plain line on what he is doing, then the guardrail or Not now. Everything is centred; 24 between
-blocks, the body text 16 under the meter, 32 from the last text to the dock's line (L3's sheet has 24).
+**One design since 24 Nov: the speedometer · Low–High** (was 4i). Every other meter — 4f Soft dial (one colour,
+blended, 3 blocks, both Low–High fills), 4g Blocks, 4h Speedometer 0–100 — and the Meter, Meter layout and Meter fill
+settings are archived in `archive/nudges-risk-meter-versions/` (outside `src/`, not built; its README says how to bring
+one back). It opens on a trader who is mid-order and stressed: how risky this is, one plain line on what he is doing,
+then the guardrail or Not now. Everything is centred.
 
 | Slot | Content |
 |---|---|
-| Heading | "You are overtrading" (`heading-24`) over "Your chances of losing money today are high" (`label-14`, secondary) |
-| Meter | 4f Soft dial or 4g Blocks (below); in the middle the level word — Safe · Caution · High risk — only (no multiple in any layout since 20 Nov) |
-| Body text | Size-up: "You are placing a bigger order right after a loss"; every other case its own fact ("3X more orders than usual today"; state C: the raw fact, "14 orders today"). `description-14`, secondary |
+| Wave | The level's light tint (pink for high risk), blurred 11.3, across the top of the sheet |
+| Meter | The speedometer with Low · Medium · High round it (below) |
+| Tag | The risk Tag (md, secondary; loss / warning / profit, warning icon): High Risk · Medium Risk · Low Risk |
+| Heading | "Your chances of losing money is high" (`heading-20`; medium / low for the other levels) |
+| Body text | Size-up: "You are placing a bigger order right after loss"; every other case its own fact ("3X more orders than usual today"; state C: the raw fact, "14 orders today"). `description-14`, secondary |
 | Dock | `ButtonGroup` vertical: `primary` = the case's guardrail · `secondary` "Not now, place order" (on Positions: "Not now"). Setting "Buttons → Both guardrails": primary · secondary (other guardrail) · ghost Not now |
 
-**Settings** (prototype; also pills on the floating switcher):
+Spacing: 24 from the sheet's top, the dial, 16, the tag, 16, the heading, 8, the fact, 24 to the dock's line.
 
-| Setting | Values |
-|---|---|
-| Meter | **4f · Soft dial** (default) · 4g · Blocks · 4h · Speedometer · 0–100 · 4i · Speedometer · Low–High (4h / 4i have their own layout; Meter layout doesn't apply) |
-| Risk level | **High risk** (default) · Caution · Safe — where the reading stops, with that level's colours, glow, grains and word |
-| Meter layout | **Text first** (default: heading, sub line, meter, body text) · Meter first (meter, "You are overtrading", body text; other cases add "Your chances of losing money today are high" to their fact) · Tag first (a red secondary L3 Tag "Overtrading Detected" with a filled warning icon — 8 padding, 2 icon → text, an L3 gap — then "Your chances of losing money are high" (`heading-18`), the meter, body text) · With multiple (now the same as Text first: the dial's multiple was removed, 20 Nov) |
-| Meter fill (Soft dial only) | **One colour** (default: the whole ring turns green → yellow → red as the needle moves; levels 0–45 / 45–65 / 65–100 %, high risk lands at ~75 % for 2X) · Blended (each part keeps the colour it was filled with, melting into the next over a soft band; levels 0–33 / 33–60 / 60–100 %, high risk at ~85 %) · Blended · 3 blocks (20 Nov: the blended ring cut by a 6 gap at each colour change — three blocks, each in its own colour) · 3 blocks · Low–High (20 Nov: the 3-block dial in three equal blocks (0–⅓–⅔–1; low stops at ⅙, medium at ½), drawn at 0.84 about its base centre, with Low and High beside its ends and Medium over the top — Heading/16, content/primary — the risk Tag in the disc where the level word was, fading in as the needle reaches the reading; under the dial the speedometer's heading and fact, whatever the Meter layout) · One colour · Low–High (20 Nov: the one-colour ring with everything of 3 blocks · Low–High — equal thirds, the scale round it, the tag in the disc, the heading and fact under it) |
+**Settings** (prototype; also pills on the floating switcher): **Risk level** — **High risk** (default) · Caution ·
+Safe: where the needle stops, with that level's tag, heading and wave.
 
-**4f · Soft dial** (`sheets/SoftDial.tsx`, from the user's reference): a thick ring filled from the left with a radial
-gradient (deep inside, light outside), sparse white grains (brightest in a soft wedge behind the needle; the ones on
-passed levels fade away), small ticks, a solid black needle standing on the centre disc, glass on the fill (sheen, soft
-highlight, fine rim), a faint tint on the rest, a blurred glow behind each level as the needle reaches it and a bloom at
-the tip; the lower ends fade into the sheet. Before the needle moves the ring is plain grey. Motion (Web Animations,
-one path for needle, fill, grains, colours and word): ease-in-out a little past the reading, back, forward a touch,
-settle (≈ 2.7 s); colours blend in oklab; the word swaps Safe → Caution → High risk (out, then in).
+**Speedometer** (`sheets/GaugeMeter.tsx`, Figma LM → F&O Playground 6917:62779, 20 Nov): the Figma speedometer
+illustration (`sheets/gaugeArt.ts`, its exported paths and colours — a brand illustration, not tokens): six colour
+segments green → red with a thin pastel rim, a black ring with ticks, a dark face and a white needle; Low · Medium · High
+in Heading/12 round it, placed as in Figma. Where the needle stops: high risk 78 (as drawn in Figma), medium 50, low 15.
+Motion, once on open: the segments light up left → right (0.26 s each, 70 ms apart) with their labels, then the needle
+swings up from 0 (`sheets/needle.ts`: eased, a little past the reading, back a touch, settle; 2 s after 0.32 s) and the
+segment it lands on brightens once. Reduced motion: the end state. Dark: the illustration as it is; the wave and text
+follow the theme.
 
-**4h / 4i · Speedometer** (`sheets/GaugeMeter.tsx`, Figma LM → F&O Playground 6917:62779, 20 Nov): the Figma
-speedometer illustration (`sheets/gaugeArt.ts`, its exported paths and colours — a brand illustration, not tokens): six
-colour segments green → red with a thin pastel rim, a black ring with ticks, a dark face and a white needle; its scale
-in Heading/12 — 4h 0 · 30 · 50 · 80 · 100, 4i Low · Medium · High — placed as in Figma. Its own layout: a pink wave (the
-level's light tint, blurred 11.3) across the top of the sheet, the dial, 16, the risk Tag (md, secondary, loss / warning
-/ profit, warning icon), 16, "Your chances of losing money is high" (Heading/20; medium / low for the other levels; Figma said "Your portfolio is at high risk", changed 20 Nov), 8, the fact (Description/14, secondary — Figma had Label/12, changed 20 Nov; size-up:
-"You are placing a bigger order right after loss"); 24 from the sheet's top and 24 to the dock's line. Where the needle
-stops: high risk 78 (as drawn in Figma), medium 50, low 15. Motion, once on open: the segments light up left → right
-(0.26 s each, 70 ms apart) with their labels, then the needle swings up from 0 with the soft dial's run (eased, a little
-past the reading, back a touch, settle; 2 s after 0.32 s) and the segment it lands on brightens once. Reduced motion:
-the end state. Dark: the illustration as it is; the wave and text follow the theme.
-
-**4g · Blocks** (`sheets/BlockDial.tsx`, from the user's reference): 13 thick rounded blocks with gaps, grey at rest; a
-fast eased fill (1.8 s, the same run with overshoot and bounce) lights them in their level's colour with a gradient (no
-glass); the block under the fill's head lifts outward and settles back — a wave travelling with the fill; level glows and
-a tip bloom as on 4f.
-
-**Mobile:** each dial's drawing area reaches past the ring (16 at the sides — the sheet's edge — and 70 above), pulled
-back with negative margins so the dial doesn't move: mobile Safari clips SVG at the svg's box, which cut the blurred
-glows off in hard edges. The text is drawn above the glow.
-
-**Floating switcher (prototype only):** on the order pad and over the open nudge, a draggable pill: grip · Meter · Risk
-level · Meter layout · Meter fill · Case · State. Each opens its own menu. `components/SheetSwitcher.tsx`, options in
+**Floating switcher (prototype only):** on the order pad and over the open nudge, a draggable pill: grip · Risk level ·
+Case · State. Each opens its own menu. `components/SheetSwitcher.tsx`, options in
 `options.ts`. Not part of the design: don't build it.
 
 **Vibration:** two short pulses (70 · 60 · 70 ms) when the sheet opens, not when it changes; setting "Vibrate when it
@@ -200,6 +179,7 @@ provide, per nudge: case id, data state, the headline numbers, ratio, own last l
 - No static (non-tappable) pill: Layout 1’s Chip header is drawn in the flow (NudgeSheet .chip) in the pill-tab shape with error-light tokens. A Tag with `radius-full` and a larger size would cover it.
 
 ### Changelog
+- 2026-11-24 · Risk meter: only the speedometer · Low–High is kept. 4f Soft dial (every fill), 4g Blocks, 4h Speedometer 0–100, the meter layouts and the Meter / Meter layout / Meter fill settings are archived in `archive/nudges-risk-meter-versions/`.
 
 - 2026-10-30 · first build on the `playground` branch.
 - 2026-10-30 · nudge sheet revamp: one card (big number + proof, 10 people filling in), pulsing icon, primary + secondary dock; tags, bars, explainer and disclaimer removed to cut text.
@@ -1373,10 +1353,10 @@ import { Icon } from '@l3/components/Icon'
 import { msCheck, msDragIndicator, msKeyboardArrowDown } from '@l3/icons/material'
 import { setFlowOption, useFlowOption, usePreview } from '../../../shared/prototype'
 import { t } from '../copy'
-import { activeMeter, caseOption, meterFillOption, meterLayoutOption, meterLevelOption, meterOption, stateOption } from '../options'
+import { caseOption, meterLevelOption, stateOption } from '../options'
 import styles from './SheetSwitcher.module.css'
 
-type Option = typeof caseOption | typeof stateOption | typeof meterOption | typeof meterLevelOption | typeof meterLayoutOption | typeof meterFillOption
+type Option = typeof caseOption | typeof stateOption | typeof meterLevelOption
 type Spot = { x: number; y: number }
 
 const SPOT_KEY = 'nudges-switcher-spot'
@@ -1412,8 +1392,6 @@ export function SheetSwitcher({ open }: { open: boolean }) {
 function Pill({ host }: { host: HTMLElement }) {
   const pill = useRef<HTMLDivElement>(null)
   const [spot, setSpot] = useState<Spot | null>(readSpot)
-  const meter = activeMeter(useFlowOption('nudges', meterOption.id, meterOption.default))
-  const fill = useFlowOption('nudges', meterFillOption.id, meterFillOption.default)
   const [menu, setMenu] = useState<{ option: Option; chip: HTMLElement } | null>(null)
   const grab = useRef<{ id: number; dx: number; dy: number } | null>(null)
 
@@ -1451,10 +1429,7 @@ function Pill({ host }: { host: HTMLElement }) {
       onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up}>
       <Icon icon={msDragIndicator} size={20} />
     </button>
-    <Pick option={meterOption} menu={menu} setMenu={setMenu} short={(_, label) => label.split(' · ')[0]} />
     <Pick option={meterLevelOption} menu={menu} setMenu={setMenu} short={(_, label) => label} />
-    {!meter.startsWith('gauge') && !(meter === 'soft' && (fill === 'splitWords' || fill === 'wholeWords')) && <Pick option={meterLayoutOption} menu={menu} setMenu={setMenu} short={(_, label) => label} />}
-    {meter === 'soft' && <Pick option={meterFillOption} menu={menu} setMenu={setMenu} short={(_, label) => label} />}
     <Pick option={caseOption} menu={menu} setMenu={setMenu} short={(_, label) => label} wide />
     <Pick option={stateOption} menu={menu} setMenu={setMenu} short={(v) => t('switcher.state', { state: v })} />
     {menu && <Menu option={menu.option} chip={menu.chip} host={host} onClose={() => setMenu(null)} />}
@@ -1604,7 +1579,6 @@ function Menu({ option, chip, host, onClose }: { option: Option; chip: HTMLEleme
   "option.actions": "Buttons",
   "option.actionsTwo": "Both guardrails",
   "option.actionsOne": "One guardrail",
-  "nudge.tag": "Overtrading Detected",
   "gauge.low": "Low",
   "gauge.medium": "Medium",
   "gauge.high": "High",
@@ -1635,15 +1609,10 @@ function Menu({ option, chip, host, onClose }: { option: Option; chip: HTMLEleme
   "nudge.zoneHeadline": "Overtrading, you just entered the high risk zone",
   "nudge.overtrading": "You're overtrading",
   "nudge.overtradingRisk": "Your chances of losing money are high",
-  "nudge.meterHeading": "You are overtrading",
-  "nudge.meterSub": "Your chances of losing money today are high",
-  "nudge.meterRiskHeading": "Your chances of losing money are high",
   "nudge.sizeUpNow": "You are placing a bigger {ratio}X order right now after a loss of {amount}",
   "nudge.sizeUpNowPlain": "You are placing a bigger order right now after a loss of {amount}",
-  "nudge.biggerAfterLoss": "You are placing a bigger order right after a loss",
   "nudge.meterFirstSub": "A {ratio} bigger order right after a {amount} loss raises your chances of losing more today",
   "nudge.meterFirstSubPlain": "A bigger order right after a {amount} loss raises your chances of losing more today",
-  "nudge.meterFirstSubOther": "{fact}. Your chances of losing money today are high",
   "nudge.numberFact": "You’re placing a bigger order right after a loss of {amount}",
   "nudge.everyone": "Everyone",
   "nudge.you": "You",
@@ -1661,7 +1630,6 @@ function Menu({ option, chip, host, onClose }: { option: Option; chip: HTMLEleme
   "nudge.meterLabel": "Risk meter: you are in the danger zone",
   "nudge.meterLabelSafe": "Risk meter: you are in the safe zone",
   "nudge.meterLabelCaution": "Risk meter: you are in the caution zone",
-  "nudge.meterLabelRatio": "Risk meter: you are in the danger zone, {ratio}X your usual",
   "case.generic.name": "Generic",
   "case.generic.headline": "Down ₹2,500 today and still trading",
   "case.sizeUp.name": "1 · Size-up after a loss",
@@ -1755,31 +1723,15 @@ function Menu({ option, chip, host, onClose }: { option: Option; chip: HTMLEleme
   "option.zoneFact": "5e · Fact first",
   "option.zoneCard": "5f · One card",
   "option.zoneCompact": "5g · Compact",
-  "option.meter": "Meter",
   "option.meterNeedle": "4a · Needle",
   "option.meterTicks": "4b · Ticks",
   "option.meterSweep": "4c · Sweep",
   "option.meterKnob": "4d · Knob",
   "option.meterLevels": "4e · Levels",
-  "option.meterSoft": "4f · Soft dial",
-  "option.meterBlocks": "4g · Blocks",
-  "option.meterGauge": "4h · Speedometer · 0–100",
-  "option.meterGaugeWords": "4i · Speedometer · Low–High",
   "option.meterLevel": "Risk level",
   "option.levelDanger": "High risk",
   "option.levelCaution": "Caution",
   "option.levelSafe": "Safe",
-  "option.meterLayout": "Meter layout",
-  "option.meterLayoutText": "Text first",
-  "option.meterLayoutMeter": "Meter first",
-  "option.meterLayoutTag": "Tag first",
-  "option.meterLayoutNumber": "With multiple",
-  "option.meterFill": "Meter fill",
-  "option.meterFillWhole": "One colour",
-  "option.meterFillBlend": "Blended",
-  "option.meterFillSplit": "Blended · 3 blocks",
-  "option.meterFillSplitWords": "3 blocks · Low–High",
-  "option.meterFillWholeWords": "One colour · Low–High",
   "option.layoutZone": "5 · Risk bar",
   "option.badge": "Layout 1 header",
   "option.badgeChip": "Chip (✋ in the tag)",
@@ -2215,7 +2167,7 @@ export const nudges: Flow = {
   ],
   screens: [
     { id: 'nudges-01', section: 'meter', name: 'Order pad · silent help', figma: '8671:18433', note: 'The default — no interruption. The F&O commodity order pad (fno-25) as it is, plus silent help: “Set TPSL” becomes a TP/SL row, pre-filled and on (Target +20% · Stop-loss −10%); “Set a loss limit for today” is the first line of the dock. Buy fires the nudge picked in the settings (Case, Data state), once: the shared cap is 1 per session.', render: (go) => <OrderPad nudge="options" onBack={back(go)} /> },
-    { id: 'nudges-02', section: 'meter', name: 'Nudge · from settings', figma: '', note: 'The one nudge sheet — the risk meter — filled by the case and data state picked in the settings. Pills on the floating switcher: Meter (4f Soft dial · 4g Blocks), Risk level, Meter layout, Meter fill, Case, State.', render: (go) => <OrderPad nudge="options" initialSheet="nudge" onBack={back(go)} /> },
+    { id: 'nudges-02', section: 'meter', name: 'Nudge · from settings', figma: '', note: 'The one nudge sheet — the risk meter, the speedometer · Low–High — filled by the case and data state picked in the settings. Pills on the floating switcher: Risk level, Case, State.', render: (go) => <OrderPad nudge="options" initialSheet="nudge" onBack={back(go)} /> },
     { id: 'nudges-03', section: 'meter', name: 'Nudge · generic', figma: '', note: 'Fires on Positions with the revenge flag when no single behaviour stands out, or the trader is too new to compare (state D). The meter and its own fact under it. Dismiss says just “Not now” (no order in hand).', render: (go) => <OrderPad nudge={{ caseId: 'generic', state: 'B' }} initialSheet="nudge" onBack={back(go)} /> },
     { id: 'nudges-04', section: 'meter', name: 'Nudge · size-up · A (own loss)', figma: '', note: 'Size-up after a loss, own history and last loss (A): the meter at high risk, “You are placing a bigger order right after a loss”.', render: (go) => <OrderPad nudge={{ caseId: 'sizeUp', state: 'A' }} initialSheet="nudge" onBack={back(go)} /> },
     { id: 'nudges-05', section: 'meter', name: 'Nudge · orders today · B', figma: '', note: 'Orders today, own history (B): the meter, and the fact “3X more orders than usual today” under it.', render: (go) => <OrderPad nudge={{ caseId: 'orders', state: 'B' }} initialSheet="nudge" onBack={back(go)} /> },
@@ -2255,20 +2207,9 @@ const onOff = [{ value: 'off', label: t('option.everyBuyOff') }, { value: 'on', 
 // Size-up after a loss is the default and heads the list.
 export const caseOption = { id: 'case', group: 'Nudge', label: t('option.case'), picker: 'dropdown' as const, values: [...nudgeCases].sort((a, b) => Number(b.id === 'sizeUp') - Number(a.id === 'sizeUp')).map((c) => ({ value: c.id, label: t(`case.${c.id}.name` as Key) })), default: 'sizeUp' }
 export const stateOption = { id: 'state', group: 'Nudge', label: t('option.state'), picker: 'dropdown' as const, values: [{ value: 'A', label: t('option.stateA') }, { value: 'B', label: t('option.stateB') }, { value: 'C', label: t('option.stateC') }], default: 'A' }
-/** The meter (19 Nov, cut down to the two in use): 4f Soft dial (default) or 4g Blocks; 20 Nov: 4h / 4i the Figma
- *  speedometer (0–100 or Low–High scale, its own layout). A stored older style falls back to the default (activeMeter). */
-export const meterOption = { id: 'meter', group: 'Nudge', label: t('option.meter'), picker: 'dropdown' as const, values: [{ value: 'soft', label: t('option.meterSoft') }, { value: 'blocks', label: t('option.meterBlocks') }, { value: 'gauge', label: t('option.meterGauge') }, { value: 'gaugeWords', label: t('option.meterGaugeWords') }], default: 'soft' }
-export const activeMeter = (value: string) => meterOption.values.some((v) => v.value === value) ? value : meterOption.default
-
-/** Where the reading stops (19 Nov) — the meter's three versions. */
+/** Where the reading stops (19 Nov). The meter itself is one design since 24 Nov: the speedometer · Low–High (the other
+ *  meters, the meter layouts and fills are archived in archive/nudges-risk-meter-versions/). */
 export const meterLevelOption = { id: 'meterLevel', group: 'Nudge', label: t('option.meterLevel'), picker: 'dropdown' as const, values: [{ value: 'danger', label: t('option.levelDanger') }, { value: 'caution', label: t('option.levelCaution') }, { value: 'safe', label: t('option.levelSafe') }], default: 'danger' }
-
-/** Where the text sits around the meter (19 Nov): Text first · Meter first · Tag first · With multiple. */
-export const meterLayoutOption = { id: 'meterLayout', group: 'Nudge', label: t('option.meterLayout'), picker: 'dropdown' as const, values: [{ value: 'text', label: t('option.meterLayoutText') }, { value: 'meter', label: t('option.meterLayoutMeter') }, { value: 'tag', label: t('option.meterLayoutTag') }, { value: 'number', label: t('option.meterLayoutNumber') }], default: 'text' }
-/** Soft dial only (19 Nov): the whole ring changes colour as the needle moves, or each part keeps the colour
- *  it was filled with, blended (green → yellow → red); or (20 Nov) blended and cut into three blocks where the colour
- *  changes; and that with Low · Medium · High round it, as on the speedometer; and (20 Nov) the one-colour ring with the same scale and tag. */
-export const meterFillOption = { id: 'meterFill', group: 'Nudge', label: t('option.meterFill'), picker: 'dropdown' as const, values: [{ value: 'whole', label: t('option.meterFillWhole') }, { value: 'blend', label: t('option.meterFillBlend') }, { value: 'split', label: t('option.meterFillSplit') }, { value: 'splitWords', label: t('option.meterFillSplitWords') }, { value: 'wholeWords', label: t('option.meterFillWholeWords') }], default: 'whole' }
 
 /** Trade protect sheets (Figma "Nudges", 23 Nov): one screen per use case, nudges-12 … nudges-29, Figma's five first. */
 export const protectScreenIds = protectUseCases.map((_, i) => `nudges-${12 + i}`)
@@ -2284,10 +2225,7 @@ export const protectVersionOption = {
 export const nudgeOptions = [
   caseOption,
   stateOption,
-  meterOption,
   meterLevelOption,
-  meterLayoutOption,
-  meterFillOption,
   protectVersionOption,
   { id: 'everyBuy', group: 'Nudge', label: t('option.everyBuy'), picker: 'toggle' as const, values: onOff, default: 'on' },
   { id: 'vibrate', group: 'Nudge', label: t('option.vibrate'), picker: 'toggle' as const, values: onOff, default: 'on' },
@@ -2361,13 +2299,12 @@ import { lmSwitchArrowVertical } from '@l3/icons/lemonnade'
 import { msChevronRight, msShield } from '@l3/icons/material'
 import { inr } from '../../../shared/data/format'
 import { SHOWCASE, useFlowOption } from '../../../shared/prototype'
-import type { RiskLevel } from '../sheets/SoftDial'
+import type { RiskLevel } from '../sheets/needle'
 import { Screen } from '../../../shared/ui/Screen'
 import { t } from '../copy'
-import { activeMeter } from '../options'
 import { caseById, defaultLimit, funds, intradayCloseTime, lossToday, orderContract, prefilledTpsl, sellMargin, validities, type DataState, type NudgeCaseId, type ProtectUseCaseId, protectById, type OrderProduct, type OrderSide, type OrderType } from '../data'
 import { LossLimitSheet, TpslSheet } from '../sheets/GuardrailSheets'
-import { NudgeSheet, type MeterLayout, type MeterStyle } from '../sheets/NudgeSheet'
+import { NudgeSheet } from '../sheets/NudgeSheet'
 import { TradeProtectSheet, type ProtectVersionId } from '../sheets/TradeProtectSheet'
 import { SheetSwitcher } from '../components/SheetSwitcher'
 import styles from './OrderPad.module.css'
@@ -2408,14 +2345,7 @@ export function OrderPad({ side = 'buy', product: initialProduct = 'delivery', t
   const optionState = useFlowOption('nudges', 'state', 'A') as DataState
   const actions = useFlowOption('nudges', 'actions', 'one') as 'one' | 'two'
   // Prototype setting: fire the nudge on every Buy / Sell instead of once (the real cap is 1 per session).
-  const meterStyle = activeMeter(useFlowOption('nudges', 'meter', 'soft')) as MeterStyle
   const meterLevel = useFlowOption('nudges', 'meterLevel', 'danger') as RiskLevel
-  const meterLayout = useFlowOption('nudges', 'meterLayout', 'text') as MeterLayout
-  const meterFill = useFlowOption('nudges', 'meterFill', 'whole')
-  const meterBlend = meterFill === 'blend' || meterFill === 'split' || meterFill === 'splitWords'
-  const meterSplit = meterFill === 'split' || meterFill === 'splitWords'
-  // Low · Medium · High round the dial and the risk tag in it: on the 3-block or the one-colour ring.
-  const meterWords = meterFill === 'splitWords' || meterFill === 'wholeWords'
   const everyBuy = useFlowOption('nudges', 'everyBuy', 'on') === 'on'
   const vibrate = useFlowOption('nudges', 'vibrate', 'on') === 'on'
   // A screen with a fixed case (03–09) shows it until the case or data state is changed in the settings; from then on
@@ -2460,7 +2390,7 @@ export function OrderPad({ side = 'buy', product: initialProduct = 'delivery', t
     : undefined
 
   const sheet = protectSheet ?? (modal?.kind === 'nudge' && fired
-    ? <NudgeSheet caseId={fired.caseId} state={fired.state} meterStyle={meterStyle} meterLevel={meterLevel} meterLayout={meterLayout} meterBlend={meterBlend} meterSplit={meterSplit} meterWords={meterWords} vibrate={vibrate} actions={actions} onGuardrail={(g) => setModal({ kind: g })} onNotNow={place} />
+    ? <NudgeSheet caseId={fired.caseId} state={fired.state} meterLevel={meterLevel} vibrate={vibrate} actions={actions} onGuardrail={(g) => setModal({ kind: g })} onNotNow={place} />
     : modal?.kind === 'pnl'
       ? <LossLimitSheet initial={limit ?? defaultLimit} onClose={() => setModal(null)} onSave={(amount) => { setLimit(amount); setModal(null); setToast(t('pnl.saved', { amount: inr(amount, 0) })) }} />
       : modal?.kind === 'tpsl'
@@ -2528,274 +2458,6 @@ export function OrderPad({ side = 'buy', product: initialProduct = 'delivery', t
 }
 ```
 
-### `src/flows/nudges/sheets/BlockDial.module.css`
-
-```css
-/* 4g · Blocks (BlockDial.tsx), in the soft dial's design language. SVG drawing units. Resting styles = the end state;
-   the component (Web Animations) runs the sweep, the tip's bloom colour and the level word; CSS runs the glows. */
-.dial { margin: 0; }
-/* The drawing area has room for the whole blurred glow (it reaches ~50 past the ring): 16 past the ring on each side
-   (that's the sheet's edge) and 70 above the dial, so nothing draws outside the svg — mobile browsers (Safari) clip
-   SVG content at the svg's box, overflow: visible or not, which cut the glow off in a hard edge (19 Nov). The svg is
-   that much bigger and pulled back by negative margins (relative to the width, like the viewBox), so the dial sits
-   exactly where it did and its box ends at the ring's base line: viewBox −16 −64 372 × 280 for the dial's 340 × 170. */
-.svg {
-  display: block;
-  width: calc(100% * 372 / 340);
-  height: auto;
-  margin: calc(100% * -70 / 340) calc(100% * -16 / 340) calc(100% * -40 / 340);
-  overflow: visible;
-}
-
-/* The sweep's resting point (the component animates it). */
-.sweepStroke { fill: none; stroke: white; stroke-dasharray: 1; stroke-dashoffset: var(--sweep-rest); }
-
-/* Layer blur per level, as on the soft dial: lighter than the level colour (mixed half with white); on as the fill
-   reaches the level, off as it moves on; the last one stays and breathes. */
-[data-tone='safe'] { --tone: color-mix(in srgb, var(--l3-surface-accent-success-default) 50%, var(--l3-static-white)); }
-[data-tone='caution'] { --tone: color-mix(in srgb, var(--l3-surface-accent-warning-default) 50%, var(--l3-static-white)); }
-[data-tone='danger'] { --tone: color-mix(in srgb, var(--l3-surface-accent-error-default) 50%, var(--l3-static-white)); }
-.glow { fill: none; stroke: var(--tone); stroke-linecap: round; opacity: 0; animation: glowPass var(--glow-for) linear var(--glow-in) both; }
-@keyframes glowPass { 0% { opacity: 0; } 20% { opacity: 0.55; } 70% { opacity: 0.45; } 100% { opacity: 0; } }
-.glow[data-last] {
-  opacity: 0.35;
-  animation:
-    fadeIn var(--l3-motion-duration-long) var(--l3-motion-easing-decelerate) var(--glow-in) backwards,
-    breathe calc(var(--l3-motion-duration-long) * 4) var(--l3-motion-easing-standard) calc(var(--glow-in) + var(--glow-for)) 2;
-}
-@keyframes breathe { 50% { opacity: 0.6; } }
-@keyframes fadeIn { from { opacity: 0; } }
-
-/* The bloom riding the fill's tip (turns about the ring's centre with the sweep). Resting colour = the reached level. */
-.turn { transform-box: view-box; transform-origin: 170px 176px; transform: rotate(var(--to-deg)); }
-.bloom { fill: var(--l3-surface-accent-error-default); opacity: 0.4; animation: fadeIn var(--l3-motion-duration-medium) linear var(--bloom-in) backwards; }
-.dial[data-level='safe'] .bloom { fill: var(--l3-surface-accent-success-default); }
-.dial[data-level='caution'] .bloom { fill: var(--l3-surface-accent-warning-default); }
-
-/* The level word: the reached level's word rests visible; the component swaps them on the way. */
-.value { font: var(--l3-text-heading-36); fill: var(--l3-content-primary); animation: fadeIn var(--l3-motion-duration-long) var(--l3-motion-easing-decelerate) var(--word-in) backwards; }
-.word { font: var(--l3-text-heading-20); fill: var(--l3-content-primary); opacity: 0; }
-.dial[data-level='safe'] .word[data-word='safe'],
-.dial[data-level='caution'] .word[data-word='caution'],
-.dial[data-level='danger'] .word[data-word='danger'] { opacity: 1; }
-
-@media (prefers-reduced-motion: reduce) {
-  .dial * { animation: none !important; }
-}
-```
-
-### `src/flows/nudges/sheets/BlockDial.tsx`
-
-```tsx
-import { useEffect, useId, useRef, type CSSProperties } from 'react'
-import { t } from '../copy'
-import { easeTimeAt, needleKeys, OVER, RUN, RUN_EASE, type RiskLevel } from './SoftDial'
-import styles from './BlockDial.module.css'
-
-/**
- * 4g · Blocks (19 Nov, from the user's reference image; in the soft dial's design language). The half ring as 13 thick
- * rounded blocks with gaps, grey at rest. A fill sweeps in from the left the way the soft dial's needle moves — fast,
- * eased, a little past the reading, back and forth, settling on the last lit block's edge — and the blocks it covers
- * show their level's colour: green (safe), yellow (caution), red (high risk), each with depth (deep inside, light
- * outside; no glass, 19 Nov). The block under the fill's head lifts outward and settles back as it moves on — a wave
- * that travels with the fill. Behind, each level's blurred glow comes on as
- * the fill reaches it; a bloom rides the fill's tip in the colour of the level it's in. In the middle, only the level
- * word, swapping Safe → Caution → High risk as the fill passes. Reduced motion: the end state.
- */
-const CX = 170
-const CY = 176
-const RO = 158
-const RI = 104
-const RM = (RO + RI) / 2
-const BAND = RO - RI
-const COUNT = 13
-const GAP = 0.018
-const ROUND = 7 // corner rounding: each block is drawn this much smaller and stroked this wide, round joins
-const SAFE_END = 0.45
-const CAUTION_END = 0.65
-const LEVEL_AT = { safe: 0.3, caution: 0.56 } as const
-/** Fast (19 Nov, "it should fill up fast"): the run to the overshoot takes 0.6 of 1.8 s. */
-const DELAY = 250
-const TRAVEL = 1800
-/** How far the block under the fill's head lifts outward (drawing units). */
-const LIFT = 7
-/** Progress (0–1) of a cubic-bezier easing at time fraction x. */
-function easeTimeInverse(x: number, [x1, y1, x2, y2]: number[]) {
-  const b = (s: number, p: number, q: number) => 3 * p * s * (1 - s) ** 2 + 3 * q * s ** 2 * (1 - s) + s ** 3
-  let lo = 0, hi = 1
-  for (let i = 0; i < 28; i++) { const m = (lo + hi) / 2; if (b(m, x1, x2) < x) lo = m; else hi = m }
-  return b((lo + hi) / 2, y1, y2)
-}
-
-function point(f: number, r: number) {
-  const a = Math.PI * (1 - f)
-  return [CX + r * Math.cos(a), CY - r * Math.sin(a)] as const
-}
-function arc(from: number, to: number, r: number) {
-  const [x1, y1] = point(from, r)
-  const [x2, y2] = point(to, r)
-  return `M ${x1} ${y1} A ${r} ${r} 0 0 1 ${x2} ${y2}`
-}
-/** One block: an annular sector from f0 to f1, inset by ROUND / 2 so its round stroke brings it back to size. */
-function block(f0: number, f1: number) {
-  const inset = ROUND / 2
-  const ro = RO - inset
-  const ri = RI + inset
-  const [x1, y1] = point(f0 + inset / (Math.PI * ro), ro)
-  const [x2, y2] = point(f1 - inset / (Math.PI * ro), ro)
-  const [x3, y3] = point(f1 - inset / (Math.PI * ri), ri)
-  const [x4, y4] = point(f0 + inset / (Math.PI * ri), ri)
-  return `M ${x1} ${y1} A ${ro} ${ro} 0 0 1 ${x2} ${y2} L ${x3} ${y3} A ${ri} ${ri} 0 0 0 ${x4} ${y4} Z`
-}
-const toneAt = (f: number) => (f < SAFE_END ? 'safe' : f < CAUTION_END ? 'caution' : 'danger')
-const levels = [
-  { from: 0, to: SAFE_END, tone: 'safe' },
-  { from: SAFE_END, to: CAUTION_END, tone: 'caution' },
-  { from: CAUTION_END, to: 1, tone: 'danger' },
-] as const
-const ms = (v: number) => `${Math.round(v)}ms`
-/** Where the reading lands at high risk: 2X at ~75 %, further with a bigger multiple (as the one-colour soft dial). */
-const nowAt = (ratio?: number) => (ratio === undefined ? 0.8 : 0.72 + 0.23 * Math.min(1, Math.max(0, (ratio - 1) / 9)))
-/** Gradient stops per level: the content colour deep inside, the surface colour through the band, the light tint outside. */
-const shades = {
-  safe: ['--l3-content-accent-success-default', '--l3-surface-accent-success-default', '--l3-surface-accent-success-light'],
-  caution: ['--l3-content-accent-warning-default', '--l3-surface-accent-warning-default', '--l3-surface-accent-warning-light'],
-  danger: ['--l3-content-accent-error-default', '--l3-surface-accent-error-default', '--l3-surface-accent-error-light'],
-} as const
-
-export function BlockDial({ ratio, level = 'danger', showRatio = false }: { ratio?: number; level?: RiskLevel; showRatio?: boolean }) {
-  const number = showRatio && ratio !== undefined
-  const uid = useId().replace(/[^a-zA-Z0-9]/g, '')
-  const id = (name: string) => `bd-${name}-${uid}`
-  const root = useRef<HTMLElement>(null)
-  const target = level === 'danger' ? nowAt(ratio) : LEVEL_AT[level]
-  const width = (1 - GAP * (COUNT - 1)) / COUNT
-  const blocks = Array.from({ length: COUNT }, (_, i) => {
-    const f0 = i * (width + GAP)
-    return { f0, f1: f0 + width, tone: toneAt(f0 + width / 2), lit: f0 + width / 2 <= target }
-  })
-  const lit = blocks.filter((b) => b.lit)
-  // The fill rests on the last lit block's outer edge, so whole blocks show; it overshoots into the next one and back.
-  const end = lit.length ? lit[lit.length - 1].f1 + 0.004 : 0.001
-  const END = Math.min(1, end + OVER)
-  const reach = (f: number) => DELAY + TRAVEL * RUN * easeTimeAt(Math.min(1, Math.max(0, f / END)), RUN_EASE)
-  const amberAt = reach(SAFE_END)
-  const redAt = reach(CAUTION_END)
-  const label = t(level === 'safe' ? 'nudge.meterLabelSafe' : level === 'caution' ? 'nudge.meterLabelCaution' : 'nudge.meterLabel')
-  const words = [['safe', 'nudge.levelSafe'], ['caution', 'nudge.levelMid'], ['danger', 'nudge.highRisk']] as const
-
-  useEffect(() => {
-    const el = root.current
-    if (!el || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    const keys = needleKeys(end)
-    const timing = { duration: TRAVEL, delay: DELAY, fill: 'backwards' as const }
-    const running: Animation[] = []
-    el.querySelectorAll<SVGElement>('[data-turn]').forEach((n) => running.push(n.animate(
-      keys.map((k) => ({ offset: k.at, easing: k.easing, transform: `rotate(${(k.f - 0.5) * 180}deg)` })), timing)))
-    const sweep = el.querySelector<SVGElement>('[data-sweep]')
-    if (sweep) running.push(sweep.animate(keys.map((k) => ({ offset: k.at, easing: k.easing, strokeDashoffset: `${1 - Math.min(k.f, END) / END}` })), timing))
-
-    // Keyframe offsets must never go backwards: at this speed one level can pass in less than two fades.
-    const forward = <T extends { offset: number }>(keys: T[]) => { let last = 0; return keys.map((k) => ({ ...k, offset: (last = Math.max(last, k.offset)) })) }
-    // The tip's bloom takes the colour of the level the fill is in (oklab blends at each edge).
-    const total = DELAY + TRAVEL
-    const at = (v: number) => Math.min(1, Math.max(0, v / total))
-    const css = getComputedStyle(el)
-    const c = (name: string) => css.getPropertyValue(name).trim()
-    const g = c('--l3-surface-accent-success-default'), y = c('--l3-surface-accent-warning-default'), r = c('--l3-surface-accent-error-default')
-    const mix = (a: string, b: string) => `color-mix(in oklab, ${a}, ${b})`
-    const w = 120
-    const bloomKeys = level === 'safe' ? [{ offset: 0, fill: g }, { offset: 1, fill: g }]
-      : level === 'caution' ? [{ offset: 0, fill: g }, { offset: at(amberAt - w), fill: g }, { offset: at(amberAt), fill: mix(g, y) }, { offset: at(amberAt + w), fill: y }, { offset: 1, fill: y }]
-        : [{ offset: 0, fill: g }, { offset: at(amberAt - w), fill: g }, { offset: at(amberAt), fill: mix(g, y) }, { offset: at(amberAt + w), fill: y },
-          { offset: at(Math.max(amberAt + w, redAt - w)), fill: y }, { offset: at(redAt), fill: mix(y, r) }, { offset: at(redAt + w), fill: r }, { offset: 1, fill: r }]
-    el.querySelectorAll<SVGElement>('[data-bloom]').forEach((n) => running.push(n.animate(forward(bloomKeys), { duration: total, fill: 'backwards' })))
-
-    // The level word swaps as the fill passes each edge (out, then in).
-    const fade = 90
-    const word = (tone: string, from: number, to: number) => el.querySelectorAll<SVGElement>(`[data-word="${tone}"]`).forEach((n) => running.push(n.animate(forward([
-      { offset: 0, opacity: from <= 0 ? 1 : 0 }, { offset: at(from), opacity: from <= 0 ? 1 : 0 }, { offset: at(from + fade), opacity: 1 },
-      { offset: at(to - fade), opacity: 1 }, { offset: at(to), opacity: to >= total ? 1 : 0 }, { offset: 1, opacity: to >= total ? 1 : 0 },
-    ]), { duration: total, fill: 'backwards' })))
-    if (level === 'caution') { word('safe', 0, amberAt); word('caution', amberAt, total) }
-    if (level === 'danger') { word('safe', 0, amberAt); word('caution', amberAt, redAt); word('danger', redAt, total) }
-    // The wave (19 Nov): the block under the fill's head lifts outward (LIFT) and settles back as the head moves on, so a
-    // wave travels with the fill — over the overshoot and back-swing too. The head's path is sampled from the same keys.
-    const samples = 90
-    const headAt = (p: number) => {
-      const i = keys.findIndex((k, n) => n < keys.length - 1 && p >= k.at && p <= keys[n + 1].at)
-      const a = keys[Math.max(0, i)], b = keys[Math.max(0, i) + 1]
-      const local = (p - a.at) / (b.at - a.at || 1)
-      const m = /cubic-bezier\(([^)]+)\)/.exec(a.easing)
-      const e = m ? easeTimeInverse(local, m[1].split(',').map(Number)) : local
-      return a.f + (b.f - a.f) * e
-    }
-    const heads = Array.from({ length: samples + 1 }, (_, n) => headAt(n / samples))
-    el.querySelectorAll<SVGGElement>('[data-block]').forEach((n) => {
-      const b = blocks[Number(n.dataset.block)]
-      const mid = (b.f0 + b.f1) / 2
-      const reachWidth = width * 0.9
-      const a = Math.PI * (1 - mid)
-      const lifts = heads.map((h) => Math.max(0, 1 - Math.abs(h - mid) / reachWidth))
-      if (!lifts.some((l) => l > 0)) return
-      running.push(n.animate(lifts.map((l, k) => ({ offset: k / samples, transform: `translate(${(Math.cos(a) * LIFT * l).toFixed(2)}px, ${(-Math.sin(a) * LIFT * l).toFixed(2)}px)` })), { duration: TRAVEL, delay: DELAY, fill: 'backwards' }))
-    })
-    return () => running.forEach((a) => a.cancel())
-  }, [end, END, amberAt, redAt, level]) // blocks / width follow from level and ratio, as end does
-
-  const big = { x: -80, y: -80, width: 500, height: 400 }
-  const shape = (b: (typeof blocks)[number], i: number, paint: string, extra?: string) =>
-    <path key={`${extra ?? 'b'}${i}`} d={block(b.f0, b.f1)} fill={paint} stroke={paint} strokeWidth={ROUND} strokeLinejoin="round" className={extra} />
-  return <figure ref={root} className={styles.dial} data-level={level} role="img" aria-label={label}
-    style={{ '--to-deg': `${(end - 0.5) * 180}deg`, '--sweep-rest': 1 - end / END, '--bloom-in': ms(DELAY), '--word-in': ms(reach(end)) } as CSSProperties}>
-    <svg viewBox="-16 -64 372 280" className={styles.svg} aria-hidden>
-      <defs>
-        {(['safe', 'caution', 'danger'] as const).map((tone) =>
-          <radialGradient key={tone} id={id(tone)} gradientUnits="userSpaceOnUse" cx={CX} cy={CY} r={RO}>
-            <stop offset={RI / RO} style={{ stopColor: `var(${shades[tone][0]})` }} />
-            <stop offset={(RI + BAND * 0.45) / RO} style={{ stopColor: `var(${shades[tone][1]})` }} />
-            <stop offset="1" style={{ stopColor: `var(${shades[tone][2]})` }} />
-          </radialGradient>)}
-        {/* Unlit blocks: a soft grey, a touch lighter outside. */}
-        <radialGradient id={id('grey')} gradientUnits="userSpaceOnUse" cx={CX} cy={CY} r={RO}>
-          <stop offset={RI / RO} style={{ stopColor: 'var(--l3-surface-tertiary)' }} />
-          <stop offset="1" style={{ stopColor: 'var(--l3-surface-secondary)' }} />
-        </radialGradient>
-        <mask id={id('sweep')} maskUnits="userSpaceOnUse" {...big}>
-          <path d={arc(0, END, RM)} pathLength={1} className={styles.sweepStroke} strokeWidth={BAND + 30} data-sweep />
-        </mask>
-        <filter id={id('blur')} filterUnits="userSpaceOnUse" {...big}><feGaussianBlur stdDeviation="14" /></filter>
-      </defs>
-
-      {/* Layer blur: each level's glow comes on as the fill reaches it and fades as it moves on; the last one stays. */}
-      {levels.filter((l) => l.from < end).map((l) => {
-        const last = end <= l.to
-        const on = l.from === 0 ? DELAY : reach(l.from)
-        const off = reach(Math.min(l.to, end)) + 250
-        return <path key={l.tone} d={arc(l.from + 0.02, Math.min(l.to, end) - 0.01, RM)} className={styles.glow} data-tone={l.tone}
-          data-last={last || undefined} strokeWidth={BAND + 16} filter={`url(#${id('blur')})`}
-          style={{ '--glow-in': ms(on), '--glow-for': ms(off - on) } as CSSProperties} />
-      })}
-
-      {/* Each block: grey, with its gradient over it where the sweep has reached (no glass, 19 Nov). Each block is its own
-          group so it can lift outward as the fill passes it — the wave. */}
-      {blocks.map((b, i) => <g key={i} data-block={i}>
-        {shape(b, i, `url(#${id('grey')})`)}
-        <g mask={`url(#${id('sweep')})`}>{shape(b, i, `url(#${id(b.tone)})`, 'c')}</g>
-      </g>)}
-
-      {/* The bloom riding the fill's tip. */}
-      <g className={styles.turn} data-turn>
-        <circle cx={CX} cy={CY - RM} r={BAND / 2} className={styles.bloom} data-bloom filter={`url(#${id('blur')})`} />
-      </g>
-
-      {number && <text x={CX} y={CY - 38} className={styles.value} textAnchor="middle">{ratio}X</text>}
-      {words.map(([tone, key]) => <text key={tone} x={CX} y={number ? CY - 6 : CY - 22} className={styles.word} data-word={tone} textAnchor="middle">{t(key)}</text>)}
-    </svg>
-  </figure>
-}
-```
-
 ### `src/flows/nudges/sheets/GaugeMeter.module.css`
 
 ```css
@@ -2833,27 +2495,19 @@ export function BlockDial({ ratio, level = 'danger', showRatio = false }: { rati
 import { useEffect, useId, useRef, type CSSProperties } from 'react'
 import { t } from '../copy'
 import { GAUGE_H, GAUGE_W, NEEDLE_DRAWN_AT, NEEDLE_PIVOT, face, needle, ring, segments } from './gaugeArt'
-import { needleKeys, RUN_EASE, easeTimeAt, RUN } from './SoftDial'
-import type { RiskLevel } from './SoftDial'
+import { needleKeys, RUN_EASE, easeTimeAt, RUN, type RiskLevel } from './needle'
 import styles from './GaugeMeter.module.css'
 
-/** 4h (0 · 30 · 50 · 80 · 100) and 4i (Low · Medium · High): the speedometer from Figma (LM → F&O Playground
- *  6917:62779, 20 Nov). */
-export type GaugeScale = 'numbers' | 'words'
+/** The speedometer with Low · Medium · High round it (4i, Figma LM → F&O Playground 6917:62779, 20 Nov) — the risk
+ *  meter the prototype keeps (24 Nov). The 0–100 scale (4h) is archived in archive/nudges-risk-meter-versions/. */
 
 /**
  * The scale around the dial, as Figma lays it out: each label's centre (x) and top (y) in the 103-tall group, and
  * where the dial sits in it. Figma geometry, in drawing units (1 = 1 px at 1×).
  */
-const SCALES = {
-  numbers: {
-    width: 213.83, dialX: 36.78,
-    labels: [{ text: '0', x: 14, y: 79 }, { text: '30', x: 35.92, y: 32 }, { text: '50', x: 106.71, y: 0 }, { text: '80', x: 178.92, y: 32 }, { text: '100', x: 202.83, y: 78 }],
-  },
-  words: {
-    width: 214.66, dialX: 34.62,
-    labels: [{ key: 'gauge.low', x: 12, y: 78 }, { key: 'gauge.medium', x: 105.04, y: 0 }, { key: 'gauge.high', x: 200.66, y: 78 }],
-  },
+const SCALE = {
+  width: 214.66, dialX: 34.62,
+  labels: [{ key: 'gauge.low', x: 12, y: 78 }, { key: 'gauge.medium', x: 105.04, y: 0 }, { key: 'gauge.high', x: 200.66, y: 78 }],
 } as const
 const DIAL_Y = 24.38
 const HEIGHT = DIAL_Y + GAUGE_H // 103
@@ -2871,10 +2525,10 @@ const SEGMENT_STAGGER = 70
 const NEEDLE_DELAY = 320
 const NEEDLE_TRAVEL = 2000
 
-export function GaugeMeter({ scale, level = 'danger' }: { scale: GaugeScale; level?: RiskLevel }) {
+export function GaugeMeter({ level = 'danger' }: { level?: RiskLevel }) {
   const root = useRef<SVGSVGElement>(null)
   const uid = useId()
-  const s = SCALES[scale]
+  const s = SCALE
   const now = GAUGE_AT[level]
   const label = t(level === 'safe' ? 'nudge.meterLabelSafe' : level === 'caution' ? 'nudge.meterLabelCaution' : 'nudge.meterLabel')
 
@@ -2902,13 +2556,13 @@ export function GaugeMeter({ scale, level = 'danger' }: { scale: GaugeScale; lev
     if (landing) running.push(landing.animate([{ filter: 'brightness(1)' }, { filter: 'brightness(1.25)' }, { filter: 'brightness(1)' }],
       { duration: 500, delay: arrive, easing: 'ease-in-out' }))
     return () => running.forEach((a) => a.cancel())
-  }, [now, scale])
+  }, [now])
 
   return (
     <svg ref={root} className={styles.gauge} width={s.width} height={HEIGHT} viewBox={`0 0 ${s.width} ${HEIGHT}`} role="img" aria-label={label} data-gauge={uid}>
       {s.labels.map((l) => (
         <text key={l.x} x={l.x} y={l.y + 8} className={styles.label} textAnchor="middle" dominantBaseline="central" data-label={l.x / s.width}>
-          {'text' in l ? l.text : t(l.key)}
+          {t(l.key)}
         </text>
       ))}
       <svg x={s.dialX} y={DIAL_Y} width={GAUGE_W} height={GAUGE_H} viewBox={`0 0 ${GAUGE_W} ${GAUGE_H}`} overflow="visible">
@@ -2930,11 +2584,11 @@ export function GaugeMeter({ scale, level = 'danger' }: { scale: GaugeScale; lev
 
 /**
  * The soft pink wave behind the top of the sheet (Figma "Ellipse 1 / 2": the level's light tint, blurred 11.3), drawn
- * in the 360-wide frame it was designed in and stretched to the sheet's width. 4h and 4i place it a little apart.
+ * in the 360-wide frame it was designed in and stretched to the sheet's width.
  */
-const WAVE = { numbers: { x: -20, y: -43 }, words: { x: -17, y: -56 } } as const
-export function GaugeWave({ scale, level = 'danger' }: { scale: GaugeScale; level?: RiskLevel }) {
-  const w = WAVE[scale]
+const WAVE = { x: -17, y: -56 } as const
+export function GaugeWave({ level = 'danger' }: { level?: RiskLevel }) {
+  const w = WAVE
   return (
     <svg className={styles.wave} data-level={level} viewBox="0 0 360 96" preserveAspectRatio="none" overflow="visible" aria-hidden="true">
       <path transform={`translate(${w.x - 22.6} ${w.y - 22.6})`} d="M415.6 89.1133C415.6 125.848 411.184 132.915 214.684 113.447C106.16 113.447 22.6 209.162 22.6 89.1133C22.6 52.379 110.576 22.6 219.1 22.6C327.624 22.6 415.6 52.379 415.6 89.1133Z" />
@@ -3018,32 +2672,18 @@ export function TpslSheet({ onSave, onClose }: { onSave: (tpsl: { targetPct: num
 ### `src/flows/nudges/sheets/NudgeSheet.module.css`
 
 ```css
-/* The overtrading nudge — the risk meter sheet (NudgeSheet.tsx), on L3 tokens. Everything is centred. */
+/* The overtrading nudge — the risk meter sheet (NudgeSheet.tsx), on L3 tokens: the speedometer · Low–High (the other
+   meters' styles are in archive/nudges-risk-meter-versions/). Everything is centred. */
 
 /* 24 above the content, as these sheets have looked since L3 2.3 (L3's 16 top space + 24; 2.4 made the 16 the content's
    own padding). Same in GuardrailSheets. */
 .sheet [data-sheet-content] { padding-top: calc(var(--l3-spacing-16) + var(--l3-spacing-24)); }
-/* 32 from the last text to the dock's line (19 Nov, user; L3's sheet content has 24). */
-.meterSheet.meterSheet [data-sheet-content] { padding-bottom: var(--l3-spacing-32); }
 
 .riskText { text-align: center; }
-/* The text is drawn over the meter's glow, which now reaches up behind it (the dial's drawing area is taller). */
-.riskText h2, .riskText p, .overtradingTag { position: relative; z-index: 1; }
+/* The text is drawn over the meter's glow, which reaches up behind it. */
+.riskText h2, .riskText p { position: relative; z-index: 1; }
 
-/* "You are overtrading": a step up from the sheet header's 20 (19 Nov, user). */
-.meterHeading { margin: 0; font: var(--l3-text-heading-24); color: var(--l3-content-primary); }
-/* "Your chances of losing money today are high" under it. */
-.meterNote { margin: 0; font: var(--l3-text-label-14); color: var(--l3-content-secondary); }
-/* The fact under the meter, as body text in secondary. */
-.meterFact { margin: 0; font: var(--l3-text-description-14); color: var(--l3-content-secondary); }
-
-/* Tag first: the risk as the heading, 18. */
-.meterRiskHeading { margin: 0; font: var(--l3-text-heading-18); color: var(--l3-content-primary); }
-/* Tag first · the "Overtrading Detected" tag (19 Nov, user): 8 in from each side and 2 between the icon and the label.
-   L3's Medium Tag has 2 at the sides and 6 icon → text (its label's own 4 padding); no prop for this (L3 gap). */
-.overtradingTag.overtradingTag[data-size] { --tag-padding-inline: var(--l3-spacing-08); --tag-label-padding: 0; }
-
-/* 4h / 4i · the speedometer layout (Figma 6917:62779): 24 from the sheet's top and 24 from the fact to the dock's line
+/* The speedometer layout (Figma 6917:62779): 24 from the sheet's top and 24 from the fact to the dock's line
    (Figma: the header's 24 top and 8 bottom + the sheet's 16 top space). The wave is drawn from the content's top. */
 .gaugeSheet.gaugeSheet [data-sheet-content] {
   position: relative;
@@ -3053,8 +2693,6 @@ export function TpslSheet({ onSave, onClose }: { onSave: (tpsl: { targetPct: num
 .gaugeHeading { margin: 0; font: var(--l3-text-heading-20); color: var(--l3-content-primary); }
 /* The fact: L3/Description/14 (20 Nov, user; Figma had Label/12). */
 .gaugeSub { margin: 0; font: var(--l3-text-description-14); color: var(--l3-content-secondary); }
-/* Soft dial · 3 blocks · Low–High: the speedometer's 24 from the fact to the dock's line. */
-.wordsSheet.wordsSheet [data-sheet-content] { padding-bottom: var(--l3-spacing-24); }
 ```
 
 ### `src/flows/nudges/sheets/NudgeSheet.tsx`
@@ -3072,30 +2710,14 @@ import copy from '../copy.json'
 import { t } from '../copy'
 import { caseById, type DataState, type Guardrail, type NudgeCaseId } from '../data'
 import styles from './NudgeSheet.module.css'
-import { SoftDial, type RiskLevel } from './SoftDial'
-import { BlockDial } from './BlockDial'
 import { GaugeMeter, GaugeWave } from './GaugeMeter'
-
-/** The meter (prototype setting "Meter"): 4f Soft dial (default), 4g Blocks, 4h / 4i the speedometer (0–100 / Low–High). */
-export type MeterStyle = 'soft' | 'blocks' | 'gauge' | 'gaugeWords'
-/** Where the text sits around the meter (prototype setting "Meter layout"). */
-export type MeterLayout = 'text' | 'meter' | 'tag' | 'number'
+import type { RiskLevel } from './needle'
 
 export type NudgeSheetProps = {
   caseId: NudgeCaseId
   state: DataState
-  /** 4f Soft dial (default) or 4g Blocks. */
-  meterStyle?: MeterStyle
   /** Where the reading stops: safe, caution or high risk (default). */
   meterLevel?: RiskLevel
-  /** Text first (default) · Meter first · Tag first · With multiple. */
-  meterLayout?: MeterLayout
-  /** Soft dial only: the blended green → yellow → red fill (default: one colour for the whole ring). */
-  meterBlend?: boolean
-  /** Soft dial, blended only: the ring cut into three blocks where the colour changes. */
-  meterSplit?: boolean
-  /** Soft dial (3 blocks or one colour): Low · Medium · High round the dial, the risk tag in it. */
-  meterWords?: boolean
   /** Buzz the phone once when the sheet opens (two short pulses: "stop, look"). */
   vibrate?: boolean
   /** 'one' (default): the case's guardrail (primary) + Not now (secondary) · 'two': both guardrails + Not now (ghost). */
@@ -3108,32 +2730,26 @@ export type NudgeSheetProps = {
 type Key = Parameters<typeof t>[0]
 
 /**
- * The overtrading nudge — the risk meter (19 Nov, cut down to the versions in use). ONE sheet for every case; a case only
- * fills the slots. It opens on a trader who is mid-order and stressed: what this is, the meter that shows how far from
- * his usual he is, and one plain line on what he is doing — then the guardrail, or Not now.
- *
- * Meter layouts (all centred, 24 between blocks, the body text 16 under the meter, 32 to the dock's line):
- * - Text first: "You are overtrading" (heading-24) over "Your chances of losing money today are high", the meter, the fact.
- * - Meter first: the meter, then "You are overtrading" and the fact.
- * - Tag first: a red "Overtrading Detected" tag (filled warning icon), "Your chances of losing money are high"
- *   (heading-18), the meter with the multiple in it, the fact.
- * - With multiple: as Text first (since 20 Nov no version shows the multiple in the dial, so the two now match).
- * The fact: size-up says "You are placing a bigger order right after a loss"; every other case its own fact
- * ("3X more orders than usual today"). Motion plays once on open; none with reduced motion.
+ * The overtrading nudge — the risk meter: the speedometer with Low · Medium · High round it (4i, Figma 6917:62779; the
+ * only version since 24 Nov — the soft dial, blocks, the 0–100 speedometer and the meter layouts are archived in
+ * archive/nudges-risk-meter-versions/). ONE sheet for every case; a case only fills the slots. It opens on a trader who
+ * is mid-order and stressed: the pink wave at the top, the dial with its scale, 16, the risk tag, 16, "Your chances of
+ * losing money is high" (heading-20), 8, the fact (description-14) — then the guardrail, or Not now. 24 from the top of
+ * the sheet, 24 from the fact to the dock's line. The fact: size-up says "You are placing a bigger order right after a
+ * loss"; every other case its own ("3X more orders than usual today"). Motion plays once on open; none with reduced
+ * motion.
  */
-export function NudgeSheet({ caseId, state, meterStyle = 'soft', meterLevel = 'danger', meterLayout = 'text', meterBlend = false, meterSplit = false, meterWords = false, vibrate = true, actions = 'one', onGuardrail, onNotNow }: NudgeSheetProps) {
+export function NudgeSheet({ caseId, state, meterLevel = 'danger', vibrate = true, actions = 'one', onGuardrail, onNotNow }: NudgeSheetProps) {
   const id = useId()
-  // On open only (switching case or version keeps the sheet open, so it doesn't buzz again).
+  // On open only (switching case or level keeps the sheet open, so it doesn't buzz again).
   useEffect(() => { if (vibrate) buzz() }, []) // eslint-disable-line react-hooks/exhaustive-deps
   const nudge = caseById.get(caseId)!
   const key = (slot: string) => `case.${caseId}.${slot}` as Key
   const has = (slot: string) => key(slot) in copy
 
-  // C (thin history): no "usual" to compare with → today's raw fact, no multiple.
+  // C (thin history): no "usual" to compare with → today's raw fact.
   const thin = state === 'C' && has('raw')
   const headline = t(key(thin ? 'raw' : 'headline'))
-  const ratio = thin ? undefined : nudge.ratio
-  const fact = caseId === 'sizeUp' ? t('nudge.biggerAfterLoss') : headline
 
   const other: Guardrail = nudge.primary === 'pnl' ? 'tpsl' : 'pnl'
   const label = (g: Guardrail) => t(g === 'pnl' ? 'nudge.setPnl' : 'nudge.setTpsl')
@@ -3144,80 +2760,22 @@ export function NudgeSheet({ caseId, state, meterStyle = 'soft', meterLevel = 'd
     <Button size="lg" variant={actions === 'two' ? 'ghost' : 'secondary'} onClick={onNotNow}>{notNow}</Button>
   </ButtonGroup>
 
-  // No multiple ("2X") in the dial in any layout (20 Nov): the disc shows the level word only.
-  // The speedometer's text under a meter: the risk tag, 16, the heading (heading-20), 8, the fact (description-14).
   const tagColor = meterLevel === 'danger' ? 'loss' : meterLevel === 'caution' ? 'warning' : 'profit'
   const riskTag = <Tag size="md" variant="secondary" color={tagColor} iconLeft={meterLevel === 'safe' ? undefined : <Icon icon={msWarningFill} />}>{t(`gauge.tag.${meterLevel}`)}</Tag>
-  const headingAndFact = <Stack gap="08" align="center">
-    <h2 id={id} className={styles.gaugeHeading}>{t(`gauge.heading.${meterLevel}`)}</h2>
-    <p className={styles.gaugeSub}>{caseId === 'sizeUp' ? t('gauge.sizeUp') : headline}</p>
-  </Stack>
-  const meter = meterStyle === 'blocks'
-    ? <BlockDial key={`${caseId}-${state}-${meterLevel}-${meterLayout}`} ratio={ratio} level={meterLevel} />
-    : <SoftDial key={`${caseId}-${state}-${meterLevel}-${meterBlend}-${meterSplit}-${meterWords}-${meterLayout}`} ratio={ratio} level={meterLevel} blend={meterBlend} split={meterSplit} words={meterWords} badge={meterWords ? riskTag : undefined} />
-  const meterAndFact = <Stack gap="16" align="center">
-    {meter}
-    <p className={styles.meterFact}>{fact}</p>
-  </Stack>
 
-  // 4h / 4i · the speedometer (Figma 6917:62779, 20 Nov) has its own layout, whatever the Meter layout setting: the pink
-  // wave at the top, the dial with its scale, 16, the risk tag, 16, "Your chances of losing money is high" (heading-20), 8, the
-  // fact (label-12). 24 from the top of the sheet, 24 from the fact to the dock's line.
-  const gaugeText = <Stack gap="16" align="center">{riskTag}{headingAndFact}</Stack>
-  if (meterStyle === 'gauge' || meterStyle === 'gaugeWords') {
-    const scale = meterStyle === 'gauge' ? 'numbers' : 'words'
-    return <Sheet labelledBy={id} onClose={onNotNow} className={`${styles.sheet} ${styles.gaugeSheet}`} footer={footer}>
-      <GaugeWave scale={scale} level={meterLevel} />
-      <Stack gap="16" align="center" className={styles.riskText}>
-        <GaugeMeter key={`${caseId}-${state}-${meterLevel}-${scale}`} scale={scale} level={meterLevel} />
-        {gaugeText}
-      </Stack>
-    </Sheet>
-  }
-  // Soft dial · 3 blocks · Low–High (20 Nov, user): the speedometer's layout under the dial (no word in the dial), and
-  // the speedometer's 24 to the dock's line; Meter layout doesn't apply.
-  if (meterWords) {
-    return <Sheet labelledBy={id} onClose={onNotNow} className={`${styles.sheet} ${styles.wordsSheet}`} footer={footer}>
-      {/* The risk tag sits in the dial (where the level word was) and fades in as the needle lands; 24 from the dial to
-          the heading (20 Nov, user). */}
-      <Stack gap="24" align="center" className={styles.riskText}>
-        {meter}
-        {headingAndFact}
-      </Stack>
-    </Sheet>
-  }
-
-  let body
-  if (meterLayout === 'meter') {
-    // Meter first: other cases add the risk to their fact ("3X more orders than usual today. Your chances … are high").
-    const line = caseId === 'sizeUp' ? fact : t('nudge.meterFirstSubOther', { fact: headline })
-    body = <Stack gap="24" align="center" className={styles.riskText}>
-      {meter}
-      <Stack gap="04" align="center">
-        <h2 id={id} className={styles.meterHeading}>{t('nudge.meterHeading')}</h2>
-        <p className={styles.meterFact}>{line}</p>
+  return <Sheet labelledBy={id} onClose={onNotNow} className={`${styles.sheet} ${styles.gaugeSheet}`} footer={footer}>
+    <GaugeWave level={meterLevel} />
+    <Stack gap="16" align="center" className={styles.riskText}>
+      <GaugeMeter key={`${caseId}-${state}-${meterLevel}`} level={meterLevel} />
+      <Stack gap="16" align="center">
+        {riskTag}
+        <Stack gap="08" align="center">
+          <h2 id={id} className={styles.gaugeHeading}>{t(`gauge.heading.${meterLevel}`)}</h2>
+          <p className={styles.gaugeSub}>{caseId === 'sizeUp' ? t('gauge.sizeUp') : headline}</p>
+        </Stack>
       </Stack>
     </Stack>
-  } else if (meterLayout === 'tag') {
-    body = <Stack gap="24" align="center" className={styles.riskText}>
-      <Stack gap="12" align="center">
-        <Tag size="md" variant="secondary" color="error" className={styles.overtradingTag} iconLeft={<Icon icon={msWarningFill} />}>{t('nudge.tag')}</Tag>
-        <h2 id={id} className={styles.meterRiskHeading}>{t('nudge.meterRiskHeading')}</h2>
-      </Stack>
-      {meterAndFact}
-    </Stack>
-  } else {
-    // Text first and With multiple (the same since the dial's multiple was removed, 20 Nov).
-    body = <Stack gap="24" align="center" className={styles.riskText}>
-      <Stack gap="04" align="center">
-        <h2 id={id} className={styles.meterHeading}>{t('nudge.meterHeading')}</h2>
-        <p className={styles.meterNote}>{t('nudge.meterSub')}</p>
-      </Stack>
-      {meterAndFact}
-    </Stack>
-  }
-
-  return <Sheet labelledBy={id} onClose={onNotNow} className={`${styles.sheet} ${styles.meterSheet}`} footer={footer}>{body}</Sheet>
+  </Sheet>
 }
 
 /** Two short pulses. In the Lemonn Android app the page calls its native bridge (works without a tap, and uses the
@@ -3229,473 +2787,6 @@ function buzz() {
     if (app?.vibrate) app.vibrate(BUZZ.join(','))
     else navigator.vibrate?.(BUZZ)
   } catch { /* no vibration here */ }
-}
-```
-
-### `src/flows/nudges/sheets/SoftDial.module.css`
-
-```css
-/* 4f · Soft dial (SoftDial.tsx). SVG drawing units, not CSS px. Resting styles are the END state (red / High risk);
-   the component (Web Animations) runs the needle, sweep, colours and level word from green before it. CSS keeps only
-   the timed fades: --travel-in / --travel-for (the needle's run) and each glow's --glow-in / --glow-for. */
-
-/* The drawing area has room for the whole blurred glow (it reaches ~50 past the ring): 16 past the ring on each side
-   (that's the sheet's edge) and 70 above the dial, so nothing draws outside the svg — mobile browsers (Safari) clip
-   SVG content at the svg's box, overflow: visible or not, which cut the glow off in a hard edge (19 Nov). The svg is
-   that much bigger and pulled back by negative margins (relative to the width, like the viewBox), so the dial sits
-   exactly where it did and its box ends at the ring's base line: viewBox −16 −64 372 × 280 for the dial's 340 × 170. */
-.svg {
-  display: block;
-  width: calc(100% * 372 / 340);
-  height: auto;
-  margin: calc(100% * -70 / 340) calc(100% * -16 / 340) calc(100% * -40 / 340);
-  overflow: visible;
-}
-
-.dial { position: relative; margin: 0; }
-/* Resting colours = the end state (red); the component animates them from green. */
-.deep { stop-color: var(--l3-content-accent-error-default); }
-.mid { stop-color: var(--l3-surface-accent-error-default); }
-.light { stop-color: var(--l3-surface-accent-error-light); }
-
-/* The sweep's resting point (the component animates it). */
-.sweepStroke { fill: none; stroke: white; stroke-dasharray: 1; stroke-dashoffset: var(--sweep-rest); }
-
-.dot { fill: var(--l3-static-white); }
-/* Grains left on the fill: quiet; the component fades the green and yellow ones away as the needle moves on. */
-.dotsPassed { opacity: 0.45; }
-.dotsPassed[data-grains='safe'], .dotsPassed[data-grains='caution'] { opacity: 0; }
-/* …except on the level the reading stops in. */
-.dial[data-level='safe'] .dotsPassed[data-grains='safe'], .dial[data-level='caution'] .dotsPassed[data-grains='caution'] { opacity: 0.45; }
-/* The grains in the soft wedge riding behind the needle: a little brighter than the rest (kept gentle, 19 Nov). */
-.dots { opacity: 0.6; }
-
-.rest { fill: var(--l3-surface-accent-error-light); opacity: 0.5; }
-
-.tick { stroke: var(--l3-content-primary); stroke-width: 2; stroke-linecap: round; opacity: 0.12; }
-.tick[data-filled] { opacity: 0.3; }
-
-/* Bloom at the tip: comes in as the fill lands. */
-.bloom { fill: var(--l3-surface-accent-error-default); opacity: 0.45; animation: fadeIn var(--l3-motion-duration-long) var(--l3-motion-easing-decelerate) calc(var(--travel-in) + var(--travel-for) - var(--l3-motion-duration-medium)) backwards; }
-
-/* Layer blur per level: on as the fill reaches the level, off as it moves on; the last one stays and breathes. */
-/* Lighter than the level colour itself: the level colour mixed half with white. */
-[data-tone='safe'] { --tone: color-mix(in srgb, var(--l3-surface-accent-success-default) 50%, var(--l3-static-white)); }
-[data-tone='caution'] { --tone: color-mix(in srgb, var(--l3-surface-accent-warning-default) 50%, var(--l3-static-white)); }
-[data-tone='danger'] { --tone: color-mix(in srgb, var(--l3-surface-accent-error-default) 50%, var(--l3-static-white)); }
-.glow { fill: none; stroke: var(--tone); stroke-linecap: round; opacity: 0; animation: glowPass var(--glow-for) linear var(--glow-in) both; }
-@keyframes glowPass { 0% { opacity: 0; } 20% { opacity: 0.6; } 70% { opacity: 0.5; } 100% { opacity: 0; } }
-.glow[data-last] {
-  opacity: 0.35;
-  animation:
-    fadeIn var(--l3-motion-duration-long) var(--l3-motion-easing-decelerate) var(--glow-in) backwards,
-    breathe calc(var(--l3-motion-duration-long) * 4) var(--l3-motion-easing-standard) calc(var(--glow-in) + var(--glow-for)) 2;
-}
-@keyframes breathe { 50% { opacity: 0.6; } }
-
-/* The needle and the grain wedge turn about the ring's centre (170, 176). */
-.turn { transform-box: view-box; transform-origin: 170px 176px; transform: rotate(var(--to-deg)); }
-/* The needle is black in both modes. */
-.needle { fill: var(--l3-static-black); }
-/* Glass on the fill. */
-.glassLine { fill: none; stroke: var(--l3-static-white); stroke-linecap: round; opacity: 0.55; }
-.glassRim { fill: none; stroke: var(--l3-static-white); stroke-width: 1; stroke-opacity: 0.5; }
-
-.disc { fill: var(--l3-surface-primary); }
-.level { font: var(--l3-text-heading-20); fill: var(--l3-content-primary); }
-/* "With multiple": the multiple above the word (L3's largest heading, 36), in once the reading lands. */
-.value { font: var(--l3-text-heading-36); fill: var(--l3-content-primary); animation: fadeIn var(--l3-motion-duration-long) var(--l3-motion-easing-decelerate) calc(var(--travel-in) + var(--travel-for)) backwards; }
-
-/* The level word: only the reached level's word rests visible; the component swaps Safe → Caution → High risk on the way. */
-.level { opacity: 0; }
-.dial[data-level='safe'] .level[data-word='safe'],
-.dial[data-level='caution'] .level[data-word='caution'],
-.dial[data-level='danger'] .level[data-word='danger'] { opacity: 1; }
-
-/* Resting colours of the safe and caution versions (danger's are the defaults above). */
-.dial[data-level='safe'] .deep { stop-color: var(--l3-content-accent-success-default); }
-.dial[data-level='safe'] .mid { stop-color: var(--l3-surface-accent-success-default); }
-.dial[data-level='safe'] .light { stop-color: var(--l3-surface-accent-success-light); }
-.dial[data-level='safe'] .rest { fill: var(--l3-surface-accent-success-light); }
-.dial[data-level='safe'] .bloom { fill: var(--l3-surface-accent-success-default); }
-.dial[data-level='caution'] .deep { stop-color: var(--l3-content-accent-warning-default); }
-.dial[data-level='caution'] .mid { stop-color: var(--l3-surface-accent-warning-default); }
-.dial[data-level='caution'] .light { stop-color: var(--l3-surface-accent-warning-light); }
-.dial[data-level='caution'] .rest { fill: var(--l3-surface-accent-warning-light); }
-.dial[data-level='caution'] .bloom { fill: var(--l3-surface-accent-warning-default); }
-@keyframes fadeIn { from { opacity: 0; } }
-
-@media (prefers-reduced-motion: reduce) {
-  .dial, .dial * { animation: none !important; }
-}
-
-/* "3 blocks · Low–High": the scale round the dial, as on the 4i speedometer (L3 heading, content/primary; in drawing
-   units the dial's 340 is about the content's width, so 14 ≈ 14 px). */
-/* 16 (20 Nov, user: 2 bigger again). */
-.scaleWord { font: var(--l3-text-heading-16); fill: var(--l3-content-primary); }
-
-/* 3 blocks · Low–High: the risk Tag in the disc, centred where the level word sat (top set by the component). */
-.badge { position: absolute; left: 50%; translate: -50% -50%; }
-```
-
-### `src/flows/nudges/sheets/SoftDial.tsx`
-
-```tsx
-import { useEffect, useId, useRef, type CSSProperties, type ReactNode } from 'react'
-import { t } from '../copy'
-import styles from './SoftDial.module.css'
-
-/**
- * 4f · Soft dial (Anshul_Risk_Meter, 19 Nov; from the user's reference image): a thick half ring filled from the left
- * end to the reading with a soft radial gradient (deep at the inner edge, light at the outer), a dotted texture and
- * small ticks on the filled part, a short dark marker at its tip, and a white disc in the middle holding the number,
- * the level and a sub line. The unfilled rest is a faint tint that fades out, with a blurred bloom at the tip.
- * The colour follows the level the fill is in: green → yellow → red as it sweeps (gradient stops animate), the level
- * word in the disc changes with it ("Low risk" → "Caution" → "High risk"), and each level gets a blurred glow behind
- * it as the fill reaches it. The lower ends fade into the sheet, as in the reference.
- * Reduced motion: the end state.
- */
-const CX = 170
-const CY = 176
-const RO = 160 // outer edge of the ring
-const RI = 96 // inner edge = the disc
-const RM = (RO + RI) / 2
-const BAND = RO - RI
-/** Level edges of the BLENDED fill (19 Nov, user): yellow starts further left and red is kept to the right — green
- *  0–33 %, yellow 33–60 %, red 60–100 % of the ring. The one-colour fill keeps the earlier 45 % / 65 % (19 Nov, user:
- *  "a little less, like the previous version"). */
-const SAFE_END = 0.33
-const CAUTION_END = 0.6
-/** "3 blocks · Low–High" (20 Nov, user): three equal blocks, so Medium sits over the middle of the yellow one. */
-const EDGES = { blend: { safe: SAFE_END, caution: CAUTION_END }, whole: { safe: 0.45, caution: 0.65 }, thirds: { safe: 1 / 3, caution: 2 / 3 } } as const
-const DELAY = 300
-/** The needle's run (19 Nov): ease-in-out up to a little past the reading (fast in the middle), then back a touch,
- *  forward a touch, and it settles — a soft bounce. Offsets are of TRAVEL; f = fraction of the scale. */
-const TRAVEL = 2400
-export const OVER = 0.05
-export const RUN = 0.6
-export const RUN_EASE = [0.42, 0, 0.3, 1] as const
-export const needleKeys = (now: number) => [
-  { at: 0, f: 0, easing: `cubic-bezier(${RUN_EASE.join(',')})` },
-  { at: RUN, f: Math.min(1, now + OVER), easing: 'cubic-bezier(0.45, 0, 0.55, 1)' },
-  { at: 0.79, f: now - 0.022, easing: 'cubic-bezier(0.45, 0, 0.55, 1)' },
-  { at: 0.91, f: now + 0.007, easing: 'cubic-bezier(0.3, 0, 0.3, 1)' },
-  { at: 1, f: now, easing: 'linear' },
-]
-/** Time fraction (0–1) at which a cubic-bezier easing reaches progress p. */
-export function easeTimeAt(p: number, [x1, y1, x2, y2]: readonly number[]) {
-  const b = (s: number, a: number, c: number) => 3 * a * s * (1 - s) ** 2 + 3 * c * s ** 2 * (1 - s) + s ** 3
-  let lo = 0, hi = 1
-  for (let i = 0; i < 30; i++) { const m = (lo + hi) / 2; if (b(m, y1, y2) < p) lo = m; else hi = m }
-  return b((lo + hi) / 2, x1, x2)
-}
-
-function point(f: number, r: number) {
-  const a = Math.PI * (1 - f)
-  return [CX + r * Math.cos(a), CY - r * Math.sin(a)] as const
-}
-function arc(from: number, to: number, r: number) {
-  const [x1, y1] = point(from, r)
-  const [x2, y2] = point(to, r)
-  return `M ${x1} ${y1} A ${r} ${r} 0 0 1 ${x2} ${y2}`
-}
-/** An annular sector of the ring, from f0 to f1. */
-function sector(f0: number, f1: number) {
-  const [ox0, oy0] = point(f0, RO)
-  const [ox1, oy1] = point(f1, RO)
-  const [ix1, iy1] = point(f1, RI)
-  const [ix0, iy0] = point(f0, RI)
-  return `M ${ox0} ${oy0} A ${RO} ${RO} 0 0 1 ${ox1} ${oy1} L ${ix1} ${iy1} A ${RI} ${RI} 0 0 0 ${ix0} ${iy0} Z`
-}
-const ms = (v: number) => `${Math.round(v)}ms`
-const levelsFor = (e: { safe: number; caution: number }) => [
-  { from: 0, to: e.safe, tone: 'safe' },
-  { from: e.safe, to: e.caution, tone: 'caution' },
-  { from: e.caution, to: 1, tone: 'danger' },
-] as const
-
-/** Where the reading stops (19 Nov): in the green, yellow or red level. Danger lands by the multiple, as before. */
-export type RiskLevel = 'safe' | 'caution' | 'danger'
-/** Where the needle stops. Blended: well into the red (2X at ~85 %); one colour: as before (2X at ~75 %). */
-const LEVEL_AT = { blend: { safe: 0.2, caution: 0.47 }, whole: { safe: 0.3, caution: 0.56 } } as const
-const multiple = (ratio?: number) => Math.min(1, Math.max(0, ((ratio ?? 1) - 1) / 9))
-const dangerAt = (ratio: number | undefined, blend: boolean) => blend
-  ? (ratio === undefined ? 0.86 : 0.84 + 0.12 * multiple(ratio))
-  : (ratio === undefined ? 0.8 : 0.72 + 0.23 * multiple(ratio))
-
-/**
- * Blended fill (19 Nov, user): each part of the ring keeps the colour it was filled with — green, then yellow, then red —
- * melting into each other over a soft band at each level edge, so it reads as one ramp, not three blocks. Drawn as thin
- * slices along the arc (SVG has no conic gradient), each in its own oklab mix of the level colours, under a radial shade
- * that keeps the ring's depth (darker inside, lighter outside).
- */
-const BLEND = 0.07 // half-width of the soft band at each level edge, as a fraction of the scale
-const SLICES = 90
-function blendColour(f: number, split = false, edges: { safe: number; caution: number } = EDGES.blend) {
-  const g = 'var(--l3-surface-accent-success-default)'
-  const y = 'var(--l3-surface-accent-warning-default)'
-  const r = 'var(--l3-surface-accent-error-default)'
-  const mix = (a: string, b: string, t: number) => `color-mix(in oklab, ${a} ${Math.round((1 - t) * 100)}%, ${b})`
-  const ease = (t: number) => t * t * (3 - 2 * t) // smoothstep, so each band starts and ends softly
-  if (split) return f < edges.safe ? g : f < edges.caution ? y : r // three blocks: each its own colour, cut at the edges
-  if (f <= SAFE_END - BLEND) return g
-  if (f < SAFE_END + BLEND) return mix(g, y, ease((f - (SAFE_END - BLEND)) / (2 * BLEND)))
-  if (f <= CAUTION_END - BLEND) return y
-  if (f < CAUTION_END + BLEND) return mix(y, r, ease((f - (CAUTION_END - BLEND)) / (2 * BLEND)))
-  return r
-}
-
-/** "Blended · 3 blocks" (20 Nov, user): the gap cut across the ring at each colour change, in drawing units. */
-const CUT = 6
-
-/** "3 blocks · Low–High" (20 Nov, user): the dial drawn at this size about its base centre, so Low · Medium · High fit
- *  round it — Low and High beside the ends, Medium over the top — as on the 4i speedometer. */
-const WORDS_SCALE = 0.84
-const WORDS_GAP = 18 // from the ring to a scale word, in drawing units
-
-/** The badge in the disc (3 blocks · Low–High): its centre, in drawing units, where the level word sat. The figure's box
- *  runs from y 6 to the base line (CY) and x 0–340 (see .svg in the CSS). */
-const BADGE_Y = CY - 26 * WORDS_SCALE
-const BADGE_FADE = 300
-
-export function SoftDial({ ratio, level = 'danger', blend = false, split = false, words = false, badge, showRatio = false }: { ratio?: number; level?: RiskLevel; blend?: boolean; split?: boolean; words?: boolean; badge?: ReactNode; showRatio?: boolean }) {
-  const uid = useId().replace(/[^a-zA-Z0-9]/g, '')
-  const ids = { fill: `sd-fill-${uid}`, sweep: `sd-sweep-${uid}`, fade: `sd-fade-${uid}`, fadeMask: `sd-fademask-${uid}`, dots: `sd-dots-${uid}`, trail: `sd-trail-${uid}`, trailBlur: `sd-trailblur-${uid}`, blur: `sd-blur-${uid}`, glass: `sd-glass-${uid}`, shadow: `sd-shadow-${uid}`, shade: `sd-shade-${uid}`, cut: `sd-cut-${uid}` }
-  const root = useRef<HTMLElement>(null)
-  const number = showRatio && ratio !== undefined
-  // Three equal blocks wherever the ring is cut into blocks or carries the Low · Medium · High scale (20 Nov, user).
-  const edges = EDGES[words || split ? 'thirds' : blend ? 'blend' : 'whole']
-  const levels = levelsFor(edges)
-  // Equal thirds: low and medium stop in the middle of their block; high as the blended dial.
-  const now = level === 'danger' ? dangerAt(ratio, blend) : words || split ? { safe: 1 / 6, caution: 0.5 }[level] : LEVEL_AT[blend ? 'blend' : 'whole'][level]
-  // The fill is drawn to END (a little past the reading) so the overshoot has colour under it; the sweep shows f / END of it.
-  const END = Math.min(1, now + OVER)
-  // When the needle first reaches fraction f (during its run).
-  const reach = (f: number) => DELAY + TRAVEL * RUN * easeTimeAt(Math.min(1, Math.max(0, f / END)), RUN_EASE)
-  const amberAt = reach(edges.safe)
-  const redAt = reach(edges.caution)
-  const timing = { '--travel-in': ms(DELAY), '--travel-for': ms(TRAVEL * RUN), '--to-deg': `${(now - 0.5) * 180}deg`, '--sweep-rest': 1 - now / END } as CSSProperties
-  const label = t(level === 'safe' ? 'nudge.meterLabelSafe' : level === 'caution' ? 'nudge.meterLabelCaution' : 'nudge.meterLabel')
-  const [tipX, tipY] = point(now, RM)
-
-  // The motion, in one place (Web Animations), so the needle, the fill, the grains, the colours and the level word all
-  // follow the same eased, bouncing path. Reduced motion: none — the CSS end state shows.
-  useEffect(() => {
-    const el = root.current
-    if (!el || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    const keys = needleKeys(now)
-    const timingOpts = { duration: TRAVEL, delay: DELAY, fill: 'backwards' as const }
-    const running: Animation[] = []
-    el.querySelectorAll<SVGElement>('[data-turn]').forEach((n) => running.push(n.animate(
-      keys.map((k) => ({ offset: k.at, easing: k.easing, transform: `rotate(${(k.f - 0.5) * 180}deg)` })), timingOpts)))
-    const sweep = el.querySelector<SVGElement>('[data-sweep]')
-    if (sweep) running.push(sweep.animate(keys.map((k) => ({ offset: k.at, easing: k.easing, strokeDashoffset: `${1 - Math.min(k.f, END) / END}` })), timingOpts))
-
-    // Colours: green → yellow → red as the needle crosses each level, each change spread over a short window and
-    // passing through an oklab mix (no muddy midpoint). Driven on the elements themselves (gradient stops, tints).
-    const css = getComputedStyle(el)
-    const tone = (name: string) => css.getPropertyValue(name).trim()
-    const total = DELAY + TRAVEL
-    // Green holds until just before the yellow level, blends to full yellow at the middle of the yellow level, then
-    // blends on to red just past it — one continuous change, each blend at least 0.25 s (oklab: no muddy midpoint).
-    const win = 250
-    const yellowAt = (amberAt + redAt) / 2
-    const at = (v: number) => Math.min(1, Math.max(0, v / total))
-    const shift = (g: string, y: string, r: string) => {
-      const mix = (a: string, b: string) => `color-mix(in oklab, ${a}, ${b})`
-      // Safe: green throughout. Caution: green, then blends to yellow as the needle enters it, and stays yellow.
-      if (level === 'safe') return [{ offset: 0, c: g }, { offset: 1, c: g }]
-      if (level === 'caution') return [{ offset: 0, c: g }, { offset: at(amberAt - win), c: g }, { offset: at(amberAt), c: mix(g, y) }, { offset: at(amberAt + win), c: y }, { offset: 1, c: y }]
-      const gEnd = Math.min(amberAt, yellowAt - win)
-      const rStart = Math.max(redAt, yellowAt + win)
-      return [
-        { offset: 0, c: g }, { offset: at(gEnd), c: g }, { offset: at((gEnd + yellowAt) / 2), c: mix(g, y) }, { offset: at(yellowAt), c: y },
-        { offset: at((yellowAt + rStart) / 2), c: mix(y, r) }, { offset: at(rStart), c: r }, { offset: 1, c: r },
-      ]
-    }
-    const deep = shift(tone('--l3-content-accent-success-default'), tone('--l3-content-accent-warning-default'), tone('--l3-content-accent-error-default'))
-    const mid = shift(tone('--l3-surface-accent-success-default'), tone('--l3-surface-accent-warning-default'), tone('--l3-surface-accent-error-default'))
-    const light = shift(tone('--l3-surface-accent-success-light'), tone('--l3-surface-accent-warning-light'), tone('--l3-surface-accent-error-light'))
-    const colourOpts = { duration: total, fill: 'backwards' as const }
-    const paint = (sel: string, prop: 'stopColor' | 'fill', keysC: { offset: number; c: string }[]) =>
-      el.querySelectorAll<SVGElement>(sel).forEach((n) => running.push(n.animate(keysC.map((k) => ({ offset: k.offset, [prop]: k.c })), colourOpts)))
-    paint('[data-stop="deep"]', 'stopColor', deep)
-    paint('[data-stop="mid"]', 'stopColor', mid)
-    paint('[data-stop="light"]', 'stopColor', light)
-    // The ring behind starts plain grey; its tint only comes in as the needle starts (0.25 s), then follows the colour.
-    const grey = tone('--l3-surface-tertiary')
-    const tintIn = DELAY + 250
-    paint('[data-paint="light"]', 'fill', [{ offset: 0, c: grey }, { offset: at(DELAY), c: grey }, { offset: at(tintIn), c: light[0].c }, ...light.filter((k) => k.offset > at(tintIn))])
-    paint('[data-paint="mid"]', 'fill', mid)
-
-    // Grains left on the green and yellow levels fade away once the needle leaves the level (over 0.5 s); red keeps them.
-    el.querySelectorAll<SVGElement>('[data-grains]').forEach((n) => {
-      const level = levels.find((l) => l.tone === n.dataset.grains)!
-      if (level.tone === 'danger' || level.to >= now) return
-      const leave = reach(level.to)
-      running.push(n.animate([{ offset: 0, opacity: 0.45 }, { offset: at(leave), opacity: 0.45 }, { offset: at(leave + 500), opacity: 0 }, { offset: 1, opacity: 0 }], colourOpts))
-    })
-
-    // The level word cross-fades with the colour.
-    // The level word swaps (0.1 s out, 0.1 s in) where the colour turns: Low risk → Caution (entering yellow) → High risk (entering red).
-    const fade = 100
-    const word = (tone: string, from: number, to: number) => el.querySelectorAll<SVGElement>(`[data-word="${tone}"]`).forEach((n) => running.push(n.animate([
-      // Out, then in (never both at once): the old word fades out just before the change, the new one in just after.
-      { offset: 0, opacity: from <= 0 ? 1 : 0 }, { offset: at(from), opacity: from <= 0 ? 1 : 0 }, { offset: at(from + fade), opacity: 1 },
-      { offset: at(to - fade), opacity: 1 }, { offset: at(to), opacity: to >= total ? 1 : 0 }, { offset: 1, opacity: to >= total ? 1 : 0 },
-    ], colourOpts)))
-    const toYellow = (Math.min(amberAt, yellowAt - win) + yellowAt) / 2
-    const toRed = (yellowAt + Math.max(redAt, yellowAt + win)) / 2
-    if (level === 'caution') {
-      word('safe', 0, amberAt)
-      word('caution', amberAt, total)
-    } else if (level === 'danger') {
-      word('safe', 0, toYellow)
-      word('caution', toYellow, toRed)
-      word('danger', toRed, total)
-    }
-    // The badge in the disc fades in as the needle reaches the reading (not before: it names where the needle lands).
-    const badgeEl = el.querySelector<HTMLElement>('[data-badge]')
-    if (badgeEl) running.push(badgeEl.animate([{ opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1 }],
-      { duration: BADGE_FADE, delay: reach(now), easing: 'cubic-bezier(0.2, 0, 0, 1)', fill: 'backwards' }))
-    return () => running.forEach((a) => a.cancel())
-  }, [now, END, amberAt, redAt, level])
-
-  const big = { x: -80, y: -80, width: 500, height: 400 }
-  return <figure ref={root} className={styles.dial} data-level={level} data-blend={blend || undefined} style={timing} role="img" aria-label={label}>
-    <svg viewBox="-16 -64 372 280" className={styles.svg} aria-hidden>
-      {words && <>
-        <text x={CX - RO * WORDS_SCALE - WORDS_GAP} y={CY - 14} className={styles.scaleWord} textAnchor="end" dominantBaseline="central">{t('gauge.low')}</text>
-        <text x={CX} y={CY - RO * WORDS_SCALE - WORDS_GAP} className={styles.scaleWord} textAnchor="middle" dominantBaseline="central">{t('gauge.medium')}</text>
-        <text x={CX + RO * WORDS_SCALE + WORDS_GAP} y={CY - 14} className={styles.scaleWord} textAnchor="start" dominantBaseline="central">{t('gauge.high')}</text>
-      </>}
-      <g transform={words ? `translate(${CX} ${CY}) scale(${WORDS_SCALE}) translate(${-CX} ${-CY})` : undefined}>
-      <defs>
-        {/* Deep at the inner edge, the level colour through the band, light at the outer edge. */}
-        <radialGradient id={ids.fill} gradientUnits="userSpaceOnUse" cx={CX} cy={CY} r={RO}>
-          <stop offset={RI / RO} className={styles.deep} data-stop="deep" />
-          <stop offset={(RI + BAND * 0.45) / RO} className={styles.mid} data-stop="mid" />
-          <stop offset="1" className={styles.light} data-stop="light" />
-        </radialGradient>
-        {/* The sweep: a band-wide stroke drawn from the left end, following the needle. */}
-        <mask id={ids.sweep} maskUnits="userSpaceOnUse" {...big}>
-          <path d={arc(0, END, RM)} pathLength={1} className={styles.sweepStroke} strokeWidth={BAND + 4} data-sweep />
-        </mask>
-        {/* The lower ends fade into the sheet. The mask reaches well past the ring, so the blur is never cut. */}
-        <linearGradient id={ids.fade} gradientUnits="userSpaceOnUse" x1="0" y1={CY - RO} x2="0" y2={CY}>
-          <stop offset="0.55" stopColor="white" />
-          <stop offset="1" stopColor="white" stopOpacity="0" />
-        </linearGradient>
-        <mask id={ids.fadeMask} maskUnits="userSpaceOnUse" {...big}>
-          <rect {...big} fill={`url(#${ids.fade})`} />
-        </mask>
-        <pattern id={ids.dots} patternUnits="userSpaceOnUse" width="19" height="19">
-          <circle cx="9.5" cy="9.5" r="1.1" className={styles.dot} />
-        </pattern>
-        <filter id={ids.blur} filterUnits="userSpaceOnUse" {...big}><feGaussianBlur stdDeviation="14" /></filter>
-        {/* Glass on the fill: a sheen bright at the outer edge, clearing toward the middle of the band. */}
-        {/* Blended fill's depth: a little darker at the inner edge, lighter at the outer, over the coloured slices. */}
-        <radialGradient id={ids.shade} gradientUnits="userSpaceOnUse" cx={CX} cy={CY} r={RO}>
-          <stop offset={RI / RO} stopColor="black" stopOpacity="0.14" />
-          <stop offset={(RI + BAND * 0.45) / RO} stopColor="black" stopOpacity="0" />
-          <stop offset="1" stopColor="white" stopOpacity="0.4" />
-        </radialGradient>
-        <radialGradient id={ids.glass} gradientUnits="userSpaceOnUse" cx={CX} cy={CY} r={RO}>
-          <stop offset={RI / RO} stopColor="white" stopOpacity="0.18" />
-          <stop offset={(RI + BAND * 0.55) / RO} stopColor="white" stopOpacity="0" />
-          <stop offset={(RO - 10) / RO} stopColor="white" stopOpacity="0.28" />
-          <stop offset="1" stopColor="white" stopOpacity="0.55" />
-        </radialGradient>
-        {/* The grains travel with the needle: a soft wedge just behind it, turning with it, lifts them; the rest stay quiet. */}
-        <filter id={ids.trailBlur} filterUnits="userSpaceOnUse" {...big}><feGaussianBlur stdDeviation="7" /></filter>
-        <mask id={ids.trail} maskUnits="userSpaceOnUse" {...big}>
-          <g className={styles.turn} data-turn>
-            <path d={sector(0.4, 0.5)} fill="white" filter={`url(#${ids.trailBlur})`} />
-          </g>
-        </mask>
-        <filter id={ids.shadow} filterUnits="userSpaceOnUse" {...big}><feGaussianBlur stdDeviation="1.5" /></filter>
-        {/* 3 blocks: everything but the gaps — a straight cut across the band at each colour change. */}
-        {split && <mask id={ids.cut} maskUnits="userSpaceOnUse" {...big}>
-          <rect {...big} fill="white" />
-          {[edges.safe, edges.caution].map((f) => {
-            const [x1, y1] = point(f, RI - 4)
-            const [x2, y2] = point(f, RO + 4)
-            return <line key={f} x1={x1} y1={y1} x2={x2} y2={y2} stroke="black" strokeWidth={CUT} />
-          })}
-        </mask>}
-      </defs>
-
-      <g mask={`url(#${ids.fadeMask})`}>
-        {/* Layer blur: a glow of each level's colour behind it, on as the needle reaches it, off as it moves on. */}
-        {levels.filter((l) => l.from < now).map((l) => {
-          const last = now <= l.to
-          const on = l.from === 0 ? DELAY : reach(l.from)
-          const off = reach(Math.min(l.to, now)) + 300
-          return <path key={l.tone} d={arc(l.from + 0.02, Math.min(l.to, now) - 0.01, RM)} className={styles.glow} data-tone={l.tone}
-            data-last={last || undefined} strokeWidth={BAND + 16} filter={`url(#${ids.blur})`}
-            style={{ '--glow-in': ms(on), '--glow-for': ms(off - on) } as CSSProperties} />
-        })}
-
-        {/* The unfilled rest: a faint tint of the current colour. */}
-        <path d={sector(0, 1)} className={styles.rest} data-paint="light" mask={split ? `url(#${ids.cut})` : undefined} />
-
-        {/* The fill, its glass and grains, revealed by the sweep. */}
-        <g mask={split ? `url(#${ids.cut})` : undefined}><g mask={`url(#${ids.sweep})`}>
-          {blend
-            ? <>
-              {Array.from({ length: SLICES }, (_, i) => {
-                const from = (i / SLICES) * END
-                const to = Math.min(END, ((i + 1) / SLICES) * END + 0.003) // a hair of overlap: no seams between slices
-                return <path key={i} d={sector(from, to)} style={{ fill: blendColour((from + to) / 2, split, edges) }} />
-              })}
-              <path d={sector(0, END)} fill={`url(#${ids.shade})`} />
-            </>
-            : <path d={sector(0, END)} fill={`url(#${ids.fill})`} />}
-          <path d={sector(0, END)} fill={`url(#${ids.glass})`} />
-          <path d={arc(0.02, END - 0.01, RO - 9)} className={styles.glassLine} strokeWidth={3} filter={`url(#${ids.shadow})`} />
-          <path d={sector(0, END)} className={styles.glassRim} />
-          {/* The grains the needle leaves on each level: they fade away from the green and yellow levels once the needle
-              has moved on; only the red level keeps a few. */}
-          {levels.map((l) => <path key={l.tone} d={sector(l.from, Math.min(l.to, END))} fill={`url(#${ids.dots})`}
-            className={styles.dotsPassed} data-grains={l.tone} />)}
-          <g mask={`url(#${ids.trail})`}>
-            <path d={sector(0, END)} fill={`url(#${ids.dots})`} className={styles.dots} />
-          </g>
-        </g></g>
-
-
-
-        {/* Ticks near the inner edge, all the way round; quieter on the unfilled part. */}
-        {Array.from({ length: 13 }, (_, i) => {
-          const f = (i + 0.5) / 13
-          const [x1, y1] = point(f, RI + 12)
-          const [x2, y2] = point(f, RI + 20)
-          return <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} className={styles.tick} data-filled={f <= now || undefined} />
-        })}
-
-        {/* A soft bloom at the tip. */}
-        <circle cx={tipX} cy={tipY} r={BAND / 2} className={styles.bloom} data-paint="mid" filter={`url(#${ids.blur})`} />
-      </g>
-
-      {/* The needle: solid black, standing on the disc (its foot tucks under it), most of the way across the band. */}
-      <g className={styles.turn} data-turn>
-        <rect x={CX - 3} y={CY - RO + 18} width={6} height={RO - 18 - RI + 8} rx={3} className={styles.needle} />
-      </g>
-
-      {/* The disc: the multiple and the level word (no sub line, 19 Nov). */}
-      <circle cx={CX} cy={CY} r={RI} className={styles.disc} />
-      {/* "With multiple" (19 Nov): the multiple, big, above the level word. */}
-      {number && <text x={CX} y={CY - 38} className={styles.value} textAnchor="middle">{ratio}X</text>}
-      {/* 3 blocks · Low–High: no word in the dial (the risk is in the tag under it). */}
-      {!words && (['safe', 'caution', 'danger'] as const).map((tone) =>
-        <text key={tone} x={CX} y={number ? CY - 6 : CY - 22} className={styles.level} data-word={tone} textAnchor="middle">
-          {/* 3 blocks · Low–High: the word follows the scale — Low risk · Medium risk · High risk. */}
-          {t(tone === 'safe' ? (words ? 'nudge.levelLow' : 'nudge.levelSafe') : tone === 'caution' ? (words ? 'nudge.levelMedium' : 'nudge.levelMid') : 'nudge.highRisk')}
-        </text>)}
-      </g>
-    </svg>
-    {badge && <div className={styles.badge} data-badge style={{ top: `${((BADGE_Y - 6) / (CY - 6)) * 100}%` }}>{badge}</div>}
-  </figure>
 }
 ```
 
@@ -4018,6 +3109,36 @@ export const segments: { rim: { d: string; fill: string }; band: { d: string; fi
 export const ring = { d: 'M119.224 69.0989C119.219 68.9516 119.213 68.8053 119.207 68.6579C119.193 68.2961 119.175 67.9343 119.153 67.5743C119.144 67.4261 119.135 67.277 119.124 67.1287C119.093 66.6794 119.056 66.2311 119.012 65.7846C119.008 65.745 119.005 65.7054 119.002 65.6667C118.953 65.1788 118.894 64.6936 118.83 64.2093C118.813 64.0804 118.794 63.9515 118.776 63.8226C118.724 63.4571 118.67 63.0926 118.61 62.7298C118.587 62.5926 118.565 62.4555 118.541 62.3192C118.468 61.892 118.389 61.4657 118.304 61.0422C118.294 60.9935 118.286 60.9447 118.277 60.8968C118.179 60.4162 118.073 59.9384 117.961 59.4624C117.937 59.3611 117.911 59.2608 117.887 59.1595C117.796 58.782 117.7 58.4064 117.6 58.0317C117.567 57.9129 117.536 57.7932 117.503 57.6745C117.388 57.2602 117.269 56.8468 117.143 56.4371C117.128 56.3892 117.115 56.3404 117.1 56.2926C116.954 55.8203 116.801 55.3516 116.64 54.8849C116.617 54.8177 116.593 54.7514 116.569 54.6842C116.433 54.291 116.291 53.9016 116.144 53.5131C116.106 53.4137 116.069 53.3133 116.031 53.2139C115.875 52.8097 115.715 52.4083 115.549 52.0097C115.531 51.9664 115.514 51.9222 115.496 51.8789C115.302 51.4186 115.102 50.961 114.895 50.5081C114.882 50.4768 114.867 50.4464 114.852 50.416C114.666 50.01 114.472 49.6067 114.275 49.2062C114.233 49.1225 114.192 49.0396 114.15 48.9567C113.956 48.571 113.759 48.188 113.556 47.8078C113.532 47.7636 113.509 47.7185 113.485 47.6733C113.247 47.2314 113.003 46.7941 112.752 46.3605C112.507 45.937 112.253 45.5181 111.995 45.1029C111.949 45.0301 111.903 44.9574 111.858 44.8847C111.612 44.4925 111.361 44.1039 111.104 43.7191C111.087 43.6943 111.07 43.6694 111.054 43.6445C110.769 43.221 110.477 42.8012 110.18 42.3869C110.156 42.3538 110.132 42.3215 110.108 42.2884C109.843 41.9211 109.572 41.5574 109.296 41.1974C109.244 41.1302 109.193 41.063 109.141 40.9958C108.531 40.2077 107.899 39.439 107.242 38.6914C107.199 38.6426 107.156 38.5947 107.113 38.5459C106.823 38.2182 106.529 37.8941 106.23 37.5746C106.177 37.5175 106.123 37.4595 106.07 37.4025C105.388 36.6797 104.685 35.9782 103.961 35.2978C103.904 35.2444 103.846 35.191 103.789 35.1376C103.469 34.8393 103.144 34.5457 102.816 34.2566C102.767 34.2133 102.719 34.17 102.67 34.1277C101.92 33.4731 101.15 32.8406 100.361 32.232C100.294 32.1805 100.227 32.1289 100.159 32.0774C99.7986 31.8021 99.4343 31.5314 99.0663 31.2663C99.0331 31.2423 99.0008 31.2184 98.9676 31.1945C98.5526 30.8971 98.1329 30.6062 97.7077 30.3226C97.6828 30.306 97.6579 30.2894 97.633 30.2729C97.2475 30.016 96.8583 29.7656 96.4654 29.5198C96.3925 29.4737 96.3196 29.4286 96.2468 29.3835C95.8308 29.1257 95.4111 28.8725 94.9868 28.6277C94.5524 28.3772 94.1143 28.1333 93.6716 27.8957C93.6273 27.8718 93.5821 27.8488 93.5369 27.8248C93.156 27.6223 92.7723 27.4244 92.3859 27.2319C92.3029 27.1905 92.2189 27.1491 92.1359 27.1076C91.7347 26.9106 91.3307 26.7182 90.924 26.5313C90.8926 26.5175 90.8622 26.5028 90.8317 26.488C90.3779 26.2809 89.9196 26.0811 89.4584 25.8887C89.415 25.8703 89.3708 25.8537 89.3274 25.8353C88.928 25.6696 88.5259 25.5094 88.121 25.3547C88.0214 25.316 87.9218 25.2783 87.8212 25.2405C87.4329 25.0942 87.0419 24.9533 86.648 24.8161C86.5807 24.7931 86.5143 24.7682 86.447 24.7452C85.9803 24.586 85.5099 24.4322 85.0367 24.2867C84.9888 24.272 84.9399 24.2582 84.8919 24.2435C84.4806 24.1183 84.0673 23.9995 83.6523 23.8844C83.5333 23.8513 83.4143 23.82 83.2944 23.7877C82.92 23.6874 82.5437 23.5916 82.1646 23.5005C82.0631 23.4756 81.9626 23.4508 81.8611 23.4268C81.3852 23.3154 80.9065 23.2096 80.4241 23.112C80.3752 23.1019 80.3264 23.0936 80.2784 23.0844C79.8541 22.9997 79.4271 22.9214 78.9991 22.8478C78.8626 22.8247 78.7252 22.8017 78.5878 22.7796C78.2244 22.7207 77.8591 22.6655 77.493 22.6139C77.3638 22.5955 77.2347 22.5771 77.1056 22.5596C76.6214 22.4961 76.1344 22.4381 75.6455 22.3883C75.6059 22.3847 75.5662 22.3819 75.5275 22.3782C75.0801 22.334 74.631 22.2972 74.1809 22.2659C74.0324 22.2558 73.8839 22.2466 73.7344 22.2374C73.3738 22.2153 73.0113 22.1968 72.6489 22.183C72.5022 22.1775 72.3546 22.1711 72.2071 22.1665C71.7118 22.1517 71.2156 22.1416 70.7166 22.1416C70.2176 22.1416 69.7214 22.1517 69.2261 22.1665C69.0785 22.1711 68.9319 22.1775 68.7843 22.183C68.4218 22.1968 68.0593 22.2153 67.6987 22.2374C67.5502 22.2466 67.4008 22.2548 67.2523 22.2659C66.8022 22.2972 66.353 22.334 65.9057 22.3782C65.866 22.3819 65.8264 22.3847 65.7876 22.3883C65.2988 22.4381 64.8127 22.4961 64.3276 22.5596C64.1984 22.5762 64.0693 22.5955 63.9402 22.6139C63.574 22.6655 63.2088 22.7198 62.8454 22.7796C62.708 22.8017 62.5705 22.8238 62.434 22.8478C62.0061 22.9214 61.5809 22.9997 61.1575 23.0844C61.1077 23.0945 61.0579 23.1028 61.0081 23.1129C60.5266 23.2105 60.048 23.3164 59.572 23.4278C59.4706 23.4517 59.37 23.4775 59.2695 23.5014C58.8913 23.5926 58.5141 23.6883 58.1396 23.7887C58.0207 23.8209 57.9017 23.8522 57.7827 23.8853C57.3667 23.9995 56.9535 24.1192 56.5422 24.2444C56.4942 24.2591 56.4462 24.272 56.3983 24.2867C55.9251 24.4322 55.4547 24.586 54.988 24.7452C54.9207 24.7682 54.8552 24.7922 54.7879 24.8152C54.3941 24.9515 54.003 25.0932 53.6138 25.2396C53.5142 25.2774 53.4145 25.3151 53.3149 25.3529C52.91 25.5085 52.5079 25.6677 52.1094 25.8335C52.0652 25.8519 52.0209 25.8694 51.9775 25.8869C51.5164 26.0802 51.0589 26.28 50.6051 26.4862C50.5738 26.5 50.5424 26.5157 50.511 26.5295C50.1043 26.7154 49.7003 26.9079 49.3 27.1058C49.217 27.1472 49.1331 27.1877 49.0501 27.2292C48.6627 27.4225 48.279 27.6205 47.8981 27.823C47.8538 27.8469 47.8086 27.869 47.7643 27.893C47.3216 28.1305 46.8835 28.3745 46.4491 28.6249C46.0239 28.8698 45.6051 29.123 45.1883 29.3808C45.1154 29.4259 45.0425 29.471 44.9706 29.5161C44.5777 29.7619 44.1875 30.0132 43.8011 30.2701C43.7762 30.2867 43.7513 30.3023 43.7273 30.3189C43.3021 30.6034 42.8824 30.8943 42.4674 31.1917C42.4342 31.2156 42.4019 31.2396 42.3687 31.2635C41.9997 31.5287 41.6364 31.7993 41.2757 32.0746C41.2084 32.1262 41.1411 32.1768 41.0746 32.2284C40.2851 32.8369 39.515 33.4685 38.7651 34.124C38.7162 34.1663 38.6683 34.2096 38.6194 34.2529C38.291 34.5429 37.9664 34.8366 37.6454 35.1349C37.5882 35.1883 37.531 35.2408 37.4739 35.2942C36.7498 35.9745 36.0461 36.6761 35.3654 37.3988C35.3119 37.4559 35.2584 37.5139 35.2049 37.5709C34.907 37.8904 34.6128 38.2145 34.3232 38.5413C34.2798 38.5901 34.2365 38.6389 34.1931 38.6877C33.5373 39.4353 32.9046 40.204 32.295 40.9921C32.2433 41.0593 32.1917 41.1265 32.14 41.1937C31.8652 41.5537 31.594 41.9165 31.3284 42.2838C31.3044 42.3169 31.2795 42.3501 31.2555 42.3842C30.9576 42.7985 30.667 43.2173 30.382 43.6409C30.3654 43.6657 30.3488 43.6906 30.3322 43.7154C30.0749 44.1003 29.824 44.4888 29.5778 44.881C29.5317 44.9537 29.4865 45.0264 29.4413 45.0992C29.183 45.5144 28.9294 45.9333 28.684 46.3568C28.4332 46.7904 28.1887 47.2277 27.9508 47.6697C27.9268 47.7139 27.9037 47.759 27.8798 47.8041C27.6768 48.1843 27.4785 48.5673 27.2858 48.9531C27.2443 49.0359 27.2028 49.1197 27.1613 49.2035C26.9639 49.603 26.7711 50.0054 26.5848 50.4114C26.57 50.4427 26.5553 50.474 26.5405 50.5062C26.3339 50.9592 26.1338 51.4158 25.9401 51.8762C25.9216 51.9203 25.9041 51.9645 25.8857 52.0087C25.7196 52.4065 25.5601 52.8079 25.4042 53.2111C25.3655 53.3105 25.3277 53.4109 25.2898 53.5103C25.1432 53.8979 25.0021 54.2883 24.8646 54.6814C24.8416 54.7486 24.8167 54.8149 24.7936 54.8821C24.6341 55.348 24.48 55.8175 24.3343 56.2898C24.3195 56.3377 24.3057 56.3865 24.291 56.4343C24.1655 56.844 24.0465 57.2574 23.9312 57.6717C23.898 57.7905 23.8667 57.9092 23.8344 58.0289C23.7339 58.4027 23.6379 58.7793 23.5466 59.1567C23.5217 59.258 23.4968 59.3584 23.4728 59.4596C23.3612 59.9347 23.2552 60.4125 23.1574 60.8931C23.1473 60.9428 23.139 60.9925 23.1288 61.0422C23.044 61.4648 22.9656 61.8902 22.8918 62.3164C22.8678 62.4527 22.8457 62.5899 22.8235 62.7271C22.7645 63.0898 22.7092 63.4544 22.6575 63.8199C22.6391 63.9488 22.6206 64.0777 22.6031 64.2066C22.5394 64.6899 22.4813 65.176 22.4315 65.664C22.4278 65.7035 22.4251 65.7431 22.4214 65.7818C22.3771 66.2283 22.3402 66.6767 22.3089 67.126C22.2987 67.2742 22.2895 67.4224 22.2803 67.5716C22.2581 67.9315 22.2397 68.2934 22.2259 68.6552C22.2203 68.8016 22.2139 68.9489 22.2093 69.0962C22.1945 69.5906 22.1843 70.0859 22.1843 70.584H29.1175C29.1175 63.0189 31.1448 55.928 34.6856 49.8194C38.3381 43.5184 43.6018 38.2642 49.9143 34.6184C56.034 31.084 63.1378 29.0604 70.7166 29.0604C78.2954 29.0604 85.3992 31.084 91.5189 34.6184C97.8313 38.2642 103.095 43.5184 106.748 49.8194C110.288 55.928 112.316 63.0189 112.316 70.584H119.249C119.249 70.0896 119.239 69.5933 119.224 69.0989Z', fill: 'black' }
 export const face = { d: 'M106.747 49.8245C103.095 43.5235 97.831 38.2693 91.5185 34.6235C85.3989 31.089 78.2951 29.0654 70.7162 29.0654C63.1374 29.0654 56.0336 31.089 49.9139 34.6235C43.6015 38.2693 38.3377 43.5235 34.6853 49.8245C31.1445 55.9331 29.1172 63.024 29.1172 70.589H70.7153H112.315C112.315 63.024 110.288 55.9331 106.747 49.8245Z', fill: '#212121' }
 export const needle = { d: 'M111.117 36.1662L74.1669 59.8714C73.0943 59.4644 71.9321 59.2389 70.7165 59.2389C65.3559 59.2389 61.0099 63.577 61.0099 68.9279C61.0099 74.2788 65.3559 78.6169 70.7165 78.6169C76.0771 78.6169 80.4231 74.2788 80.4231 68.9279C80.4231 68.2494 80.3521 67.5865 80.2193 66.9466L111.134 36.1865C111.146 36.1754 111.131 36.1579 111.117 36.1662Z', fill: 'white' }
+```
+
+### `src/flows/nudges/sheets/needle.ts`
+
+```ts
+/**
+ * The risk meter's needle run (19 Nov, kept from the soft dial when it was archived on 24 Nov — the speedometer swings
+ * the same way): ease-in-out up to a little past the reading (fast in the middle), then back a touch, forward a touch,
+ * and it settles — a soft bounce. Offsets are of the run's duration; f = fraction of the scale.
+ */
+export type RiskLevel = 'safe' | 'caution' | 'danger'
+
+export const OVER = 0.05
+export const RUN = 0.6
+export const RUN_EASE = [0.42, 0, 0.3, 1] as const
+export const needleKeys = (now: number) => [
+  { at: 0, f: 0, easing: `cubic-bezier(${RUN_EASE.join(',')})` },
+  { at: RUN, f: Math.min(1, now + OVER), easing: 'cubic-bezier(0.45, 0, 0.55, 1)' },
+  { at: 0.79, f: now - 0.022, easing: 'cubic-bezier(0.45, 0, 0.55, 1)' },
+  { at: 0.91, f: now + 0.007, easing: 'cubic-bezier(0.3, 0, 0.3, 1)' },
+  { at: 1, f: now, easing: 'linear' },
+]
+
+/** Time fraction (0–1) at which a cubic-bezier easing reaches progress p. */
+export function easeTimeAt(p: number, [x1, y1, x2, y2]: readonly number[]) {
+  const b = (s: number, a: number, c: number) => 3 * a * s * (1 - s) ** 2 + 3 * c * s ** 2 * (1 - s) + s ** 3
+  let lo = 0, hi = 1
+  for (let i = 0; i < 30; i++) { const m = (lo + hi) / 2; if (b(m, y1, y2) < p) lo = m; else hi = m }
+  return b((lo + hi) / 2, x1, x2)
+}
 ```
 
 ## Source — shared app parts it uses

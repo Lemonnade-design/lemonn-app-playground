@@ -24,7 +24,7 @@
       "id": "nudges-02",
       "name": "Nudge · from settings",
       "figma": "",
-      "note": "The one nudge sheet — the risk meter — filled by the case and data state picked in the settings. Pills on the floating switcher: Meter (4f Soft dial · 4g Blocks), Risk level, Meter layout, Meter fill, Case, State.",
+      "note": "The one nudge sheet — the risk meter, the speedometer · Low–High — filled by the case and data state picked in the settings. Pills on the floating switcher: Risk level, Case, State.",
       "goesTo": [],
       "figmaUrl": ""
     },
@@ -123,19 +123,16 @@
     "src/flows/nudges/options.ts",
     "src/flows/nudges/screens/OrderPad.module.css",
     "src/flows/nudges/screens/OrderPad.tsx",
-    "src/flows/nudges/sheets/BlockDial.module.css",
-    "src/flows/nudges/sheets/BlockDial.tsx",
     "src/flows/nudges/sheets/GaugeMeter.module.css",
     "src/flows/nudges/sheets/GaugeMeter.tsx",
     "src/flows/nudges/sheets/GuardrailSheets.module.css",
     "src/flows/nudges/sheets/GuardrailSheets.tsx",
     "src/flows/nudges/sheets/NudgeSheet.module.css",
     "src/flows/nudges/sheets/NudgeSheet.tsx",
-    "src/flows/nudges/sheets/SoftDial.module.css",
-    "src/flows/nudges/sheets/SoftDial.tsx",
     "src/flows/nudges/sheets/TradeProtectSheet.module.css",
     "src/flows/nudges/sheets/TradeProtectSheet.tsx",
-    "src/flows/nudges/sheets/gaugeArt.ts"
+    "src/flows/nudges/sheets/gaugeArt.ts",
+    "src/flows/nudges/sheets/needle.ts"
   ],
   "shared": [
     "src/shared/copy.ts",

@@ -20,13 +20,13 @@ Prototype: https://lemonnade-design.github.io/lemonn-app-prototype/#/market · m
 | `market-08` | Market · filters applied | — | `search-24`, `us-stocks-13`, `stocks-32` | The title reads "Filtered stocks (n)"; the filter button gets a red dot. |
 | `market-09` | Market · US stocks | — | `search-24`, `us-stocks-13`, `stocks-32` | The picker left of the tabs is on US: $ prices, US logos; tapping a stock opens its US stock page (us-stocks-13, which follows the user status). |
 | `market-10` | Market · US · S&P 500 filter | — | `search-24`, `us-stocks-13`, `stocks-32` | US list with the S&P 500 index applied (the US Stocks flow\ |
-| `market-11` | Watchlist | — | — | An L2 page built like Market: the IN / US picker at the left of pill tabs, one per watchlist (each market has its own). Opens on the market of the Home tab it was opened from (IND → Indian lists, US → US lists). "+ New" opens Create watchlist; a swipe or a tab moves between lists. |
+| `market-11` | Watchlist | — | — | An L2 page built like Market: the IN / US picker at the left of pill tabs, one per watchlist (each market has its own). Opens on the market of the Home tab it was opened from (IND → Indian lists, US → US lists). "+ New" opens Create watchlist; a swipe or a tab moves between lists. Under the tabs, the list\ |
 | `market-12` | Watchlist · US | — | — | Opened from Home\ |
 | `market-13` | Watchlist · another list | — | — | The second tab (Banking Giants) picked. |
 | `market-14` | Create watchlist | — | — | From "+ New": the name field (typing, keyboard up) and Create, off until something is typed. Create adds the list as the last tab and opens it. |
 | `market-15` | Sort by | — | — | From the header\ |
 | `market-16` | Edit watchlist | — | `market-11` | From the header\ |
-| `market-17` | Edit · delete watchlist | — | `market-11` | Delete watchlist asks first: a sheet with Cancel · Delete. |
+| `market-17` | Edit · delete watchlist | — | `market-11` | Delete watchlist asks first: a sheet with the large header (a bin icon, "Delete Momentum Plays?" and what happens), then Cancel · Delete. |
 
 ## Spec (README.md)
 
@@ -162,6 +162,7 @@ card is used by every stock list in the app.
 - **List divider** — ListCell has no divider option; the stock rows draw their own 1px hairline (`StockListCard` `look="list"`).
 
 ### Changelog
+- Screen notes for Watchlist, Edit watchlist and Delete brought up to date (header, star, toast, large delete header).
 - Edit watchlist: the star is a Large ghost button, so it really draws at 24 (Small ghost forced its icon to 16).
 - Edit watchlist: an "All stocks" SectionHeader (heading 16, FLAG L3 gap) above the stocks; 24 between the name field and the stocks (was 16).
 - Edit watchlist: Save returns to Watchlist with a floating success Aerobar "Watchlist updated" (3 s). The Delete sheet uses the large header with a bin Spot (error tone).
@@ -889,13 +890,13 @@ export const market: Flow = {
     { id: 'market-09', section: 'lists', name: 'Market · US stocks', figma: '', note: 'The picker left of the tabs is on US: $ prices, US logos; tapping a stock opens its US stock page (us-stocks-13, which follows the user status).', tab: true, render: (go) => <Market market="us" tab="all" onTab={(t) => goToTab(go, t)} onSearch={() => go('search-24')} onOpenUs={(sym) => { viewUsStock(sym); go('us-stocks-13') }} onOpenStock={(s) => { openStock(s); go('stocks-32') }} /> },
     { id: 'market-10', section: 'lists', name: 'Market · US · S&P 500 filter', figma: '', note: 'US list with the S&P 500 index applied (the US Stocks flow\'s E3 entry point). Filter options are the US ones.', tab: true, render: (go) => <Market market="us" filters={{ index: 'sp-500' }} onTab={(t) => goToTab(go, t)} onSearch={() => go('search-24')} onOpenUs={(sym) => { viewUsStock(sym); go('us-stocks-13') }} onOpenStock={(s) => { openStock(s); go('stocks-32') }} /> },
     // ---- Watchlist (24 Nov, the user's brief; no Figma yet): Home's Watchlist shortcut opens it.
-    { id: 'market-11', section: 'watchlist', name: 'Watchlist', badge: 'new', figma: '', note: 'An L2 page built like Market: the IN / US picker at the left of pill tabs, one per watchlist (each market has its own). Opens on the market of the Home tab it was opened from (IND → Indian lists, US → US lists). "+ New" opens Create watchlist; a swipe or a tab moves between lists.', render: (go) => <WatchlistPage go={go} /> },
+    { id: 'market-11', section: 'watchlist', name: 'Watchlist', badge: 'new', figma: '', note: 'An L2 page built like Market: the IN / US picker at the left of pill tabs, one per watchlist (each market has its own). Opens on the market of the Home tab it was opened from (IND → Indian lists, US → US lists). "+ New" opens Create watchlist; a swipe or a tab moves between lists. Under the tabs, the list\'s header as on Market: its name and count ("Momentum Plays (6)"), then Edit (not on All) and Sort. Back from Save: a "Watchlist updated" toast (3 s).', render: (go) => <WatchlistPage go={go} /> },
     { id: 'market-12', section: 'watchlist', name: 'Watchlist · US', badge: 'new', figma: '', note: 'Opened from Home\'s US tab: the US watchlists, $ prices, US logos.', render: (go) => <WatchlistPage go={go} market="us" /> },
     { id: 'market-13', section: 'watchlist', name: 'Watchlist · another list', badge: 'new', figma: '', note: 'The second tab (Banking Giants) picked.', render: (go) => <WatchlistPage go={go} market="in" list="in-banks" /> },
     { id: 'market-14', section: 'watchlist', name: 'Create watchlist', badge: 'new', figma: '', note: 'From "+ New": the name field (typing, keyboard up) and Create, off until something is typed. Create adds the list as the last tab and opens it.', render: (go) => <WatchlistPage go={go} market="in" creating="Dividend stocks" /> },
     { id: 'market-15', section: 'watchlist', name: 'Sort by', badge: 'new', figma: '', note: 'From the header\'s Sort: one choice as L3 Radio rows — As added (default), Market price, Day change % (highest first), Stock name (A → Z). Apply sorts every list on the page; a dot on Sort while it isn\'t As added.', render: (go) => <WatchlistPage go={go} market="in" list="in-momentum" sorting /> },
-    { id: 'market-16', section: 'watchlist', name: 'Edit watchlist', badge: 'new', figma: '', note: 'From the header\'s Edit (not on All): the name in an L3 TextField, the stocks as flat cards with a round ⊗ to remove each. Dock: Delete watchlist (asks first) · Save (off until something changed). Back to the list after Save, to All after Delete.', render: (go) => <EditWatchlist onBack={() => go('market-11')} /> },
-    { id: 'market-17', section: 'watchlist', name: 'Edit · delete watchlist', badge: 'new', figma: '', note: 'Delete watchlist asks first: a sheet with Cancel · Delete.', render: (go) => <EditWatchlist confirmingDelete onBack={() => go('market-11')} /> },
+    { id: 'market-16', section: 'watchlist', name: 'Edit watchlist', badge: 'new', figma: '', note: 'From the header\'s Edit (not on All): the name in an L3 TextField, an "All stocks" heading, then the stocks as flat cards, each with a filled star (24). A tap unfills the star but the stock stays; a second tap fills it again. Only Save takes the unstarred stocks off. Dock: Delete watchlist (asks first) · Save (off until something changed). Back to the list after Save (with a "Watchlist updated" toast), to All after Delete.', render: (go) => <EditWatchlist onBack={() => go('market-11')} /> },
+    { id: 'market-17', section: 'watchlist', name: 'Edit · delete watchlist', badge: 'new', figma: '', note: 'Delete watchlist asks first: a sheet with the large header (a bin icon, "Delete Momentum Plays?" and what happens), then Cancel · Delete.', render: (go) => <EditWatchlist confirmingDelete onBack={() => go('market-11')} /> },
   ],
 }
 ```

@@ -136,7 +136,7 @@
       "id": "market-11",
       "name": "Watchlist",
       "figma": "",
-      "note": "An L2 page built like Market: the IN / US picker at the left of pill tabs, one per watchlist (each market has its own). Opens on the market of the Home tab it was opened from (IND → Indian lists, US → US lists). \"+ New\" opens Create watchlist; a swipe or a tab moves between lists.",
+      "note": "An L2 page built like Market: the IN / US picker at the left of pill tabs, one per watchlist (each market has its own). Opens on the market of the Home tab it was opened from (IND → Indian lists, US → US lists). \"+ New\" opens Create watchlist; a swipe or a tab moves between lists. Under the tabs, the list\\",
       "goesTo": [],
       "figmaUrl": ""
     },
@@ -186,7 +186,7 @@
       "id": "market-17",
       "name": "Edit · delete watchlist",
       "figma": "",
-      "note": "Delete watchlist asks first: a sheet with Cancel · Delete.",
+      "note": "Delete watchlist asks first: a sheet with the large header (a bin icon, \"Delete Momentum Plays?\" and what happens), then Cancel · Delete.",
       "goesTo": [
         "market-11"
       ],
