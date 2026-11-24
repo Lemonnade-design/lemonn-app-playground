@@ -318,7 +318,7 @@ sample signals in `data.ts` (`zingSignals`, `SignalFilter`, `matchesFilter`).
   2. Colour per commodity — as 1, in the commodity's colour (gold honey, crude oil / silver grey, natural gas
      tangerine), its logo, and a pulsing green Live dot on the right.
   3. Dark ticker — the inverted surface, an orange flame, "**Trending on MCX** · 2.1K+ traded today" in honey.
-  4. Rotating facts — 1's strip; the line and its picture turn over every 5 s (rising in together): traded today ·
+  4. Rotating facts — 1's strip, without the shimmer; the line and its picture turn over every 5 s (rising in together): traded today ·
      "**Trending on MCX** · 2.1K+ traded today" with the orange flame (as 3) · "Gold is +1.2% today" with a trend arrow
      (up or down, in the strip's brown text colour) · "MCX is open till 11:30 PM". The soft white glow sits only under the gold bars
      (no glow under logos or icons, in every version).
@@ -550,6 +550,7 @@ The source uses old D2 controls alongside L3; their code equivalents are L3 comp
 - Weekday result dots (Zing Trades): no L3 component; 16 circles on the up / down light surfaces.
 
 ### Changelog
+- 24 Nov 2026 — Zing signals: no shimmer on nudge strip 4 (Rotating facts).
 - 24 Nov 2026 — Zing signals: the nudge strip animates out when switched off (tucks back behind the card) and comes out at once when switched on with the sheet up.
 - 24 Nov 2026 — Zing signals: nudge strip gradient from Figma 6947:45037 — warm top-left corner fading across, and a gold ring round strip and card.
 - 24 Nov 2026 — Zing signals: Rotating facts turns every 5 s (was 3), the picture comes in with its line, the move line has a trend arrow; the glow only under the gold bars.
@@ -10157,7 +10158,7 @@ import styles from './SignalStrip.module.css'
  * - s2 Colour per commodity: as s1, but the strip takes the commodity's colour (gold honey, crude oil slate, natural gas
  *   tangerine), its logo, and a pulsing Live dot on the right.
  * - s3 Dark ticker: the strip in the inverted surface, a flame, "Trending on MCX · 2.1K+ traded today" in honey.
- * - s4 Rotating facts: s1's strip; its line (and its picture) turns over every 5 s — traded today · trending on MCX
+ * - s4 Rotating facts: s1's strip, no shimmer; its line (and its picture) turns over every 5 s — traded today · trending on MCX
  *   (the flame, as s3) · today's move (a trend arrow in the strip's text colour) · MCX hours.
  */
 export type StripVersion = 'off' | 's1' | 's2' | 's3' | 's4'
@@ -10226,7 +10227,8 @@ export function SignalStrip({ signal, version: wanted, logo, order, children }: 
             </>
           )}
           {version === 's2' && <span className={styles.live}><span className={styles.liveDot} aria-hidden="true" />{t('signals.strip.live')}</span>}
-          <span className={styles.shimmer} aria-hidden="true" />
+          {/* No shimmer on Rotating facts: its lines already move (user, 24 Nov). */}
+          {version !== 's4' && <span className={styles.shimmer} aria-hidden="true" />}
         </div>
       </div>
       {children}
