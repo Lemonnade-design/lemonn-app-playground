@@ -22853,6 +22853,7 @@ export const usStocks: Flow = {
         { value: 'v5', label: 'V5 · settings button, amount in a box' }, // V3's settings button, order types left, amount boxed (23 Nov, user)
         { value: 'v6', label: 'V6 · amount in a box, TP/SL pill below' }, // V5's box, V2's centred tabs + pill (23 Nov, user)
         { value: 'v7', label: 'V7 · stop loss switch in the top bar' }, // V4 with a switch in place of its button; on → the card in the pad (23 Nov, user)
+        { value: 'v8', label: 'V8 · settings button, amount in a card' }, // Quantity + Amount / Shares left, the amount right (23 Nov, user)
       ],
       default: 'v2', // V2 by default (23 Nov, the user's call)
       floatOn: ORDER_PAD_SCREEN_IDS, // every pad screen: Market, Limit and SL keep the same settings (23 Nov, user)
@@ -22866,6 +22867,7 @@ export const usStocks: Flow = {
           { value: 'v5', label: 'V5 · settings button, amount in a box', short: 'V5' },
           { value: 'v6', label: 'V6 · amount in a box, TP/SL pill below', short: 'V6' },
           { value: 'v7', label: 'V7 · stop loss switch in the top bar', short: 'V7' },
+          { value: 'v8', label: 'V8 · settings button, amount in a card', short: 'V8' },
         ],
       },
     },
@@ -39613,6 +39615,20 @@ function OrderPadV1({ config, backdrop, sheet }: OrderPadProps) {
 
 /* V7's top-bar switch (23 Nov, user): the label then an L3 Switch, one tap target, in the Actionbar actions slot. */
 .slToggle { display: inline-flex; align-items: center; gap: var(--l3-spacing-08); font: var(--l3-text-label-14); color: var(--l3-content-primary); cursor: pointer; }
+
+/* V8: the amount card's left label ("Quantity"), over the Amount / Shares switch. */
+.qtyLabel { font: var(--l3-text-label-14); color: var(--l3-content-primary); }
+/* V8: the amount at 32 (L3 heading 32), its $ 2 under, whatever the "Amount size" option says. */
+/* V8: the amount row keeps one height with or without the $ (Amount ⇄ Shares doesn't move the card, 23 Nov, user). */
+.amountCardRow .amountRow { height: var(--l3-size-40); }
+.amountCardRow .amountRow .amount { font: var(--l3-text-heading-32); height: var(--l3-size-40); }
+.amountCardRow .amountRow .prefix { font: var(--l3-text-heading-32); font-size: calc(var(--l3-font-size-800) - 2px); }
+.amountCardRow .amountRow .caret { height: calc(var(--l3-font-size-800) * 1.1); }
+/* V8: 14 top and bottom (2 under the boxed versions' 16), 16 at the sides (23 Nov, user). */
+.amountBox.amountCard { padding-block: var(--l3-spacing-14); }
+
+/* V8: the Set TP/SL pill keeps its width; on a narrow phone the chips beside it scroll instead (23 Nov). */
+.tpslPill { flex-shrink: 0; }
 ```
 
 ### `src/flows/us-stocks/screens/trade/OrderPadV2.tsx`
@@ -39658,7 +39674,7 @@ import { usShortName } from '../../../../shared/data/usShortNames'
 import { inShortName } from '../../../../shared/data/inShortNames'
 import { al, forCurrentStock } from './format'
 import type { Derived, OrderPadConfig, OrderType, PadChip, PadMode } from './types'
-import { usePadVersion, usePriceCards, useTpslCard, useAmountBox, useAmountGlow, useAmountSize, useOrderTypesLeft, useValidityPlace } from './version'
+import { usePadVersion, usePriceCards, useTpslCard, useAmountBox, useAmountCard, useAmountGlow, useAmountSize, useOrderTypesLeft, useValidityPlace } from './version'
 import { LeverageCard } from './LeverageCard'
 import { TPSL_INDIA, TPSL_US, TpslControl } from './Tpsl'
 import { FeeBreakdownSheet } from './FeeBreakdown'
@@ -39763,6 +39779,7 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
   // button at the row's right edge that opens the TP/SL sheet (TpslControl, through tpslOpen).
   const tpslCard = useTpslCard()
   const amountBox = useAmountBox() // V5 / V6: the amount section in a bounding box
+  const amountCard = useAmountCard() // V8: the amount in a card, its label and switch at the left
   const orderTypesLeft = useOrderTypesLeft() // V5: order types on the left, the TP/SL button on the right
   const amountGlow = useAmountGlow() // flow option "Amount box gradient"
   const amountSize = useAmountSize() // flow option "Amount size" (36 = L3 Heading/36)
@@ -39774,7 +39791,7 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
   // The unit the field is showing; `value` is always kept in the config's own unit (config.mode).
   const [mode, setMode] = useState<PadMode>(config.mode)
   const [value, setValue] = useState(config.value)
-  const [amountText, setAmountText] = useState(config.value ? String(config.value) : '')
+  const [amountText, setAmountText] = useState(config.value ? String(Number(config.value.toFixed(4))) : '')
   const [pcts, setPcts] = useState(() => (config.prices ?? []).map((price) => price.pct))
   // The field the keypad types into: the amount, or a price card (its index). Tapping a field picks it; the blue caret
   // shows on that one. A typed price is kept as text while you type and sets its % (the Stepper follows).
@@ -39842,7 +39859,7 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
   const [feesOpen, setFeesOpen] = useState(false)
   const onReq = goTo('req') ?? (() => setFeesOpen(true))
 
-  const textOf = (n: number) => (n ? String(n) : '')
+  const textOf = (n: number) => (n ? String(Number(n.toFixed(4))) : '') // no float noise (31227.9999999996 → 31228)
   const switchMode = () => {
     const next: PadMode = mode === 'amount' ? 'shares' : 'amount'
     setAmountText(textOf(shown(next)))
@@ -40171,6 +40188,32 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
     />
   )
 
+  // The amount itself ($ and the number): in the amount section, or (V8) at the right of the amount card.
+  const amountField = (
+    <label
+      className={styles.amountRow}
+      data-error={fieldError || undefined}
+      data-size={amountSize === '36' ? undefined : amountSize}
+      style={amountSize === '36' ? undefined : ({ '--pad-amount': `var(--app-orderpad-amount-${amountSize})` } as CSSProperties)}
+    >
+      {mode === 'amount' && <span className={styles.prefix}>{symbol}</span>}
+      <input
+        className={styles.amount}
+        {...keypadFieldProps()}
+        autoFocus={startKeypad}
+        onFocus={pick('amount')}
+        onPointerDown={pick('amount')}
+        onBlur={keepFocus}
+        autoComplete="off"
+        aria-label={mode === 'amount' ? (india ? 'Amount in rupees' : 'Amount in dollars') : 'Number of shares'}
+        placeholder="0"
+        value={amountText}
+        size={Math.max(amountText.length, 1)}
+        onChange={() => undefined}
+      />
+      {keypad && active === 'amount' && <span className={styles.caret} aria-hidden="true" />}
+    </label>
+  )
   // The amount section and its chips, drawn in the body or (V5) together in a bounding box.
   const amountSection = (
     <Stack gap="08" align="center">
@@ -40191,29 +40234,7 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
           )}
         </Stack>
       )}
-      <label
-        className={styles.amountRow}
-        data-error={fieldError || undefined}
-        data-size={amountSize === '36' ? undefined : amountSize}
-        style={amountSize === '36' ? undefined : ({ '--pad-amount': `var(--app-orderpad-amount-${amountSize})` } as CSSProperties)}
-      >
-        {mode === 'amount' && <span className={styles.prefix}>{symbol}</span>}
-        <input
-          className={styles.amount}
-          {...keypadFieldProps()}
-          autoFocus={startKeypad}
-          onFocus={pick('amount')}
-          onPointerDown={pick('amount')}
-          onBlur={keepFocus}
-          autoComplete="off"
-          aria-label={mode === 'amount' ? (india ? 'Amount in rupees' : 'Amount in dollars') : 'Number of shares'}
-          placeholder="0"
-          value={amountText}
-          size={Math.max(amountText.length, 1)}
-          onChange={() => undefined}
-        />
-        {keypad && active === 'amount' && <span className={styles.caret} aria-hidden="true" />}
-      </label>
+      {amountField}
       {config.toggle && validityPlace !== 'v3' && (
         <Select size="sm" subtle icon="swap" onClick={switchMode} aria-label={switchLabel}>
           {unitLabel}
@@ -40224,7 +40245,7 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
   const chipTabs = chips && (
       <Tabs
         appearance="pill"
-        size="md"
+        size={amountCard ? 'sm' : 'md'} // V8: small pills, left in the card (23 Nov, user)
         behavior="filter"
         aria-label={mode === 'amount' ? 'Add amount' : config.side === 'sell' ? 'Shares to sell' : 'Add shares'}
         items={chips.map((chip, i) => ({ value: String(i), label: typeof chip.label === 'function' ? chip.label(money) : chip.label }))}
@@ -40241,7 +40262,7 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
       <Stack
         gap="16"
         align="center"
-        className={amountBox ? `${styles.body} ${styles.bodyTight}` : styles.body}
+        className={amountBox || amountCard ? `${styles.body} ${styles.bodyTight}` : styles.body}
         inert={backdrop || undefined}
         ref={bodyRef}
       >
@@ -40286,7 +40307,48 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
         <Stack gap="16" align="center" className={styles.fields}>
           {/* The amount is the same on every order type: it stays put while the part under it dissolves. V5 (23 Nov,
               user): the amount and its chips sit in one bounding box (the pad's price-card box). */}
-          {amountBox ? (
+          {amountCard ? (
+            // V8 (23 Nov, user): one card, label-then-value on both sides — "Quantity" over the Amount / Shares switch on
+            // the left, the amount at 32 (23 Nov, user) on the right; the chips under them, inside the card, small, with Set TP/SL at the right.
+            <PriceFieldBox className={[styles.amountBox, styles.amountCard, amountGlow && styles.amountGlow].filter(Boolean).join(' ')}>
+              <Stack gap="16" align="stretch">
+                <Stack direction="horizontal" align="center" justify="between" gap="12" className={styles.amountCardRow}>
+                  <Stack gap="04" align="start">
+                    <span className={styles.qtyLabel}>Quantity</span>
+                    {/* Amount / Shares and the validity side by side, a divider between (23 Nov, user). */}
+                    <Stack direction="horizontal" align="center" gap="12">
+                      {config.toggle && (
+                        <Select size="sm" subtle icon="swap" onClick={switchMode} aria-label={switchLabel}>
+                          {unitLabel}
+                        </Select>
+                      )}
+                      {config.toggle && validity && validityPlace === 'v3' && <span className={styles.trackDivider} aria-hidden />}
+                      {validity && validityPlace === 'v3' && ( /* V1 / V2 keep it by the order types */
+                        <Select size="sm" subtle icon="swap" onClick={onValidity} aria-label={`Validity ${validityLabel}. Switch to ${validityNext}`}>
+                          {validityLabel}
+                        </Select>
+                      )}
+                    </Stack>
+                  </Stack>
+                  {amountField}
+                </Stack>
+                {/* The chips at the left, a "Set TP/SL" pill like them at the far right, under the amount (23 Nov, user). */}
+                <Stack direction="horizontal" align="center" justify="between" gap="08">
+                  {chipTabs}
+                  <Tabs
+                    appearance="pill"
+                    size="sm"
+                    behavior="filter"
+                    className={styles.tpslPill}
+                    aria-label={(padVersion === 'india' ? TPSL_INDIA : TPSL_US).title}
+                    items={[{ value: 'tpsl', label: (padVersion === 'india' ? TPSL_INDIA : TPSL_US).setLabel }]}
+                    value=""
+                    onChange={() => tpslOpen.current?.()}
+                  />
+                </Stack>
+              </Stack>
+            </PriceFieldBox>
+          ) : amountBox ? (
             <PriceFieldBox className={[styles.amountBox, amountGlow && styles.amountGlow].filter(Boolean).join(' ')}>
               <Stack gap="16" align="center">
                 {amountSection}
@@ -40297,7 +40359,7 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
           {/* The part that changes with the order type (chips, prices, SL): it dissolves — drops + fades out, rises + fades
               in (19 Nov, the user's call: only this part moves; the tabs, the amount and the dock stay put). */}
           <Stack gap="16" align="center" className={styles.fields} ref={fields}>
-          {!amountBox && chipTabs}
+          {!amountBox && !amountCard && chipTabs}
           {/* No helper line under the amount: the order's ₹ value is in the Buy / Sell button. Only an error shows here. */}
           {derived.error && <p className={styles.error}>{forCurrentStock(derived.error)}</p>}
           {/* Indian pad, Delivery Market on NSE only (production: "Boost returns by 4X"; leverage is MTF, which BSE doesn't
@@ -43123,6 +43185,7 @@ export type TpslCardVersion = 'v1' | 'v2' | 'v3' | 'v4' | 'v7'
 export const useTpslCard = (): TpslCardVersion => {
   const v = useFlowOption('us-stocks', 'tpslCard', 'v2')
   if (v === 'v5') return 'v3' // V5 (23 Nov, user): V3's TP/SL settings button at the order types' right
+  if (v === 'v8') return 'v3' // V8 (23 Nov, user): V5's row — order types left, the stop loss button at their right — with the amount in a card
   return v === 'v1' || v === 'v4' || v === 'v7' ? v : 'v2' // V3 is hidden from the picker (23 Nov): a saved V3 shows V2
 }
 /** Orderpad version V5 (23 Nov, user): V3's pad (TP/SL settings button), Market / Limit / SL left-aligned, and the amount section — Amount / Shares, the amount and its chips — in
@@ -43131,8 +43194,14 @@ export const useAmountBox = (): boolean => {
   const v = useFlowOption('us-stocks', 'tpslCard', 'v2')
   return v === 'v5' || v === 'v6' // V6 (23 Nov, user): the box too, with V2's centred order types and TP/SL pill
 }
-/** V5 only: Market / Limit / SL left-aligned (V6 keeps them centred). */
-export const useOrderTypesLeft = (): boolean => useFlowOption('us-stocks', 'tpslCard', 'v2') === 'v5'
+/** Orderpad version V8 (23 Nov, user): V5's row (order types left, stop loss button right), with the amount in a card — "Quantity" and the Amount / Shares switch on the
+ * left, the amount (same size) on the right, so both sides read label-then-value. The chips sit in the card, under that row. */
+export const useAmountCard = (): boolean => useFlowOption('us-stocks', 'tpslCard', 'v2') === 'v8'
+/** V5 and V8: Market / Limit / SL left-aligned (V6 keeps them centred). */
+export const useOrderTypesLeft = (): boolean => {
+  const v = useFlowOption('us-stocks', 'tpslCard', 'v2')
+  return v === 'v5' || v === 'v8' // V8 copies V5's row (23 Nov, user)
+}
 
 export const useTpslSheet = (): TpslSheetVersion => (useFlowOption('us-stocks', 'tpslSheet', 'b') === 'a' ? 'a' : 'b')
 
