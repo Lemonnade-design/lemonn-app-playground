@@ -433,6 +433,8 @@ lower on the page is scrolled into view first). `components/MarketSwitchGuide.ts
   16 / 24 icon or an Avatar only — event rows are plain buttons laid out with Stack.
 
 ### Changelog
+- 2026-11-25 — US coming soon: new setting "Coming soon flag" — V2 (default) the white circle stays and the flag melts into it, as the Minted app's waving flags: tilted 4°, fading away at the left and the bottom, a soft white blur over its left edge (inside the circle) · V1 the flag in the white circle as it was.
+- 2026-11-25 — US coming soon: the in-review card adds one line under "Verification in progress" — "We'll notify you once your account is activated" (L3 Description/12, secondary, ListCell description).
 - 2026-11-24 · Home IN shortcuts: Smart Invest takes the lightbulb icon; Trade Ideas takes the Boosted ETFs icon, recoloured green for IN.
 - 2026-11-24 · Home IN shortcuts: Smart Invest is the fifth shortcut (first of row 2), so the grid is a full 4 × 2; it scrolls down to the Smart Invest section, as its chip does.
 - 2026-11-24 · Shortcut tags ("New", "5 New") are centred over the circle's top edge and no longer cut off by the cell's clip; they take the market's colour: IN green (L3 Tag success), US blue (L3 Tag discover), in every look.
@@ -26150,6 +26152,40 @@ export function UsActivationCard({ state, spec: specOverride, holdings, onCta }:
   width: 82%;
   height: auto;
 }
+/* V2 (setting "Coming soon flag", 25 Nov, user): the white circle stays, and the flag melts into it — as the Minted
+   app's waving flags (minted-source, Global ETF cards): tilted a touch, fading away at the hoist (left) and the bottom
+   (two fades, intersected), with a soft white blur over the hoist so the cloth seems to come out of the circle. The
+   blur stays inside the circle. */
+.sun[data-merged='true'] {
+  position: relative;
+  overflow: hidden;
+}
+.sun[data-merged='true'] .flag {
+  width: 88%;
+  transform: rotate(-4deg);
+  -webkit-mask:
+    linear-gradient(90deg, transparent 0, rgb(0 0 0 / 0.6) 22%, #000 48%),
+    linear-gradient(0deg, transparent 0, rgb(0 0 0 / 0.6) 20%, #000 45%);
+  -webkit-mask-composite: source-in;
+  mask:
+    linear-gradient(90deg, transparent 0, rgb(0 0 0 / 0.6) 22%, #000 48%),
+    linear-gradient(0deg, transparent 0, rgb(0 0 0 / 0.6) 20%, #000 45%);
+  mask-composite: intersect;
+}
+.sun[data-merged='true']::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: var(--l3-size-32);
+  height: var(--l3-size-64);
+  translate: 0 -50%;
+  rotate: -4deg;
+  border-radius: var(--l3-radius-full);
+  background: var(--l3-surface-primary);
+  filter: blur(var(--l3-spacing-08));
+  pointer-events: none;
+}
 
 .copy {
   text-align: center;
@@ -26227,6 +26263,7 @@ import { Inset } from '@l3/components/Inset'
 import { ListCell } from '@l3/components/ListCell'
 import { Stack } from '@l3/components/Stack'
 import { msCheckCircle, msHourglassTop } from '@l3/icons/material'
+import { useFlowOption } from '../../../../shared/prototype'
 import { usLogo } from '../../../../shared/data/usStocks'
 import flag from '../../assets/us/ftux/flag.webp'
 import bloomBlue from '../../assets/us/ftux/bloom-blue.svg'
@@ -26282,6 +26319,9 @@ export function UsComingSoon({ usState = 'activate', onActivate }: { usState?: U
   const inReview = usState === 'review' || usState === 'support'
   const page = useRef<HTMLElement>(null)
   const fillHeight = useScreenFill(page)
+  // Prototype setting "Coming soon flag" (25 Nov, user): V2 (default) the flag melting into the white circle (Minted's
+  // fade + a white blur at the hoist); V1 the flag in the white circle as it was.
+  const mergedFlag = useFlowOption('stocks', 'usSoonFlag', 'merged') !== 'circle'
   return (
     <Stack ref={page} gap="24" justify="center" className={styles.soon} style={fillHeight ? { minHeight: fillHeight } : undefined}>
       <div className={styles.stage} aria-hidden="true">
@@ -26291,7 +26331,7 @@ export function UsComingSoon({ usState = 'activate', onActivate }: { usState?: U
         <span className={styles.track} data-ring="inner" />
         <Ring symbols={OUTER} ring="outer" size={32} />
         <Ring symbols={INNER} ring="inner" size={40} />
-        <span className={styles.sun}><img className={styles.flag} src={flag} alt="" /></span>
+        <span className={styles.sun} data-merged={mergedFlag}><img className={styles.flag} src={flag} alt="" /></span>
       </div>
 
       <Inset paddingInline="16" paddingBlock="00">
@@ -26302,11 +26342,13 @@ export function UsComingSoon({ usState = 'activate', onActivate }: { usState?: U
           </Stack>
 
           {ready || inReview ? (
-            // The small version (24 Nov, user): one line that says it all, no description; 8 more above it.
+            // The small version (24 Nov, user): one line that says it all; 8 more above it. In review it adds one line under
+            // it in Description/12 (25 Nov, user): we'll notify you once the account is activated.
             <Card padding="none" className={styles.statusCard}>{/* the ListCell brings its own padding (no double padding) */}
               <ListCell size="md" multiline className={styles.statusCell}
                 iconLeft={<span className={styles.status} data-tone={ready ? 'ready' : 'review'}><Icon icon={ready ? msCheckCircle : msHourglassTop} /></span>}
-                label={t(ready ? 'us.soon.ready.title' : 'us.soon.review.title')} />
+                label={t(ready ? 'us.soon.ready.title' : 'us.soon.review.title')}
+                description={inReview && !ready ? t('us.soon.review.note') : undefined} />
             </Card>
           ) : (
             <Stack gap="08" align="center">
@@ -30265,6 +30307,7 @@ export function useLiveHeatmap(symbols: string[] = heatSymbols): HeatValue[] {
   "us.soon.cta": "Activate US Stocks in advance",
   "us.soon.note": "Free to activate · No money needed now",
   "us.soon.review.title": "Verification in progress",
+  "us.soon.review.note": "We'll notify you once your account is activated",
   "us.soon.ready.title": "All set! We'll notify you at launch",
   "f3.in.ipoNew": "{count} New"
 }
@@ -30746,6 +30789,8 @@ export const stocks: Flow = {
     // are archived (19 Nov): still in the code (Discover.tsx, Instruments.tsx), no longer offered.
     // Archived 24 Nov (the user's call): the Shortcuts setting — the circles (v6) are the shortcuts; the card stays in the code.
     { id: 'usComingSoon', group: 'Home', label: 'US Stocks coming soon', picker: 'toggle', values: [{ value: 'off', label: 'Off' }, { value: 'on', label: 'On' }], default: 'off', floatOn: HOME_SCREEN_IDS },
+    // The coming-soon page's flag (25 Nov): V2 the flag melting into the white circle (default) · V1 the white circle as it was.
+    { id: 'usSoonFlag', group: 'Home', label: 'Coming soon flag', showIf: { usComingSoon: ['on'] }, values: [{ value: 'merged', label: 'V2 · Flag merging' }, { value: 'circle', label: 'V1 · White circle' }], default: 'merged', floatOn: HOME_SCREEN_IDS },
     // US tab, Discover ETFs: the region pills with their round flags (default) or text only — testing whether the flags are too much (3 Nov).
     // Archived 18 Nov (the user's call): "Chips" on the US home rows (Top Movers, Heatmap, ETFs). V2 kept (L3's primary
     // switcher pill + outlined-selected chips); the V1 hand-made switcher stays in UsHome.tsx behind US_CHIPS_V1.
