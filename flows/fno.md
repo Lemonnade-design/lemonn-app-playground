@@ -328,7 +328,10 @@ sample signals in `data.ts` (`zingSignals`, `SignalFilter`, `matchesFilter`).
 - **Expiring This Week, Version 5** (`ExpiringDayWeek`): no View all and no calendar page — people don't look at expiries more than a month out. On the right of the section header, where View all was, a Day / Week switch (L3 pill-group Tabs, small, hugging its labels; Day first). **Day:** today only — one event and two commodity expiries, 3 cards (`todaySample`: today's real entries first, topped up as a sample from the coming days when today has fewer) — drawn like Version 2 but the grey block on the left holds the **time** it happens instead of the date — “9:00” over “PM” (an event's release time; a contract's expiry at the MCX evening close, `MCX_CLOSE` = 11:30 PM in winter, `entryTime` in `commodities/data.ts`). Entries at the same time share one block (one card each, 8 apart); times run earliest first, 16 apart. An event row drops its time there (the block says it). Nothing today → one line in a card, “Nothing expires today”. **Week:** Version 4's day row over the next month, but only the days a contract expires (a day with only an EIA event isn't a date here; an event on an expiry day still shows with it) — e.g. Fri 27, the NEXT WEEK pill, Mon 30, Fri 4, then the 14 DEC pill. Rows act as on fno-38 (option chain → fno-17, ScalpPro → fno-05, row → asset page fno-21).
   - **Day view, Versions 2 and 3** (setting “Day view”, shown with Version 5; Version 2 is the default; Version 1 = the time-block list above) — Figma 7006:4490 “Events today” (`EventsToday`), three items from its sample (`eventsTodaySample`; user, 25 Nov): 9:00 AM Gold expiry (grey “Expiry” tag, option chain + ScalpPro); 9:00 AM EIA crude oil inventories (Event · “Bullish Trend” ↗, note “In last bullish trend, Gold has moved ▲ 1.2%”); 12:30 PM EIA crude oil inventories (Event · “Bearish Trend” ↘). Events may also carry the commodities they move (↑ Gold · ↓ Crude oil) and a “Last time, … has moved” note. In Day view the title reads “Events today”. Time “9:00” (Label 14) over “AM” (Description 12), 48 wide; card 12 to its right; rows 16 apart; the list 12 from the screen edge. Names Label 12; tags L3 Tag small tertiary (the grey ones in content-secondary); an event with a note adds a hairline 16 in from each side and a footer: filled bulb 16, the line in Label 10, the move ▲/▼ in Heading 10 success / error. **Version 2:** time on the page, pictures in a 24 L3 Avatar, 16 more after the first row. **Version 3:** time in a grey block (radius 12), pictures bare at 20 (the flag in a 20 circle). Difference from Figma: the header keeps the Day / Week switch where Figma has View all (Version 5 has no View all page). **Week view (with Versions 2 / 3):** the same vertical layout (`EventsWeek`) instead of the date row — this week's expiry days (today + 6; only days a contract expires, an event on one still shows), the day on the left like Version 2's date block (weekday, Description 12, over the date, Label 16; plain or grey as the version), its cards on the right 8 apart, contracts tagged “Options expiry” / “Futures expiry”, the title “Expiring This Week”.
 - **Expiring This Week, Version 6 · All Events** (`AllEvents.tsx`; Figma 7030:9072, the user's chosen design, 26 Nov): header “All Events” with View all (L3 SectionHeader view-all → fno-38). A fixed sample (`allEventsSample` in `commodities/data.ts`), two days (today and tomorrow): Gold expiry and an EIA event on the first; EIA crude oil inventories and USD Core PCE on the second. The day on the left in a grey block (weekday Description 12 secondary over the date Label 14; 48 wide, radius 12), beside the day's first card; every card on its own row, rows 16 apart (later cards of a day keep the block's slot empty). Cards: art 20 (the US flag: Figma 7035:9401 art, 15 in a 20 slot), 8 to the name (Label 12), grey “Expiry” / “Event” tag and the event's trend tag (4 apart, 6 below an event's name), option chain + ScalpPro on the right (the PCE card before its release has none). A note under a hairline: bulb, Label 10 line, ▲/▼ move in Heading 10. Setting **Event phase** (shown with Version 6): **Pre-event** (default) — “Forecast: Bullish / Bearish”, notes “In last trend, Gold has moved ▲ 1.2%”, “Last time, Crude oil has moved ▼ 4.5%”; **Post-event** — “Actual: Bullish”, notes “Since the report, Gold has moved ▲ 1.2%”, “Since the report, Crude oil has moved ▼ 10.5%”. Tag colours and arrows are as drawn (some red tags read “Bullish”). **View all page (fno-38 in Version 6, `AllEventsPage`; Figma 6995:25579):** Actionbar “Commodity Calendar” with the All / Options / Futures / Events filter tabs under it (flat, icons, sticky in the Actionbar's bottom slot, as on the other versions' calendar; days with nothing in the tab drop out; an empty tab says “Nothing on the calendar here yet” — the sample has no futures), each month under a grey band (surface-secondary, “NOV 2026” Heading 14 spaced 4 — local token `--app-month-band-tracking`, L3 has no tracking token; 8 above and below the text, 16 above on the page's first band), its days 20 below in the same list, 16 from the sides; the sample repeats in the next month as drawn, with “EIA gold inventories” as the first day's event. Difference from Figma: the dates are today and tomorrow, not fixed to Wed 25 / Thu 26.
-- **Expiring This Week, Version 7 · Upcoming Events** (`UpcomingEventsSection`, Figma 7035:14545, 26 Nov): Version 6 with the time. Header “Upcoming Events” (L3 SectionHeader, Heading 14 — Figma draws Heading 16; L3 wins) with View all → fno-38. Sample `upcomingEventsSample`, in the order drawn: today — 09:00 AM Gold (“Options Expiry”), 07:30 AM EIA crude oil inventories (Forecast/Actual: Bullish, note); tomorrow — 09:00 AM EIA crude oil inventories (Bearish). Each day under a date line (“26th Nov”, Label 12 spaced 1 — local token `--app-date-line-tracking`; a hairline to the right edge, 4 apart); each card with its own grey time block (“09:00” Label 12 over “AM” Description 12 secondary; 48 wide, 8 × 6 in, radius 12), 12 to the card; days and cards 16 apart, 16 from the screen edge. “Event phase” applies too. **View all page** (fno-38, Figma 7035:13357): the Version 6 page with these days, the month band in surface-accent-discover-light (12 above on the first, 8 below), days 24 below. On both pages the month band sticks under the tabs while its month scrolls; the next month's band pushes it out.
+- **Expiring This Week, Version 7 · Upcoming Events** (`UpcomingEventsSection`, Figma 7035:14545, 26 Nov): Version 6 with the time. Header “Upcoming Events” (L3 SectionHeader, Heading 14 — Figma draws Heading 16; L3 wins) with View all → fno-38. Sample `upcomingEventsSample`, in the order drawn: today — 09:00 AM Gold (“Options Expiry”), 07:30 AM EIA crude oil inventories (Forecast/Actual: Bullish, note); tomorrow — 09:00 AM EIA crude oil inventories (Bearish). Each day under a date line (“26th Nov”, Label 12 spaced 1 — local token `--app-date-line-tracking`; a hairline to the right edge, 4 apart); each card with its own grey time block (“09:00” Label 12 over “AM” Description 12 secondary; 48 wide, 8 × 6 in, radius 12), 12 to the card; days and cards 16 apart, 16 from the screen edge. “Event phase” applies too. **View all page** (fno-38, Figma 7035:13357): the Version 6 page with these days, the month band in surface-secondary (user, 26 Nov; Figma draws it in surface-accent-discover-light), 12 above on the first, 8 below, days 24 below. On both pages the month band sticks under the tabs while its month scrolls; the next month's band pushes it out.
+  - **Live event** (Versions 6–8, Figma 7040:14546): an event happening now (`live` in the sample — V6: the second day's EIA crude oil inventories, as drawn; V7: today's 07:30 EIA) shows a green live dot in the art's 20 slot — a 16 halo (surface-accent-indicator-up-light) round an 8 dot (indicator-up), the halo blinking (1.2 s; still with reduced motion). Only the current month's card on the calendar page (the sample's repeat in the next month isn't live).
+- **Expiring This Week, Version 8 · Date pills** (Figma 7042:19186): Version 7 with each day's date in a grey pill (surface-secondary, radius 8, 4 × 12 in; Label 12 spaced 2 — local token `--app-date-pill-tracking`) instead of the date line, and the time on the page (no grey block). Its View all page: the month as plain text (Heading 14 spaced 4) on the page surface, sticky like the bands, 8 above its first date pill; the months split by a 2px divider (border-light) edge to edge. Live dot and Event phase as Version 7.
+- **Section titles** (Versions 6–8): “All Events” / “Upcoming Events” in Heading 16 (user, 26 Nov; Figma draws 16). L3 SectionHeader's title is fixed at Heading 14 with no size prop, so a local rule sets it (L3 gap).
 - **Event card, Version 2** (setting “Event card”, Commodities; Version 1 is the default): an event card (EIA crude oil inventories, EIA natural gas storage — wherever events show: Expiring This Week V2–V5 and the Commodity calendar) also says which way it's expected to push prices this time — an L3 Tag (secondary, small) on the right of the name, “Bullish” (profit, trending-up icon) or “Bearish” (loss, trending-down) — and ends in a strip across the card's foot: “Last time, Gold moved +1.40%” (description 12 + L3 PriceChange small), on an up-light (or down-light) tint fading out to the right, 8 × 12 inside, 4 more above it than the row's gap. Data: `outlook` and `lastTime` on each event in `commodities/data.ts` (samples: EIA crude → Bullish, Gold +1.4%; EIA gas → Bullish, Natural Gas +2.1%). L3 gap: no gradient strip component.
   - **Event card** (third; data from the user's reference card, its layout kept to the option card's): a market event
     on the contract's commodity today. NATGASMINI over “NG storage · Today 9:00 PM”; the trend read-out says the outlook
@@ -547,6 +550,8 @@ The source uses old D2 controls alongside L3; their code equivalents are L3 comp
 - Section header size: L3 SectionHeader's title is heading-14 with no size option; fno-38's month titles are set to heading-20 locally (`.calendarMonthHead h2`).
 
 ### Changelog
+- 2026-11-26 — Expiring This Week Version 8 · Date pills (Figma 7042:19186); V6–V8 section titles in Heading 16; V7 page month bands grey (surface-secondary).
+- 2026-11-26 — Versions 6 / 7: a blinking green live dot on the event that's happening now (Figma 7040:14546).
 - 2026-11-26 — F&O home: the Equity / Commodities / Strategies ribbon tabs split the row in equal thirds (L3 Tabs width="fill" plus a local equal-width rule — L3's fill keeps ribbon tabs as wide as their labels; L3 gap).
 - 2026-11-26 — Expiring This Week Version 7 · Upcoming Events (Figma 7035:14545): date lines and a time block per card; its calendar page with a blue month band. Month bands on the V6 / V7 pages are sticky.
 - 2026-11-26 — Version 6 calendar page: All / Options / Futures / Events filter tabs back on top; month bands 8 above and below (16 on the first); the US flag is Figma 7035:9401's art.
@@ -3092,10 +3097,33 @@ h�Ҝÿ}�`l��&0:s9Ї�Guw�,�H&��Z�qؒ~�y�Jot��
 .timeBlock { box-sizing: border-box; flex: none; width: var(--l3-spacing-48); display: flex; flex-direction: column; align-items: center; padding: var(--l3-spacing-08) var(--l3-spacing-06); border-radius: var(--l3-radius-12); background: var(--l3-surface-secondary); text-align: center; }
 .timeClock { font: var(--l3-text-label-12); color: var(--l3-content-primary); }
 .timeAmpm { font: var(--l3-text-description-12); color: var(--l3-content-secondary); }
-/* Version 7's page: the band in discover-light (12 above on the first, 8 below), the days 24 below. */
-.page[data-timed] .band { background: var(--l3-surface-accent-discover-light); }
+/* Version 7's page: the band grey as Version 6 (surface-secondary; user, 26 Nov — Figma has discover-light), 12 above on the first, 8 below; the days 24 below. */
 .page[data-timed] .month:first-child .band { padding-top: var(--l3-spacing-12); }
 .page[data-timed] .month { gap: var(--l3-spacing-24); }
+
+/* Live event (Figma 7040:14546): in the art's 20 slot, a 16 green halo (indicator-up light) round an 8 dot (indicator-up),
+   the halo blinking — it breathes out and fades, the dot steady. Still when reduced motion is on. */
+.live { position: relative; flex: none; width: var(--l3-size-20); height: var(--l3-size-20); }
+.live::before, .live::after { content: ''; position: absolute; border-radius: var(--l3-radius-full); }
+.live::before { inset: var(--l3-spacing-02); background: var(--l3-surface-accent-indicator-up-light); animation: liveBlink 1.2s ease-in-out infinite; }
+.live::after { inset: var(--l3-spacing-06); background: var(--l3-surface-accent-indicator-up-default); }
+@keyframes liveBlink { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.2; transform: scale(0.6); } }
+@media (prefers-reduced-motion: reduce) { .live::before { animation: none; } }
+
+/* Version 8 (Figma 7042:19186): the date in a grey pill — surface-secondary, radius 8, 4 × 12 in, Label 12 spaced 2. */
+.datePill { margin: 0; padding: var(--l3-spacing-04) var(--l3-spacing-12); border-radius: var(--l3-radius-08); background: var(--l3-surface-secondary); font: var(--l3-text-label-12); letter-spacing: var(--app-date-pill-tracking); color: var(--l3-content-primary); white-space: nowrap; }
+/* …and the time on the page: no grey block. */
+.timedList[data-pill] .timeBlock { background: none; }
+/* Its page: the month as plain text on the page surface (sticky), 16 above its days; month 16 / 24 in (top / bottom),
+   the next 24 / 16; months split by a 2px divider (border-light) running edge to edge. */
+.page[data-pill] .band { background: var(--l3-surface-default); padding: var(--l3-spacing-16) var(--l3-spacing-16) var(--l3-spacing-08); }
+.page[data-pill] .month { gap: var(--l3-spacing-08); padding-bottom: var(--l3-spacing-24); }
+.page[data-pill] .month + .month { border-top: 2px solid var(--l3-border-light); padding-top: var(--l3-spacing-08); padding-bottom: var(--l3-spacing-16); margin-inline: calc(-1 * var(--l3-spacing-16)); padding-inline: var(--l3-spacing-16); } /* 2px divider, as drawn */
+.page[data-pill] { gap: 0; }
+
+/* The section's title in Heading 16 (user, 26 Nov; Figma 7035:14545 / 7042:19186 draw it so). L3 SectionHeader's title is
+   fixed at Heading 14 — no size prop (L3 gap). */
+.header.header h2 { font: var(--l3-text-heading-16); }
 ```
 
 ### `src/flows/fno/commodities/components/AllEvents.tsx`
@@ -3133,7 +3161,7 @@ const usePhase = () => useFlowOption('fno', 'eventPhase', 'pre') as AllEventsPha
 export function AllEventsSection({ onViewAll, ...actions }: Actions & { onViewAll: () => void }) {
   const phase = usePhase()
   return <section className={parts.contractSection} aria-label={t('allEvents.title')}>
-    <SectionHeader title={t('allEvents.title')} action={{ type: 'view-all', label: t('viewAll'), onClick: onViewAll }} />
+    <SectionHeader className={styles.header} title={t('allEvents.title')} action={{ type: 'view-all', label: t('viewAll'), onClick: onViewAll }} />
     <EventDays days={allEventsSample(phase)} {...actions} />
   </section>
 }
@@ -3152,7 +3180,7 @@ const TAB_ICONS: Record<Tab, string> = { all: msApps, option: msCandlestickChart
  * - Version 7 (Figma 7035:13357): the band in surface-accent-discover-light (12 above on the first, 8 below), days 24 below
  *   in the version 7 list (date line, a time block per card).
  */
-export function AllEventsPage({ onBack, timed = false, ...actions }: Actions & { onBack: () => void; timed?: boolean }) {
+export function AllEventsPage({ onBack, timed = false, pill = false, ...actions }: Actions & { onBack: () => void; timed?: boolean; pill?: boolean }) {
   const phase = usePhase()
   const [tab, setTab] = useState<Tab>('all')
   // The tab's cards: All, an expiry's contract type, or the events; days left empty drop out.
@@ -3166,13 +3194,13 @@ export function AllEventsPage({ onBack, timed = false, ...actions }: Actions & {
   return <Screen top={<Actionbar title={t('expiryAll.title')} onBack={onBack} backLabel={t('lot.back')}
     bottom={<Tabs aria-label={t('expiryAll.filter')} value={tab} onChange={(v) => setTab(v as Tab)}
       items={TABS.map((value) => ({ value, label: t(`expiryAll.tab.${value}`), iconLeft: <Icon icon={TAB_ICONS[value]} size={16} /> }))} />} />}>
-    {days.length ? <div className={styles.page} data-timed={timed || undefined}>
+    {days.length ? <div className={styles.page} data-timed={timed || undefined} data-pill={pill || undefined}>
       {[0, 1].map((offset) => {
         const monthDays = days.map((d) => ({ ...d, inDays: d.inDays + offset * 30 }))
         return <section key={offset} className={styles.month} aria-label={month(offset)}>
           <h2 className={styles.band}>{month(offset)}</h2>
           <div className={styles.monthBody}>
-            {timed ? <TimedDays days={monthDays} sameDates={offset > 0} {...actions} />
+            {timed ? <TimedDays days={monthDays} sameDates={offset > 0} pill={pill} {...actions} />
               : <EventDays days={monthDays} sameDates={offset > 0} {...actions} />}
           </div>
         </section>
@@ -3188,13 +3216,19 @@ export function AllEventsPage({ onBack, timed = false, ...actions }: Actions & {
  * Description 12 secondary; 48 wide, 8 × 6 in, radius 12), 12 to the card. Day groups and cards 16 apart, the list 16
  * from the screen edge. An expiry's tag reads “Options Expiry”.
  */
-export function UpcomingEventsSection({ onViewAll, ...actions }: Actions & { onViewAll: () => void }) {
+export function UpcomingEventsSection({ onViewAll, pill = false, ...actions }: Actions & { onViewAll: () => void; pill?: boolean }) {
   const phase = usePhase()
   return <section className={parts.contractSection} aria-label={t('upcomingEvents.title')}>
-    <SectionHeader title={t('upcomingEvents.title')} action={{ type: 'view-all', label: t('viewAll'), onClick: onViewAll }} />
-    <TimedDays days={upcomingEventsSample(phase)} {...actions} />
+    <SectionHeader className={styles.header} title={t('upcomingEvents.title')} action={{ type: 'view-all', label: t('viewAll'), onClick: onViewAll }} />
+    <TimedDays days={upcomingEventsSample(phase)} pill={pill} {...actions} />
   </section>
 }
+
+/**
+ * Version 8 (Figma 7042:19186) = version 7 with `pill`: each day's date in a grey pill (surface-secondary, radius 8,
+ * 4 × 12 in; Label 12 spaced 2) instead of the line, and the time on the page (no grey block). Its page: the month as
+ * plain text (Heading 14 spaced 4, sticky on the page surface), the months split by a 2px divider.
+ */
 
 /** “25th Nov”. */
 function ordinalDate(date: Date) {
@@ -3204,14 +3238,15 @@ function ordinalDate(date: Date) {
 }
 
 /** Version 7's list: a date line per day, a time block per card. */
-function TimedDays({ days, sameDates, ...actions }: Actions & { days: AllEventsDay[]; sameDates?: boolean }) {
-  return <div className={styles.timedList}>
+function TimedDays({ days, sameDates, pill, ...actions }: Actions & { days: AllEventsDay[]; sameDates?: boolean; pill?: boolean }) {
+  return <div className={styles.timedList} data-pill={pill || undefined}>
     {days.map((day) => {
       // The page's second month repeats the sample's dates, only the month changes.
       const base = dayFrom(sameDates ? day.inDays - 30 : day.inDays)
       const date = sameDates ? new Date(base.getFullYear(), base.getMonth() + 1, base.getDate()) : base
       return <section key={day.inDays} className={styles.timedDay} aria-label={date.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })}>
-        <h3 className={styles.dateLine}><span>{ordinalDate(date)}</span><span className={styles.dateRule} /></h3>
+        {pill ? <h3 className={styles.datePill}>{ordinalDate(date)}</h3>
+          : <h3 className={styles.dateLine}><span>{ordinalDate(date)}</span><span className={styles.dateRule} /></h3>}
         {day.items.map((item) => {
           const [clock, ampm] = (item.time ?? '').split(' ')
           return <div key={item.id} className={styles.timedRow}>
@@ -3219,7 +3254,7 @@ function TimedDays({ days, sameDates, ...actions }: Actions & { days: AllEventsD
               <span className={styles.timeClock}>{clock}</span>
               <span className={styles.timeAmpm}>{ampm}</span>
             </div>
-            <EventCard item={item} expiryLabel={t('upcomingEvents.optionsExpiry')} {...actions} />
+            <EventCard item={sameDates ? { ...item, live: false } : item} expiryLabel={t('upcomingEvents.optionsExpiry')} {...actions} />
           </div>
         })}
       </section>
@@ -3241,7 +3276,7 @@ function EventDays({ days, sameDates, ...actions }: Actions & { days: AllEventsD
           <span className={styles.weekday}>{weekday}</span>
           <span className={styles.day}>{date.getDate()}</span>
         </div>
-        <EventCard item={item} {...actions} />
+        <EventCard item={sameDates ? { ...item, live: false } : item} {...actions} />
       </div>)
     })}
   </div>
@@ -3249,7 +3284,7 @@ function EventDays({ days, sameDates, ...actions }: Actions & { days: AllEventsD
 
 function EventCard({ item, expiryLabel, onAsset, onOptionChain, onScalper }: Actions & { item: AllEventsItem; expiryLabel?: string }) {
   const head = <div className={styles.head}>
-    {item.flag ? <span className={styles.flag}><img src={item.image} alt="" /></span> : <img src={item.image} alt="" className={styles.art} />}
+    {item.live ? <span className={styles.live} role="img" aria-label={t('allEvents.live')} /> : item.flag ? <span className={styles.flag}><img src={item.image} alt="" /></span> : <img src={item.image} alt="" className={styles.art} />}
     <div className={styles.text} data-event={item.kind === 'event' || undefined}>
       <p className={styles.name}>{item.name}</p>
       <div className={styles.tags}>
@@ -3665,8 +3700,8 @@ export function CommoditiesFeed({ instrument, lists, onCommodity, onAsset, onPic
   const expiringVersion = useFlowOption('fno', 'expiringVersion', 'v4')
   return <Stack gap="32" className={parts.feed}>
     <CommodityShortcuts onOpen={onCommodity} />
-    {expiringVersion === 'v7'
-      ? <UpcomingEventsSection onAsset={onAsset} onOptionChain={onChain} onScalper={onScalper} onViewAll={onExpiries} />
+    {expiringVersion === 'v7' || expiringVersion === 'v8'
+      ? <UpcomingEventsSection pill={expiringVersion === 'v8'} onAsset={onAsset} onOptionChain={onChain} onScalper={onScalper} onViewAll={onExpiries} />
       : expiringVersion === 'v6'
       ? <AllEventsSection onAsset={onAsset} onOptionChain={onChain} onScalper={onScalper} onViewAll={onExpiries} />
       : expiringVersion === 'v5'
@@ -4753,6 +4788,8 @@ export type AllEventsItem = {
   kind: 'expiry' | 'event'
   /** Version 7: when it happens ("09:00 AM", IST). Sample times. */
   time?: string
+  /** Happening now (Figma 7040:14546): the art gives way to a blinking green live dot. */
+  live?: boolean
   /** An expiry's contract type, for the calendar page's Options / Futures tabs. */
   contract?: 'option' | 'future'
   /** Option chain button (expiries and most events); ScalpPro comes with it. False → no buttons. */
@@ -4772,14 +4809,14 @@ export function allEventsSample(phase: AllEventsPhase, page = false): AllEventsD
     { inDays: 0, items: [gold,
       ae('ae-eia-gold', page ? 'EIA gold inventories' : 'EIA crude oil inventories', goldMini, { tag: { kind: 'forecast', trend: 'bullish', tone: 'profit', arrow: 'up', side: 'right' }, note: { kind: 'trend', name: 'Gold', change: 1.2 } })] },
     { inDays: 1, items: [
-      ae('ae-eia-crude', 'EIA crude oil inventories', crudeOil, { tag: { kind: 'forecast', trend: 'bearish', tone: 'loss', arrow: 'down', side: 'left' } }),
+      ae('ae-eia-crude', 'EIA crude oil inventories', crudeOil, { live: true, tag: { kind: 'forecast', trend: 'bearish', tone: 'loss', arrow: 'down', side: 'left' } }),
       ae('ae-pce', 'USD Core PCE - Price index', usFlag, { flag: true, actions: false, tag: { kind: 'forecast', trend: 'bullish', tone: 'loss', arrow: 'down', side: 'left' }, note: { kind: 'last', name: 'Crude oil', change: -4.5 } })] },
   ]
   return [
     { inDays: 0, items: [gold,
       ae('ae-eia-gold', page ? 'EIA gold inventories' : 'EIA crude oil inventories', goldMini, { tag: { kind: 'actual', trend: 'bullish', tone: 'profit', arrow: 'up', side: 'right' }, note: { kind: 'since', name: 'Gold', change: 1.2 } })] },
     { inDays: 1, items: [
-      ae('ae-eia-crude', 'EIA crude oil inventories', crudeOil, { tag: { kind: 'actual', trend: 'bullish', tone: 'loss', arrow: 'up', side: 'left' } }),
+      ae('ae-eia-crude', 'EIA crude oil inventories', crudeOil, { live: true, tag: { kind: 'actual', trend: 'bullish', tone: 'loss', arrow: 'up', side: 'left' } }),
       ae('ae-pce', 'USD Core PCE', usFlag, { flag: true, tag: { kind: 'actual', trend: 'bullish', tone: 'loss', arrow: 'down', side: 'left' }, note: { kind: 'since', name: 'Crude oil', change: -10.5 } })] },
   ]
 }
@@ -4793,7 +4830,7 @@ export function upcomingEventsSample(phase: AllEventsPhase): AllEventsDay[] {
   return [
     { inDays: 0, items: [
       ae('ue-gold', 'Gold', goldMini, { kind: 'expiry', contract: 'option', time: '09:00 AM' }),
-      ae('ue-eia-gold', 'EIA crude oil inventories', goldMini, { time: '07:30 AM',
+      ae('ue-eia-gold', 'EIA crude oil inventories', goldMini, { time: '07:30 AM', live: true,
         tag: { kind: pre ? 'forecast' : 'actual', trend: 'bullish', tone: 'profit', arrow: 'up', side: 'left' },
         note: { kind: pre ? 'trend' : 'since', name: 'Gold', change: 1.2 } })] },
     { inDays: 1, items: [
@@ -5066,10 +5103,10 @@ import { ExpiryTimeline } from './ExpiryTimeline'
 
 type Props = { onBack: () => void; onAsset: () => void; onOptionChain: () => void; onScalper: () => void }
 
-/** The Commodity calendar (fno-38): Expiring This Week versions 6 and 7 have their own events page; the others the timeline. */
+/** The Commodity calendar (fno-38): Expiring This Week versions 6–8 have their own events page; the others the timeline. */
 export function CommodityCalendar(props: Props) {
   const expiringVersion = useFlowOption('fno', 'expiringVersion', 'v4')
-  return expiringVersion === 'v6' || expiringVersion === 'v7' ? <AllEventsPage timed={expiringVersion === 'v7'} {...props} /> : <ExpiryTimeline {...props} />
+  return ['v6', 'v7', 'v8'].includes(expiringVersion) ? <AllEventsPage timed={expiringVersion !== 'v6'} pill={expiringVersion === 'v8'} {...props} /> : <ExpiryTimeline {...props} />
 }
 ```
 
@@ -8216,7 +8253,8 @@ function addMinutes(start: string, add: number) {
   "allEvents.note.since": "Since the report, {name} has moved",
   "allEvents.empty": "Nothing on the calendar here yet",
   "upcomingEvents.title": "Upcoming Events",
-  "upcomingEvents.optionsExpiry": "Options Expiry"
+  "upcomingEvents.optionsExpiry": "Options Expiry",
+  "allEvents.live": "Live now"
 }
 ```
 
@@ -8572,9 +8610,9 @@ export const fno: Flow = {
     // calendar's first 3 entries on their days, View all → fno-38); Version 3 = that calendar in one card.
     // Version 4 = the day row over the next month; Version 5 = no View all — a Day / Week switch (Day: today, a time
     // column instead of dates; Week: the V4 row, only days a contract expires).
-    { id: 'expiringVersion', group: 'Commodities', label: 'Expiring This Week', values: [{ value: 'v1', label: 'Version 1' }, { value: 'v2', label: 'Version 2' }, { value: 'v3', label: 'Version 3' }, { value: 'v4', label: 'Version 4' }, { value: 'v5', label: 'Version 5' }, { value: 'v6', label: 'Version 6 · All Events' }, { value: 'v7', label: 'Version 7 · Upcoming Events' }], default: 'v4', floatOn: ['fno-08', 'fno-09', 'fno-10', 'fno-38'] },
+    { id: 'expiringVersion', group: 'Commodities', label: 'Expiring This Week', values: [{ value: 'v1', label: 'Version 1' }, { value: 'v2', label: 'Version 2' }, { value: 'v3', label: 'Version 3' }, { value: 'v4', label: 'Version 4' }, { value: 'v5', label: 'Version 5' }, { value: 'v6', label: 'Version 6 · All Events' }, { value: 'v7', label: 'Version 7 · Upcoming Events' }, { value: 'v8', label: 'Version 8 · Date pills' }], default: 'v4', floatOn: ['fno-08', 'fno-09', 'fno-10', 'fno-38'] },
     // Expiring This Week v6 (Figma 7030:9072 “All Events”): the events before their release (Forecast + past moves) or after (Actual + the move since).
-    { id: 'eventPhase', group: 'Commodities', label: 'Event phase', values: [{ value: 'pre', label: 'Pre-event · Forecast' }, { value: 'post', label: 'Post-event · Actual' }], default: 'pre', showIf: { expiringVersion: ['v6', 'v7'] }, floatOn: ['fno-08', 'fno-09', 'fno-10', 'fno-38'] },
+    { id: 'eventPhase', group: 'Commodities', label: 'Event phase', values: [{ value: 'pre', label: 'Pre-event · Forecast' }, { value: 'post', label: 'Post-event · Actual' }], default: 'pre', showIf: { expiringVersion: ['v6', 'v7', 'v8'] }, floatOn: ['fno-08', 'fno-09', 'fno-10', 'fno-38'] },
     // Expiring This Week v5 · Day view: Version 1 = today by time in grey blocks (real data topped up); Versions 2 and 3 =
     // Figma 7006:4490 “Events today” (sample list) — 2 with the time on the page and 24 avatars, 3 with grey time blocks.
     { id: 'dayView', group: 'Commodities', label: 'Day view', values: [{ value: 'v1', label: 'Version 1' }, { value: 'v2', label: 'Version 2 · Plain time' }, { value: 'v3', label: 'Version 3 · Time blocks' }], default: 'v2', showIf: { expiringVersion: ['v5'] }, floatOn: ['fno-08', 'fno-09', 'fno-10'] },
