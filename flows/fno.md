@@ -325,6 +325,7 @@ sample signals in `data.ts` (`zingSignals`, `SignalFilter`, `matchesFilter`).
 - **Expiring This Week, Version 2** (`ExpiringCalendar`; prototype setting “Expiring This Week”, Commodities, Version 1 = the card rail above; Version 4 is the default): the same section as a short calendar. The calendar's first 3 entries (`expiryPreview(3)` in `commodities/data.ts`) on their days, drawn like the calendar page (`CalendarDay`, shared with fno-38): the grey date block left (today not marked, not sticky here), one card per contract or event (8 apart), days 16 apart, so it's three rows on one day or spread over two or three days. Within a day events come first (they're timed) and stay short (name over time, then the asset cards; the readings are on the calendar page). Contract rows as on fno-38: kind under the name, option chain (options) → fno-17 and ScalpPro → fno-05, row → asset page fno-21. View all → the Commodity calendar (fno-38).
 - **Expiring This Week, Version 3** (`ExpiringCalendarCard`): Version 2's three entries in **one card**. Each day is a band: the date (weekday over the number, every date the same weight) as the card's grey left column, attached edge to edge and as tall as that day's rows, the rows beside it. Hairlines between days (across the date column too) and between a day's rows. Rows behave as in Version 2; View all → fno-38.
 - **Expiring This Week, Version 4** (`ExpiringDayPicker`, **default**): a day picker over the next month (31 days) of the real MCX calendar. A row of small date cards (weekday over the number, 48 wide, 10 apart), only days that have something; it scrolls sideways and runs edge to edge (the screen's 16 inset as padding inside the row), fading at an end only while there's more to scroll that way (CSS mask, `data-more-before` / `-after`). Weeks run Monday to Sunday; each later week starts with a thin grey pill the cards' height (18 after the last day, 10 before the next), its text turned 90° in 8 upper case: “NEXT WEEK”, then the week's Monday (“7 DEC”). The selected day (first, to start) has a dark border on grey. Under the row, that day's contracts (option chain + ScalpPro) and events (on one line), one card each, 8 apart. View all (a Ghost Small button with a calendar icon before the label, `ExpiringHeader`, shared by all versions) → fno-38.
+- **Expiring This Week — only Versions 6, 7 and 8 are in the app** (user, 26 Nov; default Version 6, with Event phase Pre / Post). Versions 1–5 below are ARCHIVED (code in `commodities/archive/`: ExpiringThisWeek, ExpiringCalendar, ExpiringCalendarCard, ExpiringDayPicker, ExpiringDayWeek + EventsToday, ExpiringHeader, and the old calendar page ExpiryTimeline), with their settings Day view, Event card and Expiring card buttons. fno-38 is now always the Versions 6–8 page. **Share link for a review:** `?present=fno.expiringVersion#/fno-08` — only the version switch shows: on a phone a floating one-tap button (V6 → V7 → V8, drag it anywhere), beside the phone mockup the three versions as pills (one tap picks); no panel, settings button, install prompt or other settings.
 - **Expiring This Week, Version 5** (`ExpiringDayWeek`): no View all and no calendar page — people don't look at expiries more than a month out. On the right of the section header, where View all was, a Day / Week switch (L3 pill-group Tabs, small, hugging its labels; Day first). **Day:** today only — one event and two commodity expiries, 3 cards (`todaySample`: today's real entries first, topped up as a sample from the coming days when today has fewer) — drawn like Version 2 but the grey block on the left holds the **time** it happens instead of the date — “9:00” over “PM” (an event's release time; a contract's expiry at the MCX evening close, `MCX_CLOSE` = 11:30 PM in winter, `entryTime` in `commodities/data.ts`). Entries at the same time share one block (one card each, 8 apart); times run earliest first, 16 apart. An event row drops its time there (the block says it). Nothing today → one line in a card, “Nothing expires today”. **Week:** Version 4's day row over the next month, but only the days a contract expires (a day with only an EIA event isn't a date here; an event on an expiry day still shows with it) — e.g. Fri 27, the NEXT WEEK pill, Mon 30, Fri 4, then the 14 DEC pill. Rows act as on fno-38 (option chain → fno-17, ScalpPro → fno-05, row → asset page fno-21).
   - **Day view, Versions 2 and 3** (setting “Day view”, shown with Version 5; Version 2 is the default; Version 1 = the time-block list above) — Figma 7006:4490 “Events today” (`EventsToday`), three items from its sample (`eventsTodaySample`; user, 25 Nov): 9:00 AM Gold expiry (grey “Expiry” tag, option chain + ScalpPro); 9:00 AM EIA crude oil inventories (Event · “Bullish Trend” ↗, note “In last bullish trend, Gold has moved ▲ 1.2%”); 12:30 PM EIA crude oil inventories (Event · “Bearish Trend” ↘). Events may also carry the commodities they move (↑ Gold · ↓ Crude oil) and a “Last time, … has moved” note. In Day view the title reads “Events today”. Time “9:00” (Label 14) over “AM” (Description 12), 48 wide; card 12 to its right; rows 16 apart; the list 12 from the screen edge. Names Label 12; tags L3 Tag small tertiary (the grey ones in content-secondary); an event with a note adds a hairline 16 in from each side and a footer: filled bulb 16, the line in Label 10, the move ▲/▼ in Heading 10 success / error. **Version 2:** time on the page, pictures in a 24 L3 Avatar, 16 more after the first row. **Version 3:** time in a grey block (radius 12), pictures bare at 20 (the flag in a 20 circle). Difference from Figma: the header keeps the Day / Week switch where Figma has View all (Version 5 has no View all page). **Week view (with Versions 2 / 3):** the same vertical layout (`EventsWeek`) instead of the date row — this week's expiry days (today + 6; only days a contract expires, an event on one still shows), the day on the left like Version 2's date block (weekday, Description 12, over the date, Label 16; plain or grey as the version), its cards on the right 8 apart, contracts tagged “Options expiry” / “Futures expiry”, the title “Expiring This Week”.
 - **Expiring This Week, Version 6 · All Events** (`AllEvents.tsx`; Figma 7030:9072, the user's chosen design, 26 Nov): header “All Events” with View all (L3 SectionHeader view-all → fno-38). A fixed sample (`allEventsSample` in `commodities/data.ts`), two days (today and tomorrow): Gold expiry and an EIA event on the first; EIA crude oil inventories and USD Core PCE on the second. The day on the left in a grey block (weekday Description 12 secondary over the date Label 14; 48 wide, radius 12), beside the day's first card; every card on its own row, rows 16 apart (later cards of a day keep the block's slot empty). Cards: art 20 (the US flag: Figma 7035:9401 art, 15 in a 20 slot), 8 to the name (Label 12), grey “Expiry” / “Event” tag and the event's trend tag (4 apart, 6 below an event's name), option chain + ScalpPro on the right (the PCE card before its release has none). A note under a hairline: bulb, Label 10 line, ▲/▼ move in Heading 10. Setting **Event phase** (shown with Version 6): **Pre-event** (default) — “Forecast: Bullish / Bearish”, notes “In last trend, Gold has moved ▲ 1.2%”, “Last time, Crude oil has moved ▼ 4.5%”; **Post-event** — “Actual: Bullish”, notes “Since the report, Gold has moved ▲ 1.2%”, “Since the report, Crude oil has moved ▼ 10.5%”. Tag colours and arrows are as drawn (some red tags read “Bullish”). **View all page (fno-38 in Version 6, `AllEventsPage`; Figma 6995:25579):** Actionbar “Commodity Calendar” with the All / Options / Futures / Events filter tabs under it (flat, icons, sticky in the Actionbar's bottom slot, as on the other versions' calendar; days with nothing in the tab drop out; an empty tab says “Nothing on the calendar here yet” — the sample has no futures), each month under a grey band (surface-secondary, “NOV 2026” Heading 14 spaced 4 — local token `--app-month-band-tracking`, L3 has no tracking token; 8 above and below the text, 16 above on the page's first band), its days 20 below in the same list, 16 from the sides; the sample repeats in the next month as drawn, with “EIA gold inventories” as the first day's event. Difference from Figma: the dates are today and tomorrow, not fixed to Wed 25 / Thu 26.
@@ -550,6 +551,7 @@ The source uses old D2 controls alongside L3; their code equivalents are L3 comp
 - Section header size: L3 SectionHeader's title is heading-14 with no size option; fno-38's month titles are set to heading-20 locally (`.calendarMonthHead h2`).
 
 ### Changelog
+- 2026-11-26 — Expiring This Week: Versions 1–5 archived (and their Day view / Event card / card-buttons settings); only 6 / 7 / 8 + Event phase remain. New presentation link `?present=fno.expiringVersion` (shared preview: `PRESENT` in src/shared/prototype.ts) showing only a one-tap version switch.
 - 2026-11-26 — Expiring This Week Version 8 · Date pills (Figma 7042:19186); V6–V8 section titles in Heading 16; V7 page month bands grey (surface-secondary).
 - 2026-11-26 — Versions 6 / 7: a blinking green live dot on the event that's happening now (Figma 7040:14546).
 - 2026-11-26 — F&O home: the Equity / Commodities / Strategies ribbon tabs split the row in equal thirds (L3 Tabs width="fill" plus a local equal-width rule — L3's fill keeps ribbon tabs as wide as their labels; L3 gap).
@@ -2316,7 +2318,7 @@ import { Tabs } from '@l3/components/Tabs'
 import { msCalendarViewWeek, msViewAgenda } from '@l3/icons/material'
 import { t } from '../../copy'
 import type { ExpiryDay } from '../data'
-import { DayPicker } from '../components/ExpiringDayPicker'
+import { DayPicker } from './ExpiringDayPicker'
 import styles from '../components/Commodities.module.css'
 
 /** Day view: every day listed under its month. Week view: each month as the home's V4 day picker. */
@@ -2357,7 +2359,7 @@ import { SectionHeader } from '@l3/components/SectionHeader'
 import { Stack } from '@l3/components/Stack'
 import { t } from '../../copy'
 import { dayFrom } from '../components/CalendarDay'
-import { DayPicker, byWeek, todayInWeek } from '../components/ExpiringDayPicker'
+import { DayPicker, byWeek, todayInWeek } from './ExpiringDayPicker'
 import styles from '../components/Commodities.module.css'
 
 /** A week's title: its Monday to Sunday, month spelled out — "November 23 – 29", "November 30 – December 6". */
@@ -2384,6 +2386,669 @@ export function DayPickerByWeek({ days, ...rest }: Omit<Parameters<typeof DayPic
       </Stack>
     </section>)}
   </Stack>
+}
+```
+
+### `src/flows/fno/commodities/archive/EventsToday.module.css`
+
+```css
+/* Expiring This Week v5 · Day view Versions 2 / 3 (EventsToday.tsx), after Figma 7006:4490. */
+
+/* Rows 16 apart; Figma's list sits 12 from the screen edge (the section's 16, less 4). */
+.list { display: flex; flex-direction: column; gap: var(--l3-spacing-16); margin-inline: calc(-1 * var(--l3-spacing-04)); }
+/* Version 2: 16 more after the first row (the expiry), as drawn. */
+.list[data-variant='plain']:not([data-week]) > .row:first-child { margin-bottom: var(--l3-spacing-16); }
+.row { display: flex; align-items: flex-start; gap: var(--l3-spacing-12); }
+
+/* The time: “9:00” (Label 14) over “AM” (Description 12, secondary), centred in 48, 8 × 4 in. */
+.time { box-sizing: border-box; flex: none; width: var(--l3-spacing-48); display: flex; flex-direction: column; align-items: center; padding: var(--l3-spacing-08) var(--l3-spacing-04); text-align: center; }
+.list[data-variant='block'] .time { border-radius: var(--l3-radius-12); background: var(--l3-surface-secondary); }
+.clock { font: var(--l3-text-label-14); color: var(--l3-content-primary); }
+.ampm { font: var(--l3-text-description-12); color: var(--l3-content-secondary); }
+
+.card.card { min-width: 0; gap: 0; overflow: hidden; }
+.text { flex: 1; min-width: 0; }
+.name { margin: 0; font: var(--l3-text-label-12); color: var(--l3-content-primary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* Figma's grey tag: L3 Tag neutral tertiary, its label in content-secondary (L3's neutral soft tag is content-primary — L3 gap). */
+.greyTag.greyTag { color: var(--l3-content-secondary); }
+
+.expiry { padding: var(--l3-spacing-12); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.expiry:active { background: var(--l3-surface-secondary); }
+@media (hover: hover) { .expiry:hover { background: var(--l3-surface-secondary); } }
+
+.event { display: flex; flex-direction: column; gap: var(--l3-spacing-12); padding: var(--l3-spacing-12) 0; }
+.event[data-note] { padding-bottom: var(--l3-spacing-06); }
+.eventHead { padding-inline: var(--l3-spacing-12); }
+
+/* The note: a hairline 16 in from each side, 6 above a 24 line (content 4 down, 12 in). */
+.footer { display: flex; flex-direction: column; gap: var(--l3-spacing-06); }
+.rule { height: 1px; margin-inline: var(--l3-spacing-16); background: var(--l3-border-light); } /* 1px hairline */
+.note { display: flex; align-items: center; gap: var(--l3-spacing-08); min-height: var(--l3-size-24); padding-inline: var(--l3-spacing-12); }
+.bulb { flex: none; transform: scaleY(-1); color: var(--l3-content-secondary); } /* the bulb upright: Figma flips wb_incandescent */
+.noteLine { display: inline-flex; align-items: center; min-width: 0; font: var(--l3-text-label-10); color: var(--l3-content-primary); white-space: nowrap; }
+.move { display: inline-flex; align-items: center; font: var(--l3-text-heading-10); color: var(--l3-content-accent-error-default); }
+.move[data-up='true'] { color: var(--l3-content-accent-success-default); }
+
+/* Pictures. Version 2: art 16 (a flag 12) inside the 24 L3 Avatar. Version 3: art bare at 20; a flag 15 in a 20 circle. */
+.avatar.avatar { flex: none; }
+.artIn { width: var(--l3-size-16); height: var(--l3-size-16); object-fit: contain; }
+.flagIn { width: var(--l3-size-12); height: var(--l3-size-12); border-radius: var(--l3-radius-full); object-fit: cover; }
+.art { flex: none; width: var(--l3-size-20); height: var(--l3-size-20); object-fit: contain; }
+.flagCircle { flex: none; display: inline-flex; align-items: center; justify-content: center; width: var(--l3-size-20); height: var(--l3-size-20); border-radius: var(--l3-radius-full); overflow: hidden; }
+.flagCircle img { width: var(--app-today-flag); height: var(--app-today-flag); border-radius: var(--l3-radius-full); object-fit: cover; }
+/* Figma: 6 between an event's name and its tags (L3 Stack has no 06 gap). */
+.eventText.eventText { gap: var(--l3-spacing-06); }
+/* A row's cards (the Week view: a day's contracts and events), 8 apart. */
+.cards { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: var(--l3-spacing-08); }
+/* Week view: the day block as Version 2's date — weekday (Description 12, secondary) over the date (Label 16). */
+.time[data-day] .clock { font: var(--l3-text-description-12); color: var(--l3-content-secondary); }
+.time[data-day] .ampm { font: var(--l3-text-label-16); color: var(--l3-content-primary); }
+.empty { margin: 0; font: var(--l3-text-description-12); color: var(--l3-content-secondary); }
+/* Version 3: a symbol avatar (Copper's “Cu”, L3 Avatar's smallest is 24) takes the bare art's 20 in the row, so names line up. */
+.list[data-variant='block'] .avatar.avatar { margin-inline: calc(-1 * var(--l3-spacing-02)); }
+```
+
+### `src/flows/fno/commodities/archive/EventsToday.tsx`
+
+```tsx
+// ARCHIVED 2026-11-26 — not in the app (user: keep only Expiring This Week Versions 6–8). Was Versions 1–5 of Expiring This Week / their calendar page; to bring one back, import it in CommoditiesFeed (or CommodityCalendar) and restore its option values in fno/index.tsx.
+import { Avatar } from '@l3/components/Avatar'
+import { Card } from '@l3/components/Card'
+import { Icon } from '@l3/components/Icon'
+import { Stack } from '@l3/components/Stack'
+import { Tag } from '@l3/components/Tag'
+import { msArrowDownward, msArrowDropDown, msArrowDropUp, msArrowUpward, msTrendingDown, msTrendingUp, msWbIncandescentFill } from '@l3/icons/material'
+import { t } from '../../copy'
+import { asTodayItem, eventsTodaySample, expiryCalendarAll, type TodayItem } from '../data'
+import { RowActions, dayFrom } from '../components/CalendarDay'
+import styles from './EventsToday.module.css'
+
+/**
+ * Expiring This Week version 5 — Day view, Versions 2 and 3 (Figma 7006:4490, “Events today”, 25 Nov). Today's list,
+ * one row per time: the time on the left (“9:00” over “AM”, 48 wide), the card on the right (12 apart), rows 16 apart.
+ * - `plain` (Version 2, Figma left): the time on the page (no block); pictures in a 24 L3 Avatar; 16 more after the
+ *   first row.
+ * - `block` (Version 3, Figma right): the time in a grey block (surface-secondary, radius 12); pictures bare at 20.
+ * Card: an expiry — name (Label 12) over a grey “Expiry” tag, option chain + ScalpPro on the right. An event — name over
+ * “Event” and its trend tag (“Bullish Trend” ↗ / “Bearish Trend” ↘) or the commodities it moves (↑ Gold, ↓ Crude oil);
+ * with a note, a hairline (16 in from each side) and a footer line: a bulb, “In last bullish trend, Gold has moved” /
+ * “Last time, Crude oil has moved” (Label 10) and the move, ▲ / ▼ in success / error (Heading 10).
+ */
+export function EventsToday({ variant, onAsset, onOptionChain, onScalper }: { variant: 'plain' | 'block'; onAsset: () => void; onOptionChain: () => void; onScalper: () => void }) {
+  // Day: one row per item, the time on the left ("9:00" over "AM").
+  const rows = eventsTodaySample.map((item) => { const [top, bottom] = item.time.split(' '); return { key: item.id, label: item.time, top, bottom, items: [item] } })
+  return <EventRows rows={rows} variant={variant} onAsset={onAsset} onOptionChain={onOptionChain} onScalper={onScalper} />
+}
+
+/** How far ahead the Week view lists: this week (today and the 6 days after). */
+const WEEK_DAYS = 7
+
+/**
+ * The Week view in the same layout (user, 25 Nov): a vertical list of the week's expiry days (only days a contract
+ * expires; an event on one of them still shows), the day on the left as the time is in Day view — the weekday over the
+ * date ("Fri" over "27"), plain or in the grey block — and that day's cards on the right, one per contract or event,
+ * 8 apart. Contracts tagged “Options expiry” / “Futures expiry”.
+ */
+export function EventsWeek({ variant, onAsset, onOptionChain, onScalper }: { variant: 'plain' | 'block'; onAsset: () => void; onOptionChain: () => void; onScalper: () => void }) {
+  const rows = expiryCalendarAll
+    .filter((d) => d.inDays < WEEK_DAYS && d.entries.some((e) => e.kind !== 'event'))
+    .map((d) => {
+      const date = dayFrom(d.inDays)
+      const items = d.entries.map((e) => asTodayItem(e, e.kind === 'event' ? undefined : t(`eventsToday.tag.${e.kind}`)))
+      return { key: String(d.inDays), label: date.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' }),
+        top: date.toLocaleDateString('en-IN', { weekday: 'short' }), bottom: String(date.getDate()), items, day: true }
+    })
+  if (!rows.length) return <Card><p className={styles.empty}>{t('eventsToday.noneWeek')}</p></Card>
+  return <EventRows rows={rows} variant={variant} onAsset={onAsset} onOptionChain={onOptionChain} onScalper={onScalper} />
+}
+
+type Row = { key: string; label: string; top: string; bottom: string; items: TodayItem[]; day?: boolean }
+
+/** The list: each row is the left block (time, or day) and its cards. */
+function EventRows({ rows, variant, onAsset, onOptionChain, onScalper }: { rows: Row[]; variant: 'plain' | 'block'; onAsset: () => void; onOptionChain: () => void; onScalper: () => void }) {
+  return <div className={styles.list} data-variant={variant} data-week={rows[0]?.day || undefined}>
+    {rows.map((row) => {
+      return <div key={row.key} className={styles.row}>
+        <div className={styles.time} aria-label={row.label} data-day={row.day || undefined}>
+          <span className={styles.clock}>{row.top}</span>
+          <span className={styles.ampm}>{row.bottom}</span>
+        </div>
+        <div className={styles.cards}>{row.items.map((item) =>
+        <Card key={item.id} padding="none" className={styles.card}>
+          {item.kind === 'expiry'
+            ? <Stack direction="horizontal" gap="12" align="center" className={styles.expiry} data-tappable onClick={onAsset}>
+              <Picture item={item} variant={variant} />
+              <Stack gap="04" className={styles.text}>
+                <p className={styles.name}>{item.name}</p>
+                <span><Tag variant="tertiary" size="sm" className={styles.greyTag}>{item.tag ?? t('eventsToday.expiry')}</Tag></span>
+              </Stack>
+              <RowActions name={item.name} chain={Boolean(item.chain)} onOptionChain={onOptionChain} onScalper={onScalper} />
+            </Stack>
+            : <div className={styles.event} data-note={Boolean(item.note) || undefined}>
+              <Stack direction="horizontal" gap="12" align="center" className={styles.eventHead}>
+                <Picture item={item} variant={variant} />
+                <Stack gap="04" className={`${styles.text} ${styles.eventText}`}>
+                  <p className={styles.name}>{item.name}</p>
+                  <Stack direction="horizontal" gap="08" align="center">
+                    <Tag variant="tertiary" size="sm" className={styles.greyTag}>{t('eventsToday.event')}</Tag>
+                    {item.trend && <Tag variant="tertiary" size="sm" color={item.trend === 'bullish' ? 'profit' : 'loss'}
+                      iconLeft={<Icon icon={item.trend === 'bullish' ? msTrendingUp : msTrendingDown} />}>{t(`eventsToday.trend.${item.trend}`)}</Tag>}
+                    {item.moves?.map((m) => <Tag key={m.name} variant="tertiary" size="sm" color={m.trend === 'up' ? 'profit' : 'loss'}
+                      iconLeft={<Icon icon={m.trend === 'up' ? msArrowUpward : msArrowDownward} />}>{m.name}</Tag>)}
+                  </Stack>
+                </Stack>
+              </Stack>
+              {item.note && <div className={styles.footer}>
+                <span className={styles.rule} />
+                <div className={styles.note}>
+                  <Icon icon={msWbIncandescentFill} size={16} className={styles.bulb} />
+                  <span className={styles.noteLine}>
+                    <span>{item.note.kind === 'trend'
+                      ? t('eventsToday.noteTrend', { trend: t(`eventsToday.trendWord.${item.note.trend ?? 'bullish'}`), name: item.note.name })
+                      : t('eventsToday.noteLast', { name: item.note.name })}</span>
+                    <span className={styles.move} data-up={item.note.change >= 0}>
+                      <Icon icon={item.note.change >= 0 ? msArrowDropUp : msArrowDropDown} size={12} />
+                      {Math.abs(item.note.change).toFixed(1)}%
+                    </span>
+                  </span>
+                </div>
+              </div>}
+            </div>}
+        </Card>)}</div>
+      </div>
+    })}
+  </div>
+}
+
+/** The row's picture: in Version 2 inside a 24 L3 Avatar (16 art; a flag 12), in Version 3 bare at 20 (a flag in a 20 circle). */
+function Picture({ item, variant }: { item: TodayItem; variant: 'plain' | 'block' }) {
+  // No art (Copper, Zinc…): their symbol in a 24 L3 Avatar, either version.
+  if (!item.image) return <Avatar size={24} initials={item.initials} className={styles.avatar} />
+  if (variant === 'plain') return <Avatar size={24} className={styles.avatar}
+    icon={<img src={item.image} alt="" className={item.flag ? styles.flagIn : styles.artIn} />} />
+  return item.flag
+    ? <span className={styles.flagCircle}><img src={item.image} alt="" /></span>
+    : <img src={item.image} alt="" className={styles.art} />
+}
+```
+
+### `src/flows/fno/commodities/archive/ExpiringCalendar.tsx`
+
+```tsx
+// ARCHIVED 2026-11-26 — not in the app (user: keep only Expiring This Week Versions 6–8). Was Versions 1–5 of Expiring This Week / their calendar page; to bring one back, import it in CommoditiesFeed (or CommodityCalendar) and restore its option values in fno/index.tsx.
+import { ExpiringHeader } from './ExpiringHeader'
+import { t } from '../../copy'
+import { expiryCalendarAll, expiryPreview } from '../data'
+import { CalendarDay } from '../components/CalendarDay'
+import parts from '../../components/HomeParts.module.css'
+import styles from '../components/Commodities.module.css'
+
+/**
+ * Expiring This Week, version 2 — the Commodities home section as a short calendar instead of the card rail: the
+ * calendar's first 3 entries (`expiryPreview`), on their days (the grey date block on the left, one card per contract or event, 8 apart), so
+ * it's three rows on one day or spread over two or three days. Events first within a day and on one line (time ·
+ * country, impact); contracts as on the calendar page (option chain + ScalpPro, row → asset page). View all → the
+ * Commodity calendar (fno-38) with everything. Prototype setting "Expiring This Week" picks Version 1 (cards) or 2.
+ */
+export function ExpiringCalendar({ onAsset, onOptionChain, onScalper, onViewAll }: { onAsset: () => void; onOptionChain: () => void; onScalper: () => void; onViewAll: () => void }) {
+  return <section className={parts.contractSection} aria-label={t('expiring.title')}>
+    <ExpiringHeader onViewAll={onViewAll} />
+    <div className={styles.expiryCalendarPreview}>
+      {expiryPreview(3, expiryCalendarAll).map((day) => <CalendarDay key={day.inDays} day={day} showKind sticky={false} eventDetails={false} separate onAsset={onAsset} onOptionChain={onOptionChain} onScalper={onScalper} />)}
+    </div>
+  </section>
+}
+```
+
+### `src/flows/fno/commodities/archive/ExpiringCalendarCard.tsx`
+
+```tsx
+// ARCHIVED 2026-11-26 — not in the app (user: keep only Expiring This Week Versions 6–8). Was Versions 1–5 of Expiring This Week / their calendar page; to bring one back, import it in CommoditiesFeed (or CommodityCalendar) and restore its option values in fno/index.tsx.
+import { Card } from '@l3/components/Card'
+import { ExpiringHeader } from './ExpiringHeader'
+import { t } from '../../copy'
+import { expiryCalendarAll, expiryPreview } from '../data'
+import { CalendarDate, CalendarEntry } from '../components/CalendarDay'
+import parts from '../../components/HomeParts.module.css'
+import styles from '../components/Commodities.module.css'
+
+/**
+ * Expiring This Week, version 3 — the version 2 short calendar (the calendar's first 3 entries on their days, events
+ * first and on one line) in ONE card: each day is a band with the date as the card's grey left column, attached edge
+ * to edge and as tall as the day's rows, and the rows beside it; hairlines between days and between rows. Rows act as
+ * on the calendar page (option chain + ScalpPro, row → asset page). View all → the Commodity calendar (fno-38).
+ */
+export function ExpiringCalendarCard({ onAsset, onOptionChain, onScalper, onViewAll }: { onAsset: () => void; onOptionChain: () => void; onScalper: () => void; onViewAll: () => void }) {
+  return <section className={parts.contractSection} aria-label={t('expiring.title')}>
+    <ExpiringHeader onViewAll={onViewAll} />
+    <Card padding="none" className={styles.calendarJoined}>
+      {expiryPreview(3, expiryCalendarAll).map((day) => <div key={day.inDays} className={styles.calendarJoinedDay}>
+        <CalendarDate inDays={day.inDays} className={styles.calendarJoinedDate} />
+        <div className={styles.calendarJoinedRows}>
+          {day.entries.map((c) => <CalendarEntry key={c.id} entry={c} showKind eventDetails={false} onAsset={onAsset} onOptionChain={onOptionChain} onScalper={onScalper} />)}
+        </div>
+      </div>)}
+    </Card>
+  </section>
+}
+```
+
+### `src/flows/fno/commodities/archive/ExpiringDayPicker.tsx`
+
+```tsx
+// ARCHIVED 2026-11-26 — not in the app (user: keep only Expiring This Week Versions 6–8). Was Versions 1–5 of Expiring This Week / their calendar page; to bring one back, import it in CommoditiesFeed (or CommodityCalendar) and restore its option values in fno/index.tsx.
+import { Fragment, useEffect, useRef, useState } from 'react'
+import { Card } from '@l3/components/Card'
+import { Stack } from '@l3/components/Stack'
+import { ExpiringHeader } from './ExpiringHeader'
+import { t } from '../../copy'
+import { expiryCalendarAll, type ExpiryDay } from '../data'
+import { CalendarEntry, dayFrom } from '../components/CalendarDay'
+import parts from '../../components/HomeParts.module.css'
+import styles from '../components/Commodities.module.css'
+
+/** How far ahead the home's day row reaches: about a month. */
+const DAYS_AHEAD = 31
+
+/** Today's place in its calendar week (weeks run Monday to Sunday): Mon 0 … Sun 6. */
+export const todayInWeek = () => (new Date().getDay() + 6) % 7
+
+/** Days grouped by calendar week (0 = this week, 1 = next week …), in order. */
+export function byWeek(days: ExpiryDay[]): { week: number; days: ExpiryDay[] }[] {
+  const weeks: { week: number; days: ExpiryDay[] }[] = []
+  for (const day of days) {
+    const week = Math.floor((day.inDays + todayInWeek()) / 7)
+    const last = weeks[weeks.length - 1]
+    if (last?.week === week) last.days.push(day)
+    else weeks.push({ week, days: [day] })
+  }
+  return weeks
+}
+
+/** The pill before a week: "Next week", then that week's Monday ("7 Dec") — short, so the turned text fits the row. */
+function weekLabel(week: number) {
+  if (week === 1) return t('expiring.nextWeek')
+  return dayFrom(week * 7 - todayInWeek()).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })
+}
+
+/**
+ * The day picker (Expiring This Week version 4, the default): the given days (only days that
+ * have something, so every card leads somewhere) as a row of small date cards, scrolling sideways. Weeks run Monday to
+ * Sunday; each week after this one starts with a thin grey pill, its text turned 90° (bottom to top, upper case, 8):
+ * "NEXT WEEK", then the week's Monday ("7 DEC"). The selected day has a dark border on grey; the first day is selected
+ * first (no count tag — removed 24 Nov). Under the row, that day's contracts and events, one card each (8 apart).
+ */
+export function DayPicker({ days, weekPills = true, markToday = false, showKind, eventDetails, onAsset, onOptionChain, onScalper }: {
+  days: ExpiryDay[]
+  /** The "NEXT WEEK" / "7 DEC" pills between weeks — off when the days are one week already (the calendar page's week sections). */
+  weekPills?: boolean
+  /** Today's card, when selected, inverted (dark fill, light text), as on the calendar page's day list — the calendar page's week view, not the home. */
+  markToday?: boolean
+  /** Tag each row with its kind (Options / Futures / Event) — when the days mix kinds. */
+  showKind: boolean
+  /** Events show their figures (previous / forecast / actual) — on the calendar page, not on the home. */
+  eventDetails: boolean
+  onAsset: () => void
+  onOptionChain: () => void
+  onScalper: () => void
+}) {
+  const [selected, setSelected] = useState(days[0]?.inDays ?? 0)
+  const day = days.find((d) => d.inDays === selected) ?? days[0]
+  // The row's ends fade on a side with more to scroll to (data-more-before / -after → the CSS mask), checked on scroll and resize.
+  const row = useRef<HTMLDivElement>(null)
+  const updateFades = () => {
+    const el = row.current
+    if (!el) return
+    el.toggleAttribute('data-more-before', el.scrollLeft > 1)
+    el.toggleAttribute('data-more-after', el.scrollLeft + el.clientWidth < el.scrollWidth - 1)
+  }
+  useEffect(() => {
+    updateFades()
+    const observer = new ResizeObserver(updateFades)
+    if (row.current) observer.observe(row.current)
+    return () => observer.disconnect()
+  }, [days])
+  return <>
+    <div ref={row} onScroll={updateFades} role="tablist" aria-label={t('expiring.days')} className={styles.dayPicker}>
+      {byWeek(days).map((w) => <Fragment key={w.week}>
+        {weekPills && w.week > 0 && <span className={styles.dayPickerWeek} aria-hidden>{weekLabel(w.week)}</span>}
+        {w.days.map((d) => {
+          const date = dayFrom(d.inDays)
+          const active = d.inDays === day?.inDays
+          return <button key={d.inDays} type="button" role="tab" aria-selected={active} className={styles.dayPickerDay} data-today={(markToday && d.inDays === 0) || undefined}
+            aria-label={date.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })}
+            onClick={() => setSelected(d.inDays)}>
+            <span className={styles.calendarWeekday}>{date.toLocaleDateString('en-IN', { weekday: 'short' })}</span>
+            <span className={styles.calendarDay}>{date.getDate()}</span>
+          </button>
+        })}
+      </Fragment>)}
+    </div>
+    {day && <Stack gap="08">
+      {day.entries.map((c) => <Card key={c.id} padding="none" className={styles.calendarCard}>
+        <CalendarEntry entry={c} showKind={showKind} eventDetails={eventDetails} onAsset={onAsset} onOptionChain={onOptionChain} onScalper={onScalper} />
+      </Card>)}
+    </Stack>}
+  </>
+}
+
+/**
+ * Expiring This Week, version 4 — the day picker over the next month (contracts with option chain + ScalpPro, events
+ * on one line). View all → the Commodity calendar (fno-38), the day list (one card per contract or event).
+ */
+export function ExpiringDayPicker({ onAsset, onOptionChain, onScalper, onViewAll }: { onAsset: () => void; onOptionChain: () => void; onScalper: () => void; onViewAll: () => void }) {
+  return <section className={parts.contractSection} aria-label={t('expiring.title')}>
+    <ExpiringHeader onViewAll={onViewAll} />
+    <DayPicker days={expiryCalendarAll.filter((d) => d.inDays < DAYS_AHEAD)} showKind eventDetails={false} onAsset={onAsset} onOptionChain={onOptionChain} onScalper={onScalper} />
+  </section>
+}
+```
+
+### `src/flows/fno/commodities/archive/ExpiringDayWeek.tsx`
+
+```tsx
+// ARCHIVED 2026-11-26 — not in the app (user: keep only Expiring This Week Versions 6–8). Was Versions 1–5 of Expiring This Week / their calendar page; to bring one back, import it in CommoditiesFeed (or CommodityCalendar) and restore its option values in fno/index.tsx.
+import { useState } from 'react'
+import { useFlowOption } from '../../../../shared/prototype'
+import { EventsToday, EventsWeek } from './EventsToday'
+import { Card } from '@l3/components/Card'
+import { SectionHeader } from '@l3/components/SectionHeader'
+import { Stack } from '@l3/components/Stack'
+import { Tabs } from '@l3/components/Tabs'
+import { t } from '../../copy'
+import { entryTime, expiryCalendarAll, minutesOf, todaySample, type ExpiryEntry } from '../data'
+import { CalendarEntry } from '../components/CalendarDay'
+import { DayPicker } from './ExpiringDayPicker'
+import parts from '../../components/HomeParts.module.css'
+import styles from '../components/Commodities.module.css'
+
+/** How far ahead the week view reaches: about a month (people don't look at expiries further out). */
+const DAYS_AHEAD = 31
+
+type View = 'day' | 'week'
+
+/**
+ * Expiring This Week, version 5 — no View all page: the header's Day / Week switch (an L3 pill-group Tabs, small, on
+ * the right where View all was) changes what the section shows.
+ * - Day (first): today only — one event and two commodity expiries (3 cards; topped up from the coming days as a
+ *   sample when today has fewer, `todaySample`), as version 2's short calendar, but the grey block on the left holds the TIME it happens
+ *   (an event's release time, a contract's expiry at the MCX close) instead of the date — "9:00" over "PM". Entries at
+ *   the same time share a block (one card each, 8 apart); times 16 apart, earliest first. Nothing today → one line.
+ * - Week: version 4's day row over the next month, but only the days a contract expires (an events-only day isn't a
+ *   date here) — e.g. Wed, then Fri, then the "NEXT WEEK" pill. An event on one of those days still shows with it.
+ */
+export function ExpiringDayWeek({ onAsset, onOptionChain, onScalper }: { onAsset: () => void; onOptionChain: () => void; onScalper: () => void }) {
+  const [view, setView] = useState<View>('day')
+  // Prototype setting “Day view”: Version 1 = TodayByTime below; 2 / 3 = Figma's “Events today” (EventsToday), titled so.
+  const dayView = useFlowOption('fno', 'dayView', 'v2')
+  const figma = dayView !== 'v1'
+  const figmaDay = view === 'day' && figma
+  const listVariant = dayView === 'v3' ? 'block' : 'plain'
+  const props = { onAsset, onOptionChain, onScalper }
+  return <section className={parts.contractSection} aria-label={t('expiring.title')}>
+    <Stack direction="horizontal" gap="08" align="center" justify="between">
+      <SectionHeader title={figmaDay ? t('eventsToday.title') : t('expiring.title')} />
+      <Tabs appearance="pill-group" size="sm" aria-label={t('expiring.view')} value={view} onChange={(v) => setView(v as View)} className={styles.expiringViewAll}
+        items={[{ value: 'day', label: t('expiring.view.day') }, { value: 'week', label: t('expiring.view.week') }]} />
+    </Stack>
+    {figmaDay ? <EventsToday variant={listVariant} {...props} /> : view === 'day' ? <TodayByTime {...props} /> : figma ? <EventsWeek variant={listVariant} {...props} /> : <DayPicker
+      days={expiryCalendarAll.filter((d) => d.inDays < DAYS_AHEAD && d.entries.some((e) => e.kind !== 'event'))}
+      showKind eventDetails={false} {...props} />}
+  </section>
+}
+
+/** Day view: today's entries grouped by time, earliest first. */
+function TodayByTime({ onAsset, onOptionChain, onScalper }: { onAsset: () => void; onOptionChain: () => void; onScalper: () => void }) {
+  const today = todaySample()
+  const times = new Map<string, ExpiryEntry[]>()
+  for (const entry of [...today].sort((a, b) => minutesOf(entryTime(a)) - minutesOf(entryTime(b))))
+    times.set(entryTime(entry), [...(times.get(entryTime(entry)) ?? []), entry])
+  if (!times.size) return <Card><p className={styles.calendarExchange}>{t('expiring.noneToday')}</p></Card>
+  return <div className={styles.expiryCalendarPreview}>
+    {[...times].map(([time, entries]) => {
+      const [clock, ampm] = time.split(' ')
+      return <Stack key={time} direction="horizontal" gap="12" align="start">
+        <Stack gap="00" align="center" className={styles.calendarDate} data-static aria-label={time}>
+          <span className={styles.calendarDay}>{clock}</span>
+          <span className={styles.calendarWeekday}>{ampm}</span>
+        </Stack>
+        <Stack gap="08" className={styles.calendarCards}>
+          {entries.map((c) => <Card key={c.id} padding="none" className={styles.calendarCard}>
+            <CalendarEntry entry={c} showKind eventDetails={false} showTime={false} onAsset={onAsset} onOptionChain={onOptionChain} onScalper={onScalper} />
+          </Card>)}
+        </Stack>
+      </Stack>
+    })}
+  </div>
+}
+```
+
+### `src/flows/fno/commodities/archive/ExpiringHeader.tsx`
+
+```tsx
+// ARCHIVED 2026-11-26 — not in the app (user: keep only Expiring This Week Versions 6–8). Was Versions 1–5 of Expiring This Week / their calendar page; to bring one back, import it in CommoditiesFeed (or CommodityCalendar) and restore its option values in fno/index.tsx.
+import { Button } from '@l3/components/Button'
+import { Icon } from '@l3/components/Icon'
+import { SectionHeader } from '@l3/components/SectionHeader'
+import { Stack } from '@l3/components/Stack'
+import { msCalendarMonth } from '@l3/icons/material'
+import { t } from '../../copy'
+import styles from '../components/Commodities.module.css'
+
+/**
+ * Expiring This Week's header (all four versions): the L3 SectionHeader title, and View all as a Ghost Small button with
+ * a calendar icon BEFORE the label (it opens the Commodity calendar, fno-38). L3's SectionHeader `view-all` action only
+ * takes a chevron after the label, so the button sits beside the header instead — L3 gap.
+ */
+export function ExpiringHeader({ onViewAll }: { onViewAll: () => void }) {
+  return <Stack direction="horizontal" gap="08" align="center" justify="between">
+    <SectionHeader title={t('expiring.title')} />
+    <Button variant="ghost" size="sm" className={styles.expiringViewAll} onClick={onViewAll} iconLeft={<Icon icon={msCalendarMonth} />}>{t('viewAll')}</Button>
+  </Stack>
+}
+```
+
+### `src/flows/fno/commodities/archive/ExpiringThisWeek.tsx`
+
+```tsx
+// ARCHIVED 2026-11-26 — not in the app (user: keep only Expiring This Week Versions 6–8). Was Versions 1–5 of Expiring This Week / their calendar page; to bring one back, import it in CommoditiesFeed (or CommodityCalendar) and restore its option values in fno/index.tsx.
+import { Button } from '@l3/components/Button'
+import { Card } from '@l3/components/Card'
+import { MaskIcon } from '@l3/components/MaskIcon'
+import { PriceChange } from '@l3/components/PriceChange'
+import { ExpiringHeader } from './ExpiringHeader'
+import { Stack } from '@l3/components/Stack'
+import { inr } from '../../../../shared/data/format'
+import { useFlowOption } from '../../../../shared/prototype'
+import type { Contract } from '../../data'
+import { t } from '../../copy'
+import { expiringThisWeek, type ExpiringContract } from '../data'
+import scalper from '../../assets/scalppro.svg'
+import { TrendBadge } from '../../components/TrendBadge'
+import { trendLabel, trendSince } from '../sheets/TrendInfoSheet'
+import parts from '../../components/HomeParts.module.css'
+import styles from '../components/Commodities.module.css'
+
+/** The commodity art on the left of each card — hidden for now (kept, not deleted). */
+const SHOW_ART = false
+
+/** The expiry line's day: Today, Tomorrow, then the weekday ("Thu"). */
+function expiryDay(days: number) {
+  if (days === 0) return t('expiring.today')
+  if (days === 1) return t('expiring.tomorrow')
+  const date = new Date()
+  date.setDate(date.getDate() + days)
+  return date.toLocaleDateString('en-IN', { weekday: 'short' })
+}
+
+/** The card as a contract, for the contract sheet (Buy). */
+const asContract = (c: ExpiringContract): Contract => c.kind !== 'future'
+  ? { id: c.id, name: `${c.symbol} ${c.option}`, description: c.description, price: c.price, change: c.priceChange, volume: 0, side: c.option.includes(' PE') ? 'put' : 'call' }
+  : { id: c.id, name: c.symbol, description: c.description, price: c.price, change: c.priceChange, volume: 0 }
+
+/** The card's variant: the expiry line under the symbol and the left column's label (the option, or LTP for a future). */
+const expiryLine = (c: ExpiringContract) =>
+  c.kind === 'option' ? t('expiring.tag', { day: expiryDay(c.expiresInDays) })
+  : c.kind === 'event' ? t('expiring.eventTag', { event: c.event, day: expiryDay(c.eventInDays), time: c.eventTime })
+  : t('expiring.futTag', { date: c.expiryDate })
+const priceLabel = (c: ExpiringContract) => c.kind === 'future' ? t('expiring.ltp') : c.option
+
+/**
+ * Expiring This Week — the Commodities tab's section between the commodity shortcuts and the chart: a sideways rail
+ * of contracts whose options expire this week. Each card: the commodity with when its options expire (plain text,
+ * "OPT Expiry Today" / "FUT Expiry 3 Dec"), the trend since when it started, the option's premium or the future's LTP
+ * (left) and the margin per lot
+ * (right), each a label over its value, then
+ * View all opens the Upcoming expiries timeline (fno-38). The trend read-out (top right, with its i) opens the trend info sheet. ScalpPro and Buy in the card's action footer (no fill); the three parts sit 16 apart. A tap on the card opens the contract's asset page.
+ */
+export function ExpiringThisWeek({ onAsset, onContract, onScalper, onViewAll, onTrendInfo }: { onAsset: () => void; onContract: (contract: Contract) => void; onScalper: () => void; /** The trend read-out (Strong Uptrend / Bullish …, the whole top right) → the trend info sheet. */ onTrendInfo: (contract: ExpiringContract) => void; /** View all → the Upcoming expiries timeline (fno-38). */ onViewAll: () => void }) {
+  // Prototype setting “Expiring card buttons”: off hides the whole ScalpPro + Buy footer.
+  const showButtons = useFlowOption('fno', 'expiringButtons', 'on') === 'on'
+  return <section className={parts.contractSection} aria-label={t('expiring.title')}>
+    <ExpiringHeader onViewAll={onViewAll} />
+    <div className={styles.expiryRail}>
+      {expiringThisWeek.map((c) => <div key={c.id} className={styles.expiryItem}>
+        <Card
+          className={styles.expiryCard}
+          onClick={onAsset}
+          aria-label={`${c.symbol} ${priceLabel(c)}`}
+          footer={showButtons ? <>
+            <Button variant="secondary" size="md" fullWidth iconLeft={<span className={styles.expiryActionIcon}><MaskIcon src={scalper} /></span>} onClick={onScalper}>{t('chart.scalper')}</Button>
+            <Button variant="primary" size="md" fullWidth onClick={() => onContract(asContract(c))}>{t('expiring.buy')}</Button>
+          </> : undefined}
+        >
+          <Stack gap="16">
+            <Stack direction="horizontal" gap="12" align="center">
+              {SHOW_ART && <span className={styles.expiryLogo}><img className={styles.expiryArt} src={c.image} alt="" /></span>}
+              <Stack gap="04" className={parts.grow}>
+                <p className={styles.expirySymbol}>{c.symbol}</p>
+                <p className={parts.description}>{expiryLine(c)}</p>
+              </Stack>
+              <TrendBadge trend={c.trend} label={trendLabel(c)} since={trendSince(c)} largeSince info={t('expiring.sinceInfo')} onInfo={() => onTrendInfo(c)} />
+            </Stack>
+            <div className={styles.expiryRule} />
+            <Stack direction="horizontal" gap="12" justify="between">
+              <Stack gap="04"><span className={styles.expiryLabel}>{priceLabel(c)}</span><Stack direction="horizontal" gap="08" align="center"><span className={styles.expiryValue}>{inr(c.price)}</span><PriceChange value={c.priceChange} unit="percent" size="md" /></Stack></Stack>
+              <Stack gap="04" align="end"><span className={styles.expiryLabel}>{t('expiring.margin')}</span><span className={styles.expiryValue}>{inr(c.margin)}</span></Stack>
+            </Stack>
+          </Stack>
+        </Card>
+      </div>)}
+    </div>
+  </section>
+}
+```
+
+### `src/flows/fno/commodities/archive/ExpiryTimeline.tsx`
+
+```tsx
+// ARCHIVED 2026-11-26 — not in the app (user: keep only Expiring This Week Versions 6–8). Was Versions 1–5 of Expiring This Week / their calendar page; to bring one back, import it in CommoditiesFeed (or CommodityCalendar) and restore its option values in fno/index.tsx.
+import { useLayoutEffect, useRef, useState, type CSSProperties } from 'react'
+import { Actionbar } from '@l3/components/Actionbar'
+import { Icon } from '@l3/components/Icon'
+import { SectionHeader } from '@l3/components/SectionHeader'
+import { Stack } from '@l3/components/Stack'
+import { Tabs } from '@l3/components/Tabs'
+import { msApps, msCandlestickChart, msEvent, msTrendingUp } from '@l3/icons/material'
+import { Screen } from '../../../../shared/ui/Screen'
+import { neighbour, useSwipeBetween } from '../../../../shared/ui/useSwipeBetween'
+import { t } from '../../copy'
+import { expiryCalendar, expiryCalendarAll, type ExpiryKind } from '../data'
+import { CalendarDay, dayFrom } from '../components/CalendarDay'
+import styles from '../components/Commodities.module.css'
+import flat from '../../flatCards.module.css'
+
+type Tab = 'all' | ExpiryKind
+const TABS: Tab[] = ['all', 'option', 'future', 'event']
+const TAB_ICONS: Record<Tab, string> = { all: msApps, option: msCandlestickChart, future: msTrendingUp, event: msEvent }
+
+const monthOf = (date: Date) => date.toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })
+
+/**
+ * fno-38 · Expiry calendar — View all on Expiring This Week (Commodities). All / Options / Futures / Events (flat tabs with icons, sticky, in the
+ * Actionbar's bottom slot). The days run from today under a month section header (L3 SectionHeader, content-primary: "Nov 2026", repeated when the month turns):
+ * on the left one grey block (surface-secondary) holding the weekday over the date (today inverted on the calendar page — dark fill, light text — not marked on the home), on the right one card with that day's contracts — one day can hold
+ * several, split by hairlines. Scrolling, the month header sticks at the top until the next month's pushes it out, and
+ * each day's date block sticks under it for as long as that day's card is in view. A row is only the contract's name with two flat (no shadow) icon
+ * buttons, centred vertically, the row 12 in from every side: options get option chain (→ option chain page) then ScalpPro (→ Scalper);
+ * Changing tab slides the body with it (tap: the new tab's body slides in from its side; swipe left / right on the body drags it
+ * to the next / previous tab, rubber-band at the ends — shared useSwipeBetween).
+ * futures ScalpPro only; events show everything upfront (time IST, previous / forecast / actual, one arrow tag per commodity it moves → asset page), no buttons. All tags each row with its kind. Cards are flat (border, no shadow).
+ */
+export function ExpiryTimeline({ onBack, onAsset, onOptionChain, onScalper }: { onBack: () => void; onAsset: () => void; onOptionChain: () => void; onScalper: () => void }) {
+  const [tab, setTab] = useState<Tab>('all')
+  // The tab being tapped, so the tabs answer at once while the body is still sliding.
+  const [tapped, setTapped] = useState<Tab | null>(null)
+  // The body slides with the tabs (the shared useSwipeBetween, like Market's tabs and the stocks theme page): the tab
+  // next door's body sits just off-screen on either side, so a swipe drags it into view and a tap slides it across.
+  const body = useRef<HTMLDivElement>(null)
+  const comingFrom = useRef<1 | -1 | 0>(0)
+  const swipe = useSwipeBetween({
+    page: tab,
+    canGo: (direction) => neighbour(TABS, tab, direction) !== null,
+    onSwitch: (direction) => { const next = neighbour(TABS, tab, direction); if (next) { setTab(next); setTapped(null) } },
+    slides: () => (body.current ? [body.current] : []),
+    fades: () => [],
+  })
+  // A tap on a tab. Next door: the same slide as a swipe. Further away: it slides straight in from its side.
+  const pick = (next: Tab) => {
+    const step = TABS.indexOf(next) - TABS.indexOf(tab)
+    if (!step || next === tapped) return
+    setTapped(next)
+    if (Math.abs(step) === 1) return swipe.go(step as 1 | -1, () => { setTab(next); setTapped(null) })
+    comingFrom.current = step > 0 ? 1 : -1
+    setTab(next)
+    setTapped(null)
+  }
+  useLayoutEffect(() => {
+    const from = comingFrom.current
+    comingFrom.current = 0
+    const el = body.current
+    if (!from || !el || matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    el.animate([{ translate: `${from * el.offsetWidth}px 0` }, { translate: '0 0' }], { duration: 280, easing: 'cubic-bezier(0.2, 0, 0, 1)' })
+  }, [tab])
+  const props = { onAsset, onOptionChain, onScalper }
+  return <Screen className={flat.flatCards} top={<Actionbar title={t('expiryAll.title')} onBack={onBack} backLabel={t('lot.back')}
+    bottom={<Tabs aria-label={t('expiryAll.filter')} value={tapped ?? tab} onChange={(v) => pick(v as Tab)}
+      items={TABS.map((value) => ({ value, label: t(`expiryAll.tab.${value}`), iconLeft: <Icon icon={TAB_ICONS[value]} size={16} /> }))} />} />}>
+    <div className={styles.calendarViewport}>
+      <div ref={(el) => { body.current = el; swipe.bind(el) }} className={styles.calendarTrack}>
+        {/* Keyed by tab: the body that slides in stays the same once it becomes the current one. */}
+        {[neighbour(TABS, tab, -1), tab, neighbour(TABS, tab, 1)].map((panelTab, at) => panelTab && (
+          <div key={panelTab} className={styles.calendarPanel} data-side={['before', 'current', 'after'][at]} inert={at !== 1} aria-hidden={at !== 1 || undefined}>
+            <CalendarBody tab={panelTab} {...props} />
+          </div>
+        ))}
+      </div>
+    </div>
+  </Screen>
+}
+
+/** One tab's days, grouped by month. */
+function CalendarBody({ tab, onAsset, onOptionChain, onScalper }: { tab: Tab; onAsset: () => void; onOptionChain: () => void; onScalper: () => void }) {
+  const days = tab === 'all' ? expiryCalendarAll : expiryCalendar[tab]
+  // The days grouped by month ("Nov 2026", "Dec 2026"), in order.
+  const months: { month: string; days: typeof days }[] = []
+  for (const day of days) {
+    const month = monthOf(dayFrom(day.inDays))
+    if (months.at(-1)?.month === month) months.at(-1)!.days.push(day)
+    else months.push({ month, days: [day] })
+  }
+  // The sticky date blocks stop just under the sticky month header: measure its height once it's drawn.
+  const headRef = useRef<HTMLDivElement>(null)
+  const [headHeight, setHeadHeight] = useState(0)
+  useLayoutEffect(() => { setHeadHeight(headRef.current?.offsetHeight ?? 0) }, [tab])
+  return <div className={styles.calendar} style={{ '--calendar-head': `${headHeight}px` } as CSSProperties}>
+    {months.map((m, mi) => <section key={m.month} className={styles.calendarMonth} aria-label={m.month}>
+      {/* Sticky: the month stays at the top until the next month's header pushes it out. (The day / week view switch
+          on its right is archived: commodities/archive/CalendarWeekView.tsx.) */}
+      <div ref={mi === 0 ? headRef : undefined} className={styles.calendarMonthHead}><SectionHeader title={m.month} /></div>
+      {/* 32 between two days (no line). */}
+      <Stack gap="32">
+        {m.days.map((day) => <CalendarDay key={day.inDays} day={day} showKind={tab === 'all'} separate onAsset={onAsset} onOptionChain={onOptionChain} onScalper={onScalper} />)}
+      </Stack>
+    </section>)}
+  </div>
 }
 ```
 
@@ -3663,12 +4328,7 @@ import { t } from '../../copy'
 import { smartFutures, type Commodity, type ExpiringContract } from '../data'
 import { CommodityHeatmap } from './CommodityHeatmap'
 import { CommodityShortcuts } from './CommodityShortcuts'
-import { ExpiringCalendar } from './ExpiringCalendar'
-import { ExpiringCalendarCard } from './ExpiringCalendarCard'
-import { ExpiringDayPicker } from './ExpiringDayPicker'
-import { ExpiringDayWeek } from './ExpiringDayWeek'
 import { AllEventsSection, UpcomingEventsSection } from './AllEvents'
-import { ExpiringThisWeek } from './ExpiringThisWeek'
 import { useFlowOption } from '../../../../shared/prototype'
 import { PopularCommodities } from './PopularCommodities'
 import parts from '../../components/HomeParts.module.css'
@@ -3694,25 +4354,16 @@ type Props = {
 
 /** The Commodities tab of F&O home (Figma 6754:63637), under the shared header, P&L, indices and product tabs. */
 export function CommoditiesFeed({ instrument, lists, onCommodity, onAsset, onPicker, onChoose, onContract, onDestination, onAddWatchlist, onChain, onScalper, onExpiries, onTrendInfo }: Props) {
-  // Prototype setting “Expiring This Week”: Version 1 = the card rail, Version 2 = the short calendar,
-  // Version 3 = that calendar in one card (dates attached as its left column). Version 4 = a row of day
-  // cards, the selected day's entries below. Version 5 = no View all: a Day (today by time) / Week (expiry days) switch.
-  const expiringVersion = useFlowOption('fno', 'expiringVersion', 'v4')
+  // Prototype setting “Expiring This Week”: Version 6 = All Events (the day block beside its cards), Version 7 =
+  // Upcoming Events (a date line, a time block per card), Version 8 = Version 7 with date pills and plain times.
+  // Versions 1–5 archived 2026-11-26 (commodities/archive/: ExpiringThisWeek, ExpiringCalendar, ExpiringCalendarCard,
+  // ExpiringDayPicker, ExpiringDayWeek + EventsToday).
+  const expiringVersion = useFlowOption('fno', 'expiringVersion', 'v6')
   return <Stack gap="32" className={parts.feed}>
     <CommodityShortcuts onOpen={onCommodity} />
     {expiringVersion === 'v7' || expiringVersion === 'v8'
       ? <UpcomingEventsSection pill={expiringVersion === 'v8'} onAsset={onAsset} onOptionChain={onChain} onScalper={onScalper} onViewAll={onExpiries} />
-      : expiringVersion === 'v6'
-      ? <AllEventsSection onAsset={onAsset} onOptionChain={onChain} onScalper={onScalper} onViewAll={onExpiries} />
-      : expiringVersion === 'v5'
-      ? <ExpiringDayWeek onAsset={onAsset} onOptionChain={onChain} onScalper={onScalper} />
-      : expiringVersion === 'v4'
-      ? <ExpiringDayPicker onAsset={onAsset} onOptionChain={onChain} onScalper={onScalper} onViewAll={onExpiries} />
-      : expiringVersion === 'v3'
-      ? <ExpiringCalendarCard onAsset={onAsset} onOptionChain={onChain} onScalper={onScalper} onViewAll={onExpiries} />
-      : expiringVersion === 'v2'
-      ? <ExpiringCalendar onAsset={onAsset} onOptionChain={onChain} onScalper={onScalper} onViewAll={onExpiries} />
-      : <ExpiringThisWeek onAsset={onAsset} onContract={onContract} onScalper={onScalper} onViewAll={onExpiries} onTrendInfo={onTrendInfo} />}
+      : <AllEventsSection onAsset={onAsset} onOptionChain={onChain} onScalper={onScalper} onViewAll={onExpiries} />}
     <TradingChart instrument={instrument} onInstrument={onPicker} onChoose={onChoose} onDestination={onDestination} onChain={onChain} onScalper={onScalper} />
     <div className={parts.divider} />
     <div data-fno="watchlists"><Watchlists lists={lists} onAdd={onAddWatchlist} onOpen={onDestination} /></div>
@@ -3771,549 +4422,6 @@ export function CommodityShortcuts({ onOpen }: { onOpen: (commodity: Commodity) 
       <span className={[styles.change, commodity.change < 0 ? parts.down : parts.up].join(' ')}>{commodity.change > 0 ? '+' : ''}{commodity.change.toFixed(2)}%</span>
     </Stack>
   </Stack>)}</Grid></Inset></div>
-}
-```
-
-### `src/flows/fno/commodities/components/EventsToday.module.css`
-
-```css
-/* Expiring This Week v5 · Day view Versions 2 / 3 (EventsToday.tsx), after Figma 7006:4490. */
-
-/* Rows 16 apart; Figma's list sits 12 from the screen edge (the section's 16, less 4). */
-.list { display: flex; flex-direction: column; gap: var(--l3-spacing-16); margin-inline: calc(-1 * var(--l3-spacing-04)); }
-/* Version 2: 16 more after the first row (the expiry), as drawn. */
-.list[data-variant='plain']:not([data-week]) > .row:first-child { margin-bottom: var(--l3-spacing-16); }
-.row { display: flex; align-items: flex-start; gap: var(--l3-spacing-12); }
-
-/* The time: “9:00” (Label 14) over “AM” (Description 12, secondary), centred in 48, 8 × 4 in. */
-.time { box-sizing: border-box; flex: none; width: var(--l3-spacing-48); display: flex; flex-direction: column; align-items: center; padding: var(--l3-spacing-08) var(--l3-spacing-04); text-align: center; }
-.list[data-variant='block'] .time { border-radius: var(--l3-radius-12); background: var(--l3-surface-secondary); }
-.clock { font: var(--l3-text-label-14); color: var(--l3-content-primary); }
-.ampm { font: var(--l3-text-description-12); color: var(--l3-content-secondary); }
-
-.card.card { min-width: 0; gap: 0; overflow: hidden; }
-.text { flex: 1; min-width: 0; }
-.name { margin: 0; font: var(--l3-text-label-12); color: var(--l3-content-primary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-/* Figma's grey tag: L3 Tag neutral tertiary, its label in content-secondary (L3's neutral soft tag is content-primary — L3 gap). */
-.greyTag.greyTag { color: var(--l3-content-secondary); }
-
-.expiry { padding: var(--l3-spacing-12); cursor: pointer; -webkit-tap-highlight-color: transparent; }
-.expiry:active { background: var(--l3-surface-secondary); }
-@media (hover: hover) { .expiry:hover { background: var(--l3-surface-secondary); } }
-
-.event { display: flex; flex-direction: column; gap: var(--l3-spacing-12); padding: var(--l3-spacing-12) 0; }
-.event[data-note] { padding-bottom: var(--l3-spacing-06); }
-.eventHead { padding-inline: var(--l3-spacing-12); }
-
-/* The note: a hairline 16 in from each side, 6 above a 24 line (content 4 down, 12 in). */
-.footer { display: flex; flex-direction: column; gap: var(--l3-spacing-06); }
-.rule { height: 1px; margin-inline: var(--l3-spacing-16); background: var(--l3-border-light); } /* 1px hairline */
-.note { display: flex; align-items: center; gap: var(--l3-spacing-08); min-height: var(--l3-size-24); padding-inline: var(--l3-spacing-12); }
-.bulb { flex: none; transform: scaleY(-1); color: var(--l3-content-secondary); } /* the bulb upright: Figma flips wb_incandescent */
-.noteLine { display: inline-flex; align-items: center; min-width: 0; font: var(--l3-text-label-10); color: var(--l3-content-primary); white-space: nowrap; }
-.move { display: inline-flex; align-items: center; font: var(--l3-text-heading-10); color: var(--l3-content-accent-error-default); }
-.move[data-up='true'] { color: var(--l3-content-accent-success-default); }
-
-/* Pictures. Version 2: art 16 (a flag 12) inside the 24 L3 Avatar. Version 3: art bare at 20; a flag 15 in a 20 circle. */
-.avatar.avatar { flex: none; }
-.artIn { width: var(--l3-size-16); height: var(--l3-size-16); object-fit: contain; }
-.flagIn { width: var(--l3-size-12); height: var(--l3-size-12); border-radius: var(--l3-radius-full); object-fit: cover; }
-.art { flex: none; width: var(--l3-size-20); height: var(--l3-size-20); object-fit: contain; }
-.flagCircle { flex: none; display: inline-flex; align-items: center; justify-content: center; width: var(--l3-size-20); height: var(--l3-size-20); border-radius: var(--l3-radius-full); overflow: hidden; }
-.flagCircle img { width: var(--app-today-flag); height: var(--app-today-flag); border-radius: var(--l3-radius-full); object-fit: cover; }
-/* Figma: 6 between an event's name and its tags (L3 Stack has no 06 gap). */
-.eventText.eventText { gap: var(--l3-spacing-06); }
-/* A row's cards (the Week view: a day's contracts and events), 8 apart. */
-.cards { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: var(--l3-spacing-08); }
-/* Week view: the day block as Version 2's date — weekday (Description 12, secondary) over the date (Label 16). */
-.time[data-day] .clock { font: var(--l3-text-description-12); color: var(--l3-content-secondary); }
-.time[data-day] .ampm { font: var(--l3-text-label-16); color: var(--l3-content-primary); }
-.empty { margin: 0; font: var(--l3-text-description-12); color: var(--l3-content-secondary); }
-/* Version 3: a symbol avatar (Copper's “Cu”, L3 Avatar's smallest is 24) takes the bare art's 20 in the row, so names line up. */
-.list[data-variant='block'] .avatar.avatar { margin-inline: calc(-1 * var(--l3-spacing-02)); }
-```
-
-### `src/flows/fno/commodities/components/EventsToday.tsx`
-
-```tsx
-import { Avatar } from '@l3/components/Avatar'
-import { Card } from '@l3/components/Card'
-import { Icon } from '@l3/components/Icon'
-import { Stack } from '@l3/components/Stack'
-import { Tag } from '@l3/components/Tag'
-import { msArrowDownward, msArrowDropDown, msArrowDropUp, msArrowUpward, msTrendingDown, msTrendingUp, msWbIncandescentFill } from '@l3/icons/material'
-import { t } from '../../copy'
-import { asTodayItem, eventsTodaySample, expiryCalendarAll, type TodayItem } from '../data'
-import { RowActions, dayFrom } from './CalendarDay'
-import styles from './EventsToday.module.css'
-
-/**
- * Expiring This Week version 5 — Day view, Versions 2 and 3 (Figma 7006:4490, “Events today”, 25 Nov). Today's list,
- * one row per time: the time on the left (“9:00” over “AM”, 48 wide), the card on the right (12 apart), rows 16 apart.
- * - `plain` (Version 2, Figma left): the time on the page (no block); pictures in a 24 L3 Avatar; 16 more after the
- *   first row.
- * - `block` (Version 3, Figma right): the time in a grey block (surface-secondary, radius 12); pictures bare at 20.
- * Card: an expiry — name (Label 12) over a grey “Expiry” tag, option chain + ScalpPro on the right. An event — name over
- * “Event” and its trend tag (“Bullish Trend” ↗ / “Bearish Trend” ↘) or the commodities it moves (↑ Gold, ↓ Crude oil);
- * with a note, a hairline (16 in from each side) and a footer line: a bulb, “In last bullish trend, Gold has moved” /
- * “Last time, Crude oil has moved” (Label 10) and the move, ▲ / ▼ in success / error (Heading 10).
- */
-export function EventsToday({ variant, onAsset, onOptionChain, onScalper }: { variant: 'plain' | 'block'; onAsset: () => void; onOptionChain: () => void; onScalper: () => void }) {
-  // Day: one row per item, the time on the left ("9:00" over "AM").
-  const rows = eventsTodaySample.map((item) => { const [top, bottom] = item.time.split(' '); return { key: item.id, label: item.time, top, bottom, items: [item] } })
-  return <EventRows rows={rows} variant={variant} onAsset={onAsset} onOptionChain={onOptionChain} onScalper={onScalper} />
-}
-
-/** How far ahead the Week view lists: this week (today and the 6 days after). */
-const WEEK_DAYS = 7
-
-/**
- * The Week view in the same layout (user, 25 Nov): a vertical list of the week's expiry days (only days a contract
- * expires; an event on one of them still shows), the day on the left as the time is in Day view — the weekday over the
- * date ("Fri" over "27"), plain or in the grey block — and that day's cards on the right, one per contract or event,
- * 8 apart. Contracts tagged “Options expiry” / “Futures expiry”.
- */
-export function EventsWeek({ variant, onAsset, onOptionChain, onScalper }: { variant: 'plain' | 'block'; onAsset: () => void; onOptionChain: () => void; onScalper: () => void }) {
-  const rows = expiryCalendarAll
-    .filter((d) => d.inDays < WEEK_DAYS && d.entries.some((e) => e.kind !== 'event'))
-    .map((d) => {
-      const date = dayFrom(d.inDays)
-      const items = d.entries.map((e) => asTodayItem(e, e.kind === 'event' ? undefined : t(`eventsToday.tag.${e.kind}`)))
-      return { key: String(d.inDays), label: date.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' }),
-        top: date.toLocaleDateString('en-IN', { weekday: 'short' }), bottom: String(date.getDate()), items, day: true }
-    })
-  if (!rows.length) return <Card><p className={styles.empty}>{t('eventsToday.noneWeek')}</p></Card>
-  return <EventRows rows={rows} variant={variant} onAsset={onAsset} onOptionChain={onOptionChain} onScalper={onScalper} />
-}
-
-type Row = { key: string; label: string; top: string; bottom: string; items: TodayItem[]; day?: boolean }
-
-/** The list: each row is the left block (time, or day) and its cards. */
-function EventRows({ rows, variant, onAsset, onOptionChain, onScalper }: { rows: Row[]; variant: 'plain' | 'block'; onAsset: () => void; onOptionChain: () => void; onScalper: () => void }) {
-  return <div className={styles.list} data-variant={variant} data-week={rows[0]?.day || undefined}>
-    {rows.map((row) => {
-      return <div key={row.key} className={styles.row}>
-        <div className={styles.time} aria-label={row.label} data-day={row.day || undefined}>
-          <span className={styles.clock}>{row.top}</span>
-          <span className={styles.ampm}>{row.bottom}</span>
-        </div>
-        <div className={styles.cards}>{row.items.map((item) =>
-        <Card key={item.id} padding="none" className={styles.card}>
-          {item.kind === 'expiry'
-            ? <Stack direction="horizontal" gap="12" align="center" className={styles.expiry} data-tappable onClick={onAsset}>
-              <Picture item={item} variant={variant} />
-              <Stack gap="04" className={styles.text}>
-                <p className={styles.name}>{item.name}</p>
-                <span><Tag variant="tertiary" size="sm" className={styles.greyTag}>{item.tag ?? t('eventsToday.expiry')}</Tag></span>
-              </Stack>
-              <RowActions name={item.name} chain={Boolean(item.chain)} onOptionChain={onOptionChain} onScalper={onScalper} />
-            </Stack>
-            : <div className={styles.event} data-note={Boolean(item.note) || undefined}>
-              <Stack direction="horizontal" gap="12" align="center" className={styles.eventHead}>
-                <Picture item={item} variant={variant} />
-                <Stack gap="04" className={`${styles.text} ${styles.eventText}`}>
-                  <p className={styles.name}>{item.name}</p>
-                  <Stack direction="horizontal" gap="08" align="center">
-                    <Tag variant="tertiary" size="sm" className={styles.greyTag}>{t('eventsToday.event')}</Tag>
-                    {item.trend && <Tag variant="tertiary" size="sm" color={item.trend === 'bullish' ? 'profit' : 'loss'}
-                      iconLeft={<Icon icon={item.trend === 'bullish' ? msTrendingUp : msTrendingDown} />}>{t(`eventsToday.trend.${item.trend}`)}</Tag>}
-                    {item.moves?.map((m) => <Tag key={m.name} variant="tertiary" size="sm" color={m.trend === 'up' ? 'profit' : 'loss'}
-                      iconLeft={<Icon icon={m.trend === 'up' ? msArrowUpward : msArrowDownward} />}>{m.name}</Tag>)}
-                  </Stack>
-                </Stack>
-              </Stack>
-              {item.note && <div className={styles.footer}>
-                <span className={styles.rule} />
-                <div className={styles.note}>
-                  <Icon icon={msWbIncandescentFill} size={16} className={styles.bulb} />
-                  <span className={styles.noteLine}>
-                    <span>{item.note.kind === 'trend'
-                      ? t('eventsToday.noteTrend', { trend: t(`eventsToday.trendWord.${item.note.trend ?? 'bullish'}`), name: item.note.name })
-                      : t('eventsToday.noteLast', { name: item.note.name })}</span>
-                    <span className={styles.move} data-up={item.note.change >= 0}>
-                      <Icon icon={item.note.change >= 0 ? msArrowDropUp : msArrowDropDown} size={12} />
-                      {Math.abs(item.note.change).toFixed(1)}%
-                    </span>
-                  </span>
-                </div>
-              </div>}
-            </div>}
-        </Card>)}</div>
-      </div>
-    })}
-  </div>
-}
-
-/** The row's picture: in Version 2 inside a 24 L3 Avatar (16 art; a flag 12), in Version 3 bare at 20 (a flag in a 20 circle). */
-function Picture({ item, variant }: { item: TodayItem; variant: 'plain' | 'block' }) {
-  // No art (Copper, Zinc…): their symbol in a 24 L3 Avatar, either version.
-  if (!item.image) return <Avatar size={24} initials={item.initials} className={styles.avatar} />
-  if (variant === 'plain') return <Avatar size={24} className={styles.avatar}
-    icon={<img src={item.image} alt="" className={item.flag ? styles.flagIn : styles.artIn} />} />
-  return item.flag
-    ? <span className={styles.flagCircle}><img src={item.image} alt="" /></span>
-    : <img src={item.image} alt="" className={styles.art} />
-}
-```
-
-### `src/flows/fno/commodities/components/ExpiringCalendar.tsx`
-
-```tsx
-import { ExpiringHeader } from './ExpiringHeader'
-import { t } from '../../copy'
-import { expiryCalendarAll, expiryPreview } from '../data'
-import { CalendarDay } from './CalendarDay'
-import parts from '../../components/HomeParts.module.css'
-import styles from './Commodities.module.css'
-
-/**
- * Expiring This Week, version 2 — the Commodities home section as a short calendar instead of the card rail: the
- * calendar's first 3 entries (`expiryPreview`), on their days (the grey date block on the left, one card per contract or event, 8 apart), so
- * it's three rows on one day or spread over two or three days. Events first within a day and on one line (time ·
- * country, impact); contracts as on the calendar page (option chain + ScalpPro, row → asset page). View all → the
- * Commodity calendar (fno-38) with everything. Prototype setting "Expiring This Week" picks Version 1 (cards) or 2.
- */
-export function ExpiringCalendar({ onAsset, onOptionChain, onScalper, onViewAll }: { onAsset: () => void; onOptionChain: () => void; onScalper: () => void; onViewAll: () => void }) {
-  return <section className={parts.contractSection} aria-label={t('expiring.title')}>
-    <ExpiringHeader onViewAll={onViewAll} />
-    <div className={styles.expiryCalendarPreview}>
-      {expiryPreview(3, expiryCalendarAll).map((day) => <CalendarDay key={day.inDays} day={day} showKind sticky={false} eventDetails={false} separate onAsset={onAsset} onOptionChain={onOptionChain} onScalper={onScalper} />)}
-    </div>
-  </section>
-}
-```
-
-### `src/flows/fno/commodities/components/ExpiringCalendarCard.tsx`
-
-```tsx
-import { Card } from '@l3/components/Card'
-import { ExpiringHeader } from './ExpiringHeader'
-import { t } from '../../copy'
-import { expiryCalendarAll, expiryPreview } from '../data'
-import { CalendarDate, CalendarEntry } from './CalendarDay'
-import parts from '../../components/HomeParts.module.css'
-import styles from './Commodities.module.css'
-
-/**
- * Expiring This Week, version 3 — the version 2 short calendar (the calendar's first 3 entries on their days, events
- * first and on one line) in ONE card: each day is a band with the date as the card's grey left column, attached edge
- * to edge and as tall as the day's rows, and the rows beside it; hairlines between days and between rows. Rows act as
- * on the calendar page (option chain + ScalpPro, row → asset page). View all → the Commodity calendar (fno-38).
- */
-export function ExpiringCalendarCard({ onAsset, onOptionChain, onScalper, onViewAll }: { onAsset: () => void; onOptionChain: () => void; onScalper: () => void; onViewAll: () => void }) {
-  return <section className={parts.contractSection} aria-label={t('expiring.title')}>
-    <ExpiringHeader onViewAll={onViewAll} />
-    <Card padding="none" className={styles.calendarJoined}>
-      {expiryPreview(3, expiryCalendarAll).map((day) => <div key={day.inDays} className={styles.calendarJoinedDay}>
-        <CalendarDate inDays={day.inDays} className={styles.calendarJoinedDate} />
-        <div className={styles.calendarJoinedRows}>
-          {day.entries.map((c) => <CalendarEntry key={c.id} entry={c} showKind eventDetails={false} onAsset={onAsset} onOptionChain={onOptionChain} onScalper={onScalper} />)}
-        </div>
-      </div>)}
-    </Card>
-  </section>
-}
-```
-
-### `src/flows/fno/commodities/components/ExpiringDayPicker.tsx`
-
-```tsx
-import { Fragment, useEffect, useRef, useState } from 'react'
-import { Card } from '@l3/components/Card'
-import { Stack } from '@l3/components/Stack'
-import { ExpiringHeader } from './ExpiringHeader'
-import { t } from '../../copy'
-import { expiryCalendarAll, type ExpiryDay } from '../data'
-import { CalendarEntry, dayFrom } from './CalendarDay'
-import parts from '../../components/HomeParts.module.css'
-import styles from './Commodities.module.css'
-
-/** How far ahead the home's day row reaches: about a month. */
-const DAYS_AHEAD = 31
-
-/** Today's place in its calendar week (weeks run Monday to Sunday): Mon 0 … Sun 6. */
-export const todayInWeek = () => (new Date().getDay() + 6) % 7
-
-/** Days grouped by calendar week (0 = this week, 1 = next week …), in order. */
-export function byWeek(days: ExpiryDay[]): { week: number; days: ExpiryDay[] }[] {
-  const weeks: { week: number; days: ExpiryDay[] }[] = []
-  for (const day of days) {
-    const week = Math.floor((day.inDays + todayInWeek()) / 7)
-    const last = weeks[weeks.length - 1]
-    if (last?.week === week) last.days.push(day)
-    else weeks.push({ week, days: [day] })
-  }
-  return weeks
-}
-
-/** The pill before a week: "Next week", then that week's Monday ("7 Dec") — short, so the turned text fits the row. */
-function weekLabel(week: number) {
-  if (week === 1) return t('expiring.nextWeek')
-  return dayFrom(week * 7 - todayInWeek()).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })
-}
-
-/**
- * The day picker (Expiring This Week version 4, the default): the given days (only days that
- * have something, so every card leads somewhere) as a row of small date cards, scrolling sideways. Weeks run Monday to
- * Sunday; each week after this one starts with a thin grey pill, its text turned 90° (bottom to top, upper case, 8):
- * "NEXT WEEK", then the week's Monday ("7 DEC"). The selected day has a dark border on grey; the first day is selected
- * first (no count tag — removed 24 Nov). Under the row, that day's contracts and events, one card each (8 apart).
- */
-export function DayPicker({ days, weekPills = true, markToday = false, showKind, eventDetails, onAsset, onOptionChain, onScalper }: {
-  days: ExpiryDay[]
-  /** The "NEXT WEEK" / "7 DEC" pills between weeks — off when the days are one week already (the calendar page's week sections). */
-  weekPills?: boolean
-  /** Today's card, when selected, inverted (dark fill, light text), as on the calendar page's day list — the calendar page's week view, not the home. */
-  markToday?: boolean
-  /** Tag each row with its kind (Options / Futures / Event) — when the days mix kinds. */
-  showKind: boolean
-  /** Events show their figures (previous / forecast / actual) — on the calendar page, not on the home. */
-  eventDetails: boolean
-  onAsset: () => void
-  onOptionChain: () => void
-  onScalper: () => void
-}) {
-  const [selected, setSelected] = useState(days[0]?.inDays ?? 0)
-  const day = days.find((d) => d.inDays === selected) ?? days[0]
-  // The row's ends fade on a side with more to scroll to (data-more-before / -after → the CSS mask), checked on scroll and resize.
-  const row = useRef<HTMLDivElement>(null)
-  const updateFades = () => {
-    const el = row.current
-    if (!el) return
-    el.toggleAttribute('data-more-before', el.scrollLeft > 1)
-    el.toggleAttribute('data-more-after', el.scrollLeft + el.clientWidth < el.scrollWidth - 1)
-  }
-  useEffect(() => {
-    updateFades()
-    const observer = new ResizeObserver(updateFades)
-    if (row.current) observer.observe(row.current)
-    return () => observer.disconnect()
-  }, [days])
-  return <>
-    <div ref={row} onScroll={updateFades} role="tablist" aria-label={t('expiring.days')} className={styles.dayPicker}>
-      {byWeek(days).map((w) => <Fragment key={w.week}>
-        {weekPills && w.week > 0 && <span className={styles.dayPickerWeek} aria-hidden>{weekLabel(w.week)}</span>}
-        {w.days.map((d) => {
-          const date = dayFrom(d.inDays)
-          const active = d.inDays === day?.inDays
-          return <button key={d.inDays} type="button" role="tab" aria-selected={active} className={styles.dayPickerDay} data-today={(markToday && d.inDays === 0) || undefined}
-            aria-label={date.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })}
-            onClick={() => setSelected(d.inDays)}>
-            <span className={styles.calendarWeekday}>{date.toLocaleDateString('en-IN', { weekday: 'short' })}</span>
-            <span className={styles.calendarDay}>{date.getDate()}</span>
-          </button>
-        })}
-      </Fragment>)}
-    </div>
-    {day && <Stack gap="08">
-      {day.entries.map((c) => <Card key={c.id} padding="none" className={styles.calendarCard}>
-        <CalendarEntry entry={c} showKind={showKind} eventDetails={eventDetails} onAsset={onAsset} onOptionChain={onOptionChain} onScalper={onScalper} />
-      </Card>)}
-    </Stack>}
-  </>
-}
-
-/**
- * Expiring This Week, version 4 — the day picker over the next month (contracts with option chain + ScalpPro, events
- * on one line). View all → the Commodity calendar (fno-38), the day list (one card per contract or event).
- */
-export function ExpiringDayPicker({ onAsset, onOptionChain, onScalper, onViewAll }: { onAsset: () => void; onOptionChain: () => void; onScalper: () => void; onViewAll: () => void }) {
-  return <section className={parts.contractSection} aria-label={t('expiring.title')}>
-    <ExpiringHeader onViewAll={onViewAll} />
-    <DayPicker days={expiryCalendarAll.filter((d) => d.inDays < DAYS_AHEAD)} showKind eventDetails={false} onAsset={onAsset} onOptionChain={onOptionChain} onScalper={onScalper} />
-  </section>
-}
-```
-
-### `src/flows/fno/commodities/components/ExpiringDayWeek.tsx`
-
-```tsx
-import { useState } from 'react'
-import { useFlowOption } from '../../../../shared/prototype'
-import { EventsToday, EventsWeek } from './EventsToday'
-import { Card } from '@l3/components/Card'
-import { SectionHeader } from '@l3/components/SectionHeader'
-import { Stack } from '@l3/components/Stack'
-import { Tabs } from '@l3/components/Tabs'
-import { t } from '../../copy'
-import { entryTime, expiryCalendarAll, minutesOf, todaySample, type ExpiryEntry } from '../data'
-import { CalendarEntry } from './CalendarDay'
-import { DayPicker } from './ExpiringDayPicker'
-import parts from '../../components/HomeParts.module.css'
-import styles from './Commodities.module.css'
-
-/** How far ahead the week view reaches: about a month (people don't look at expiries further out). */
-const DAYS_AHEAD = 31
-
-type View = 'day' | 'week'
-
-/**
- * Expiring This Week, version 5 — no View all page: the header's Day / Week switch (an L3 pill-group Tabs, small, on
- * the right where View all was) changes what the section shows.
- * - Day (first): today only — one event and two commodity expiries (3 cards; topped up from the coming days as a
- *   sample when today has fewer, `todaySample`), as version 2's short calendar, but the grey block on the left holds the TIME it happens
- *   (an event's release time, a contract's expiry at the MCX close) instead of the date — "9:00" over "PM". Entries at
- *   the same time share a block (one card each, 8 apart); times 16 apart, earliest first. Nothing today → one line.
- * - Week: version 4's day row over the next month, but only the days a contract expires (an events-only day isn't a
- *   date here) — e.g. Wed, then Fri, then the "NEXT WEEK" pill. An event on one of those days still shows with it.
- */
-export function ExpiringDayWeek({ onAsset, onOptionChain, onScalper }: { onAsset: () => void; onOptionChain: () => void; onScalper: () => void }) {
-  const [view, setView] = useState<View>('day')
-  // Prototype setting “Day view”: Version 1 = TodayByTime below; 2 / 3 = Figma's “Events today” (EventsToday), titled so.
-  const dayView = useFlowOption('fno', 'dayView', 'v2')
-  const figma = dayView !== 'v1'
-  const figmaDay = view === 'day' && figma
-  const listVariant = dayView === 'v3' ? 'block' : 'plain'
-  const props = { onAsset, onOptionChain, onScalper }
-  return <section className={parts.contractSection} aria-label={t('expiring.title')}>
-    <Stack direction="horizontal" gap="08" align="center" justify="between">
-      <SectionHeader title={figmaDay ? t('eventsToday.title') : t('expiring.title')} />
-      <Tabs appearance="pill-group" size="sm" aria-label={t('expiring.view')} value={view} onChange={(v) => setView(v as View)} className={styles.expiringViewAll}
-        items={[{ value: 'day', label: t('expiring.view.day') }, { value: 'week', label: t('expiring.view.week') }]} />
-    </Stack>
-    {figmaDay ? <EventsToday variant={listVariant} {...props} /> : view === 'day' ? <TodayByTime {...props} /> : figma ? <EventsWeek variant={listVariant} {...props} /> : <DayPicker
-      days={expiryCalendarAll.filter((d) => d.inDays < DAYS_AHEAD && d.entries.some((e) => e.kind !== 'event'))}
-      showKind eventDetails={false} {...props} />}
-  </section>
-}
-
-/** Day view: today's entries grouped by time, earliest first. */
-function TodayByTime({ onAsset, onOptionChain, onScalper }: { onAsset: () => void; onOptionChain: () => void; onScalper: () => void }) {
-  const today = todaySample()
-  const times = new Map<string, ExpiryEntry[]>()
-  for (const entry of [...today].sort((a, b) => minutesOf(entryTime(a)) - minutesOf(entryTime(b))))
-    times.set(entryTime(entry), [...(times.get(entryTime(entry)) ?? []), entry])
-  if (!times.size) return <Card><p className={styles.calendarExchange}>{t('expiring.noneToday')}</p></Card>
-  return <div className={styles.expiryCalendarPreview}>
-    {[...times].map(([time, entries]) => {
-      const [clock, ampm] = time.split(' ')
-      return <Stack key={time} direction="horizontal" gap="12" align="start">
-        <Stack gap="00" align="center" className={styles.calendarDate} data-static aria-label={time}>
-          <span className={styles.calendarDay}>{clock}</span>
-          <span className={styles.calendarWeekday}>{ampm}</span>
-        </Stack>
-        <Stack gap="08" className={styles.calendarCards}>
-          {entries.map((c) => <Card key={c.id} padding="none" className={styles.calendarCard}>
-            <CalendarEntry entry={c} showKind eventDetails={false} showTime={false} onAsset={onAsset} onOptionChain={onOptionChain} onScalper={onScalper} />
-          </Card>)}
-        </Stack>
-      </Stack>
-    })}
-  </div>
-}
-```
-
-### `src/flows/fno/commodities/components/ExpiringHeader.tsx`
-
-```tsx
-import { Button } from '@l3/components/Button'
-import { Icon } from '@l3/components/Icon'
-import { SectionHeader } from '@l3/components/SectionHeader'
-import { Stack } from '@l3/components/Stack'
-import { msCalendarMonth } from '@l3/icons/material'
-import { t } from '../../copy'
-import styles from './Commodities.module.css'
-
-/**
- * Expiring This Week's header (all four versions): the L3 SectionHeader title, and View all as a Ghost Small button with
- * a calendar icon BEFORE the label (it opens the Commodity calendar, fno-38). L3's SectionHeader `view-all` action only
- * takes a chevron after the label, so the button sits beside the header instead — L3 gap.
- */
-export function ExpiringHeader({ onViewAll }: { onViewAll: () => void }) {
-  return <Stack direction="horizontal" gap="08" align="center" justify="between">
-    <SectionHeader title={t('expiring.title')} />
-    <Button variant="ghost" size="sm" className={styles.expiringViewAll} onClick={onViewAll} iconLeft={<Icon icon={msCalendarMonth} />}>{t('viewAll')}</Button>
-  </Stack>
-}
-```
-
-### `src/flows/fno/commodities/components/ExpiringThisWeek.tsx`
-
-```tsx
-import { Button } from '@l3/components/Button'
-import { Card } from '@l3/components/Card'
-import { MaskIcon } from '@l3/components/MaskIcon'
-import { PriceChange } from '@l3/components/PriceChange'
-import { ExpiringHeader } from './ExpiringHeader'
-import { Stack } from '@l3/components/Stack'
-import { inr } from '../../../../shared/data/format'
-import { useFlowOption } from '../../../../shared/prototype'
-import type { Contract } from '../../data'
-import { t } from '../../copy'
-import { expiringThisWeek, type ExpiringContract } from '../data'
-import scalper from '../../assets/scalppro.svg'
-import { TrendBadge } from '../../components/TrendBadge'
-import { trendLabel, trendSince } from '../sheets/TrendInfoSheet'
-import parts from '../../components/HomeParts.module.css'
-import styles from './Commodities.module.css'
-
-/** The commodity art on the left of each card — hidden for now (kept, not deleted). */
-const SHOW_ART = false
-
-/** The expiry line's day: Today, Tomorrow, then the weekday ("Thu"). */
-function expiryDay(days: number) {
-  if (days === 0) return t('expiring.today')
-  if (days === 1) return t('expiring.tomorrow')
-  const date = new Date()
-  date.setDate(date.getDate() + days)
-  return date.toLocaleDateString('en-IN', { weekday: 'short' })
-}
-
-/** The card as a contract, for the contract sheet (Buy). */
-const asContract = (c: ExpiringContract): Contract => c.kind !== 'future'
-  ? { id: c.id, name: `${c.symbol} ${c.option}`, description: c.description, price: c.price, change: c.priceChange, volume: 0, side: c.option.includes(' PE') ? 'put' : 'call' }
-  : { id: c.id, name: c.symbol, description: c.description, price: c.price, change: c.priceChange, volume: 0 }
-
-/** The card's variant: the expiry line under the symbol and the left column's label (the option, or LTP for a future). */
-const expiryLine = (c: ExpiringContract) =>
-  c.kind === 'option' ? t('expiring.tag', { day: expiryDay(c.expiresInDays) })
-  : c.kind === 'event' ? t('expiring.eventTag', { event: c.event, day: expiryDay(c.eventInDays), time: c.eventTime })
-  : t('expiring.futTag', { date: c.expiryDate })
-const priceLabel = (c: ExpiringContract) => c.kind === 'future' ? t('expiring.ltp') : c.option
-
-/**
- * Expiring This Week — the Commodities tab's section between the commodity shortcuts and the chart: a sideways rail
- * of contracts whose options expire this week. Each card: the commodity with when its options expire (plain text,
- * "OPT Expiry Today" / "FUT Expiry 3 Dec"), the trend since when it started, the option's premium or the future's LTP
- * (left) and the margin per lot
- * (right), each a label over its value, then
- * View all opens the Upcoming expiries timeline (fno-38). The trend read-out (top right, with its i) opens the trend info sheet. ScalpPro and Buy in the card's action footer (no fill); the three parts sit 16 apart. A tap on the card opens the contract's asset page.
- */
-export function ExpiringThisWeek({ onAsset, onContract, onScalper, onViewAll, onTrendInfo }: { onAsset: () => void; onContract: (contract: Contract) => void; onScalper: () => void; /** The trend read-out (Strong Uptrend / Bullish …, the whole top right) → the trend info sheet. */ onTrendInfo: (contract: ExpiringContract) => void; /** View all → the Upcoming expiries timeline (fno-38). */ onViewAll: () => void }) {
-  // Prototype setting “Expiring card buttons”: off hides the whole ScalpPro + Buy footer.
-  const showButtons = useFlowOption('fno', 'expiringButtons', 'on') === 'on'
-  return <section className={parts.contractSection} aria-label={t('expiring.title')}>
-    <ExpiringHeader onViewAll={onViewAll} />
-    <div className={styles.expiryRail}>
-      {expiringThisWeek.map((c) => <div key={c.id} className={styles.expiryItem}>
-        <Card
-          className={styles.expiryCard}
-          onClick={onAsset}
-          aria-label={`${c.symbol} ${priceLabel(c)}`}
-          footer={showButtons ? <>
-            <Button variant="secondary" size="md" fullWidth iconLeft={<span className={styles.expiryActionIcon}><MaskIcon src={scalper} /></span>} onClick={onScalper}>{t('chart.scalper')}</Button>
-            <Button variant="primary" size="md" fullWidth onClick={() => onContract(asContract(c))}>{t('expiring.buy')}</Button>
-          </> : undefined}
-        >
-          <Stack gap="16">
-            <Stack direction="horizontal" gap="12" align="center">
-              {SHOW_ART && <span className={styles.expiryLogo}><img className={styles.expiryArt} src={c.image} alt="" /></span>}
-              <Stack gap="04" className={parts.grow}>
-                <p className={styles.expirySymbol}>{c.symbol}</p>
-                <p className={parts.description}>{expiryLine(c)}</p>
-              </Stack>
-              <TrendBadge trend={c.trend} label={trendLabel(c)} since={trendSince(c)} largeSince info={t('expiring.sinceInfo')} onInfo={() => onTrendInfo(c)} />
-            </Stack>
-            <div className={styles.expiryRule} />
-            <Stack direction="horizontal" gap="12" justify="between">
-              <Stack gap="04"><span className={styles.expiryLabel}>{priceLabel(c)}</span><Stack direction="horizontal" gap="08" align="center"><span className={styles.expiryValue}>{inr(c.price)}</span><PriceChange value={c.priceChange} unit="percent" size="md" /></Stack></Stack>
-              <Stack gap="04" align="end"><span className={styles.expiryLabel}>{t('expiring.margin')}</span><span className={styles.expiryValue}>{inr(c.margin)}</span></Stack>
-            </Stack>
-          </Stack>
-        </Card>
-      </div>)}
-    </div>
-  </section>
 }
 ```
 
@@ -5099,126 +5207,16 @@ export function AssetPage({ asset, onBack, onChain, onScalper, onOrder }: Props)
 ```tsx
 import { useFlowOption } from '../../../../shared/prototype'
 import { AllEventsPage } from '../components/AllEvents'
-import { ExpiryTimeline } from './ExpiryTimeline'
 
 type Props = { onBack: () => void; onAsset: () => void; onOptionChain: () => void; onScalper: () => void }
 
-/** The Commodity calendar (fno-38): Expiring This Week versions 6–8 have their own events page; the others the timeline. */
-export function CommodityCalendar(props: Props) {
-  const expiringVersion = useFlowOption('fno', 'expiringVersion', 'v4')
-  return ['v6', 'v7', 'v8'].includes(expiringVersion) ? <AllEventsPage timed={expiringVersion !== 'v6'} pill={expiringVersion === 'v8'} {...props} /> : <ExpiryTimeline {...props} />
-}
-```
-
-### `src/flows/fno/commodities/screens/ExpiryTimeline.tsx`
-
-```tsx
-import { useLayoutEffect, useRef, useState, type CSSProperties } from 'react'
-import { Actionbar } from '@l3/components/Actionbar'
-import { Icon } from '@l3/components/Icon'
-import { SectionHeader } from '@l3/components/SectionHeader'
-import { Stack } from '@l3/components/Stack'
-import { Tabs } from '@l3/components/Tabs'
-import { msApps, msCandlestickChart, msEvent, msTrendingUp } from '@l3/icons/material'
-import { Screen } from '../../../../shared/ui/Screen'
-import { neighbour, useSwipeBetween } from '../../../../shared/ui/useSwipeBetween'
-import { t } from '../../copy'
-import { expiryCalendar, expiryCalendarAll, type ExpiryKind } from '../data'
-import { CalendarDay, dayFrom } from '../components/CalendarDay'
-import styles from '../components/Commodities.module.css'
-import flat from '../../flatCards.module.css'
-
-type Tab = 'all' | ExpiryKind
-const TABS: Tab[] = ['all', 'option', 'future', 'event']
-const TAB_ICONS: Record<Tab, string> = { all: msApps, option: msCandlestickChart, future: msTrendingUp, event: msEvent }
-
-const monthOf = (date: Date) => date.toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })
-
 /**
- * fno-38 · Expiry calendar — View all on Expiring This Week (Commodities). All / Options / Futures / Events (flat tabs with icons, sticky, in the
- * Actionbar's bottom slot). The days run from today under a month section header (L3 SectionHeader, content-primary: "Nov 2026", repeated when the month turns):
- * on the left one grey block (surface-secondary) holding the weekday over the date (today inverted on the calendar page — dark fill, light text — not marked on the home), on the right one card with that day's contracts — one day can hold
- * several, split by hairlines. Scrolling, the month header sticks at the top until the next month's pushes it out, and
- * each day's date block sticks under it for as long as that day's card is in view. A row is only the contract's name with two flat (no shadow) icon
- * buttons, centred vertically, the row 12 in from every side: options get option chain (→ option chain page) then ScalpPro (→ Scalper);
- * Changing tab slides the body with it (tap: the new tab's body slides in from its side; swipe left / right on the body drags it
- * to the next / previous tab, rubber-band at the ends — shared useSwipeBetween).
- * futures ScalpPro only; events show everything upfront (time IST, previous / forecast / actual, one arrow tag per commodity it moves → asset page), no buttons. All tags each row with its kind. Cards are flat (border, no shadow).
+ * The Commodity calendar (fno-38), View all on the Commodities home's events section: Version 6's page, or Versions 7 /
+ * 8's (a time per card; 8 with date pills). The earlier timeline page is archived (commodities/archive/ExpiryTimeline).
  */
-export function ExpiryTimeline({ onBack, onAsset, onOptionChain, onScalper }: { onBack: () => void; onAsset: () => void; onOptionChain: () => void; onScalper: () => void }) {
-  const [tab, setTab] = useState<Tab>('all')
-  // The tab being tapped, so the tabs answer at once while the body is still sliding.
-  const [tapped, setTapped] = useState<Tab | null>(null)
-  // The body slides with the tabs (the shared useSwipeBetween, like Market's tabs and the stocks theme page): the tab
-  // next door's body sits just off-screen on either side, so a swipe drags it into view and a tap slides it across.
-  const body = useRef<HTMLDivElement>(null)
-  const comingFrom = useRef<1 | -1 | 0>(0)
-  const swipe = useSwipeBetween({
-    page: tab,
-    canGo: (direction) => neighbour(TABS, tab, direction) !== null,
-    onSwitch: (direction) => { const next = neighbour(TABS, tab, direction); if (next) { setTab(next); setTapped(null) } },
-    slides: () => (body.current ? [body.current] : []),
-    fades: () => [],
-  })
-  // A tap on a tab. Next door: the same slide as a swipe. Further away: it slides straight in from its side.
-  const pick = (next: Tab) => {
-    const step = TABS.indexOf(next) - TABS.indexOf(tab)
-    if (!step || next === tapped) return
-    setTapped(next)
-    if (Math.abs(step) === 1) return swipe.go(step as 1 | -1, () => { setTab(next); setTapped(null) })
-    comingFrom.current = step > 0 ? 1 : -1
-    setTab(next)
-    setTapped(null)
-  }
-  useLayoutEffect(() => {
-    const from = comingFrom.current
-    comingFrom.current = 0
-    const el = body.current
-    if (!from || !el || matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    el.animate([{ translate: `${from * el.offsetWidth}px 0` }, { translate: '0 0' }], { duration: 280, easing: 'cubic-bezier(0.2, 0, 0, 1)' })
-  }, [tab])
-  const props = { onAsset, onOptionChain, onScalper }
-  return <Screen className={flat.flatCards} top={<Actionbar title={t('expiryAll.title')} onBack={onBack} backLabel={t('lot.back')}
-    bottom={<Tabs aria-label={t('expiryAll.filter')} value={tapped ?? tab} onChange={(v) => pick(v as Tab)}
-      items={TABS.map((value) => ({ value, label: t(`expiryAll.tab.${value}`), iconLeft: <Icon icon={TAB_ICONS[value]} size={16} /> }))} />} />}>
-    <div className={styles.calendarViewport}>
-      <div ref={(el) => { body.current = el; swipe.bind(el) }} className={styles.calendarTrack}>
-        {/* Keyed by tab: the body that slides in stays the same once it becomes the current one. */}
-        {[neighbour(TABS, tab, -1), tab, neighbour(TABS, tab, 1)].map((panelTab, at) => panelTab && (
-          <div key={panelTab} className={styles.calendarPanel} data-side={['before', 'current', 'after'][at]} inert={at !== 1} aria-hidden={at !== 1 || undefined}>
-            <CalendarBody tab={panelTab} {...props} />
-          </div>
-        ))}
-      </div>
-    </div>
-  </Screen>
-}
-
-/** One tab's days, grouped by month. */
-function CalendarBody({ tab, onAsset, onOptionChain, onScalper }: { tab: Tab; onAsset: () => void; onOptionChain: () => void; onScalper: () => void }) {
-  const days = tab === 'all' ? expiryCalendarAll : expiryCalendar[tab]
-  // The days grouped by month ("Nov 2026", "Dec 2026"), in order.
-  const months: { month: string; days: typeof days }[] = []
-  for (const day of days) {
-    const month = monthOf(dayFrom(day.inDays))
-    if (months.at(-1)?.month === month) months.at(-1)!.days.push(day)
-    else months.push({ month, days: [day] })
-  }
-  // The sticky date blocks stop just under the sticky month header: measure its height once it's drawn.
-  const headRef = useRef<HTMLDivElement>(null)
-  const [headHeight, setHeadHeight] = useState(0)
-  useLayoutEffect(() => { setHeadHeight(headRef.current?.offsetHeight ?? 0) }, [tab])
-  return <div className={styles.calendar} style={{ '--calendar-head': `${headHeight}px` } as CSSProperties}>
-    {months.map((m, mi) => <section key={m.month} className={styles.calendarMonth} aria-label={m.month}>
-      {/* Sticky: the month stays at the top until the next month's header pushes it out. (The day / week view switch
-          on its right is archived: commodities/archive/CalendarWeekView.tsx.) */}
-      <div ref={mi === 0 ? headRef : undefined} className={styles.calendarMonthHead}><SectionHeader title={m.month} /></div>
-      {/* 32 between two days (no line). */}
-      <Stack gap="32">
-        {m.days.map((day) => <CalendarDay key={day.inDays} day={day} showKind={tab === 'all'} separate onAsset={onAsset} onOptionChain={onOptionChain} onScalper={onScalper} />)}
-      </Stack>
-    </section>)}
-  </div>
+export function CommodityCalendar(props: Props) {
+  const expiringVersion = useFlowOption('fno', 'expiringVersion', 'v6')
+  return <AllEventsPage timed={expiringVersion !== 'v6'} pill={expiringVersion === 'v8'} {...props} />
 }
 ```
 
@@ -8606,26 +8604,15 @@ export const fno: Flow = {
     // The breakeven sheet (fno-36): Version 2 (default) = What is breakeven line? + the charges table,
     // no info lines; Version 1 = the sheet as it first shipped (How breakeven works, two info lines, no table).
     { id: 'breakevenSheet', group: 'Scalper', label: 'Breakeven sheet', values: [{ value: 'v1', label: 'Version 1' }, { value: 'v2', label: 'Version 2' }], default: 'v2', floatOn: ['fno-36'] },
-    // Expiring This Week (Commodities, fno-08): Version 1 = the sideways card rail; Version 2 = a short calendar (the
-    // calendar's first 3 entries on their days, View all → fno-38); Version 3 = that calendar in one card.
-    // Version 4 = the day row over the next month; Version 5 = no View all — a Day / Week switch (Day: today, a time
-    // column instead of dates; Week: the V4 row, only days a contract expires).
-    { id: 'expiringVersion', group: 'Commodities', label: 'Expiring This Week', values: [{ value: 'v1', label: 'Version 1' }, { value: 'v2', label: 'Version 2' }, { value: 'v3', label: 'Version 3' }, { value: 'v4', label: 'Version 4' }, { value: 'v5', label: 'Version 5' }, { value: 'v6', label: 'Version 6 · All Events' }, { value: 'v7', label: 'Version 7 · Upcoming Events' }, { value: 'v8', label: 'Version 8 · Date pills' }], default: 'v4', floatOn: ['fno-08', 'fno-09', 'fno-10', 'fno-38'] },
-    // Expiring This Week v6 (Figma 7030:9072 “All Events”): the events before their release (Forecast + past moves) or after (Actual + the move since).
-    { id: 'eventPhase', group: 'Commodities', label: 'Event phase', values: [{ value: 'pre', label: 'Pre-event · Forecast' }, { value: 'post', label: 'Post-event · Actual' }], default: 'pre', showIf: { expiringVersion: ['v6', 'v7', 'v8'] }, floatOn: ['fno-08', 'fno-09', 'fno-10', 'fno-38'] },
-    // Expiring This Week v5 · Day view: Version 1 = today by time in grey blocks (real data topped up); Versions 2 and 3 =
-    // Figma 7006:4490 “Events today” (sample list) — 2 with the time on the page and 24 avatars, 3 with grey time blocks.
-    { id: 'dayView', group: 'Commodities', label: 'Day view', values: [{ value: 'v1', label: 'Version 1' }, { value: 'v2', label: 'Version 2 · Plain time' }, { value: 'v3', label: 'Version 3 · Time blocks' }], default: 'v2', showIf: { expiringVersion: ['v5'] }, floatOn: ['fno-08', 'fno-09', 'fno-10'] },
-    // Event card (the EIA events on Expiring This Week and the Commodity calendar): Version 2 adds the event's trend
-    // (Bullish / Bearish tag) and a gradient strip at the card's foot with the last release's move ("Gold +1.40%").
-    { id: 'eventCard', group: 'Commodities', label: 'Event card', values: [{ value: 'v1', label: 'Version 1' }, { value: 'v2', label: 'Version 2 · Trend + last move' }], default: 'v1', floatOn: ['fno-08', 'fno-09', 'fno-10', 'fno-38'] },
-    // Expiring This Week v2 / v3: which sample week the short calendar shows, to see how the days split — 3 today,
-    // 2 today + 1 tomorrow, or 1 a day. Contracts only on the first two days; the event comes on day 3.
-    // “Calendar days” (sample weeks) archived 2026-11-24 — real data only (commodities/archive/expiryPreviewSamples.ts).
-    // Expiring This Week (Commodities, fno-08): show or hide the cards' ScalpPro + Buy footer (the whole grey strip).
-    { id: 'expiringButtons', group: 'Commodities', label: 'Expiring card buttons', picker: 'toggle', values: [{ value: 'off', label: 'Hidden' }, { value: 'on', label: 'Shown' }], default: 'on', floatOn: ['fno-08', 'fno-09', 'fno-10'],
-      // Phone app mode: a floating one-tap switch on the Commodities home, so it flips without opening the settings sheet.
-      quickSwitch: { on: ['fno-08', 'fno-09', 'fno-10'], values: [{ value: 'on', label: 'Shown', short: 'BTN ON' }, { value: 'off', label: 'Hidden', short: 'BTN OFF' }] } },
+    // Expiring This Week (Commodities, fno-08 / -09 / -10 and its View all page fno-38): Version 6 = All Events (Figma
+    // 7030:9072), Version 7 = Upcoming Events (7035:14545, a time per card), Version 8 = date pills (7042:19186).
+    // Versions 1–5 and their settings (Day view, Event card, Expiring card buttons) archived 2026-11-26 (commodities/archive/).
+    // Phone app mode: a floating one-tap switch (V6 → V7 → V8) on those screens; `?present=fno.expiringVersion` shows
+    // only that switch (the link to share — see src/shared/prototype.ts PRESENT).
+    { id: 'expiringVersion', group: 'Commodities', label: 'Expiring This Week', values: [{ value: 'v6', label: 'Version 6 · All Events' }, { value: 'v7', label: 'Version 7 · Upcoming Events' }, { value: 'v8', label: 'Version 8 · Date pills' }], default: 'v6', floatOn: ['fno-08', 'fno-09', 'fno-10', 'fno-38'],
+      quickSwitch: { on: ['fno-08', 'fno-09', 'fno-10', 'fno-38'], values: [{ value: 'v6', label: 'Version 6 · All Events', short: 'V6' }, { value: 'v7', label: 'Version 7 · Upcoming Events', short: 'V7' }, { value: 'v8', label: 'Version 8 · Date pills', short: 'V8' }] } },
+    // The events before their release (Forecast + past moves) or after (Actual + the move since).
+    { id: 'eventPhase', group: 'Commodities', label: 'Event phase', values: [{ value: 'pre', label: 'Pre-event · Forecast' }, { value: 'post', label: 'Post-event · Actual' }], default: 'pre', floatOn: ['fno-08', 'fno-09', 'fno-10', 'fno-38'] },
   ],
   // The F&O tab's parts, as the preview lists them (like the tab's own pages). Positions isn't built yet.
   sections: [
@@ -12346,6 +12333,16 @@ export const linkParams = (() => {
   } catch { return new URLSearchParams() }
 })()
 export const SHOWCASE = linkParams.has('showcase')
+/**
+ * A presentation link: `?present=<flow>.<option>` (e.g. `?present=fno.expiringVersion`) shows the app with only that
+ * setting's switch — no panel, no settings button, no install prompt, no other floating settings. On a phone it's the
+ * setting's one-tap quick switch (each tap steps to the next value); beside the phone mockup its values as pills (one
+ * tap picks one). For sharing a choice between versions with someone who shouldn't see the rest of the prototype.
+ */
+export const PRESENT = (() => {
+  const [flow, option] = (linkParams.get('present') ?? '').split('.')
+  return flow && option ? { flow, option } : null
+})()
 // A showcase frame sits in a page of phones: the app focusing its sheet must never scroll that page to it.
 if (SHOWCASE) {
   const focus = HTMLElement.prototype.focus

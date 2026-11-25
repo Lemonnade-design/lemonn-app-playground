@@ -27278,6 +27278,16 @@ export const linkParams = (() => {
   } catch { return new URLSearchParams() }
 })()
 export const SHOWCASE = linkParams.has('showcase')
+/**
+ * A presentation link: `?present=<flow>.<option>` (e.g. `?present=fno.expiringVersion`) shows the app with only that
+ * setting's switch — no panel, no settings button, no install prompt, no other floating settings. On a phone it's the
+ * setting's one-tap quick switch (each tap steps to the next value); beside the phone mockup its values as pills (one
+ * tap picks one). For sharing a choice between versions with someone who shouldn't see the rest of the prototype.
+ */
+export const PRESENT = (() => {
+  const [flow, option] = (linkParams.get('present') ?? '').split('.')
+  return flow && option ? { flow, option } : null
+})()
 // A showcase frame sits in a page of phones: the app focusing its sheet must never scroll that page to it.
 if (SHOWCASE) {
   const focus = HTMLElement.prototype.focus
