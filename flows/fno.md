@@ -325,6 +325,11 @@ sample signals in `data.ts` (`zingSignals`, `SignalFilter`, `matchesFilter`).
 - **Expiring This Week, Version 2** (`ExpiringCalendar`; prototype setting “Expiring This Week”, Commodities, Version 1 = the card rail above; Version 4 is the default): the same section as a short calendar. The calendar's first 3 entries (`expiryPreview(3)` in `commodities/data.ts`) on their days, drawn like the calendar page (`CalendarDay`, shared with fno-38): the grey date block left (today not marked, not sticky here), one card per contract or event (8 apart), days 16 apart, so it's three rows on one day or spread over two or three days. Within a day events come first (they're timed) and stay short (name over time, then the asset cards; the readings are on the calendar page). Contract rows as on fno-38: kind under the name, option chain (options) → fno-17 and ScalpPro → fno-05, row → asset page fno-21. View all → the Commodity calendar (fno-38).
 - **Expiring This Week, Version 3** (`ExpiringCalendarCard`): Version 2's three entries in **one card**. Each day is a band: the date (weekday over the number, every date the same weight) as the card's grey left column, attached edge to edge and as tall as that day's rows, the rows beside it. Hairlines between days (across the date column too) and between a day's rows. Rows behave as in Version 2; View all → fno-38.
 - **Expiring This Week, Version 4** (`ExpiringDayPicker`, **default**): a day picker over the next month (31 days) of the real MCX calendar. A row of small date cards (weekday over the number, 48 wide, 10 apart), only days that have something; it scrolls sideways and runs edge to edge (the screen's 16 inset as padding inside the row), fading at an end only while there's more to scroll that way (CSS mask, `data-more-before` / `-after`). Weeks run Monday to Sunday; each later week starts with a thin grey pill the cards' height (18 after the last day, 10 before the next), its text turned 90° in 8 upper case: “NEXT WEEK”, then the week's Monday (“7 DEC”). The selected day (first, to start) has a dark border on grey. Under the row, that day's contracts (option chain + ScalpPro) and events (on one line), one card each, 8 apart. View all (a Ghost Small button with a calendar icon before the label, `ExpiringHeader`, shared by all versions) → fno-38.
+- **Expiring This Week, Version 5** (`ExpiringDayWeek`): no View all and no calendar page — people don't look at expiries more than a month out. On the right of the section header, where View all was, a Day / Week switch (L3 pill-group Tabs, small, hugging its labels; Day first). **Day:** today only — one event and two commodity expiries, 3 cards (`todaySample`: today's real entries first, topped up as a sample from the coming days when today has fewer) — drawn like Version 2 but the grey block on the left holds the **time** it happens instead of the date — “9:00” over “PM” (an event's release time; a contract's expiry at the MCX evening close, `MCX_CLOSE` = 11:30 PM in winter, `entryTime` in `commodities/data.ts`). Entries at the same time share one block (one card each, 8 apart); times run earliest first, 16 apart. An event row drops its time there (the block says it). Nothing today → one line in a card, “Nothing expires today”. **Week:** Version 4's day row over the next month, but only the days a contract expires (a day with only an EIA event isn't a date here; an event on an expiry day still shows with it) — e.g. Fri 27, the NEXT WEEK pill, Mon 30, Fri 4, then the 14 DEC pill. Rows act as on fno-38 (option chain → fno-17, ScalpPro → fno-05, row → asset page fno-21).
+  - **Day view, Versions 2 and 3** (setting “Day view”, shown with Version 5; Version 2 is the default; Version 1 = the time-block list above) — Figma 7006:4490 “Events today” (`EventsToday`), three items from its sample (`eventsTodaySample`; user, 25 Nov): 9:00 AM Gold expiry (grey “Expiry” tag, option chain + ScalpPro); 9:00 AM EIA crude oil inventories (Event · “Bullish Trend” ↗, note “In last bullish trend, Gold has moved ▲ 1.2%”); 12:30 PM EIA crude oil inventories (Event · “Bearish Trend” ↘). Events may also carry the commodities they move (↑ Gold · ↓ Crude oil) and a “Last time, … has moved” note. In Day view the title reads “Events today”. Time “9:00” (Label 14) over “AM” (Description 12), 48 wide; card 12 to its right; rows 16 apart; the list 12 from the screen edge. Names Label 12; tags L3 Tag small tertiary (the grey ones in content-secondary); an event with a note adds a hairline 16 in from each side and a footer: filled bulb 16, the line in Label 10, the move ▲/▼ in Heading 10 success / error. **Version 2:** time on the page, pictures in a 24 L3 Avatar, 16 more after the first row. **Version 3:** time in a grey block (radius 12), pictures bare at 20 (the flag in a 20 circle). Difference from Figma: the header keeps the Day / Week switch where Figma has View all (Version 5 has no View all page). **Week view (with Versions 2 / 3):** the same vertical layout (`EventsWeek`) instead of the date row — this week's expiry days (today + 6; only days a contract expires, an event on one still shows), the day on the left like Version 2's date block (weekday, Description 12, over the date, Label 16; plain or grey as the version), its cards on the right 8 apart, contracts tagged “Options expiry” / “Futures expiry”, the title “Expiring This Week”.
+- **Expiring This Week, Version 6 · All Events** (`AllEvents.tsx`; Figma 7030:9072, the user's chosen design, 26 Nov): header “All Events” with View all (L3 SectionHeader view-all → fno-38). A fixed sample (`allEventsSample` in `commodities/data.ts`), two days (today and tomorrow): Gold expiry and an EIA event on the first; EIA crude oil inventories and USD Core PCE on the second. The day on the left in a grey block (weekday Description 12 secondary over the date Label 14; 48 wide, radius 12), beside the day's first card; every card on its own row, rows 16 apart (later cards of a day keep the block's slot empty). Cards: art 20 (the US flag: Figma 7035:9401 art, 15 in a 20 slot), 8 to the name (Label 12), grey “Expiry” / “Event” tag and the event's trend tag (4 apart, 6 below an event's name), option chain + ScalpPro on the right (the PCE card before its release has none). A note under a hairline: bulb, Label 10 line, ▲/▼ move in Heading 10. Setting **Event phase** (shown with Version 6): **Pre-event** (default) — “Forecast: Bullish / Bearish”, notes “In last trend, Gold has moved ▲ 1.2%”, “Last time, Crude oil has moved ▼ 4.5%”; **Post-event** — “Actual: Bullish”, notes “Since the report, Gold has moved ▲ 1.2%”, “Since the report, Crude oil has moved ▼ 10.5%”. Tag colours and arrows are as drawn (some red tags read “Bullish”). **View all page (fno-38 in Version 6, `AllEventsPage`; Figma 6995:25579):** Actionbar “Commodity Calendar” with the All / Options / Futures / Events filter tabs under it (flat, icons, sticky in the Actionbar's bottom slot, as on the other versions' calendar; days with nothing in the tab drop out; an empty tab says “Nothing on the calendar here yet” — the sample has no futures), each month under a grey band (surface-secondary, “NOV 2026” Heading 14 spaced 4 — local token `--app-month-band-tracking`, L3 has no tracking token; 8 above and below the text, 16 above on the page's first band), its days 20 below in the same list, 16 from the sides; the sample repeats in the next month as drawn, with “EIA gold inventories” as the first day's event. Difference from Figma: the dates are today and tomorrow, not fixed to Wed 25 / Thu 26.
+- **Expiring This Week, Version 7 · Upcoming Events** (`UpcomingEventsSection`, Figma 7035:14545, 26 Nov): Version 6 with the time. Header “Upcoming Events” (L3 SectionHeader, Heading 14 — Figma draws Heading 16; L3 wins) with View all → fno-38. Sample `upcomingEventsSample`, in the order drawn: today — 09:00 AM Gold (“Options Expiry”), 07:30 AM EIA crude oil inventories (Forecast/Actual: Bullish, note); tomorrow — 09:00 AM EIA crude oil inventories (Bearish). Each day under a date line (“26th Nov”, Label 12 spaced 1 — local token `--app-date-line-tracking`; a hairline to the right edge, 4 apart); each card with its own grey time block (“09:00” Label 12 over “AM” Description 12 secondary; 48 wide, 8 × 6 in, radius 12), 12 to the card; days and cards 16 apart, 16 from the screen edge. “Event phase” applies too. **View all page** (fno-38, Figma 7035:13357): the Version 6 page with these days, the month band in surface-accent-discover-light (12 above on the first, 8 below), days 24 below. On both pages the month band sticks under the tabs while its month scrolls; the next month's band pushes it out.
+- **Event card, Version 2** (setting “Event card”, Commodities; Version 1 is the default): an event card (EIA crude oil inventories, EIA natural gas storage — wherever events show: Expiring This Week V2–V5 and the Commodity calendar) also says which way it's expected to push prices this time — an L3 Tag (secondary, small) on the right of the name, “Bullish” (profit, trending-up icon) or “Bearish” (loss, trending-down) — and ends in a strip across the card's foot: “Last time, Gold moved +1.40%” (description 12 + L3 PriceChange small), on an up-light (or down-light) tint fading out to the right, 8 × 12 inside, 4 more above it than the row's gap. Data: `outlook` and `lastTime` on each event in `commodities/data.ts` (samples: EIA crude → Bullish, Gold +1.4%; EIA gas → Bullish, Natural Gas +2.1%). L3 gap: no gradient strip component.
   - **Event card** (third; data from the user's reference card, its layout kept to the option card's): a market event
     on the contract's commodity today. NATGASMINI over “NG storage · Today 9:00 PM”; the trend read-out says the outlook
     (“Bullish” over “Smaller build”, up arrow, no info icon); hairline; then the ATM option (305 CE ATM ₹7.40 +4.20%) and Margin Per Lot (₹1,850), and
@@ -542,6 +547,14 @@ The source uses old D2 controls alongside L3; their code equivalents are L3 comp
 - Section header size: L3 SectionHeader's title is heading-14 with no size option; fno-38's month titles are set to heading-20 locally (`.calendarMonthHead h2`).
 
 ### Changelog
+- 2026-11-26 — F&O home: the Equity / Commodities / Strategies ribbon tabs split the row in equal thirds (L3 Tabs width="fill" plus a local equal-width rule — L3's fill keeps ribbon tabs as wide as their labels; L3 gap).
+- 2026-11-26 — Expiring This Week Version 7 · Upcoming Events (Figma 7035:14545): date lines and a time block per card; its calendar page with a blue month band. Month bands on the V6 / V7 pages are sticky.
+- 2026-11-26 — Version 6 calendar page: All / Options / Futures / Events filter tabs back on top; month bands 8 above and below (16 on the first); the US flag is Figma 7035:9401's art.
+- 2026-11-26 — Expiring This Week Version 6 · All Events (Figma 7030:9072): All Events section with View all → its Commodity Calendar page with month bands; setting “Event phase” (Pre-event Forecast / Post-event Actual).
+- 2026-11-25 — Expiring This Week V5, Day view Versions 2 / 3: Day shows three items (Gold expiry 9:00 AM, EIA events 9:00 AM and 12:30 PM); Week uses the same vertical list with the day (weekday over date) on the left.
+- 2026-11-25 — Expiring This Week V5 · Day view Versions 2 and 3 (setting “Day view”, default 2): Figma 7006:4490 “Events today” — the time on the page or in grey blocks, expiry + event cards with trend tags and the last-move note.
+- 2026-11-25 — Event card Version 2 (setting “Event card”): the event's trend (Bullish / Bearish tag by its name) and a gradient strip at the card's foot with the last release's move (“Last time, Gold moved +1.40%”).
+- 2026-11-25 — Expiring This Week Version 5 (setting “Expiring This Week”): no View all — a Day / Week switch. Day = today by time (time column instead of dates), 1 event + 2 commodity expiries; Week = the V4 day row with only the days a contract expires.
 - 24 Nov 2026 — Zing signals: the nudge strip shows only on the first commodity card (no setting; every-card archived).
 - 24 Nov 2026 — Zing signals: the nudge strip's outline stroke uses L3 extra/gold/50 → extra/gold/300 (top to bottom).
 - 24 Nov 2026 — Zing signals: Rotating facts is the only nudge strip; the setting, Off, Gold glow, Colour per commodity and Dark ticker are archived in `archive/zing-nudge-strip-versions/`.
@@ -2904,6 +2917,376 @@ sl��-�""	d ί��n������'�O�gt�s:�#E>�_��
 �)_+���+M;`�oV�t�+�x��<Pw��������G'-���2u�٤�*�����ȍF<��P�)�؜ȗ�:��?�ȇ/��L��3���i9��mx�h�*�Jq&�U���Pʍ���M��vVM�Y��N�������OzP��j"�� �HS�5o:�    IEND�B`�
 ```
 
+### `src/flows/fno/commodities/assets/us-flag-event.png`
+
+```tsx
+�PNG
+
+   IHDR   �   �   ��g-   tIME�-5̼n
+  _9IDATx���y�%�y߇�9Uu��o��t�0�A,$�E\%j�vj���QL���8r�ɓ�N;��䟝��y�(;v�X)QERI@��  �����w��sN�8uow�� CM��po��K����.���
+k-�vh���~���n;��R;��R;��R;��R;��R;��R;��R;��R;��R;��R;��R;��R;��R;��R;��R;��R;��R;��R;��R;��R;��R;��R;��R;��R;��R;��R;��R��K����!�
+(��d2>)�'<|�C)�!R�MP-!X� @�0 �Dp�H��HA�`I� kR��l�����7!�<S��=�H�ý���f�2��g9Q_��R��H~���'��=/��,�7�>��/�s�����b���ƎZE؂�xXXl`-),��X��ݯ�X�-l�ݶ�����mU+�W���]O)�^��M��5��´�č&�N��|��7��v�,�$�0�� cF�e�Xk�Z��Xk�Xl\�M0�������"Z.Xx���=� �7���[70���6Ȇ1Yk
+X�֠�kЌqG�gk ��֭����M���m��
+��� ��>!�}B�t�!8��I�q�i@����\+w� ����2bmP�
+���� c�h0a�0n�#$V'+!	P��<Y� �����Rb
+%R!��J�O)�>!ՏI%�7�><��򍞐C ~��� �� 1a���J	�D<	ȬA� �$`���K���|�I����j�v����&@�B��	%V90
+��SX�a<�h�W�N���_��,� � �x� '��7�������}������tV1���d>a��`��^t	8u���kM^�Y!mLc�~���j�~�S���M�@+$VJ�-+	J!<<<��U
+�$Z*�G�����02�O��v'��7n=�Q�n�A�6�YC�Ew|���(�mS�g,�Z��H� (���+�"��J�vۯh�{q�����h�	[�FE`b��U����X��L�CIP���Z|J&���p@yh)��e4Zk�b�FS�(�?��<( G��v���_�Up+�q�a�Vz�Z�IV�H�V(�F*�l�*�2U{�3���"�HV7�<�6�8�X; 5��f[ob�ȥ�\.��!�E��.�U{V1�0R`}����Z�h��ML��i��;Ul+L�n��� Y�!�YD�R)�<��!�"*!֠ML��0Ƅ-L5r�
+��
+��K��q�����Xĭjw���e���0 �-T$+�06�ٿ��0i��@XFCC!��jaMh4�*���G����Bt�����}=�r	����Yɔ��v1Q���ML�ѹO��ޮ�̣�g����+���@E������f�Jb�!0�F�!D1�,8> �Xyf8��Z��eW�o�p�V��Lev}��I�Rc�����q+�4�a:�ٕ`k�n�H�l� �[�c�F[�c-d.����b��]AV�P�DoO�
+�TD�"��N4k�8r��"�kj�YŴ��0Ls[�d:�ܳ�Z!@J9����]]Ǭ���0sإ����e����G���ѡ[E�U	�w�z�ujB�= ~DJ�#RzF����E?���-Y7�Gp��!�U`k��Z�������A](h���Mbi�� -(m?��yr�*�V6��	c��&���la�M��#{��F��&��'��'��F�P]%d!�\��YvS%�n9_���0�E�����:I�$iю:���q�>�? L�w ����A�c�C�����e_���+�N�F�.�M�Τ�ٌ�)o k�c �Iַ�9���VH+�2)���J�*)�Bb��
+Ʃ��p%�P�즡nԊ�Dm��= B�am� �c�ѮbYk1Bc�x�J1ͫ�����"ّ>���7h�V��m��-�l����h�����B��;6�?1�71�72��f;�x��0ӊ0�ma�׵l_-сHJ�$��ɶ�2I�lºRZ��D�\�Zla�ju�@z^6����d?�a��-2g���2�s/R=u�pq���`�f#fb ��<8��p_9�����[<e�$()��+)��}PJI&���`[� �B�j�:�l&�� �k>���g����$]`%�4�{�B��
+WK6���wb�>R����k����3s;�)v��h�d�R$����Cl�;U@��㕊���#ClG��FG�Ɔ����`��Wׇ�.`�r	ϕ��Dx�����eb�ֻ�r;�z߭ �t�K;������"l��m6�H{�R)W�k�0aD����5>B��0�=Lx�<ͳ0s��,1mb^~m��~`�O�7BOW��}f��.lP�|%�$x�bL�N#d�7����� xH)�RP��I���-&(�]>�U�D��Jh	����$R�AtV���j��z���G+�S�[�Ӵ�# ���}���#G�s�B���?�ћl���T��֛��H�����F�Ϣ
+���#�xG��������\;8�[��y�+]���K������,&�0���"�ʚ;�V����FkL+�D��m��0���iD!�"��L�� ���l54��C�\�%��-D9�B��7��F��ZEon"�)���G��`D��PX��sva���K����R ��%��+z���^�V����<��R�� (�ĝfL%�O{,�7Ȥ<<%�:%�j����2�k�CM)��Z��I�0�2)>|O���b.��k|��%61��VBm�[����O~,~��f/�ܹM��
+�bAՂ���ך��I��G&���N�O����P��^��;'��籍9��P�>�L�����W�K+�+�ċ+��ċKD˫�M�-��&�����}{�3��v����͵)
+���#
+�N#{�Q�=��a�q���#�c#��.To7*��j��a�Y�m+��I�}� �DF���/N-��o<�G�� �nh4��S��Z�F�/||�|�(3ku�A����H�0�|G�XҾ����H���z_(�M붜ζ	�B���ϧ��|�3�;�]ء!h����|�X�x�Ė��VZ����X�R�����|��2���y�i��J���i�כ���� ������Ce��	��߻��ny���u��<M<=�Y]G�������cvv��U��Vk�t��Xϕ�d���MRC��o�g�2P1�$�`Rkn���=��U��<�ŗ0D(�r��������?H��Q��JjuQ�N�lLlXZ����R*dc��fhȦ���+S�<}f���{��J�����ɦ<Z�p��F#��>:I&P�
+Y��S�,WkdS^�b7B�@O�_���<|{/��7y������s[� �bj��7Oo��;wX��̬�l��w~�6�,��C��v�s�;��)JY�%
+5Q3$���0^F�s���j��A� Cx޾U�{�.�-��Ht�����&�Z�6C�I��s�.)��b0�|�$��^0���}a�U��x�b��7�ç�%��x�$�����?	�����_$|�9���Gx�#xw߁��N��'��2��q��obp/E�A`�f�!���^瞻X�h����S�������dX�j�Z�鑊��2�d�������Mr��Nc���n�_ΰ�r'RIIl%��"����O�sK<qv���cT�����W>�~�_�@��]L#P�9[�;������]��X���al�d��Ҋ��+$fs(c�M��`S��k�/�0@4����#�8E|����fe[ob�����d*�L�Ċ+R"{R*��7�:�28�������e��H@顔DH��%$vk�Ɵ}���_���Eml�����Q��U��a-؂��q�x�����_���/Γ-gx��y�MJ�9���l�5J�����a���7�L�Y6��XP]Ѽ�d�n��������_���-��hЪ��3Vfq�ɥ�:C�O��L+v �YkPɧx�X����qpb��c�-���6���1�n�s�w�B���m� �h�%�K3�ӳDg/_�"�]�,.c�IJF)d>��d!�ﰾ�<��n���cW���b����'S�g����Μ������7Q�]��'o��� m����s�<�]��}d��%�YW����
+R�4;��jC�K{l.l�G�(������\\����u��pt�@1�3�Rg�+�#���'Oϐ�������/�Q��g<
+���||�ٵ�����J�X[R������֊��O�g?qx��*o���)��iC��:�� m���;׾��"m^������_B/�`�W1�B%��L��A�x�+w��:�Lrt��J��i�i�!4Z��	��I��`��$�u���=�H����֯�ڨ���,Q�E�fk�@��� b�51��4;�������:��/�	2)ŷάb4���d=)�#C���ѻ��!�-����7VXܨ�	<�cf�F:�81\����S'(..�9=��R��Rc-�;!�Ov�?t'���(�VwBN^� ��:.�+VvB~�[3��C��wgy���M��RJьJ�@
+!�,��/a�]d����ˮ�����A�"�ve�\Y.�+�9\%��v4�rD�la�8i��Ϻ�]���*#�{ �r�/%1�SX�Q�ܭ��Л[��*�Vw?��ȵb�M�e��z�]!H#�yȦܻ�W~A�U���N�D &ܴ��2=��|��1~��9Z�DO���&�;�r�d�
+0)%��H��X_o����!�󭳫|��Y<)�/����V�m�E���`�HR)~�s/ЊO���dS'ϭsq�F*[���9~���X (�M����@1X�����k\\�r�?�@%��Z��F�|��C��_9�XO�Fh@*D&�ί��oRUyd.�̤�^�x����`C�a�ԛ.}!]b�t��R|�UB�T�}=��^G@��BVʈ�.D� �?l��WYI:�vW�8Ƅ���b���$�lvjD��Y�KI����YZŮo����]!�����hO7_���/l������{&��*�����\�'^��j����ʧ����v�}Bl4�፹m��Y
+����Hu�I�/O�]T��H���?���L����+<����"JB3�������_���7O�V�8>T��M���=9Z���j��B�S�[l�cBm��\�;�b�'Ϗ}`��~�q���;ON����ٔ��>���e��i88���s�56���S�c[-D.�,�&�]i�����B�VP�=��^DWQ."����Ě�>�l��c�鸁{{D���}�+���#O�6UDV��Os_�$�[�K.
+֗f�_~����2
+|l� )u�yS ��X�����m~��T#ŗ_^��x�ހ86�l5�g}�U>��	֫!/=;���"����9�L��Kibc��ź��cCE������_�#e���4C�6�\�'Җfd�����+�]��S��B�b6`n�Ư��J��gfhŖ��&ٔG>��V�1���0��N�N�Ȥ$_?�H1�.nJ�|���>�Y�JU�dUk4!����������	W=��E�*�۷b\���1Q���k��G��V|e�l���������U���w�4%�T
+������B�>��`m����ϽD�����Ϣ�V;BE�fn�$�j%å��7_Ai^8��H�R�ϓ�-Mw>��3����8��7k1S�&�_�H�.��vH.���É;��k���r�to��j�矞&lj^�٢����2D�旿�����̭5�Υ�J�U����O�Ӈ�ُ%��H��'�������|��~�����9�C�-��t��r���b�u����@�t;�����qob����x��.�r�s[vY(�:Ǖ�wb��u�co��s�$��Vr��&���g�|���>�a2˫����~�yN�:w	��y3�K���N.��3��g���<�[! 0�o�|���Mj������k�����|���HO��]�6�ί���<��~t�J>E�W�xy���ۤ}�|�'6�U���������GF���������H
+�����bf���Z�r�D|��7�Urhm����Dy|��o>~�?{y�ۆˌ��h�:i�w�]�ҔP�M��m4���P=�����?>�dorW�FK��{�&��$�<�v ;����
+)��qk��{GF��Q�����4�� `�_@9���-d6�:���Ƞ��|�Z̬��֋s����W	wB2���+�N=d��{�UJ\\��W�T�yJŖK�;<x����~�7������J$�>��lĚ���O^a�ҕH�*�R�	6����Z�S�[ ����>��ĸܟ�ְS3ę.D6��U&��=xGF������ ��(��*;��;\���o�}�
+��B��3�b��ϓ���n;kd�-=v�#F��MOQ�([� ��ޏ�"L�����lm9��@�� 8��k�6Y%�B�;f��bq��*��]o���u�뢜�� ���&�)+/]X�O_Z��;c����S��G]JC[��R����U����k�A�#�R�	=��j|��WhE�#}��S+5>pG/����W_:Ñ�2�ri%w7XG���Fo|��OP��N�;nßu��~a'�|`�*�%ۮP2�7�M����Fc�5����
+�V�Z'�a�&尅n��0t��B��ҩN	P>���}y�-G?�c#�|�/�bCG��6 P�g1GƋ|�CG��G���������_��E�Gz��*A�'�	��@)�Vd�=�@W����_e�������R3�dS�;>R�+//����*QΥX�n�������l5"޸��P_�K�Uҁ"��X��dR���_��$��o�{ƻ����9�F!��ʸ�=��`vv(��Ϣ�|%�n h׍��h�\u��3@�5z{Ǳ_���\乸L��L��B�����v	ic]�k�jI���c��.7�y�T�Q��)D!�7:��ß����F�u�e3��������F����E5(��3[�x���8�MT����G�!��|׍o-�T4W����A���|�u��<�wh�\1}yg�R6`u�	J��w�5���|��e����:)_�	����c�)���3\\�i��\%DZK=��Љ��'�������������%�_�J�H;Nk}��{�`�����/m6��ZB�Z&Z^#^^A�n`ju�z����`��D�k������e�sl������qi���&�H������d��,��F�H��%!8v�̽w�����kP�����Ƃm�Ր��
+5�hiAs���gVX\�#<��2Q=���E�o�G���?2A:��}�������~�Y�͘{�Vx��n�����HO�gϭ���
+/�+B���d�G??��	�/Y�l���u�']y�ZO�Y��ݧ����G92P�[gWY�h29X@ �4B�R_��2���i�o���j��D<5Kt���_�&^Z��oa�5L��^:�@* �w}��B�JȮr�'��������inO4m_THϱ_�ߡku"_���(^��-��*�/ �(?�*�I�u��=���� n;�,QJ �vv\�>8 [���2C��|�I~��E��m@O��F�'���y�h�c��TB�y��Z���?� ��.�:���楎�W��6#Mw.����qt��,����giEƑ_��4��9��3gW�����������T���.�z�с�)E�$}y�ٗ��ҥ�)19X`i�Ao1�/}���WΑK�h�h[W�횀{;�-�_�"�0Et���)��z����Gd�?@����X�7=�^0�������K'�6Ⱥ \E&/�B�����Z_#|�(�0c��w�~l�x��׃�eo2 -Զ|���ɏMrt���zb�'ϭ���ec^��I��AdZ�FyI҃�`e���>9�X������J�|c,Z[ҁ$��<��,��#���-��f)���j|_xn�ܨE�W�{�՝���<skM�k��9��6�E_)����^�$����D)��d���3�/���D�������|�Г��8�5fi���+_]�Lt�zn���\�Fd��B����{��+��w
+��?a�y��ӍP��:��Q?w�Mi�����q��a��w�D ��5^�����h��������[D�C�|���o���RT��|�1|%�ڟ_D��H��_��W��b����d��%	|%0N���.�xc���o��;���zc5�B@#44Z1=�4Ϟ]ef�N+6���t��k��O��`���e�fj�N&������C͑�<��'�fJ�����wۈĕ�l�ި״Z�sK��/��H|i���4z~	���X ��/R��ǫ���Xoe7�6X�u�vw�0�>`�FǮb�F�P��K[��-���x`�kR�ޑre4�^':y�����o�@c�Ր_�������+`-*��� �9%�ş�����$�ku���ח����q�-!x��*�|���:#e>q� ��⛨R�Fd��oM�cÅ�:=�R
+v6��?t�gά��5R�ߗK{�<I#Ԥ|������_���(糤����_�
+��zJ�$_|n�}�(��E�9��1�=���U�nP?}����S�g���l��8%�4F*pD�de�V���%�v�[!��p:0q�Q�2J ry�&˦Ld�d[��seE�h� �Zsi�V��0��B�!F�Ff�.ZV����9" S���7F�J{<��
+O?���]#���̭4�,2O�K�;�]��Н}<�'�79���J�N�����f3��8�_��$�
+T�i{}�W.l�M)�����Yy�x?�����3����/��w�5��I<�$dӁbu�ūS���@���pnn���"�PK>�Ɩ;G�|�y=�c�y�*i�j1(�*g����Ü}���6�9�CdӨ�tWv��	�.����p��9l���q�,.e +eRݓ�J	����ݎ�ߋ讀�a��kYі�);r����T�;�]����Z���.�xy�xf�1a66�qD@
+�9d6��;f� &IZc!Гcn�
+�z����n����j6j!��eJ��8�Du�N�7�ю��{�z#fz��}]L���&���e�}�]����$g�6��;���!��y�������b<O�	<bc٨��/_<�z��Y���&w�������#=y6j!��,87�C6�\=;���s�SCu�u�q�9��n�X�傐Zݭ�"�Ҩ�2~O�݅�$t��~��{���,��~�Urk�F��v�@�� [c\�$~�2
+!]�Ӥ����^\&�[@O͡g�sK��E��2��Sɪ�]K��ޑcy+`��5X_A�9:Qf��~~���ΓS<��4�;��v���'��3Rɠr.�lw�[@x�3�;|�y>n%_=�����Jk�5c
+i���XY���5��<�f�Hy�\k�v�iE�������f���S�WC�{���҄�����d�[�srj�L�*!��e�`��!j�D��Ɓg��i��B�ұ�SA8�cxN�C�t#�D!����.��M���VG�e_��^�̕�]�x���l!��������<պc�,���*�g^���)©yb�1�tRU���7��N�eAHV���O��_��c<p��՟緞����M�%�7��X%���osǽ����x����J������s���2�g���2���L�CG{x��*JJ��|��*��Go�W�RL��dc�����;��l��Rpi���$�]i��!���}�8���M*��4���~�vRm����v��aw#kuG�J�#���QGT8q���ܱ	D&}��$�����7o�m3k�2B�}���T ���n'����gi�>G��W�ϾH�䫘�i�F�nfc:�U!�X��)	����*��Z�o����x}n���=d�*	C�/?�w�c:���@	NN�piqǕބ�+/�S)�T��6\�o��]�O�K[M���|��
+��c������.~����?4��)��o�O�r_	��s)�V=��//��O�N*��W8}i�c�e��0��f��tk�u��q��5:} �|d���Q��!��Q���9�0'�^b���ff�[7�VH���
+��a��'������/�B�s�3�z�R�X38P$�)�����V�-���H��8w��Y�nAlPߑMq�!��-Z���!d>��:O�~�ӻ���Z��������9q���R�_�͓�_�RH��l���s�;Dz�JD�:����fLo1M32a��R:
+��}�uf��t�S���X�����|��~~뛗�+�I���}O�������TXd��,�M8����c��A���\پm&���i�'��A��k��� ��1N�֘���5t��|��܃��N��d� (c�/~�(}`���.���"������"���WJ#R
+m�k�K����Z�S�,�՗�Y[����;mn,��V��'�������QNMo��gf)ueQR��Sd����\�෾q���:�|����%�vm����~sf����|@W>E+�<r������
+O�Y��ח�R��a7��ILwԫ�1���O��{Ė�)�jS%��Ð�Юpm����wez�����Z���eQ� �TgU7fWS�F��ZaG��m-	���&ƘN�vs ���;��k���W��&����L��f��{��a3�� �V4g����#H!9yrY���7����"ͱ�"^1���ظ�_),���<�8�����ˌt�(Po9J�R.R����'���m>��4��XO�\J�0��_��;�����S��,n6�`�'K�������#��?q/�\�����?��s���6�_�y�G��78����TzšS��7���7#fa�h~�hq	So$l��E�I]Y��a��N!��e!�E䳈l��@&�$y���zQ}��sItk�8Q��J�^io* ��r������$)���H��^�W�-Cw>����8?��#�>���Z�U/]Xw�TJ0�� ��^�14R���2�>qQLc��}�<յ���\�fn�����c��9���Pw�W�6� �If��T���?{?����W��)�O�tc��_I�1��33��G'�k,�ӫ���f�;�V�("����H�ݴ�ް�f�����"^_'^Z%^^!�_r�W�cu]�;��z=�r���h�ݗ��]��c,1�E�2͞[ѕD��Ηƛşp��`�hU)��F���|� ��x��_f��:�`o��U�̤#T�XZ�F�w��z��+�ڌ��/�2� �áцO�w�������V����x��2�'�,��M:���G+���>��o��yb�?yq�u�)�<c}��N�\����n ���"���ɡ��k
+i���[J���������q�P�j3�輘�M�ސ�쁁��թ�S��5�u��zc�����q��(r������!2)T&��.'�݉I��F�m1Mkƌm�t�N[����`�5Z/�J���<A
+�/���L�����H��=ȉ�JryQݹ����a����B!��3��|ƕwvZ�K�4Z݈x���.n`��K/γ��$]J'�"G��5"�)��|`�޾.�����{��i<�IX�-��v�������Y忙z�f�)f�vJ���c~��S�Wx����&�N�+�_Iƻ2�_�!����_fy�ɫS[t�|%�oB��>�mn]�r̘s��]D�./,aw�n�i7��m�h�,����]���IJּ�9���n�_�2��Uw9R#\R���'���{�?>������Ct�(��ފcR�n�B���(��<Ld��΢1���(+�!_��i*���;��׹}�H!�IZ$֖(���>H���\��7W��"�f�W_��<YAA��I��|���ӫ|��{+<yj���rڀ��|�fS��X��W/�����p�J.�F������￝_��7	���Jk�����w���Pzy&Q��!:w�xj������Gs�����L1��.yq��tN�C(�LȒ��$��M�_z���_%��zd�ڑ�m�xCz�w��nK*��!���+�o�mS�Gϭ��k�`j�J��"�hl7ɕ��=V��sk GGJ�o_>����S�-S-iCk�+9v�1;͘��'/m�Ͽ��v���0�Rgyn���$�\��}����;�
+R���bߓ���G���w;�m�ۇ����z������1�:��ߢ)ǶB��Qd�g��fQa#a���t
+�J�{�re��ޣ�/}��뽎��\U,�K+l�v���/c�yTO~�g���n�g��ԓTZdJ��Z��S����{���_;�D�yD���6�5_q��n>tg:�����Sl7c./Uysf"�+�[��0&5��'����y��:R�<3�E���)A9��=4�/}�8G�
+*����@�M{�4c��m��n[��\�K��2�_@
+A���N0�󖥂;�Q��uy����󗈧f�g�+��t}ӹ"�A��x��M)�_eZ;}2!�4��!����6�v�6ϥ�X�!PX�@B+E�=�LN:H*�ͦN�����9�8�6�K&��hZ8Va�&���B��I)~��d�?Ϸ�X���$Փ���$4��y~���dl�@!�����,���edN��es��÷w�K�u?��1�{/��O���Β	����7j!���=� ,n����=Ŕ�;c]�XV�[��s�Z3DZ3ܛCC������o���n�)f�����,��'N��HZE�i,�r	*]7l6i&B��6��V����R�ޚ
+��z==Ȟ2��ۉYۙ|�TcP��c�llon� g'�e��z��C����Y��B�B9d*�M�E�mLx���0��䧾�8���m|�U>�Ԡ�xcf��_��{���@�\�Ol@C:�k�=5�_���?��K��y��%2�Y�&<=�K^9���.ȗ*��"c�(6�3��F�	�����"?��<�Psy��4ȷ������O�o�q�.�3џ���Y��I������K������!�JQ��/c/?K�ԋ�fQ��t�ߍ	�rr'�A�Bi�q������ +]N������A��8���7��sCl�ܗnq�E۶6�ޕ�M��V2��=�+��.]�丏S3�Ssص�N�x��>�\@�ˠ�w������3ku>|Gw����d��~���&�R�m�Y�j�=��:��#�g�Bpd�Ŀ}�����T�)R�T�׌4����Iv1�^�����$�F�@�m+Ը�z�\�'�������u�)ѕ�]����^�-�o�v����-�a�xo�f�]����ҧ��{�x��^~�s/���uҙ���*C8�J;�yG��K����c�"�wCk���z+�S)#z*N��� )eGso^�3��ZC'�1�cØk�ap�(�(�QE'&��$�=w�R�[��-�Z0���_B_�&~�5�s���&�Ŗ
+��xe�ƂO�Yy��e2�����i�Ȥ�+<�8��/����O>0D�����?�םe}���<v	����|���&A��k����ޞ����?��S)d�ve��Gby��gW*���5�� �����)>pW���|����O_������������]9�؅����i2��4�ߠ���:�\��\A)D&��v�;�㍍��6鸀�z�=`�Xt;��̘v��;��д:&�k�,z{����k�"��2�+oP��ϟ�q�<zm�����S�� �̬���_{��=4��$V�}��B@�r�#c����c���_>���A�Ce-��,c�yn,�����u6k!�P���6�J�����Z�H%������<Fl,���o�mӪr)�\��ڌ��}��n<��+�ryӱc������o4x��2vr�Fs�P���Ɓ�DǮ��l9꾵�L��9p���F�OǛ�v�o��'��6k���%�z�xk���}T.K���I�{?Afv�W��}��˯^�r��� Zח(Wk 2|��9��,2��ʓ��"�������f������R�d;	��ъ9֟����<p��ۆK��/��+/͓K�PR�IIj-��?��}��ǎ�5�:�ɓ�W<��}OҨ���S|�c����sk�l482P���6�z����s<a�BƧ��"�R���l��5[�"Qk@!eRor������v��~��q�����1�z���r3�� ����o����N͠��T�D�`v;"��z��ߣތ�WF;P��C����Y�jьb��]�
+�/��s���I��3|�i2�T' �|��ܹ5���2?����Y���Po%	�Wֵ�r|(��������*Y�]i�l�#�7[v��H��@E54T1��u�)t� ��o���cx��(.��cn���δ�ߵ��T}d{<D��&�Fg�][��$jZ;�T��Jg6q|ë�Ct��^[��xÃ��G��:s��3���ɹ�-�-Ǽ��L5�B��)(7�/A���ysf���.��16R"ӕ�h{ݼ�'˓�W�ֹ?��(ue��`��
+)"m���v�.�X�ju:
+�V������s�hk�]kP�ĝ�h���"���$�1yRQ���R��e��������qG0=`v�]Y{�B�����o�J��M��&�چ�&�2	��D1��B7[n;ͤ�"�s�
+\ĝN���4*8J��n����Ak�>sJ��ZQ?м�Pt���ជ<r�cs����ۼty�gV�]�R�l�Y'i%,�+��k�Sꪊ��ܜ��~b��J���2����_If�J)�����M�J!��T1�\�E:na&�' �������Ed���,C��H%ñ���N�uqd���`��@��]gp�n��@��7[����FB�Z!�_"^X"ZZv��W�W�0a+)z��+����1�R�ӮM��&	�T �j|ĩ������Q�,*�Fz
+�h"j�d���`�i5Z4|9����N��O���V���'�\��+\\ipyu���V�d6C3�N�T
+���D�����@��j���<�aW$!	ı�T̂�DX�ZǬq��&"r���
+*)IɃ��`w���4����,G�L�������+���v�a:��NAau�1`VV��W��V3fs�x}���#��E~�<ǐI%��V��FI���N�F�I��7��sCR�h\aR"��@5<�?1Njrl����wގW�@��X^�$�� p��a���q˒/���?��;��(�������K�\��dzi�K+u.�T�ێ�
+��-�Ȣ�U$����+���d���s+�����e=*)E9%�-���K����Wr������]ɓ)d��q�v��0�r{m�ћ�V�xz���y�K3���Oͺ��;�j�%��h�"��F-��nD�)Go/Nt�k�d酧��K�gWU�ڤ[.�ݔ�sh��S԰(/���K�;I�}�{��jx ��لz��`|W޳�5;UjB"�$���wU��N�#i�5ͭ*��++;��ר7#ꍈZ#f��ӈ��4�f����J�)��)<%	<E�w?gS���]Y��r�#[�@6��5?V{j��viB{��7�﷾�^X&<s�Ս/^&�0��k��0r[_[ (��+��U]+Gצ��S	^vw��j�t�
+>"�B"�By���Z-���ƣ�#��'��{ͣ���.dW�	�����Ӑ{�Oe�%l�D���l%�C^�*��(V�����.�ږ�����3K�j�Է�%��v�#�G���!ִ��(�	����~<5��֖[��!�4�V�jSo$3F�� @��ϱD�y3����o�<:i�ɠ
+9���qD��Ԟy��|�j_7����|��o���5Y*�,xڑP����1q6�}��R���B��r� ��|>�$"�ڝ���FX��\����լ��̵K���i�9���\p�ҙY7���t�D:����z3�k��ެĲv��N	����M��l��"	(���d�oG�7�%A����8Ĭ�њ���)�_��o���֯�s��0���¾��=	;��U D��ل�������-����`7c�Lʇ����&��g��_$��#z�,zz�xv�����i��nn��є7ɬ��v.�Э� �FǐJ�Z�4(�TP%��j�@�qUX%ѵz��m&$�d�:DBI
+�RN�& Z�U�1�rY��|  F��i]:G����C#��܋���Q��̉�BM�f�E��w2���d���v.Molњ�'>s�xz�Q�/�`�W0�kn�Q*�\�L���<��1��u��۲�&�]d�w�k2�Eu��vLo7��ٛ0c��!�r��2X�Hĉ�f�u�mW]O�ֶ�vj�z��C<=��4�W1Ķ�G
+�;*��f����91]��Q@j�^Z������/�%w�=dy��w����!T�bI+����=ߌ������3�yIa�oi��i4ns��F<5�N�eG45��حml���%,�t����k�dk�m	�V�
+Q��"R)TO�ߋ_�#*edO�SAt;�"Q)wni��K�&�a�X�h�ncR{R�5�#N$X)��J�H�{�lŘ�m��M���[���Зg03��af��4�\�v~;�0�*�Y<UB%#9�_�*���^�����%u|b��"��H�sdO�Cz>`�q�L�;�!�	B�L~N&��=vߛ�l����涣į����K�8����c�6��q&�:�U���`϶���o���_��՜_�;�5�S!u�q�#�N+��$�`?�RB%3�|N��0���M���@�Dפc])�X��������CH�sJ^�llb��^z�����^?�^XFK��x~�����z`�,^.��c�)w�<��C�]��k���P�<�T�+��2�G�sne.�ֱ�ɔ�D��lW���u�ʪ��V�1����m��6�Zu`�"J�(4�B�7˷T�4��\��	Z$5UF%,�D������=xc�nt��qwt�/աaud���_�+s{oy��/dt]���n,����D&���!��O����a��i�q��s/ó/Q=�:fq	�ț:�՘��m>�XR����F/.>�RR� ڑn�#�d:�ʤ��4 ��դ߸[�Pa�I�ue!!R!�0�Ur���ߵ'$�+�	���f���N��*��	JG����jd�:�}[�@�.(Xo��uP�`���o8����S_�����=��^7A�œ4�<��_<�k��^���Z.�����f3ΧbO^�=�b��l��ީ%*���(������*!q
+ٞ�&: ۍ��>"}��`�Ղzөa�12P��x�����31�t54���0�k8X���k�{A�i��9wg#e��h����^�}�m�oa�7��]����ɖ?������M��^��@ty{�vv���ƃ|�EiINi��~���_ی���ʔK��IlI���Z|2#ͶZP�cc�L����^�����pG��^O|���v���vjG��҉I�\�fMD�t�m�����i6a+['&���t+��bl���5\��o��������1Ʊj``��z�!T�Iic�̅)�W߄��k��s?]t�Ԟ�O+��ނ�[�����^Ҷ��<]&s|�F���\����1��'��ڰˣ]�u���:�	hσ���R������m��u����z"N�H<��4b�3&Q�2mzVa�(I�����Qt�d�n�@�J�b \EN�M����Ij� v�-xmÍ��f����|���x���O=w��ԛn���$��T&�l �m����N��z���#�d�I��©O:��|.ԗ��s3�&�	��A�%�z%7���-ظ��t�,�7��W�Ыk�+�N�hy�xiŉ�mo�8��M�]gmR�H�`�$r��M��� �+ٝ��(�n9�H��?o�5>�t�`b����aD��W);�h{�Sݷ�ߨݘ6L��cm��E�;�>�~d�E<=��_"�4��<��<K<5�YYuc��U@!�B�v]W"�k����M��W��F�#Ѿ�B�]j��O���\���uC�z���{P�x}��nT��*�RpͲg.ܕy�w0����v��f�hi���y7�af�����mm���N�xk�m�J�mR���ɖ�����5�=��k��6�ŉDR�#	6lc��i��`�}�d	���z�G�H� ���I?t?jx���󋰱qÁ��j��xR���M��F�S����q�'?���U��fi==���sy�Z��F��j��M2� �<�R��$]
+@(�(D��*���z��z\P�SA�v��Go�\Dd�H�G����wkq��4*��|#	�v�ŵW�xc���]�r�m��/\"^Xr��E���lB���^>י9|%����{�� {΁��3��V�N}K��)�`��s�_?KS?J�_��m������ķA����Y������So��b�;�V+�N�ZJ��Y���u#����%j�Bk�=����6���F�Ŵ~;a�\�V*��� �F�
+�t���ӝ��V�[N&�Mo�X���F��U�7Ds��s��w���<�������+�*K����4���?�=H�o�t�}��}��wI��Z��H�EJ���,��O���Q;>N��(��8^�MX-�EW�u'�߻*^��.�)B��/�&I�H��(O��R�Ӆ�}W)n���k�ls4mrQ�.5m����\�������Ԅp'���^�YK45Kxq
+}i�0��_$^\q�y��\ȹ�lwŹo����i�,�?l"�{�v?\��b��U<�z��JX�inm��������r�\?�co����_�-ԑ��܉�o op%��^#�z����#�P�AG��* ���F��oe��]M�01�n4ݪ�IFg���K�l���sۦ*@����wo�8�B�����%�1I�״iYI�a0I���uzg�L�S �
++��ҞN9�{%������b�* uLED�.�������%Q����<��������J"����2��@y���:[延=@m}>��Z Z^u���KN���4��WS�؀zӕ�R��B�B�{.�;�ݳ�ı+7F��d� L�)
+W[�e]ed��ҁ�$	�@8&�#$x
+�hL���7({s�Su�fӱ`�e��DyD>�JW|��$�|��<�*���@�N�'�|�	t���}w����d���S�懲�!k�`GɤF��b���F�~���@lWID2� �j��Χ��D]�:P��;!ɋ�Ŭ�f+�Z�6Z���'�]A�{�N�A+W�͸�p�Z�4�.hK��H���"�T�/����:z1�҅(]�]vL��j7ƶ+�4��q��S�2�ЩD�'�7\����^�r=+K����:��Ctu��y������ۛ�N�j:��($6�h|󛴾�����xcC��G'�G�ƆP�}�L��8 �I ��|��.�m�9��6�P�:�\�ˌ�}d8���7�V��m��fc���Y]G/���]Zhc=��]]s�w#�)�?��u����}f�sS�hW��S�Lƥ��s���;1��
+�R�R�̈́+�J]��P��r	�V�%��0cں1m�>Ft\�VK�P�,�����;�x�U������8��<fz���7U�����b�u=ޠ8�q>-.4O�P�,
+qD���4_z	���\��wt��#�c��T>�*擼]��6���&d'W���։*j`�W1���bm��_Yì��Wֱ[[��*vk���c\�& Q.u�ז�D���iؕ�Hƶ��6n+*�P�2��w����)J�'�F�]�!q�~܎
+V��.���^�'��xKѡd�rV�i���V�B*Tw�{�E���<���i<�"�_�~��Y�>&�
+7����������@"�QHti���y���#P�M�2iD�~���Pp��圻�]p�.�c:�/�vg�S��j؝�KN'�ö8���'��}a�0mЈw��Y��M����{��nG=M�F��M8a���;�w5�Q�o��hp����ԇ}���� i�����0�E��`7���@��X7��..%����z���d���L��=�2񷞥q�5Z3s�յ�@S�t�E����\���v�FH�n��e�@�g�h�خb�����4I/�H*�9Ѳ��"J$ ��IϤQł[5�)')�wд����.�v��{�v|�Q����	�������9������SYٻEZB%#�~�b��zn�l�Q�.h�:v�	��N��t
+�I��5�cC�A������k�֍.��5���t���G�D.Ӽp	=�p� ����'��Ş���ZE#���rjx���k����r���oӧv��Kպ��Я��|����u��DA���f�����4���Խw:�B"L䍏⍍ ��
+l�Zw��-n_�e�R
+����_�v��V�xq��I��I��F��F��B��J���^_'^YG7nk�1&6�_��ĴY1A��_"��f��u>��g������0�� ^�c����s&z��/R{7�wv�X��o?F���o s��4��D-���[$s��ċ�Xb�T�i�ꪒ�5/��ǹ���^�w����֚ԏmⳙZñ<rYd1�(��⍏�u`SÃ�Ã�t1�N����߇u��b����9t��^\Aol�m����W��W	���&��"Z� ��� ���c���1����Ƕ��'�Q�k�n��W�uW�9P/W�� 51F����QRc��#C��>�j�;U���Řf��?�Y 4kX!\k��G9�'���|�<�s/��
+zf���@!E�JA&�n�q+Wr����;M��(BD�"�5.�a���-`b�1b&F���� ^weQ���Q����D��W5��M4�@ti���,��ˮ�����ֈ����-׽�@[�������0�"�4�a�:�.��%2W����-x
+���Xw]d�.?*�Q�=q�4�q���"��n��Ar�{��ƿ����� �lnv�&7��Ƶ�-,�+jx�܃����g�S��o�E_�I���s���J���@"ERd��įQ�qV~��pb/Z��D7� v@���Z�T�RY,"�	��zP}ݨ���^T_�#���r�}=��Q���h_�9I!:I���u�^Z%�[H@6Mxi�hj�hy�̀�7�)����x
+[���Ώ�:�%����K@���}k��;�g�[zKH�SkNޥ�6-Z�$_j-R$k�����<���JKksoi��������!��(��;1�� �L|�l�=X-�X�4��Q��v�8t�3U�"��Gf2�Vj��&zz=;O|i}qʩ���n�l���5С�D���	BH�����i�b5؇�*���r倥z�񺻐�]x=d��J���
+�`�(�6`R�r��]��V#�[ �] �p���4��,��,��:�N�u��S�tʁ�\@WJh�H[����&�X�0c�x,�6�[ClИ$�	�l���:zn��䜋N�ݢ����[��ݰG/d3��o,��ѯ�N�
+h�Ҝÿ}�`l��&0:s9Ї�Guw�,�H&��Z�qؒ~�y�Jot��@%��|�����pl�ZH�s�6	OP��+JuX$^wU�r	�T�n������5��H:Q���������:���i�hk�xz�hf���e��	g�f�v_3D�!6`��mV�h����]��u�*�mM�o	��+�5���q����Z'�]@�{� $
+[vo�o�7���SU�]�=CS	�/%���� �bC�<T!�-���P�ܢ���xϼ����~s ��O�wd_7�;o'��ɽ���Ǒ���fL���o��c�.Ԯ���LUȻ<����.��\�!,$ڮ�v�gWa�#�u����)W��\��.͈T�l�qD���̩Y�D/;�m~�xm�Xk� �f��|��C*Cl,�D�	xb���� e������& 4�v�U��奝8�s?��0f;��u���E�l�BP�`����ܸp��OVB�C�·�4� �)0B>��#��܂�эf.���1��#D�G鑇ɿ�R���=���t�W�����F��_0��5w=e����[��.3F
+�,W�U����F/�^�"�4Mx�)&DsD+knj��{�gK�1�e4�
+���;�#�Ǎ[l-ar��R�q�Ir�����,������a-kf�e����%��FR��9��#�0`�X*�������<V��ہ#[�0B#hX���Z|k�r��d�����Ly6��X�ǈ��Ԧg�/����/�'���d`r�`x�?�@8�"D[��$'d�M��v��ש�\�jq��t K�J��Hc6��[��MH���<������D�� �����z��&[%�8;~X��f�Ł�X"t�e��n��V��4�v��U���`���E\�ͻ�M`� �7`�`��b�4VLZ�Q��Bm�Is��gM��L���+��[h���!diA/�P��P_�c� ��S!56L*ʒ��rM?�r�5�l������ft��K2�o��	��:�M�!���9�mnc77��kn �ʺ����L��objMtb����n�Z�a����p��M��6�lP��@�l�Q������N��ݷ�,o�W�S��k�x�ນ����y,���V�O!�k�۳�������@/r0 &Q��R�bmLl���4���Y����M���g���C)��B0<��Uvbץ�X�+\D[,v�DB�o� &	K�V�^[w []w���m����z�5�hw E�� �¦��R#\���l���ϻ��.ko�{���E|������px=�?���?D��4� ����-|�X�)c��Zt����8 56��M��DVӲ����� Nm�/�%Cf<��4�Z���DF1^��#a[�sP�*�q��W�غH�U��ͤ�u�%�4�\�#�\�\�W#6#\NL���V2lg�p+���;γ����b�^��38���W��m�&��!���ok늃K�t���X@������@+��O(|�rHJH��PA����c�m�2�A�Y# ��&h���<E�Lxl�1w\67i� FX��H�Wn�����l*�b�W���픰�к]��0-,��S^n+=����ʹ��
+!4,��h��2�I6 �uwS�0.g$�0�<!QB�	�'
+��BGxq?!�*��&�FΏ��'\�9 $�iF�]� ��nKl;�.��%�[�<����Ӄ�=�n�<��4pR.
+8L�����n��\r����~�
+�	1�suDK�&�#�[�p�L%�aR�P��l����9�:jZ�	M���A�l#�j�.����0m�_\��̊=~�;�i�og@�\ .kp=�wd�tL����a�{�Y��T�y2.˞�v��r�J���_J�Q;m���,��U�vǗhGd���M�X����9�p���%�͘�7|.9 *X��&�e�`e��j��%��n>p�����;�6��5!ذ�e\�9+����$\�vXP�?ڭ�oǘ�u��� @@ ���a�Y��`� ]z���x��
+h!�I<�~����@6�K�.��u�f�O�>�C�	v��vh�;��R;��R;��R;��R;��R;��R;��R;��R;��R;��R;��R;��R;��R;��R;��R;��R;��R;��R;��R;��R;��R;��R;��R;��R;��R;��R;��R�� �e*�𶂉    IEND�B`�
+```
+
+### `src/flows/fno/commodities/components/AllEvents.module.css`
+
+```css
+/* Expiring This Week v6 · “All Events” (AllEvents.tsx), after Figma 7030:9072. */
+
+/* One card per row, rows 16 apart; Figma's list sits 12 from the screen edge (the section's 16, less 4). */
+.list { display: flex; flex-direction: column; gap: var(--l3-spacing-16); margin-inline: calc(-1 * var(--l3-spacing-04)); }
+.row { display: flex; align-items: flex-start; gap: var(--l3-spacing-12); }
+
+/* The day: weekday (Description 12, secondary) over the date (Label 14) in a grey block, 48 wide, 8 × 4 in, radius 12.
+   A day's later cards keep the slot empty. */
+.date { box-sizing: border-box; flex: none; width: var(--l3-spacing-48); display: flex; flex-direction: column; align-items: center; padding: var(--l3-spacing-08) var(--l3-spacing-04); border-radius: var(--l3-radius-12); background: var(--l3-surface-secondary); text-align: center; }
+.date[data-spacer] { visibility: hidden; }
+.weekday { font: var(--l3-text-description-12); color: var(--l3-content-secondary); }
+.day { font: var(--l3-text-label-14); color: var(--l3-content-primary); }
+
+.card.card { flex: 1; min-width: 0; gap: 0; overflow: hidden; }
+/* A card: 12 in; with a note 12 above, 6 below, the head 12 above the note. */
+.body { display: flex; flex-direction: column; gap: var(--l3-spacing-12); padding: var(--l3-spacing-12); }
+.body[data-note] { padding: var(--l3-spacing-12) 0 var(--l3-spacing-06); }
+.body[data-note] .head { padding-inline: var(--l3-spacing-12); }
+.body[data-tappable] { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.body[data-tappable]:active { background: var(--l3-surface-secondary); }
+@media (hover: hover) { .body[data-tappable]:hover { background: var(--l3-surface-secondary); } }
+
+/* Head: art 20, 8 to the name (Label 12) over the tags (4 below for an expiry, 6 for an event; tags 4 apart). */
+.head { display: flex; align-items: center; gap: var(--l3-spacing-08); }
+.text { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: var(--l3-spacing-04); }
+.text[data-event] { gap: var(--l3-spacing-06); }
+.name { margin: 0; max-width: 100%; font: var(--l3-text-label-12); color: var(--l3-content-primary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tags { display: flex; align-items: center; gap: var(--l3-spacing-04); }
+/* Figma's grey tag: L3 Tag neutral tertiary, its label in content-secondary (L3's is content-primary — L3 gap). */
+.greyTag.greyTag { color: var(--l3-content-secondary); }
+
+.art { flex: none; width: var(--l3-size-20); height: var(--l3-size-20); object-fit: contain; }
+.flag { flex: none; display: inline-flex; align-items: center; justify-content: center; width: var(--l3-size-20); height: var(--l3-size-20); }
+.flag img { width: var(--app-today-flag); height: var(--app-today-flag); object-fit: cover; transform: scale(1.125); } /* Figma 7035:9401: the flag art 15 in the 20 slot, its image 6.25% past each edge */
+
+/* The note: a hairline 16 in from each side, 6 above a 24 line (bulb, Label 10, the move in Heading 10). */
+.footer { display: flex; flex-direction: column; gap: var(--l3-spacing-06); }
+.rule { height: 1px; margin-inline: var(--l3-spacing-16); background: var(--l3-border-light); } /* 1px hairline */
+.note { display: flex; align-items: center; gap: var(--l3-spacing-08); min-height: var(--l3-size-24); padding-inline: var(--l3-spacing-12); }
+.bulb { flex: none; transform: scaleY(-1); color: var(--l3-content-secondary); }
+.noteLine { display: inline-flex; align-items: center; min-width: 0; font: var(--l3-text-label-10); color: var(--l3-content-primary); white-space: nowrap; }
+.move { display: inline-flex; align-items: center; font: var(--l3-text-heading-10); color: var(--l3-content-accent-error-default); }
+.move[data-up='true'] { color: var(--l3-content-accent-success-default); }
+
+/* The View all page: months under a grey band (Heading 14, spaced 4; 8 above and below the text, 16 above on the first), the days 20 below, 16 in. */
+.page { display: flex; flex-direction: column; gap: var(--l3-spacing-24); padding-inline: var(--l3-spacing-16); }
+.month { display: flex; flex-direction: column; gap: var(--l3-spacing-20); }
+.band { margin: 0 calc(-1 * var(--l3-spacing-16)); padding: var(--l3-spacing-08) var(--l3-spacing-16); background: var(--l3-surface-secondary); font: var(--l3-text-heading-14); letter-spacing: var(--app-month-band-tracking); color: var(--l3-content-primary); }
+/* Only the first band, where the page starts, has 16 above its text. */
+.month:first-child .band { padding-top: var(--l3-spacing-16); }
+/* The band sticks at the top of the page while its month scrolls by; the next month's band pushes it out (its section ends). */
+.band { position: sticky; top: 0; z-index: 1; }
+.monthBody .list { margin-inline: 0; }
+
+/* A tab with nothing in it: one line, 24 in from the top and sides. */
+.empty { margin: 0; padding: var(--l3-spacing-24) var(--l3-spacing-16); font: var(--l3-text-description-12); color: var(--l3-content-secondary); text-align: center; }
+
+/* Version 7 (Figma 7035:14545): a date line per day, a time block per card. Day groups and cards 16 apart. */
+.timedList { display: flex; flex-direction: column; gap: var(--l3-spacing-16); }
+.timedDay { display: flex; flex-direction: column; gap: var(--l3-spacing-16); }
+/* “25th Nov” (Label 12, spaced 1) and a hairline to the right edge, 4 apart. */
+.dateLine { margin: 0; display: flex; align-items: center; gap: var(--l3-spacing-04); font: var(--l3-text-label-12); letter-spacing: var(--app-date-line-tracking); color: var(--l3-content-primary); white-space: nowrap; }
+.dateRule { flex: 1; height: 1px; background: var(--l3-border-light); } /* 1px hairline */
+.timedRow { display: flex; align-items: flex-start; gap: var(--l3-spacing-12); }
+/* The time: “09:00” (Label 12) over “AM” (Description 12, secondary), 48 wide, 8 × 6 in, radius 12, grey. */
+.timeBlock { box-sizing: border-box; flex: none; width: var(--l3-spacing-48); display: flex; flex-direction: column; align-items: center; padding: var(--l3-spacing-08) var(--l3-spacing-06); border-radius: var(--l3-radius-12); background: var(--l3-surface-secondary); text-align: center; }
+.timeClock { font: var(--l3-text-label-12); color: var(--l3-content-primary); }
+.timeAmpm { font: var(--l3-text-description-12); color: var(--l3-content-secondary); }
+/* Version 7's page: the band in discover-light (12 above on the first, 8 below), the days 24 below. */
+.page[data-timed] .band { background: var(--l3-surface-accent-discover-light); }
+.page[data-timed] .month:first-child .band { padding-top: var(--l3-spacing-12); }
+.page[data-timed] .month { gap: var(--l3-spacing-24); }
+```
+
+### `src/flows/fno/commodities/components/AllEvents.tsx`
+
+```tsx
+import { Actionbar } from '@l3/components/Actionbar'
+import { Card } from '@l3/components/Card'
+import { Icon } from '@l3/components/Icon'
+import { SectionHeader } from '@l3/components/SectionHeader'
+import { Tag } from '@l3/components/Tag'
+import { Tabs } from '@l3/components/Tabs'
+import { msApps, msArrowDropDown, msArrowDropUp, msCandlestickChart, msEvent, msTrendingDown, msTrendingUp, msWbIncandescentFill } from '@l3/icons/material'
+import { useState } from 'react'
+import { useFlowOption } from '../../../../shared/prototype'
+import { Screen } from '../../../../shared/ui/Screen'
+import { t } from '../../copy'
+import { allEventsSample, upcomingEventsSample, type AllEventsDay, type AllEventsItem, type AllEventsPhase } from '../data'
+import { RowActions, dayFrom } from './CalendarDay'
+import parts from '../../components/HomeParts.module.css'
+import styles from './AllEvents.module.css'
+
+type Actions = { onAsset: () => void; onOptionChain: () => void; onScalper: () => void }
+
+/** Prototype setting “Event phase” (Versions 6 and 7): before the release (Forecast) or after it (Actual). */
+const usePhase = () => useFlowOption('fno', 'eventPhase', 'pre') as AllEventsPhase
+
+/**
+ * Expiring This Week version 6 — “All Events” (Figma 7030:9072, Pre-Event / Post-Event, 26 Nov). Header “All Events”
+ * with View all (→ the Commodity calendar, fno-38). Days down the left in a grey block (weekday, Description 12 secondary,
+ * over the date, Label 14; 48 wide, radius 12), each card on its own row, every row 16 apart (a day's later cards keep
+ * an empty slot where the block would be). Cards: art 20, 8 to the name (Label 12); an expiry has a grey “Expiry” tag;
+ * an event “Event” and its Forecast / Actual tag (trend arrow), 6 below the name; option chain + ScalpPro on the right.
+ * A note under a hairline: bulb, “In last trend, Gold has moved ▲ 1.2%”.
+ */
+export function AllEventsSection({ onViewAll, ...actions }: Actions & { onViewAll: () => void }) {
+  const phase = usePhase()
+  return <section className={parts.contractSection} aria-label={t('allEvents.title')}>
+    <SectionHeader title={t('allEvents.title')} action={{ type: 'view-all', label: t('viewAll'), onClick: onViewAll }} />
+    <EventDays days={allEventsSample(phase)} {...actions} />
+  </section>
+}
+
+/** The page's filter tabs, as on the other versions' calendar (fno-38): flat tabs with icons in the Actionbar's bottom slot (sticky). */
+type Tab = 'all' | 'option' | 'future' | 'event'
+const TABS: Tab[] = ['all', 'option', 'future', 'event']
+const TAB_ICONS: Record<Tab, string> = { all: msApps, option: msCandlestickChart, future: msTrendingUp, event: msEvent }
+
+/**
+ * The View all page (fno-38) in versions 6 and 7: the Commodity Calendar actionbar with the All / Options / Futures /
+ * Events tabs under it (user, 26 Nov — the tabs back as a filter), then each month under a band with its days below.
+ * The band sticks under the tabs while its month scrolls by; the next month's band pushes it out (user, 26 Nov).
+ * - Version 6 (Figma 6995:25579): grey band (surface-secondary, “NOV 2026” Heading 14 spaced 4; 8 above and below,
+ *   16 above on the first), days 20 below in the version 6 list. Sample: the two days, again the month after.
+ * - Version 7 (Figma 7035:13357): the band in surface-accent-discover-light (12 above on the first, 8 below), days 24 below
+ *   in the version 7 list (date line, a time block per card).
+ */
+export function AllEventsPage({ onBack, timed = false, ...actions }: Actions & { onBack: () => void; timed?: boolean }) {
+  const phase = usePhase()
+  const [tab, setTab] = useState<Tab>('all')
+  // The tab's cards: All, an expiry's contract type, or the events; days left empty drop out.
+  const days = (timed ? upcomingEventsSample(phase) : allEventsSample(phase, true))
+    .map((d) => ({ ...d, items: d.items.filter((item) => tab === 'all' || (tab === 'event' ? item.kind === 'event' : item.contract === tab)) }))
+    .filter((d) => d.items.length)
+  const month = (offset: number) => {
+    const d = dayFrom(0)
+    return new Date(d.getFullYear(), d.getMonth() + offset, 1).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' }).toUpperCase()
+  }
+  return <Screen top={<Actionbar title={t('expiryAll.title')} onBack={onBack} backLabel={t('lot.back')}
+    bottom={<Tabs aria-label={t('expiryAll.filter')} value={tab} onChange={(v) => setTab(v as Tab)}
+      items={TABS.map((value) => ({ value, label: t(`expiryAll.tab.${value}`), iconLeft: <Icon icon={TAB_ICONS[value]} size={16} /> }))} />} />}>
+    {days.length ? <div className={styles.page} data-timed={timed || undefined}>
+      {[0, 1].map((offset) => {
+        const monthDays = days.map((d) => ({ ...d, inDays: d.inDays + offset * 30 }))
+        return <section key={offset} className={styles.month} aria-label={month(offset)}>
+          <h2 className={styles.band}>{month(offset)}</h2>
+          <div className={styles.monthBody}>
+            {timed ? <TimedDays days={monthDays} sameDates={offset > 0} {...actions} />
+              : <EventDays days={monthDays} sameDates={offset > 0} {...actions} />}
+          </div>
+        </section>
+      })}
+    </div> : <p className={styles.empty}>{t('allEvents.empty')}</p>}
+  </Screen>
+}
+
+/**
+ * Expiring This Week version 7 — “Upcoming Events” (Figma 7035:14545, 26 Nov): version 6 with the time. Header
+ * “Upcoming Events” with View all (→ fno-38). Each day under a date line (“25th Nov”, Label 12 spaced 1, a hairline
+ * running to the right edge, 4 apart); every card has its own grey time block on the left (“09:00” Label 12 over “AM”
+ * Description 12 secondary; 48 wide, 8 × 6 in, radius 12), 12 to the card. Day groups and cards 16 apart, the list 16
+ * from the screen edge. An expiry's tag reads “Options Expiry”.
+ */
+export function UpcomingEventsSection({ onViewAll, ...actions }: Actions & { onViewAll: () => void }) {
+  const phase = usePhase()
+  return <section className={parts.contractSection} aria-label={t('upcomingEvents.title')}>
+    <SectionHeader title={t('upcomingEvents.title')} action={{ type: 'view-all', label: t('viewAll'), onClick: onViewAll }} />
+    <TimedDays days={upcomingEventsSample(phase)} {...actions} />
+  </section>
+}
+
+/** “25th Nov”. */
+function ordinalDate(date: Date) {
+  const n = date.getDate()
+  const suffix = n % 100 >= 11 && n % 100 <= 13 ? 'th' : ['th', 'st', 'nd', 'rd'][n % 10] ?? 'th'
+  return `${n}${suffix} ${date.toLocaleDateString('en-IN', { month: 'short' })}`
+}
+
+/** Version 7's list: a date line per day, a time block per card. */
+function TimedDays({ days, sameDates, ...actions }: Actions & { days: AllEventsDay[]; sameDates?: boolean }) {
+  return <div className={styles.timedList}>
+    {days.map((day) => {
+      // The page's second month repeats the sample's dates, only the month changes.
+      const base = dayFrom(sameDates ? day.inDays - 30 : day.inDays)
+      const date = sameDates ? new Date(base.getFullYear(), base.getMonth() + 1, base.getDate()) : base
+      return <section key={day.inDays} className={styles.timedDay} aria-label={date.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })}>
+        <h3 className={styles.dateLine}><span>{ordinalDate(date)}</span><span className={styles.dateRule} /></h3>
+        {day.items.map((item) => {
+          const [clock, ampm] = (item.time ?? '').split(' ')
+          return <div key={item.id} className={styles.timedRow}>
+            <div className={styles.timeBlock} aria-label={item.time}>
+              <span className={styles.timeClock}>{clock}</span>
+              <span className={styles.timeAmpm}>{ampm}</span>
+            </div>
+            <EventCard item={item} expiryLabel={t('upcomingEvents.optionsExpiry')} {...actions} />
+          </div>
+        })}
+      </section>
+    })}
+  </div>
+}
+
+/** The list: one row per card, the day's block beside its first card (a day's later cards keep the slot empty). */
+function EventDays({ days, sameDates, ...actions }: Actions & { days: AllEventsDay[]; sameDates?: boolean }) {
+  return <div className={styles.list}>
+    {days.flatMap((day) => {
+      // The page's second month repeats the sample's dates as drawn, only the month changes.
+      const base = dayFrom(sameDates ? day.inDays - 30 : day.inDays)
+      const date = sameDates ? new Date(base.getFullYear(), base.getMonth() + 1, base.getDate()) : base
+      const weekday = (sameDates ? base : date).toLocaleDateString('en-IN', { weekday: 'short' })
+      return day.items.map((item, at) => <div key={`${day.inDays}-${item.id}`} className={styles.row}>
+        <div className={styles.date} aria-hidden={at > 0 || undefined} data-spacer={at > 0 || undefined}
+          aria-label={at === 0 ? date.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' }) : undefined}>
+          <span className={styles.weekday}>{weekday}</span>
+          <span className={styles.day}>{date.getDate()}</span>
+        </div>
+        <EventCard item={item} {...actions} />
+      </div>)
+    })}
+  </div>
+}
+
+function EventCard({ item, expiryLabel, onAsset, onOptionChain, onScalper }: Actions & { item: AllEventsItem; expiryLabel?: string }) {
+  const head = <div className={styles.head}>
+    {item.flag ? <span className={styles.flag}><img src={item.image} alt="" /></span> : <img src={item.image} alt="" className={styles.art} />}
+    <div className={styles.text} data-event={item.kind === 'event' || undefined}>
+      <p className={styles.name}>{item.name}</p>
+      <div className={styles.tags}>
+        <Tag variant="tertiary" size="sm" className={styles.greyTag}>{item.kind === 'expiry' ? (expiryLabel ?? t('eventsToday.expiry')) : t('eventsToday.event')}</Tag>
+        {item.tag && (() => {
+          const icon = <Icon icon={item.tag.arrow === 'up' ? msTrendingUp : msTrendingDown} />
+          return <Tag variant="tertiary" size="sm" color={item.tag.tone}
+            iconLeft={item.tag.side === 'left' ? icon : undefined} iconRight={item.tag.side === 'right' ? icon : undefined}>
+            {t(`allEvents.${item.tag.kind}`, { trend: t(`allEvents.trend.${item.tag.trend}`) })}
+          </Tag>
+        })()}
+      </div>
+    </div>
+    {item.actions && <RowActions name={item.name} chain onOptionChain={onOptionChain} onScalper={onScalper} />}
+  </div>
+  return <Card padding="none" className={styles.card}>
+    <div className={styles.body} data-note={Boolean(item.note) || undefined} data-tappable={item.kind === 'expiry' || undefined}
+      onClick={item.kind === 'expiry' ? onAsset : undefined}>
+      {head}
+      {item.note && <div className={styles.footer}>
+        <span className={styles.rule} />
+        <div className={styles.note}>
+          <Icon icon={msWbIncandescentFill} size={16} className={styles.bulb} />
+          <span className={styles.noteLine}>
+            <span>{t(`allEvents.note.${item.note.kind}`, { name: item.note.name })}</span>
+            <span className={styles.move} data-up={item.note.change >= 0}>
+              <Icon icon={item.note.change >= 0 ? msArrowDropUp : msArrowDropDown} size={12} />
+              {Math.abs(item.note.change).toFixed(1)}%
+            </span>
+          </span>
+        </div>
+      </div>}
+    </div>
+  </Card>
+}
+```
+
 ### `src/flows/fno/commodities/components/CalendarDay.tsx`
 
 ```tsx
@@ -2913,8 +3296,10 @@ import { Card } from '@l3/components/Card'
 import { Grid } from '@l3/components/Grid'
 import { Icon } from '@l3/components/Icon'
 import { MaskIcon } from '@l3/components/MaskIcon'
+import { PriceChange } from '@l3/components/PriceChange'
 import { Stack } from '@l3/components/Stack'
-import { msArrowDownward, msArrowUpward, msEvent, msLink } from '@l3/icons/material'
+import { msArrowDownward, msArrowUpward, msEvent, msLink, msTrendingDown, msTrendingUp } from '@l3/icons/material'
+import { useFlowOption } from '../../../../shared/prototype'
 import { Tag } from '@l3/components/Tag'
 import { t } from '../../copy'
 import type { ExpiryDay, ExpiryEntry } from '../data'
@@ -2974,17 +3359,23 @@ export function CalendarDate({ inDays, className, sticky = false }: { inDays: nu
 }
 
 /** One calendar row — a contract (art, name, kind, option chain + ScalpPro, tap → asset page) or an event (see CalendarDay). */
-export function CalendarEntry({ entry: c, showKind, eventDetails = true, onAsset, onOptionChain, onScalper }: {
+export function CalendarEntry({ entry: c, showKind, eventDetails = true, showTime = true, onAsset, onOptionChain, onScalper }: {
   entry: ExpiryEntry
   showKind: boolean
+  /** An event's time after its kind — off where a time column already says it (Expiring This Week v5, Day). */
+  showTime?: boolean
   eventDetails?: boolean
   onAsset: () => void
   onOptionChain: () => void
   onScalper: () => void
 }) {
+    // Prototype setting “Event card”: Version 2 adds the event's trend (Bullish / Bearish tag on the right of its name)
+    // and, at the card's foot, a gradient strip with how a commodity moved after the last release.
+    const eventV2 = useFlowOption('fno', 'eventCard', 'v1') === 'v2'
     if (c.event) {
       // An event: everything upfront — there's no event page, so the row isn't tappable and has no buttons; each asset it moves is.
       const e = c.event
+      const outlookUp = e.outlook === 'bullish'
       const stats = ([['previous', e.previous], ['forecast', e.forecast], ['actual', e.actual]] as const)
       return <Stack gap="08" className={styles.calendarRow}>
         <Stack direction="horizontal" gap="12" align="center">
@@ -2992,9 +3383,11 @@ export function CalendarEntry({ entry: c, showKind, eventDetails = true, onAsset
           <Stack gap="00" className={styles.calendarText}>
             <p className={styles.calendarName} data-wrap>{c.name}</p>
             <span className={styles.calendarExchange}>
-              {[showKind ? t('expiryAll.kind.event') : null, e.time].filter(Boolean).join(' · ')}
+              {[showKind ? t('expiryAll.kind.event') : null, showTime ? e.time : null].filter(Boolean).join(' · ')}
             </span>
           </Stack>
+          {eventV2 && e.outlook && <Tag variant="secondary" size="sm" color={outlookUp ? 'profit' : 'loss'} className={styles.calendarOutlook}
+            iconLeft={<Icon icon={outlookUp ? msTrendingUp : msTrendingDown} />}>{t(`expiryAll.outlook.${e.outlook}`)}</Tag>}
         </Stack>
         <Stack gap="08" className={styles.calendarEventBody}>
           {eventDetails && e.previous && <Grid columns={3} gap="08">
@@ -3016,6 +3409,11 @@ export function CalendarEntry({ entry: c, showKind, eventDetails = true, onAsset
             })}
           </Stack>
         </Stack>
+        {/* Version 2: the last release's move, in a strip across the card's foot (up / down tint fading to the right). */}
+        {eventV2 && e.lastTime && <Stack direction="horizontal" gap="04" align="center" className={styles.calendarLastTime} data-trend={e.lastTime.change >= 0 ? 'up' : 'down'}>
+          <span className={styles.calendarExchange}>{t('expiryAll.lastTime', { name: e.lastTime.name })}</span>
+          <PriceChange value={e.lastTime.change} unit="percent" size="sm" />
+        </Stack>}
       </Stack>
     }
     return <Stack direction="horizontal" gap="12" align="center" className={styles.calendarRow}
@@ -3032,7 +3430,7 @@ export function CalendarEntry({ entry: c, showKind, eventDetails = true, onAsset
 }
 
 /** The row's two icon buttons: option chain (when `chain`) and ScalpPro. They stop the tap so the row doesn't open too. */
-function RowActions({ name, chain, onOptionChain, onScalper }: { name: string; chain: boolean; onOptionChain: () => void; onScalper: () => void }) {
+export function RowActions({ name, chain, onOptionChain, onScalper }: { name: string; chain: boolean; onOptionChain: () => void; onScalper: () => void }) {
   return <Stack direction="horizontal" gap="08" align="center">
     {chain && <Button variant="tertiary" size="sm" raised="none" aria-label={t('expiryAll.chain', { name })} iconLeft={<Icon icon={msLink} size={16} />} onClick={(ev) => { ev.stopPropagation(); onOptionChain() }} />}
     <Button variant="tertiary" size="sm" raised="none" aria-label={t('expiryAll.scalper', { name })} iconLeft={<span className={styles.calendarIcon}><MaskIcon src={scalper} /></span>} onClick={(ev) => { ev.stopPropagation(); onScalper() }} />
@@ -3205,6 +3603,17 @@ function RowActions({ name, chain, onOptionChain, onScalper }: { name: string; c
 /* Commodity calendar V4 (fno-38): week sections split by a 2 line (border-light) running edge to edge — out through the
    page's 16 inset — with 24 on either side of it (the Stack's 24 above, this 24 below): 48 between two weeks. */
 /* archived (archive/DayPickerByWeek.tsx) */ .weekSection + .weekSection { margin-inline: calc(-1 * var(--l3-spacing-16)); padding: var(--l3-spacing-24) var(--l3-spacing-16) 0; border-top: var(--app-week-divider) solid var(--l3-border-light); }
+
+/* Event card Version 2 (setting “Event card”): the trend tag stays its size on the right of the event's name. */
+.calendarOutlook { flex: none; }
+/* …and the last release's move in a strip across the card's foot: out through the row's 12 to the card's edges, 4 more
+   above it than the row's 8 gap; an up (or down) tint on the left fading out to the right. L3 has no gradient strip — L3 gap. */
+.calendarLastTime {
+  margin: var(--l3-spacing-04) calc(-1 * var(--l3-spacing-12)) calc(-1 * var(--l3-spacing-12));
+  padding: var(--l3-spacing-08) var(--l3-spacing-12);
+  background: linear-gradient(90deg, var(--l3-surface-accent-indicator-up-light), transparent);
+}
+.calendarLastTime[data-trend='down'] { background: linear-gradient(90deg, var(--l3-surface-accent-indicator-down-light), transparent); }
 ```
 
 ### `src/flows/fno/commodities/components/CommoditiesFeed.tsx`
@@ -3222,6 +3631,8 @@ import { CommodityShortcuts } from './CommodityShortcuts'
 import { ExpiringCalendar } from './ExpiringCalendar'
 import { ExpiringCalendarCard } from './ExpiringCalendarCard'
 import { ExpiringDayPicker } from './ExpiringDayPicker'
+import { ExpiringDayWeek } from './ExpiringDayWeek'
+import { AllEventsSection, UpcomingEventsSection } from './AllEvents'
 import { ExpiringThisWeek } from './ExpiringThisWeek'
 import { useFlowOption } from '../../../../shared/prototype'
 import { PopularCommodities } from './PopularCommodities'
@@ -3250,11 +3661,17 @@ type Props = {
 export function CommoditiesFeed({ instrument, lists, onCommodity, onAsset, onPicker, onChoose, onContract, onDestination, onAddWatchlist, onChain, onScalper, onExpiries, onTrendInfo }: Props) {
   // Prototype setting “Expiring This Week”: Version 1 = the card rail, Version 2 = the short calendar,
   // Version 3 = that calendar in one card (dates attached as its left column). Version 4 = a row of day
-  // cards, the selected day's entries below.
+  // cards, the selected day's entries below. Version 5 = no View all: a Day (today by time) / Week (expiry days) switch.
   const expiringVersion = useFlowOption('fno', 'expiringVersion', 'v4')
   return <Stack gap="32" className={parts.feed}>
     <CommodityShortcuts onOpen={onCommodity} />
-    {expiringVersion === 'v4'
+    {expiringVersion === 'v7'
+      ? <UpcomingEventsSection onAsset={onAsset} onOptionChain={onChain} onScalper={onScalper} onViewAll={onExpiries} />
+      : expiringVersion === 'v6'
+      ? <AllEventsSection onAsset={onAsset} onOptionChain={onChain} onScalper={onScalper} onViewAll={onExpiries} />
+      : expiringVersion === 'v5'
+      ? <ExpiringDayWeek onAsset={onAsset} onOptionChain={onChain} onScalper={onScalper} />
+      : expiringVersion === 'v4'
       ? <ExpiringDayPicker onAsset={onAsset} onOptionChain={onChain} onScalper={onScalper} onViewAll={onExpiries} />
       : expiringVersion === 'v3'
       ? <ExpiringCalendarCard onAsset={onAsset} onOptionChain={onChain} onScalper={onScalper} onViewAll={onExpiries} />
@@ -3319,6 +3736,188 @@ export function CommodityShortcuts({ onOpen }: { onOpen: (commodity: Commodity) 
       <span className={[styles.change, commodity.change < 0 ? parts.down : parts.up].join(' ')}>{commodity.change > 0 ? '+' : ''}{commodity.change.toFixed(2)}%</span>
     </Stack>
   </Stack>)}</Grid></Inset></div>
+}
+```
+
+### `src/flows/fno/commodities/components/EventsToday.module.css`
+
+```css
+/* Expiring This Week v5 · Day view Versions 2 / 3 (EventsToday.tsx), after Figma 7006:4490. */
+
+/* Rows 16 apart; Figma's list sits 12 from the screen edge (the section's 16, less 4). */
+.list { display: flex; flex-direction: column; gap: var(--l3-spacing-16); margin-inline: calc(-1 * var(--l3-spacing-04)); }
+/* Version 2: 16 more after the first row (the expiry), as drawn. */
+.list[data-variant='plain']:not([data-week]) > .row:first-child { margin-bottom: var(--l3-spacing-16); }
+.row { display: flex; align-items: flex-start; gap: var(--l3-spacing-12); }
+
+/* The time: “9:00” (Label 14) over “AM” (Description 12, secondary), centred in 48, 8 × 4 in. */
+.time { box-sizing: border-box; flex: none; width: var(--l3-spacing-48); display: flex; flex-direction: column; align-items: center; padding: var(--l3-spacing-08) var(--l3-spacing-04); text-align: center; }
+.list[data-variant='block'] .time { border-radius: var(--l3-radius-12); background: var(--l3-surface-secondary); }
+.clock { font: var(--l3-text-label-14); color: var(--l3-content-primary); }
+.ampm { font: var(--l3-text-description-12); color: var(--l3-content-secondary); }
+
+.card.card { min-width: 0; gap: 0; overflow: hidden; }
+.text { flex: 1; min-width: 0; }
+.name { margin: 0; font: var(--l3-text-label-12); color: var(--l3-content-primary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* Figma's grey tag: L3 Tag neutral tertiary, its label in content-secondary (L3's neutral soft tag is content-primary — L3 gap). */
+.greyTag.greyTag { color: var(--l3-content-secondary); }
+
+.expiry { padding: var(--l3-spacing-12); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.expiry:active { background: var(--l3-surface-secondary); }
+@media (hover: hover) { .expiry:hover { background: var(--l3-surface-secondary); } }
+
+.event { display: flex; flex-direction: column; gap: var(--l3-spacing-12); padding: var(--l3-spacing-12) 0; }
+.event[data-note] { padding-bottom: var(--l3-spacing-06); }
+.eventHead { padding-inline: var(--l3-spacing-12); }
+
+/* The note: a hairline 16 in from each side, 6 above a 24 line (content 4 down, 12 in). */
+.footer { display: flex; flex-direction: column; gap: var(--l3-spacing-06); }
+.rule { height: 1px; margin-inline: var(--l3-spacing-16); background: var(--l3-border-light); } /* 1px hairline */
+.note { display: flex; align-items: center; gap: var(--l3-spacing-08); min-height: var(--l3-size-24); padding-inline: var(--l3-spacing-12); }
+.bulb { flex: none; transform: scaleY(-1); color: var(--l3-content-secondary); } /* the bulb upright: Figma flips wb_incandescent */
+.noteLine { display: inline-flex; align-items: center; min-width: 0; font: var(--l3-text-label-10); color: var(--l3-content-primary); white-space: nowrap; }
+.move { display: inline-flex; align-items: center; font: var(--l3-text-heading-10); color: var(--l3-content-accent-error-default); }
+.move[data-up='true'] { color: var(--l3-content-accent-success-default); }
+
+/* Pictures. Version 2: art 16 (a flag 12) inside the 24 L3 Avatar. Version 3: art bare at 20; a flag 15 in a 20 circle. */
+.avatar.avatar { flex: none; }
+.artIn { width: var(--l3-size-16); height: var(--l3-size-16); object-fit: contain; }
+.flagIn { width: var(--l3-size-12); height: var(--l3-size-12); border-radius: var(--l3-radius-full); object-fit: cover; }
+.art { flex: none; width: var(--l3-size-20); height: var(--l3-size-20); object-fit: contain; }
+.flagCircle { flex: none; display: inline-flex; align-items: center; justify-content: center; width: var(--l3-size-20); height: var(--l3-size-20); border-radius: var(--l3-radius-full); overflow: hidden; }
+.flagCircle img { width: var(--app-today-flag); height: var(--app-today-flag); border-radius: var(--l3-radius-full); object-fit: cover; }
+/* Figma: 6 between an event's name and its tags (L3 Stack has no 06 gap). */
+.eventText.eventText { gap: var(--l3-spacing-06); }
+/* A row's cards (the Week view: a day's contracts and events), 8 apart. */
+.cards { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: var(--l3-spacing-08); }
+/* Week view: the day block as Version 2's date — weekday (Description 12, secondary) over the date (Label 16). */
+.time[data-day] .clock { font: var(--l3-text-description-12); color: var(--l3-content-secondary); }
+.time[data-day] .ampm { font: var(--l3-text-label-16); color: var(--l3-content-primary); }
+.empty { margin: 0; font: var(--l3-text-description-12); color: var(--l3-content-secondary); }
+/* Version 3: a symbol avatar (Copper's “Cu”, L3 Avatar's smallest is 24) takes the bare art's 20 in the row, so names line up. */
+.list[data-variant='block'] .avatar.avatar { margin-inline: calc(-1 * var(--l3-spacing-02)); }
+```
+
+### `src/flows/fno/commodities/components/EventsToday.tsx`
+
+```tsx
+import { Avatar } from '@l3/components/Avatar'
+import { Card } from '@l3/components/Card'
+import { Icon } from '@l3/components/Icon'
+import { Stack } from '@l3/components/Stack'
+import { Tag } from '@l3/components/Tag'
+import { msArrowDownward, msArrowDropDown, msArrowDropUp, msArrowUpward, msTrendingDown, msTrendingUp, msWbIncandescentFill } from '@l3/icons/material'
+import { t } from '../../copy'
+import { asTodayItem, eventsTodaySample, expiryCalendarAll, type TodayItem } from '../data'
+import { RowActions, dayFrom } from './CalendarDay'
+import styles from './EventsToday.module.css'
+
+/**
+ * Expiring This Week version 5 — Day view, Versions 2 and 3 (Figma 7006:4490, “Events today”, 25 Nov). Today's list,
+ * one row per time: the time on the left (“9:00” over “AM”, 48 wide), the card on the right (12 apart), rows 16 apart.
+ * - `plain` (Version 2, Figma left): the time on the page (no block); pictures in a 24 L3 Avatar; 16 more after the
+ *   first row.
+ * - `block` (Version 3, Figma right): the time in a grey block (surface-secondary, radius 12); pictures bare at 20.
+ * Card: an expiry — name (Label 12) over a grey “Expiry” tag, option chain + ScalpPro on the right. An event — name over
+ * “Event” and its trend tag (“Bullish Trend” ↗ / “Bearish Trend” ↘) or the commodities it moves (↑ Gold, ↓ Crude oil);
+ * with a note, a hairline (16 in from each side) and a footer line: a bulb, “In last bullish trend, Gold has moved” /
+ * “Last time, Crude oil has moved” (Label 10) and the move, ▲ / ▼ in success / error (Heading 10).
+ */
+export function EventsToday({ variant, onAsset, onOptionChain, onScalper }: { variant: 'plain' | 'block'; onAsset: () => void; onOptionChain: () => void; onScalper: () => void }) {
+  // Day: one row per item, the time on the left ("9:00" over "AM").
+  const rows = eventsTodaySample.map((item) => { const [top, bottom] = item.time.split(' '); return { key: item.id, label: item.time, top, bottom, items: [item] } })
+  return <EventRows rows={rows} variant={variant} onAsset={onAsset} onOptionChain={onOptionChain} onScalper={onScalper} />
+}
+
+/** How far ahead the Week view lists: this week (today and the 6 days after). */
+const WEEK_DAYS = 7
+
+/**
+ * The Week view in the same layout (user, 25 Nov): a vertical list of the week's expiry days (only days a contract
+ * expires; an event on one of them still shows), the day on the left as the time is in Day view — the weekday over the
+ * date ("Fri" over "27"), plain or in the grey block — and that day's cards on the right, one per contract or event,
+ * 8 apart. Contracts tagged “Options expiry” / “Futures expiry”.
+ */
+export function EventsWeek({ variant, onAsset, onOptionChain, onScalper }: { variant: 'plain' | 'block'; onAsset: () => void; onOptionChain: () => void; onScalper: () => void }) {
+  const rows = expiryCalendarAll
+    .filter((d) => d.inDays < WEEK_DAYS && d.entries.some((e) => e.kind !== 'event'))
+    .map((d) => {
+      const date = dayFrom(d.inDays)
+      const items = d.entries.map((e) => asTodayItem(e, e.kind === 'event' ? undefined : t(`eventsToday.tag.${e.kind}`)))
+      return { key: String(d.inDays), label: date.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' }),
+        top: date.toLocaleDateString('en-IN', { weekday: 'short' }), bottom: String(date.getDate()), items, day: true }
+    })
+  if (!rows.length) return <Card><p className={styles.empty}>{t('eventsToday.noneWeek')}</p></Card>
+  return <EventRows rows={rows} variant={variant} onAsset={onAsset} onOptionChain={onOptionChain} onScalper={onScalper} />
+}
+
+type Row = { key: string; label: string; top: string; bottom: string; items: TodayItem[]; day?: boolean }
+
+/** The list: each row is the left block (time, or day) and its cards. */
+function EventRows({ rows, variant, onAsset, onOptionChain, onScalper }: { rows: Row[]; variant: 'plain' | 'block'; onAsset: () => void; onOptionChain: () => void; onScalper: () => void }) {
+  return <div className={styles.list} data-variant={variant} data-week={rows[0]?.day || undefined}>
+    {rows.map((row) => {
+      return <div key={row.key} className={styles.row}>
+        <div className={styles.time} aria-label={row.label} data-day={row.day || undefined}>
+          <span className={styles.clock}>{row.top}</span>
+          <span className={styles.ampm}>{row.bottom}</span>
+        </div>
+        <div className={styles.cards}>{row.items.map((item) =>
+        <Card key={item.id} padding="none" className={styles.card}>
+          {item.kind === 'expiry'
+            ? <Stack direction="horizontal" gap="12" align="center" className={styles.expiry} data-tappable onClick={onAsset}>
+              <Picture item={item} variant={variant} />
+              <Stack gap="04" className={styles.text}>
+                <p className={styles.name}>{item.name}</p>
+                <span><Tag variant="tertiary" size="sm" className={styles.greyTag}>{item.tag ?? t('eventsToday.expiry')}</Tag></span>
+              </Stack>
+              <RowActions name={item.name} chain={Boolean(item.chain)} onOptionChain={onOptionChain} onScalper={onScalper} />
+            </Stack>
+            : <div className={styles.event} data-note={Boolean(item.note) || undefined}>
+              <Stack direction="horizontal" gap="12" align="center" className={styles.eventHead}>
+                <Picture item={item} variant={variant} />
+                <Stack gap="04" className={`${styles.text} ${styles.eventText}`}>
+                  <p className={styles.name}>{item.name}</p>
+                  <Stack direction="horizontal" gap="08" align="center">
+                    <Tag variant="tertiary" size="sm" className={styles.greyTag}>{t('eventsToday.event')}</Tag>
+                    {item.trend && <Tag variant="tertiary" size="sm" color={item.trend === 'bullish' ? 'profit' : 'loss'}
+                      iconLeft={<Icon icon={item.trend === 'bullish' ? msTrendingUp : msTrendingDown} />}>{t(`eventsToday.trend.${item.trend}`)}</Tag>}
+                    {item.moves?.map((m) => <Tag key={m.name} variant="tertiary" size="sm" color={m.trend === 'up' ? 'profit' : 'loss'}
+                      iconLeft={<Icon icon={m.trend === 'up' ? msArrowUpward : msArrowDownward} />}>{m.name}</Tag>)}
+                  </Stack>
+                </Stack>
+              </Stack>
+              {item.note && <div className={styles.footer}>
+                <span className={styles.rule} />
+                <div className={styles.note}>
+                  <Icon icon={msWbIncandescentFill} size={16} className={styles.bulb} />
+                  <span className={styles.noteLine}>
+                    <span>{item.note.kind === 'trend'
+                      ? t('eventsToday.noteTrend', { trend: t(`eventsToday.trendWord.${item.note.trend ?? 'bullish'}`), name: item.note.name })
+                      : t('eventsToday.noteLast', { name: item.note.name })}</span>
+                    <span className={styles.move} data-up={item.note.change >= 0}>
+                      <Icon icon={item.note.change >= 0 ? msArrowDropUp : msArrowDropDown} size={12} />
+                      {Math.abs(item.note.change).toFixed(1)}%
+                    </span>
+                  </span>
+                </div>
+              </div>}
+            </div>}
+        </Card>)}</div>
+      </div>
+    })}
+  </div>
+}
+
+/** The row's picture: in Version 2 inside a 24 L3 Avatar (16 art; a flag 12), in Version 3 bare at 20 (a flag in a 20 circle). */
+function Picture({ item, variant }: { item: TodayItem; variant: 'plain' | 'block' }) {
+  // No art (Copper, Zinc…): their symbol in a 24 L3 Avatar, either version.
+  if (!item.image) return <Avatar size={24} initials={item.initials} className={styles.avatar} />
+  if (variant === 'plain') return <Avatar size={24} className={styles.avatar}
+    icon={<img src={item.image} alt="" className={item.flag ? styles.flagIn : styles.artIn} />} />
+  return item.flag
+    ? <span className={styles.flagCircle}><img src={item.image} alt="" /></span>
+    : <img src={item.image} alt="" className={styles.art} />
 }
 ```
 
@@ -3488,6 +4087,84 @@ export function ExpiringDayPicker({ onAsset, onOptionChain, onScalper, onViewAll
     <ExpiringHeader onViewAll={onViewAll} />
     <DayPicker days={expiryCalendarAll.filter((d) => d.inDays < DAYS_AHEAD)} showKind eventDetails={false} onAsset={onAsset} onOptionChain={onOptionChain} onScalper={onScalper} />
   </section>
+}
+```
+
+### `src/flows/fno/commodities/components/ExpiringDayWeek.tsx`
+
+```tsx
+import { useState } from 'react'
+import { useFlowOption } from '../../../../shared/prototype'
+import { EventsToday, EventsWeek } from './EventsToday'
+import { Card } from '@l3/components/Card'
+import { SectionHeader } from '@l3/components/SectionHeader'
+import { Stack } from '@l3/components/Stack'
+import { Tabs } from '@l3/components/Tabs'
+import { t } from '../../copy'
+import { entryTime, expiryCalendarAll, minutesOf, todaySample, type ExpiryEntry } from '../data'
+import { CalendarEntry } from './CalendarDay'
+import { DayPicker } from './ExpiringDayPicker'
+import parts from '../../components/HomeParts.module.css'
+import styles from './Commodities.module.css'
+
+/** How far ahead the week view reaches: about a month (people don't look at expiries further out). */
+const DAYS_AHEAD = 31
+
+type View = 'day' | 'week'
+
+/**
+ * Expiring This Week, version 5 — no View all page: the header's Day / Week switch (an L3 pill-group Tabs, small, on
+ * the right where View all was) changes what the section shows.
+ * - Day (first): today only — one event and two commodity expiries (3 cards; topped up from the coming days as a
+ *   sample when today has fewer, `todaySample`), as version 2's short calendar, but the grey block on the left holds the TIME it happens
+ *   (an event's release time, a contract's expiry at the MCX close) instead of the date — "9:00" over "PM". Entries at
+ *   the same time share a block (one card each, 8 apart); times 16 apart, earliest first. Nothing today → one line.
+ * - Week: version 4's day row over the next month, but only the days a contract expires (an events-only day isn't a
+ *   date here) — e.g. Wed, then Fri, then the "NEXT WEEK" pill. An event on one of those days still shows with it.
+ */
+export function ExpiringDayWeek({ onAsset, onOptionChain, onScalper }: { onAsset: () => void; onOptionChain: () => void; onScalper: () => void }) {
+  const [view, setView] = useState<View>('day')
+  // Prototype setting “Day view”: Version 1 = TodayByTime below; 2 / 3 = Figma's “Events today” (EventsToday), titled so.
+  const dayView = useFlowOption('fno', 'dayView', 'v2')
+  const figma = dayView !== 'v1'
+  const figmaDay = view === 'day' && figma
+  const listVariant = dayView === 'v3' ? 'block' : 'plain'
+  const props = { onAsset, onOptionChain, onScalper }
+  return <section className={parts.contractSection} aria-label={t('expiring.title')}>
+    <Stack direction="horizontal" gap="08" align="center" justify="between">
+      <SectionHeader title={figmaDay ? t('eventsToday.title') : t('expiring.title')} />
+      <Tabs appearance="pill-group" size="sm" aria-label={t('expiring.view')} value={view} onChange={(v) => setView(v as View)} className={styles.expiringViewAll}
+        items={[{ value: 'day', label: t('expiring.view.day') }, { value: 'week', label: t('expiring.view.week') }]} />
+    </Stack>
+    {figmaDay ? <EventsToday variant={listVariant} {...props} /> : view === 'day' ? <TodayByTime {...props} /> : figma ? <EventsWeek variant={listVariant} {...props} /> : <DayPicker
+      days={expiryCalendarAll.filter((d) => d.inDays < DAYS_AHEAD && d.entries.some((e) => e.kind !== 'event'))}
+      showKind eventDetails={false} {...props} />}
+  </section>
+}
+
+/** Day view: today's entries grouped by time, earliest first. */
+function TodayByTime({ onAsset, onOptionChain, onScalper }: { onAsset: () => void; onOptionChain: () => void; onScalper: () => void }) {
+  const today = todaySample()
+  const times = new Map<string, ExpiryEntry[]>()
+  for (const entry of [...today].sort((a, b) => minutesOf(entryTime(a)) - minutesOf(entryTime(b))))
+    times.set(entryTime(entry), [...(times.get(entryTime(entry)) ?? []), entry])
+  if (!times.size) return <Card><p className={styles.calendarExchange}>{t('expiring.noneToday')}</p></Card>
+  return <div className={styles.expiryCalendarPreview}>
+    {[...times].map(([time, entries]) => {
+      const [clock, ampm] = time.split(' ')
+      return <Stack key={time} direction="horizontal" gap="12" align="start">
+        <Stack gap="00" align="center" className={styles.calendarDate} data-static aria-label={time}>
+          <span className={styles.calendarDay}>{clock}</span>
+          <span className={styles.calendarWeekday}>{ampm}</span>
+        </Stack>
+        <Stack gap="08" className={styles.calendarCards}>
+          {entries.map((c) => <Card key={c.id} padding="none" className={styles.calendarCard}>
+            <CalendarEntry entry={c} showKind eventDetails={false} showTime={false} onAsset={onAsset} onOptionChain={onOptionChain} onScalper={onScalper} />
+          </Card>)}
+        </Stack>
+      </Stack>
+    })}
+  </div>
 }
 ```
 
@@ -3678,6 +4355,7 @@ import goldDefault from './assets/gold-default.png'
 import goldGuinea from './assets/gold-guinea.png'
 import goldPetal from './assets/gold-petal.png'
 import goldTen from './assets/gold-ten.png'
+import usFlag from './assets/us-flag-event.png'
 
 /** Snapshot examples from Figma 6754:63073 (F&O Home → Commodities); these are not live quotes. */
 
@@ -3897,6 +4575,10 @@ export type ExpiryEvent = {
    *  commodity, never its contract sizes: Gold and Gold Mini move together, so it's just "Gold" (likewise Crude Oil,
    *  Natural Gas, Silver). */
   moves: { name: string; trend: 'up' | 'down' }[]
+  /** Event card Version 2: which way it's expected to push prices this time (the trend tag). */
+  outlook?: 'bullish' | 'bearish'
+  /** Event card Version 2: how a commodity it moves did after the last release (sample), e.g. Gold +1.4%. */
+  lastTime?: { name: string; change: number }
   /** How it usually moves them, in one line. */
   why: string
 }
@@ -3959,8 +4641,8 @@ export const expiryCalendar: Record<ExpiryKind, ExpiryDay[]> = {
   option: byDate(mcxExpiries.filter((e) => e.kind === 'option').map((e) => ({ inDays: daysUntil(e.date), entries: contracts('option', e.names) }))),
   future: byDate(mcxExpiries.filter((e) => e.kind === 'future').map((e) => ({ inDays: daysUntil(e.date), entries: contracts('future', e.names) }))),
   event: byDate([
-    ...weekly(3, event('EIA crude oil inventories', { time: '9:00 PM', country: 'US', impact: 'high', previous: '−3.4M bbl', forecast: '−1.8M bbl', moves: [{ name: 'Crude Oil', trend: 'down' }, { name: 'Natural Gas', trend: 'down' }, { name: 'Gold', trend: 'up' }], why: 'Falling stocks usually lift crude; a surprise build pulls it down.' })),
-    ...weekly(4, event('EIA natural gas storage', { time: '9:00 PM', country: 'US', impact: 'high', previous: '+56 Bcf', forecast: '+38 Bcf', moves: [{ name: 'Natural Gas', trend: 'up' }, { name: 'Crude Oil', trend: 'up' }], why: 'A smaller injection than expected usually lifts natural gas.' })),
+    ...weekly(3, event('EIA crude oil inventories', { time: '9:00 PM', country: 'US', impact: 'high', previous: '−3.4M bbl', forecast: '−1.8M bbl', moves: [{ name: 'Crude Oil', trend: 'down' }, { name: 'Natural Gas', trend: 'down' }, { name: 'Gold', trend: 'up' }], outlook: 'bullish', lastTime: { name: 'Gold', change: 1.4 }, why: 'Falling stocks usually lift crude; a surprise build pulls it down.' })),
+    ...weekly(4, event('EIA natural gas storage', { time: '9:00 PM', country: 'US', impact: 'high', previous: '+56 Bcf', forecast: '+38 Bcf', moves: [{ name: 'Natural Gas', trend: 'up' }, { name: 'Crude Oil', trend: 'up' }], outlook: 'bullish', lastTime: { name: 'Natural Gas', change: 2.1 }, why: 'A smaller injection than expected usually lifts natural gas.' })),
   ]),
 }
 /** All tab: every kind on each day — options, then futures, then events. */
@@ -3987,6 +4669,137 @@ export function expiryPreview(count = 3, source: ExpiryDay[] = expiryCalendarAll
     left -= entries.length
   }
   return days
+}
+
+/**
+ * When an entry happens on its day (IST) — the time column of Expiring This Week version 5's day view. An event: its
+ * release time. A contract: it expires at the close of MCX's evening session on its expiry day — 11:30 PM in winter
+ * (US standard time, Nov–Mar; 11:55 PM in US summer). Sample: check each contract's last-day timing before a release.
+ */
+export const MCX_CLOSE = '11:30 PM'
+export const entryTime = (entry: ExpiryEntry) => entry.event?.time ?? MCX_CLOSE
+/** A "9:00 PM" time as minutes after midnight, to order a day's entries by time. */
+export const minutesOf = (time: string) => {
+  const [, h, m, ampm] = /(\d+):(\d+)\s*(AM|PM)/.exec(time) ?? ['', '0', '0', 'AM']
+  return (Number(h) % 12 + (ampm === 'PM' ? 12 : 0)) * 60 + Number(m)
+}
+
+/**
+ * Expiring This Week version 5's Day view: today as one event and two commodity expiries (3 cards). Today's real
+ * entries come first; when today has fewer, the rest is a SAMPLE topped up from the coming days — the next event, then
+ * the next contracts to expire — shown as if they were today, so the view always shows its full shape.
+ */
+export function todaySample(): ExpiryEntry[] {
+  const today = expiryCalendarAll.find((d) => d.inDays === 0)?.entries ?? []
+  const later = expiryCalendarAll.filter((d) => d.inDays > 0).flatMap((d) => d.entries)
+  const pick = (kind: 'event' | 'contract', count: number) => {
+    const match = (e: ExpiryEntry) => (kind === 'event' ? e.kind === 'event' : e.kind !== 'event')
+    return [...today.filter(match), ...later.filter(match)].slice(0, count)
+  }
+  return [...pick('event', 1), ...pick('contract', 2)]
+}
+
+/**
+ * Expiring This Week version 5, Day view Versions 2 and 3 (Figma 7006:4490, 25 Nov): today's sample list exactly as
+ * designed, three items (user, 25 Nov): the 9:00 AM Gold expiry and two EIA events (9:00 AM bullish, 12:30 PM bearish).
+ * An event can carry a note: how a commodity moved in its last trend of that kind, or last time. The Week view uses the
+ * same rows for the week's expiry days (`weekItems`).
+ */
+export type TodayItem = {
+  id: string
+  /** "9:00 AM" — the time column. */
+  time: string
+  name: string
+  /** The commodity art, or a country flag for a country's release; no art → `initials` (Cu, Zn…). */
+  image?: string
+  initials?: string
+  /** An expiry's tag (default “Expiry”): the Week view says which, “Options expiry” / “Futures expiry”. */
+  tag?: string
+  flag?: boolean
+  kind: 'expiry' | 'event'
+  /** Expiry rows: option chain as well as ScalpPro. */
+  chain?: boolean
+  trend?: 'bullish' | 'bearish'
+  moves?: { name: string; trend: 'up' | 'down' }[]
+  note?: { kind: 'trend' | 'last'; trend?: 'bullish' | 'bearish'; name: string; change: number }
+}
+export const eventsTodaySample: TodayItem[] = [
+  { id: 'today-gold', time: '9:00 AM', name: 'Gold', image: goldMini, kind: 'expiry', chain: true },
+  { id: 'today-eia-bull', time: '9:00 AM', name: 'EIA crude oil inventories', image: goldMini, kind: 'event', trend: 'bullish', note: { kind: 'trend', trend: 'bullish', name: 'Gold', change: 1.2 } },
+  { id: 'today-eia-bear', time: '12:30 PM', name: 'EIA crude oil inventories', image: crudeOil, kind: 'event', trend: 'bearish' },
+]
+
+/** A calendar entry as an “Events today” row (the Week view): contracts as expiries, events with their trend and note. */
+export function asTodayItem(entry: ExpiryEntry, tag?: string): TodayItem {
+  const e = entry.event
+  if (!e) return { id: entry.id, time: MCX_CLOSE, name: entry.name, image: entry.image, initials: entry.initials, kind: 'expiry', chain: entry.kind === 'option', tag }
+  return { id: entry.id, time: e.time, name: entry.name, kind: 'event', trend: e.outlook, moves: e.outlook ? undefined : e.moves,
+    image: expiryArt[e.moves[0]?.name ?? '']?.image,
+    note: e.lastTime ? { kind: e.outlook ? 'trend' : 'last', trend: e.outlook, name: e.lastTime.name, change: e.lastTime.change } : undefined }
+}
+
+/**
+ * Expiring This Week version 6 — “All Events” (Figma 7030:9072, 26 Nov): a fixed sample, as drawn. Two phases of the same
+ * days: before the release (“Forecast: …”, the note from past releases) and after it (“Actual: …”, the move since).
+ * Tag colours and arrows are copied from the Figma frames as they are (some red tags read “Bullish”).
+ */
+export type AllEventsPhase = 'pre' | 'post'
+export type AllEventsTag = { kind: 'forecast' | 'actual'; trend: 'bullish' | 'bearish'; tone: 'profit' | 'loss'; arrow: 'up' | 'down'; side: 'left' | 'right' }
+export type AllEventsItem = {
+  id: string
+  name: string
+  image: string
+  flag?: boolean
+  kind: 'expiry' | 'event'
+  /** Version 7: when it happens ("09:00 AM", IST). Sample times. */
+  time?: string
+  /** An expiry's contract type, for the calendar page's Options / Futures tabs. */
+  contract?: 'option' | 'future'
+  /** Option chain button (expiries and most events); ScalpPro comes with it. False → no buttons. */
+  actions: boolean
+  tag?: AllEventsTag
+  note?: { kind: 'trend' | 'last' | 'since'; name: string; change: number }
+}
+export type AllEventsDay = { inDays: number; items: AllEventsItem[] }
+
+const ae = (id: string, name: string, image: string, rest: Partial<AllEventsItem> = {}): AllEventsItem =>
+  ({ id, name, image, kind: 'event', actions: true, ...rest })
+
+/** The two sample days (Wed 25, Thu 26 in Figma; here today and tomorrow). `page` → the calendar page's names. */
+export function allEventsSample(phase: AllEventsPhase, page = false): AllEventsDay[] {
+  const gold = ae('ae-gold', 'Gold', goldMini, { kind: 'expiry', contract: 'option' })
+  if (phase === 'pre') return [
+    { inDays: 0, items: [gold,
+      ae('ae-eia-gold', page ? 'EIA gold inventories' : 'EIA crude oil inventories', goldMini, { tag: { kind: 'forecast', trend: 'bullish', tone: 'profit', arrow: 'up', side: 'right' }, note: { kind: 'trend', name: 'Gold', change: 1.2 } })] },
+    { inDays: 1, items: [
+      ae('ae-eia-crude', 'EIA crude oil inventories', crudeOil, { tag: { kind: 'forecast', trend: 'bearish', tone: 'loss', arrow: 'down', side: 'left' } }),
+      ae('ae-pce', 'USD Core PCE - Price index', usFlag, { flag: true, actions: false, tag: { kind: 'forecast', trend: 'bullish', tone: 'loss', arrow: 'down', side: 'left' }, note: { kind: 'last', name: 'Crude oil', change: -4.5 } })] },
+  ]
+  return [
+    { inDays: 0, items: [gold,
+      ae('ae-eia-gold', page ? 'EIA gold inventories' : 'EIA crude oil inventories', goldMini, { tag: { kind: 'actual', trend: 'bullish', tone: 'profit', arrow: 'up', side: 'right' }, note: { kind: 'since', name: 'Gold', change: 1.2 } })] },
+    { inDays: 1, items: [
+      ae('ae-eia-crude', 'EIA crude oil inventories', crudeOil, { tag: { kind: 'actual', trend: 'bullish', tone: 'loss', arrow: 'up', side: 'left' } }),
+      ae('ae-pce', 'USD Core PCE', usFlag, { flag: true, tag: { kind: 'actual', trend: 'bullish', tone: 'loss', arrow: 'down', side: 'left' }, note: { kind: 'since', name: 'Crude oil', change: -10.5 } })] },
+  ]
+}
+
+/**
+ * Expiring This Week version 7 — “Upcoming Events” (Figma 7035:14545, 26 Nov): version 6 with a time on every card.
+ * Three cards over two days, in the order drawn (09:00 Gold expiry, 07:30 EIA with its note; next day 09:00 EIA crude).
+ */
+export function upcomingEventsSample(phase: AllEventsPhase): AllEventsDay[] {
+  const pre = phase === 'pre'
+  return [
+    { inDays: 0, items: [
+      ae('ue-gold', 'Gold', goldMini, { kind: 'expiry', contract: 'option', time: '09:00 AM' }),
+      ae('ue-eia-gold', 'EIA crude oil inventories', goldMini, { time: '07:30 AM',
+        tag: { kind: pre ? 'forecast' : 'actual', trend: 'bullish', tone: 'profit', arrow: 'up', side: 'left' },
+        note: { kind: pre ? 'trend' : 'since', name: 'Gold', change: 1.2 } })] },
+    { inDays: 1, items: [
+      ae('ue-eia-crude', 'EIA crude oil inventories', crudeOil, { time: '09:00 AM',
+        tag: { kind: pre ? 'forecast' : 'actual', trend: 'bearish', tone: 'loss', arrow: 'down', side: 'left' } })] },
+  ]
 }
 ```
 
@@ -4241,6 +5054,22 @@ export function AssetPage({ asset, onBack, onChain, onScalper, onOrder }: Props)
       </section>
     </Stack>
   </Screen>
+}
+```
+
+### `src/flows/fno/commodities/screens/CommodityCalendar.tsx`
+
+```tsx
+import { useFlowOption } from '../../../../shared/prototype'
+import { AllEventsPage } from '../components/AllEvents'
+import { ExpiryTimeline } from './ExpiryTimeline'
+
+type Props = { onBack: () => void; onAsset: () => void; onOptionChain: () => void; onScalper: () => void }
+
+/** The Commodity calendar (fno-38): Expiring This Week versions 6 and 7 have their own events page; the others the timeline. */
+export function CommodityCalendar(props: Props) {
+  const expiringVersion = useFlowOption('fno', 'expiringVersion', 'v4')
+  return expiringVersion === 'v6' || expiringVersion === 'v7' ? <AllEventsPage timed={expiringVersion === 'v7'} {...props} /> : <ExpiryTimeline {...props} />
 }
 ```
 
@@ -5907,6 +6736,8 @@ export function Heatmap({ onOpen, onViewAll }: { onOpen: (name: string) => void;
  */
 .productTabs.productTabs { background: var(--l3-surface-secondary); box-shadow: inset 0 -1px 0 var(--app-fno-tabs-baseline); }
 .productTabs.productTabs [role='tab'] { --tab-font: var(--l3-text-label-12); }
+/* The three product tabs in equal thirds (user, 26 Nov). L3 Tabs width="fill" spreads only the space left over, so ribbon tabs stay as wide as their labels (equal widths are pill-group only — L3 gap). */
+.productTabs.productTabs[data-width='fill'] > [role='tab'] { flex: 1 1 0; min-width: 0; }
 .productTabs.productTabs [role='tab'][aria-selected='true'] { --tab-border: var(--l3-border-accent-success-default); --tab-surface: var(--l3-surface-default); background-image: linear-gradient(180deg, var(--l3-surface-accent-success-light) 3%, var(--l3-surface-default)); }
 
 /* A product tab switch: only the content under the tabs slides in, from the chosen tab's side. */
@@ -7238,6 +8069,22 @@ function addMinutes(start: string, add: number) {
   "settings.apply": "Apply",
   "expiring.title": "Expiring This Week",
   "expiring.days": "Days with expiries",
+  "expiring.view": "Show today or the week",
+  "expiring.view.day": "Day",
+  "expiring.view.week": "Week",
+  "expiring.noneToday": "Nothing expires today",
+  "eventsToday.title": "Events today",
+  "eventsToday.expiry": "Expiry",
+  "eventsToday.tag.option": "Options expiry",
+  "eventsToday.tag.future": "Futures expiry",
+  "eventsToday.noneWeek": "Nothing expires this week",
+  "eventsToday.event": "Event",
+  "eventsToday.trend.bullish": "Bullish Trend",
+  "eventsToday.trend.bearish": "Bearish Trend",
+  "eventsToday.trendWord.bullish": "bullish",
+  "eventsToday.trendWord.bearish": "bearish",
+  "eventsToday.noteTrend": "In last {trend} trend, {name} has moved",
+  "eventsToday.noteLast": "Last time, {name} has moved",
   "expiring.nextWeek": "Next week",
   "expiring.weekRange": "{from} – {to}",
   "expiring.tag": "OPT Expiry {day}",
@@ -7273,6 +8120,9 @@ function addMinutes(start: string, add: number) {
   "expiryAll.forecast": "Forecast",
   "expiryAll.actual": "Actual",
   "expiryAll.due": "Due",
+  "expiryAll.outlook.bullish": "Bullish",
+  "expiryAll.outlook.bearish": "Bearish",
+  "expiryAll.lastTime": "Last time, {name} moved",
   "expiryAll.bullishFor": "Bullish for {name}",
   "expiryAll.bearishFor": "Bearish for {name}",
   "expiryAll.scalper": "Open {name} in ScalpPro",
@@ -7355,7 +8205,18 @@ function addMinutes(start: string, add: number) {
   "signals.commodity.gas": "Natural Gas",
   "signals.mcx": "MCX · {name}",
   "signals.win25": "Win rate ≥ 25% ({count})",
-  "signals.banknifty": "Bank Nifty"
+  "signals.banknifty": "Bank Nifty",
+  "allEvents.title": "All Events",
+  "allEvents.forecast": "Forecast: {trend}",
+  "allEvents.actual": "Actual: {trend}",
+  "allEvents.trend.bullish": "Bullish",
+  "allEvents.trend.bearish": "Bearish",
+  "allEvents.note.trend": "In last trend, {name} has moved",
+  "allEvents.note.last": "Last time, {name} has moved",
+  "allEvents.note.since": "Since the report, {name} has moved",
+  "allEvents.empty": "Nothing on the calendar here yet",
+  "upcomingEvents.title": "Upcoming Events",
+  "upcomingEvents.optionsExpiry": "Options Expiry"
 }
 ```
 
@@ -7671,7 +8532,7 @@ import type { Flow, Go } from '../types'
 import { Home, type HomePart, type Product } from './screens/Home'
 import { LotSummary } from './commodities/screens/LotSummary'
 import { AssetPage } from './commodities/screens/AssetPage'
-import { ExpiryTimeline } from './commodities/screens/ExpiryTimeline'
+import { CommodityCalendar } from './commodities/screens/CommodityCalendar'
 import { goldMiniAsset, illiquidAsset } from './commodities/data'
 import { OptionChain } from './option-chain/screens/OptionChain'
 import { OrderPad } from './order-pad/screens/OrderPad'
@@ -7709,7 +8570,17 @@ export const fno: Flow = {
     { id: 'breakevenSheet', group: 'Scalper', label: 'Breakeven sheet', values: [{ value: 'v1', label: 'Version 1' }, { value: 'v2', label: 'Version 2' }], default: 'v2', floatOn: ['fno-36'] },
     // Expiring This Week (Commodities, fno-08): Version 1 = the sideways card rail; Version 2 = a short calendar (the
     // calendar's first 3 entries on their days, View all → fno-38); Version 3 = that calendar in one card.
-    { id: 'expiringVersion', group: 'Commodities', label: 'Expiring This Week', values: [{ value: 'v1', label: 'Version 1' }, { value: 'v2', label: 'Version 2' }, { value: 'v3', label: 'Version 3' }, { value: 'v4', label: 'Version 4' }], default: 'v4', floatOn: ['fno-08', 'fno-09', 'fno-10'] },
+    // Version 4 = the day row over the next month; Version 5 = no View all — a Day / Week switch (Day: today, a time
+    // column instead of dates; Week: the V4 row, only days a contract expires).
+    { id: 'expiringVersion', group: 'Commodities', label: 'Expiring This Week', values: [{ value: 'v1', label: 'Version 1' }, { value: 'v2', label: 'Version 2' }, { value: 'v3', label: 'Version 3' }, { value: 'v4', label: 'Version 4' }, { value: 'v5', label: 'Version 5' }, { value: 'v6', label: 'Version 6 · All Events' }, { value: 'v7', label: 'Version 7 · Upcoming Events' }], default: 'v4', floatOn: ['fno-08', 'fno-09', 'fno-10', 'fno-38'] },
+    // Expiring This Week v6 (Figma 7030:9072 “All Events”): the events before their release (Forecast + past moves) or after (Actual + the move since).
+    { id: 'eventPhase', group: 'Commodities', label: 'Event phase', values: [{ value: 'pre', label: 'Pre-event · Forecast' }, { value: 'post', label: 'Post-event · Actual' }], default: 'pre', showIf: { expiringVersion: ['v6', 'v7'] }, floatOn: ['fno-08', 'fno-09', 'fno-10', 'fno-38'] },
+    // Expiring This Week v5 · Day view: Version 1 = today by time in grey blocks (real data topped up); Versions 2 and 3 =
+    // Figma 7006:4490 “Events today” (sample list) — 2 with the time on the page and 24 avatars, 3 with grey time blocks.
+    { id: 'dayView', group: 'Commodities', label: 'Day view', values: [{ value: 'v1', label: 'Version 1' }, { value: 'v2', label: 'Version 2 · Plain time' }, { value: 'v3', label: 'Version 3 · Time blocks' }], default: 'v2', showIf: { expiringVersion: ['v5'] }, floatOn: ['fno-08', 'fno-09', 'fno-10'] },
+    // Event card (the EIA events on Expiring This Week and the Commodity calendar): Version 2 adds the event's trend
+    // (Bullish / Bearish tag) and a gradient strip at the card's foot with the last release's move ("Gold +1.40%").
+    { id: 'eventCard', group: 'Commodities', label: 'Event card', values: [{ value: 'v1', label: 'Version 1' }, { value: 'v2', label: 'Version 2 · Trend + last move' }], default: 'v1', floatOn: ['fno-08', 'fno-09', 'fno-10', 'fno-38'] },
     // Expiring This Week v2 / v3: which sample week the short calendar shows, to see how the days split — 3 today,
     // 2 today + 1 tomorrow, or 1 a day. Contracts only on the first two days; the event comes on day 3.
     // “Calendar days” (sample weeks) archived 2026-11-24 — real data only (commodities/archive/expiryPreviewSamples.ts).
@@ -7751,7 +8622,7 @@ export const fno: Flow = {
     { id: 'fno-09', section: 'home', group: 'home', name: 'Commodities · heatmap & Smart Futures', figma: '6754:63637', tab: true, note: 'The same long screen, scrolled to the Futures Heatmap.', render: (go) => home(go, 'heatmap', { product: 'commodities' }) },
     { id: 'fno-10', section: 'home', group: 'home', name: 'Contract picker · Commodities', figma: '6754:65111', tab: true, note: 'From the chart’s “Gold ⇕”. Equity / Commodities tabs in the sheet header’s bottom slot, commodity chips (All, Gold, Silver …) under them; contracts grouped by commodity as radio rows (Gold Mini tagged “Lowest Margin”). Picking one updates the chart and closes the sheet.', render: (go) => home(go, undefined, { product: 'commodities', picker: 'commodities' }) },
     { id: 'fno-11', section: 'home', group: 'home', name: 'Contract picker · Equity', figma: '6754:65054', tab: true, note: 'The same sheet on its Equity tab: the 8 index contracts.', render: (go) => home(go, undefined, { product: 'commodities', picker: 'equity' }) },
-    { id: 'fno-38', section: 'home', name: 'Commodity calendar (View all)', figma: '', badge: 'new', note: 'From View all on Expiring This Week (fno-08). All / Options / Futures / Events (flat tabs with icons, sticky; All merges them by day). Options rows: option chain (→ fno-17, back returns here) + ScalpPro; futures: ScalpPro only; events: no buttons. Days from today under a month section header (SectionHeader, content-primary): weekday over the date in one grey block (surface-secondary; today inverted (surface-inverted)), beside it one card with that day’s contracts — one day can hold several. A row is only the name with flat ScalpPro (→ fno-05) and open-contract (→ asset page fno-21) icon buttons. Back → Commodities home. Layout after the user’s reference (Expiry Calendar screenshot, 2026-11-17; no Figma frame yet).', render: (go) => <ExpiryTimeline onBack={() => go('fno-08')} onAsset={() => go('fno-21')} onOptionChain={() => { markMove('fno-17', 'forward'); go('fno-17') }} onScalper={() => openScalper(go)} /> },
+    { id: 'fno-38', section: 'home', name: 'Commodity calendar (View all)', figma: '', badge: 'new', note: 'From View all on Expiring This Week (fno-08). All / Options / Futures / Events (flat tabs with icons, sticky; All merges them by day). Options rows: option chain (→ fno-17, back returns here) + ScalpPro; futures: ScalpPro only; events: no buttons. Days from today under a month section header (SectionHeader, content-primary): weekday over the date in one grey block (surface-secondary; today inverted (surface-inverted)), beside it one card with that day’s contracts — one day can hold several. A row is only the name with flat ScalpPro (→ fno-05) and open-contract (→ asset page fno-21) icon buttons. Back → Commodities home. Layout after the user’s reference (Expiry Calendar screenshot, 2026-11-17; no Figma frame yet).', render: (go) => <CommodityCalendar onBack={() => go('fno-08')} onAsset={() => go('fno-21')} onOptionChain={() => { markMove('fno-17', 'forward'); go('fno-17') }} onScalper={() => openScalper(go)} /> },
     { id: 'fno-12', section: 'asset', group: 'lot', name: 'Gold Summary · by price', figma: '6754:65113', note: 'From a commodity shortcut on fno-08. Gold lot tabs (Gold, Gold Mini, Gold Guinea, Gold Ten, Gold Petal) in the Actionbar’s bottom slot; Futures (View all) and Options (View option chain, expiry month, category pills, Filter, sort). The sort opens a sheet: By Price · By Volume · Margin per lot.', render: (go) => <LotSummary onBack={() => go('fno-08')} onChain={() => go('fno-17')} onAsset={(illiquid) => go(illiquid ? 'fno-22' : 'fno-21')} onOrder={(side) => go(side === 'buy' ? 'fno-25' : 'fno-29')} /> },
     { id: 'fno-13', section: 'asset', group: 'lot', name: 'Gold Summary · by volume', figma: '6754:65288', note: 'Sorted by volume: each option shows its traded volume, no change.', render: (go) => <LotSummary sort="volume" onBack={() => go('fno-08')} onChain={() => go('fno-17')} onAsset={(illiquid) => go(illiquid ? 'fno-22' : 'fno-21')} onOrder={(side) => go(side === 'buy' ? 'fno-25' : 'fno-29')} /> },
     { id: 'fno-14', section: 'asset', group: 'lot', name: 'Gold Summary · margin per lot', figma: '6754:65444', note: 'Sorted by margin per lot: each option shows the margin for one lot, no change.', render: (go) => <LotSummary sort="margin" onBack={() => go('fno-08')} onChain={() => go('fno-17')} onAsset={(illiquid) => go(illiquid ? 'fno-22' : 'fno-21')} onOrder={(side) => go(side === 'buy' ? 'fno-25' : 'fno-29')} /> },
@@ -8524,7 +9395,7 @@ export function Home({ product = 'equity', segment = 'equity', picker, onProduct
   return <Screen className={flat.flatCards} top={<Header scrolled={scrolled} initials={user.name.split(' ').map((name) => name[0]).join('')} onSearch={onSearch} onProfile={onProfile} onWallet={onWallet} onDash={onDash} />} bottom={<FnoNav onHome={onHome} onDestination={open} onChain={onChain} onScalper={onScalper} />} sheet={sheet} toast={created ? <Aerobar floating type="success" heading={t('watchlists.created')} onDismiss={() => setCreated(false)} /> : undefined}>
     <Stack ref={root}>
       <div data-fno="top"><Overview onDestination={open} /></div>
-      <div data-fno="tabs" className={styles.stickyTabs} data-stuck={tabsStuck || undefined}><Tabs aria-label="F&O products" appearance="ribbon" size="md" className={styles.productTabs} value={product} onChange={(v) => onProduct(v)} items={[{ value: 'equity', label: t('equity'), iconLeft: <span className={styles.ribbonIcon}><MaskIcon src={equity} /></span> }, { value: 'commodities', label: t('commodities'), iconLeft: <span className={styles.ribbonIcon}><MaskIcon src={commodities} /></span> }, { value: 'strategies', label: t('strategies'), iconLeft: <span className={styles.ribbonIcon}><MaskIcon src={strategies} /></span> }]} /></div>
+      <div data-fno="tabs" className={styles.stickyTabs} data-stuck={tabsStuck || undefined}><Tabs aria-label="F&O products" appearance="ribbon" size="md" width="fill" className={styles.productTabs} value={product} onChange={(v) => onProduct(v)} items={[{ value: 'equity', label: t('equity'), iconLeft: <span className={styles.ribbonIcon}><MaskIcon src={equity} /></span> }, { value: 'commodities', label: t('commodities'), iconLeft: <span className={styles.ribbonIcon}><MaskIcon src={commodities} /></span> }, { value: 'strategies', label: t('strategies'), iconLeft: <span className={styles.ribbonIcon}><MaskIcon src={strategies} /></span> }]} /></div>
       <div key={product} data-fno="content" className={styles.productContent} data-slide={slide ?? undefined}>
       {product === 'equity' && <Stack gap="32" className={styles.feed}>
         <Shortcuts onWatchlist={() => scroll('watchlists')} onDestination={open} />
@@ -11416,6 +12287,8 @@ export function setFlowOption(flow: string, option: string, fallback: string, va
   const key = optionKey(flow, option, fallback)
   try { localStorage.setItem(key, value) } catch { /* storage off: this visit only */ }
   memory.set(key, value)
+  // A link's `o=` value is only where the visit starts: once someone picks in the settings panel, their pick wins.
+  linkOptions.delete(`${flow}.${option}`)
   optionListeners.forEach((l) => l())
 }
 

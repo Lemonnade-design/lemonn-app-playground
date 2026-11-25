@@ -1478,6 +1478,8 @@ export function setFlowOption(flow: string, option: string, fallback: string, va
   const key = optionKey(flow, option, fallback)
   try { localStorage.setItem(key, value) } catch { /* storage off: this visit only */ }
   memory.set(key, value)
+  // A link's `o=` value is only where the visit starts: once someone picks in the settings panel, their pick wins.
+  linkOptions.delete(`${flow}.${option}`)
   optionListeners.forEach((l) => l())
 }
 
