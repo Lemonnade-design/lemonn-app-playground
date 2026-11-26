@@ -170,13 +170,14 @@ sit over the stock page. Every Activate US Stocks / Retry (Home card, FTUX sheet
 **L3 gap:** IDFC FIRST Bank has no logo in `@l3/assets/company-logos`; its mark (cropped from the Wikimedia Commons
 logo, 128 px) is kept in `screens/activate/assets/idfcfirstb.png` until L3 adds it.
 
-- **94 · Declarations** — header "Agree to invest abroad", then four checkbox rows, 24 apart with no separators. Each
-  row has a short statement and, under it, the document behind it as a link with a chevron: "I'm not a US citizen or US
-  tax resident" (Form W-8BEN), "India is my only country of tax residence" (FATCA declaration), "I've read the risks of
-  investing in US stocks" (Risk Disclosure), "I accept ViewTrade's account terms" (Terms and conditions).
-  Tapping anywhere on a row ticks it; the link opens the document without ticking. Above the button, "Opened by
-  ViewTrade IFSC · IFSCA regulated" with a lock. "Agree and continue" (Large, full width) turns on once all four are
-  ticked → 95. L3 gap: no small text link with a chevron, so the document links are styled locally.
+- **94 · Declarations** — header "Agree to invest abroad", then the four statements as a plain list, no checkboxes: each
+  one plain ListCell row (the statement, a chevron on the right) that opens the document behind it — "I'm not a US
+  citizen or US tax resident" (Form W-8BEN), "India is my only country of tax residence" (FATCA declaration), "I've read
+  the risks of investing in US stocks" (Risk Disclosure), "I accept ViewTrade's account terms" (Terms and conditions).
+  As the live app's "Declarations for investment" page. The user agrees once, with the "I agree to all of the above"
+  checkbox above the button. "Agree and continue" (Large, full width) looks disabled
+  until it's ticked, but a tap on it then shakes the agree row so the eye goes to it; ticked → 95. Under the button,
+  "Opened by ViewTrade IFSC · IFSCA regulated" with a lock.
 - **95 · Bank** — only ICICI, HDFC, Kotak, IDFC FIRST and Axis can send money abroad for us (`screens/activate/data.ts`).
   Their logos show only where the user has to add a bank (none supported, or "Add bank"), not over a list that already
   has an eligible bank.
@@ -202,6 +203,11 @@ Every tap he wired is kept. The main path: FTUX sheet → Activate → Declarati
 
 ### Changelog
 
+- 26 Nov 2026 · Declarations sheet (us-stocks-94): 4 more space between the agree row and Agree and continue.
+- 26 Nov 2026 · Declarations sheet (us-stocks-94): Agree and continue looks disabled again until the agree box is ticked; a tap on it before then shakes the agree row.
+- 26 Nov 2026 · Declarations sheet (us-stocks-94): Agree and continue is always on; tapped before "I agree to all of the above" is ticked, the agree row shakes.
+- 26 Nov 2026 · Declarations sheet (us-stocks-94): each statement is one row with a chevron that opens its document (no separate link), as the live app.
+- 26 Nov 2026 · Declarations sheet (us-stocks-94): the four statements are a plain list (statement + document link, no checkbox); the user agrees once with "I agree to all of the above" above the button, which turns Agree and continue on.
 - 26 Nov 2026 · Declarations sheet (us-stocks-94): an "I agree to all of the above" checkbox above Agree and continue ticks or clears all four rows (ticked only when all four are; part-ticked stays clear, no dash); "Opened by ViewTrade IFSC · IFSCA regulated" moved under the button; the terms link reads just "Terms and conditions".
 - 2026-11-26 · Order pad V7 top bar: a Share icon (L3 ghost ActionbarAction) left of the TP/SL switch, a 1px hairline between them, as some live-app accounts show it. EDGE CASE: not shown to a normal user in the live app, only on some internal staff accounts; the condition and what it shares are unknown (maybe internal testing). Developers confirm with product and show it only then; the prototype hides it by default — Settings → Trade → "Share icon (edge case)" shows it (Web Share of the page link). L3 gap: no divider between Actionbar actions.
 - 2026-11-26 · Fee breakdown sheet audit: the whole breakdown sits in an L3 static Card; Charges and Taxes start collapsed, a chevron right after the label opens their sub-fees (as Balance details); Brokerage, Charges and Taxes labels primary, sub-fees and the note secondary; Estimated fee in Heading/16; amounts never wrap (they broke one character per line beside the long note). US Brokerage label is "Brokerage (0.25%)". L3 gaps: KeyValueRow's label is always secondary, its value cell can shrink, the total row has no heading size.
@@ -23178,7 +23184,7 @@ export const registry: UsScreenEntry[] = [
   { figma: '5796:88163', tab: 'mutualFund', id: 'us-stocks-07', section: 'entry', name: "E5 · Mutual Fund home · US banner", note: "Mutual Fund home with a US Stocks on Lemonn banner." },
   { figma: '5826:93627', id: 'us-stocks-13', badge: 'changed', badgeNote: "Follows the user status in the prototype settings", section: 'ftux', name: "S03 · Stock page", note: "The US stock page in the user status picked in the prototype settings (User status): KYC pending → Complete KYC (as us-stocks-74); not activated, under review or failed → Activate US Stocks in place of Buy / Sell; activated → Buy / Sell (us-stocks-31), with Your Holdings when the user holds NVDA (us-stocks-32). Home, Search and Market open this page." },
   { figma: '9001:10', id: 'us-stocks-74', hidden: true, badge: 'new', badgeNote: "Not in Jojo's Figma: a user whose Lemonn KYC isn't done", section: 'ftux', name: "Stock page · KYC not done", note: "Stock page for a user whose Lemonn (Indian) KYC isn't complete: US Stocks can't be activated yet, so the button is Complete KYC (→ the KYC flow, kyc-01) in place of Activate. Back → the US tab with the KYC card (stocks-21)." },
-  { figma: '9001:60', id: 'us-stocks-94', over: 'us-stocks-13', badge: 'new', badgeNote: "Not in Figma: replaces the risk disclosure sheet", section: 'ftux', name: "Activate · Declarations", note: "Activate US Stocks, step 1 of 2, as a bottom sheet over the screen the user tapped Activate on (Home, a stock page, the wallet …): four checkbox rows, each a short statement with its document as a link — Form W-8BEN, FATCA declaration, Risk Disclosure, ViewTrade terms; tapping a row ticks it, the link doesn't. An \"I agree to all of the above\" checkbox above the button ticks all four. \"Opened by ViewTrade IFSC · IFSCA regulated\" under the button. Agree and continue turns on once all four are ticked → the bank sheet (us-stocks-95). Closing it goes back to the stock page. Every Activate US Stocks / Retry in the app comes here." },
+  { figma: '9001:60', id: 'us-stocks-94', over: 'us-stocks-13', badge: 'new', badgeNote: "Not in Figma: replaces the risk disclosure sheet", section: 'ftux', name: "Activate · Declarations", note: "Activate US Stocks, step 1 of 2, as a bottom sheet over the screen the user tapped Activate on (Home, a stock page, the wallet …): four statements as a plain list, each one row with a chevron that opens its document (Form W-8BEN, FATCA declaration, Risk Disclosure, ViewTrade terms); no checkbox per row. One \"I agree to all of the above\" checkbox above the button; Agree and continue looks disabled until it's ticked, and a tap on it before then shakes the agree row. \"Opened by ViewTrade IFSC · IFSCA regulated\" under the button → the bank sheet (us-stocks-95). Closing it goes back to the stock page. Every Activate US Stocks / Retry in the app comes here." },
   { figma: '9001:61', id: 'us-stocks-95', over: 'us-stocks-13', badge: 'new', badgeNote: "Not in Figma: follows User status → Bank accounts", section: 'ftux', name: "Activate · Bank", note: "Step 2 of 2, swapped in on the same sheet. The user's linked banks: supported ones as radio cards tagged Eligible (the first picked already), others greyed out and tagged Not supported. Add bank (Tertiary Small, header) shows the five supported banks' logos + Add bank account. Verify and activate → the automatic bank check (us-stocks-97). With no supported bank linked it shows us-stocks-96. User status → Bank accounts: Three (+ SBI) / SBI only show both cases." },
   { figma: '9001:62', id: 'us-stocks-96', over: 'us-stocks-13', badge: 'new', badgeNote: "Not in Figma: no supported bank linked", section: 'ftux', name: "Activate · Bank · no supported bank", note: "No supported bank linked (the user always has one — KYC adds it): a card on top says their bank can't send money abroad and shows the five supported banks' logos; then the user's own banks greyed out and tagged Not supported. Add bank account → Add bank account (deposit-12), which comes back to us-stocks-95 once verified; no Not now — closing the sheet (back, scrim) returns to the stock page." },
   { figma: '9001:63', id: 'us-stocks-97', over: 'us-stocks-13', badge: 'new', badgeNote: "Not in Figma: the bank check", section: 'ftux', name: "Activate · Bank · verifying", note: "The bank check (run by us on the bank details we already have, no money sent, nothing for the user to do) as a loader sheet over the stock page, as in account setup; can't be closed. Moves on by itself to activation submitted (stocks-18)." },
@@ -23281,16 +23287,6 @@ export const idForFigma = new Map(registry.map((s) => [s.figma, s.id]))
   text-align: center;
 }
 
-/* A declaration in a sheet: its checkbox, and the text beside it (the scheme / form name is a link). */
-.declaration {
-  display: block;
-  cursor: pointer;
-}
-
-.declaration > * > :first-child {
-  flex: none;
-}
-
 .declarationText {
   display: block;
   font: var(--l3-text-description-14);
@@ -23298,10 +23294,7 @@ export const idForFigma = new Map(registry.map((s) => [s.figma, s.id]))
 }
 
 .declarations {
-  display: flex;
-  flex-direction: column;
-  gap: var(--l3-spacing-24);
-  margin: 0;
+  margin: 0 calc(-1 * var(--l3-spacing-16)); /* plain ListCell rows bring their own 16 side padding */
   padding: 0;
   list-style: none;
 }
@@ -23311,25 +23304,42 @@ export const idForFigma = new Map(registry.map((s) => [s.figma, s.id]))
   color: var(--l3-content-primary);
 }
 
-/* FLAG: small text link with a chevron — L3 Button has no inline link variant (L3 gap). */
-.docLink {
-  display: inline-flex;
-  align-self: flex-start;
-  align-items: center;
-  gap: var(--l3-spacing-02);
-  padding: 0;
-  border: 0;
-  background: none;
-  font: var(--l3-text-label-12);
-  color: var(--l3-content-accent-discover-default);
-  cursor: pointer;
-}
-
-/* "I agree to all of the above" above the button (26 Nov, user). */
+/* "I agree to all of the above" above the button: the one checkbox on the sheet (26 Nov, user). */
 .acceptAll {
   display: block;
   align-self: stretch;
+  margin-block-end: var(--l3-spacing-04); /* 4 more to the button than the dock's own gap (user, 26 Nov) */
   cursor: pointer;
+}
+
+/* Agree and continue, disabled-looking, with a see-through tap catcher over it while the box isn't ticked. */
+.ctaWrap {
+  position: relative;
+  align-self: stretch;
+}
+
+.ctaCatch {
+  position: absolute;
+  inset: 0;
+  cursor: pointer;
+}
+
+/* Agree and continue tapped before the box is ticked: the agree row shakes (side to side, 4 each way, settling; L3's long
+   duration), as the TP/SL blocked line (trade/Tpsl.module.css). L3 gap: no shake / error-attention motion. */
+.shake {
+  animation: shake var(--l3-motion-duration-long) var(--l3-motion-easing-standard);
+}
+
+@keyframes shake {
+  15% { transform: translateX(calc(-1 * var(--l3-spacing-04))); }
+  35% { transform: translateX(var(--l3-spacing-04)); }
+  55% { transform: translateX(calc(-1 * var(--l3-spacing-04))); }
+  75% { transform: translateX(calc(var(--l3-spacing-04) / 2)); }
+  90% { transform: translateX(calc(-1 * var(--l3-spacing-04) / 2)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shake { animation: none; }
 }
 
 /* "Opened by ViewTrade IFSC · IFSCA regulated" under the button, with a lock. */
@@ -23602,18 +23612,20 @@ function VerifyingSheet({ bank, backdrop }: { bank: string; backdrop?: boolean }
 
 ```tsx
 // us-stocks-94 · Activate US Stocks, step 1: the declarations as a bottom sheet over the stock page, like the app's
-// "agree to our Terms & Conditions" sheet. Four rows (26 Nov, the user's "US Stocks Declarations" HTML): each a checkbox,
-// a short statement and the document behind it as a link (Form W-8BEN, FATCA declaration, Risk Disclosure, ViewTrade's
-// terms). Rows 24 apart, no separators (26 Nov, user); the whole row ticks the box, the link doesn't. Above the button an "I agree to all of the
-// above" checkbox ticks all four at once (26 Nov, user); under it "Opened by ViewTrade IFSC · IFSCA
-// regulated" with a lock. "Agree and continue" turns on once all four are ticked →
-// the bank sheet (us-stocks-95).
+// "agree to our Terms & Conditions" sheet. Four statements (26 Nov, the user's "US Stocks Declarations" HTML), each with
+// the document behind it (Form W-8BEN, FATCA declaration, Risk Disclosure, ViewTrade's terms), as a plain list: no
+// checkbox per row; each is one plain ListCell row with a chevron that opens its document (26 Nov, user, after the live
+// app's "Declarations for investment" page). The user agrees once, with the "I agree to all of the above" checkbox above
+// the button. "Agree and continue" looks disabled until it's ticked, but a tap on it then shakes the agree row to draw
+// the eye; ticked → the bank sheet (us-stocks-95). Under
+// the button "Opened by ViewTrade IFSC · IFSCA regulated" with a lock.
 import { useId, useState } from 'react'
 import { BottomSheetHeader } from '@l3/components/BottomSheet'
 import { Button } from '@l3/components/Button'
 import { ButtonGroup } from '@l3/components/ButtonGroup'
 import { Checkbox } from '@l3/components/Checkbox'
 import { Icon } from '@l3/components/Icon'
+import { ListCell } from '@l3/components/ListCell'
 import { Stack } from '@l3/components/Stack'
 import { msChevronRight, msLock } from '@l3/icons/material'
 import { useUsNav } from '../../nav'
@@ -23623,14 +23635,14 @@ import { ACTIVATE_BANK } from './ids'
 import styles from './Activate.module.css'
 
 const DECLARATIONS = ['w8ben', 'fatca', 'risk', 'terms'] as const
-type DeclarationId = (typeof DECLARATIONS)[number]
 
 export function DeclarationsScreen({ backdrop }: { backdrop?: boolean }) {
   const { go } = useUsNav()
   const headingId = useId()
-  const [agreed, setAgreed] = useState<Record<DeclarationId, boolean>>({ w8ben: false, fatca: false, risk: false, terms: false })
-  const allAgreed = DECLARATIONS.every((id) => agreed[id])
-  const setAll = (on: boolean) => setAgreed({ w8ben: on, fatca: on, risk: on, terms: on })
+  const [agreed, setAgreed] = useState(false)
+  // A tap on the button before the box is ticked shakes the agree row (26 Nov, user). The count is the row's key, so
+  // every tap replays the shake.
+  const [shakes, setShakes] = useState(0)
   return (
     <ActivateSheet
       backdrop={backdrop}
@@ -23638,14 +23650,19 @@ export function DeclarationsScreen({ backdrop }: { backdrop?: boolean }) {
       header={<BottomSheetHeader size="sm" heading={t('declarations.title')} headingId={headingId} description={t('declarations.description')} />}
       footer={
         <ButtonGroup aria-label={t('declarations.actionsLabel')}>
-          {/* Accept all (26 Nov, user): ticks or clears all four at once; two states only, ticked when all four are, otherwise clear (no dash). */}
-          <label className={styles.acceptAll}>
+          {/* The one agreement for all four statements (26 Nov, user). */}
+          <label key={shakes} className={shakes > 0 ? `${styles.acceptAll} ${styles.shake}` : styles.acceptAll}>
             <Stack direction="horizontal" align="center" gap="12">
-              <Checkbox checked={allAgreed} onChange={(e) => setAll(e.target.checked)} />
+              <Checkbox checked={agreed} onChange={(e) => setAgreed(e.target.checked)} />
               <span className={styles.declarationSay}>{t('declarations.acceptAll')}</span>
             </Stack>
           </label>
-          <Button size="lg" fullWidth disabled={!allAgreed} onClick={() => go(ACTIVATE_BANK)}>{t('declarations.cta')}</Button>
+          {/* Looks disabled until the box is ticked (L3 disabled Button), but a tap still lands: a disabled button gets no
+              clicks, so a see-through catcher lies over it and shakes the agree row. */}
+          <div className={styles.ctaWrap}>
+            <Button size="lg" fullWidth disabled={!agreed} onClick={() => go(ACTIVATE_BANK)}>{t('declarations.cta')}</Button>
+            {!agreed && <span className={styles.ctaCatch} aria-hidden="true" onClick={() => setShakes((n) => n + 1)} />}
+          </div>
           <p className={styles.trust}>
             <Icon icon={msLock} size={12} />
             {t('declarations.trust')}
@@ -23653,23 +23670,18 @@ export function DeclarationsScreen({ backdrop }: { backdrop?: boolean }) {
         </ButtonGroup>
       }
     >
+      {/* Each statement is one row, the whole row opens its document (the live app's declarations page). */}
       <ul className={styles.declarations}>
         {DECLARATIONS.map((id) => (
-          // The whole row ticks the box (a label); the link opens the document without ticking it.
           <li key={id}>
-            <label className={styles.declaration}>
-              <Stack direction="horizontal" align="start" gap="12">
-                <Checkbox checked={agreed[id]} onChange={(e) => setAgreed({ ...agreed, [id]: e.target.checked })} />
-                <Stack gap="04">
-                  <span className={styles.declarationSay}>{t(`declarations.${id}.say`)}</span>
-                  {/* The document itself (not in the prototype). */}
-                  <button type="button" className={styles.docLink} onClick={(e) => e.preventDefault()}>
-                    {t(`declarations.${id}.doc`)}
-                    <Icon icon={msChevronRight} size={16} />
-                  </button>
-                </Stack>
-              </Stack>
-            </label>
+            {/* The document itself (not in the prototype). */}
+            <ListCell
+              as="button"
+              label={t(`declarations.${id}.say`)}
+              labelSize="14" /* the label never wraps; 16 cut the risks row at 392 */
+              iconRight={<Icon icon={msChevronRight} size={20} />}
+              onClick={() => {}}
+            />
           </li>
         ))}
       </ul>
