@@ -3295,14 +3295,10 @@ export const PRESENT = (() => {
   const [flow, option] = (linkParams.get('present') ?? '').split('.')
   return flow && option ? { flow, option } : null
 })()
-/**
- * Whether a setting belongs on a presentation link: the presented one, or a setting of the same flow that depends on it
- * (`showIf` names it — e.g. V5's Option 1 / Option 2 under the version switch). The dependent one still shows only while
- * it applies.
- */
-export function presentIncludes(flow: string, option: { id: string; showIf?: Record<string, string[]> }) {
-  if (!PRESENT || flow !== PRESENT.flow) return false
-  return option.id === PRESENT.option || Boolean(option.showIf && PRESENT.option in option.showIf)
+/** Whether a setting belongs on a presentation link: only the presented one (a setting it depends on — e.g. the
+ * version under `?present=fno.timelineOption` — is set with `o=` and stays as set). */
+export function presentIncludes(flow: string, option: { id: string }) {
+  return Boolean(PRESENT && flow === PRESENT.flow && option.id === PRESENT.option)
 }
 // A showcase frame sits in a page of phones: the app focusing its sheet must never scroll that page to it.
 if (SHOWCASE) {
