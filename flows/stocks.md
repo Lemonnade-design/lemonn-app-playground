@@ -433,6 +433,7 @@ lower on the page is scrolled into view first). `components/MarketSwitchGuide.ts
   16 / 24 icon or an Avatar only — event rows are plain buttons laid out with Stack.
 
 ### Changelog
+- 2026-11-26 — **Invest in Ideas** (Home, Indian tab) is drawn like the US tab's Explore by themes: the same rail (1.9 across) of theme cards — overlapping logos (3, then +n), the basket's name, its 1Y return (sample) and "N stocks ›" (`BasketCard` in `components/us/ThemeCard.tsx`, shared by both). Was big cards with a 3 × 2 logo grid.
 - 2026-11-25 — US coming soon: new setting "Coming soon flag" — V2 (default) the white circle stays and the flag melts into it, as the Minted app's waving flags: tilted 4°, fading away at the left and the bottom, a soft white blur over its left edge (inside the circle) · V1 the flag in the white circle as it was.
 - 2026-11-25 — US coming soon: the in-review card adds one line under "Verification in progress" — "We'll notify you once your account is activated" (L3 Description/12, secondary, ListCell description).
 - 2026-11-24 · Home IN shortcuts: Smart Invest takes the lightbulb icon; Trade Ideas takes the Boosted ETFs icon, recoloured green for IN.
@@ -21707,6 +21708,12 @@ export function HeroButtons({ buy, add }: HeroButtonsProps) {
 }
 
 /* ---- Highlights ---- */
+/* The rail makes both cards as tall as the taller one; the body takes the spare height so the Explore button sits at the
+   card's bottom in both (L3 gap: Card with a footer doesn't grow its body). */
+.highlightBox > :first-child {
+  flex-grow: 1;
+}
+
 .highlightCard {
   display: flex;
   flex-direction: column;
@@ -21720,17 +21727,6 @@ export function HeroButtons({ buy, add }: HeroButtonsProps) {
 .highlightValue {
   font: var(--l3-text-heading-24);
   color: var(--l3-content-accent-success-default);
-}
-
-/* ---- Invest in ideas: a basket's logos, 3 across (live app; L3 Avatar tops out at 48 — live tiles are ~80) ---- */
-.logos {
-  display: grid;
-  grid-template-columns: repeat(3, max-content);
-  gap: var(--l3-spacing-12);
-}
-
-.basketName {
-  font: var(--l3-text-heading-18);
 }
 
 /* ---- Disclosure ---- */
@@ -22668,38 +22664,32 @@ function MarketSection({ flag, label, value, muted, onClick, children }: { flag:
 
 ```tsx
 import { useState } from 'react'
-import { Avatar } from '@l3/components/Avatar'
-import { Card } from '@l3/components/Card'
-import { Icon } from '@l3/components/Icon'
 import { Inset } from '@l3/components/Inset'
 import { Section } from '@l3/components/Section'
 import { SectionHeader } from '@l3/components/SectionHeader'
 import { Stack } from '@l3/components/Stack'
-import { msChevronRight } from '@l3/icons/material'
 import { Rail } from '../../../shared/ui/Rail'
 import { disclosure, ideaBaskets } from '../data'
 import { t } from '../copy'
+import { BasketCard } from './us/ThemeCard'
 import styles from './Home.module.css'
 
-/** Invest in ideas: curated baskets — their stocks' logos, the name and the count. */
+/** Invest in ideas: curated baskets, drawn like the US tab's Explore by themes (26 Nov, the user's call): the same rail
+ *  (1.9 across) of theme cards — overlapping logos, the name, its 1Y return and "N stocks ›". */
 export function IdeaBaskets({ onOpen }: { onOpen?: (id: string) => void }) {
   return (
     <Stack as="section" gap="16" aria-label={t('baskets.title')}>
       <Inset paddingInline="16" paddingBlock="00"><SectionHeader title={t('baskets.title')} /></Inset>
-      <Rail label={t('baskets.railLabel')} visible={1.19}>
+      <Rail label={t('baskets.railLabel')} visible={1.9}>
         {ideaBaskets.map((b) => (
-          <Card key={b.id} onClick={() => onOpen?.(b.id)}>
-            <span className={styles.cardStack}>
-              <span className={styles.logos} aria-hidden="true">
-                {b.stocks.slice(0, 6).map((s) => <Avatar key={s.symbol} initials={s.initials} src={s.logoUrl} size={48} shape="rounded" />)}
-              </span>
-              <span className={styles.basketName}>{b.name}</span>
-              <span className={styles.cardRow}>
-                <span className={styles.cardCount}>{t('baskets.count', { count: b.stocks.length })}</span>
-                <span className={styles.chevron}><Icon icon={msChevronRight} /></span>
-              </span>
-            </span>
-          </Card>
+          <BasketCard
+            key={b.id}
+            name={b.name}
+            return1y={b.return1y}
+            count={b.stocks.length}
+            logos={b.stocks.map((s) => ({ key: s.symbol, src: s.logoUrl, initials: s.initials }))}
+            onClick={onOpen ? () => onOpen(b.id) : undefined}
+          />
         ))}
       </Rail>
     </Stack>
@@ -23125,7 +23115,7 @@ export function Highlights({ onExplore }: { onExplore?: (id: string) => void }) 
       <Inset paddingInline="16" paddingBlock="00"><SectionHeader title={t('highlights.title')} /></Inset>
       <Rail label={t('highlights.railLabel')} visible={1.67}>
         {highlights.map((h) => (
-          <Card key={h.id} onClick={() => onExplore?.(h.id)} footer={<Button variant="tertiary" onClick={() => onExplore?.(h.id)}>{h.cta}</Button>}>
+          <Card key={h.id} className={styles.highlightBox} onClick={() => onExplore?.(h.id)} footer={<Button variant="tertiary" onClick={() => onExplore?.(h.id)}>{h.cta}</Button>}>
             <span className={styles.highlightCard}>
               <span className={styles.highlightTitle}>{h.title}</span>
               <span className={styles.cardMeta}>{h.description}</span>
@@ -25756,19 +25746,34 @@ type Theme = (typeof themes)[number]
 export function ThemeCard({ theme, onOpen }: { theme: Theme; onOpen: (id: ThemeId) => void }) {
   const name = t(`us.theme.${theme.id}`)
   return (
-    <Card onClick={() => onOpen(theme.id)} surface="primary" className={styles.card} aria-label={t('us.themes.cardLabel', { name, pct: theme.returns['1y'].toFixed(1), count: theme.symbols.length })}>
+    <BasketCard
+      name={name}
+      return1y={theme.returns['1y']}
+      count={theme.symbols.length}
+      logos={theme.symbols.map((sym) => ({ key: sym, src: usLogo(sym), initials: sym.slice(0, 1) }))}
+      onClick={() => onOpen(theme.id)}
+    />
+  )
+}
+
+type StackLogo = { key: string; src?: string; initials: string }
+
+/** The theme card's look for any basket of stocks (also the Indian home's Invest in Ideas, 26 Nov, the user's call). */
+export function BasketCard({ name, return1y, count, logos, onClick }: { name: string; return1y: number; count: number; logos: StackLogo[]; onClick?: () => void }) {
+  return (
+    <Card onClick={onClick} surface="primary" className={styles.card} aria-label={t('us.themes.cardLabel', { name, pct: return1y.toFixed(1), count })}>
       <Stack gap="12">
-        <LogoStack symbols={theme.symbols} max={3} />
+        <LogoStack logos={logos} max={3} />
         {/* Name and 1Y return read as one block: 4 apart (the card's other parts stay 12 apart). */}
         <Stack gap="04">
           <span className={styles.name}>{name}</span>
           <span className={styles.return}>
-            <PriceChange value={theme.returns['1y']} size="md" />
+            <PriceChange value={return1y} size="md" />
             <span className={styles.returnLabel}>{t('us.themes.return1y')}</span>
           </span>
         </Stack>
         <span className={styles.foot}>
-          <span>{t('us.themes.stocks', { count: theme.symbols.length })}</span>
+          <span>{t('us.themes.stocks', { count })}</span>
           <Icon icon={msChevronRight} size={16} />
         </span>
       </Stack>
@@ -25788,12 +25793,13 @@ export function ThemeRail({ onOpen }: { onOpen: (id: ThemeId) => void }) {
 
 /** Overlapping logos (32, or 24 on the F1 home's theme tiles; up to `max`) and a "+n" disc for the rest (`more` when the
  *  list given is only the first few). */
-export function LogoStack({ symbols, max = 3, size = 32, more }: { symbols: string[]; max?: number; size?: 24 | 32; more?: number }) {
-  const rest = more ?? symbols.length - max
+export function LogoStack({ symbols, logos, max = 3, size = 32, more }: { symbols?: string[]; logos?: StackLogo[]; max?: number; size?: 24 | 32; more?: number }) {
+  const items = logos ?? (symbols ?? []).map((sym) => ({ key: sym, src: usLogo(sym), initials: sym.slice(0, 1) }))
+  const rest = more ?? items.length - max
   return (
     <span className={styles.stack} data-size={size} aria-hidden="true">
-      {symbols.slice(0, max).map((sym) => (
-        <span key={sym} className={styles.stackLogo}><Avatar src={usLogo(sym)} initials={sym.slice(0, 1)} size={size} /></span>
+      {items.slice(0, max).map((logo) => (
+        <span key={logo.key} className={styles.stackLogo}><Avatar src={logo.src} initials={logo.initials} size={size} /></span>
       ))}
       {rest > 0 && <span className={styles.stackMore}>+{rest}</span>}
     </span>
@@ -30465,11 +30471,12 @@ export const highlights: Highlight[] = [
 ]
 
 /** Invest in ideas: curated baskets of stocks. */
-export type IdeaBasket = { id: string; name: string; stocks: Stock[] }
+/** return1y: the basket's 1-year return in % (sample), shown on its card like a US theme's. */
+export type IdeaBasket = { id: string; name: string; return1y: number; stocks: Stock[] }
 export const ideaBaskets: IdeaBasket[] = [
-  { id: 'oil-price-dependents', name: 'Oil Price Dependents', stocks: [stocks.JINDRILL, stocks.HINDOILEXP, stocks.OIL, stocks.ONGC, stocks.RELIANCE] },
+  { id: 'oil-price-dependents', name: 'Oil Price Dependents', return1y: 12.4, stocks: [stocks.JINDRILL, stocks.HINDOILEXP, stocks.OIL, stocks.ONGC, stocks.RELIANCE] },
   // the second basket only peeks in at the screen edge on the live app; its full name isn't visible there
-  { id: 'high-growth', name: 'High Growth Media', stocks: [stocks.TVTODAY, stocks.NTPC, stocks.IRFC, stocks.COALINDIA, stocks.HAL, stocks.SBIN, stocks.NHPC] },
+  { id: 'high-growth', name: 'High Growth Media', return1y: 28.6, stocks: [stocks.TVTODAY, stocks.NTPC, stocks.IRFC, stocks.COALINDIA, stocks.HAL, stocks.SBIN, stocks.NHPC] },
 ]
 
 /** The broker's regulatory line (shared with Profile). */
@@ -60943,6 +60950,17 @@ export const userStatusOptions: FlowOption[] = [
     floatOn: [...STATUS_SCREENS, 'us-stocks-28'],
   },
   {
+    // Indian stocks in Portfolio (26 Nov, user: developers need every empty state). Empty = no Indian holdings, no open
+    // orders, no SIPs and no order history: Holdings shows its empty state and ₹0 on the IN P&L card, and each Orders
+    // list (Open, SIP, History) its own. Positions are always empty in the prototype.
+    id: 'inPortfolio',
+    group: 'User status',
+    label: 'Indian stocks',
+    values: [{ value: 'some', label: 'Holdings & orders' }, { value: 'none', label: 'Empty' }],
+    default: 'some',
+    floatOn: ['us-stocks-05', 'us-stocks-06', 'us-stocks-77', 'us-stocks-91', 'us-stocks-92'],
+  },
+  {
     // Bank accounts linked to Lemonn (KYC adds the first). None = the add-money screens ask for one first.
     id: 'banks',
     group: 'User status',
@@ -60957,6 +60975,9 @@ export const userStatusOptions: FlowOption[] = [
 
 const option = (id: string) => userStatusOptions.find((o) => o.id === id)!
 const useStatus = (id: string) => useFlowOption(USER_STATUS, id, option(id).default)
+
+/** True when the user has no Indian holdings or orders ("User status → Indian stocks: Empty"). */
+export const useInPortfolioEmpty = () => useStatus('inPortfolio') === 'none'
 
 export type UserStatus = { kyc: KycStatus; us: UsActivation; usWallet: UsWallet; usHoldings: UsHoldings; banks: BankLinks }
 

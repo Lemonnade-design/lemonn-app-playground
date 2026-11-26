@@ -28992,6 +28992,17 @@ export const userStatusOptions: FlowOption[] = [
     floatOn: [...STATUS_SCREENS, 'us-stocks-28'],
   },
   {
+    // Indian stocks in Portfolio (26 Nov, user: developers need every empty state). Empty = no Indian holdings, no open
+    // orders, no SIPs and no order history: Holdings shows its empty state and ₹0 on the IN P&L card, and each Orders
+    // list (Open, SIP, History) its own. Positions are always empty in the prototype.
+    id: 'inPortfolio',
+    group: 'User status',
+    label: 'Indian stocks',
+    values: [{ value: 'some', label: 'Holdings & orders' }, { value: 'none', label: 'Empty' }],
+    default: 'some',
+    floatOn: ['us-stocks-05', 'us-stocks-06', 'us-stocks-77', 'us-stocks-91', 'us-stocks-92'],
+  },
+  {
     // Bank accounts linked to Lemonn (KYC adds the first). None = the add-money screens ask for one first.
     id: 'banks',
     group: 'User status',
@@ -29006,6 +29017,9 @@ export const userStatusOptions: FlowOption[] = [
 
 const option = (id: string) => userStatusOptions.find((o) => o.id === id)!
 const useStatus = (id: string) => useFlowOption(USER_STATUS, id, option(id).default)
+
+/** True when the user has no Indian holdings or orders ("User status → Indian stocks: Empty"). */
+export const useInPortfolioEmpty = () => useStatus('inPortfolio') === 'none'
 
 export type UserStatus = { kyc: KycStatus; us: UsActivation; usWallet: UsWallet; usHoldings: UsHoldings; banks: BankLinks }
 

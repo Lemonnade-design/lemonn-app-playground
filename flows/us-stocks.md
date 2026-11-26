@@ -170,11 +170,13 @@ sit over the stock page. Every Activate US Stocks / Retry (Home card, FTUX sheet
 **L3 gap:** IDFC FIRST Bank has no logo in `@l3/assets/company-logos`; its mark (cropped from the Wikimedia Commons
 logo, 128 px) is kept in `screens/activate/assets/idfcfirstb.png` until L3 adds it.
 
-- **94 · Declarations** — header "Agree to invest abroad", then two checkbox rows, the declaration written beside each
-  box: LRS (resident, own money, $250,000 a year, allowed purposes) and US tax (Form W-8BEN: not a US person, 25% on
-  dividends, report in your ITR). The scheme / form name is an inline link to the full text; the rest of the row is a
-  label, so tapping anywhere on it ticks the box. "I agree and continue" (Large, full width) turns on once both are
-  ticked → 95.
+- **94 · Declarations** — header "Agree to invest abroad", then four checkbox rows, 24 apart with no separators. Each
+  row has a short statement and, under it, the document behind it as a link with a chevron: "I'm not a US citizen or US
+  tax resident" (Form W-8BEN), "India is my only country of tax residence" (FATCA declaration), "I've read the risks of
+  investing in US stocks" (Risk Disclosure), "I accept ViewTrade's account terms" (Terms and conditions · 8 documents).
+  Tapping anywhere on a row ticks it; the link opens the document without ticking. Above the button, "Opened by
+  ViewTrade IFSC · IFSCA regulated" with a lock. "Agree and continue" (Large, full width) turns on once all four are
+  ticked → 95. L3 gap: no small text link with a chevron, so the document links are styled locally.
 - **95 · Bank** — only ICICI, HDFC, Kotak, IDFC FIRST and Axis can send money abroad for us (`screens/activate/data.ts`).
   Their logos show only where the user has to add a bank (none supported, or "Add bank"), not over a list that already
   has an eligible bank.
@@ -199,6 +201,11 @@ Every tap he wired is kept. The main path: FTUX sheet → Activate → Declarati
 → Pay on bank → Money ready → Stock → Buy → Executed → Wallet → Withdraw.
 
 ### Changelog
+- 2026-11-26 · Portfolio → Holdings: new option "Holdings market switch". V2 (default) · an L3 pill group (IN Stocks / US Stocks, flags) where the "Your holdings" heading was, Sort (Tertiary Small) on its right, no underline tabs above, 24 below the cards; V1 · the underline tabs over the heading, as before. The page dots under the P&L cards are gone (both versions).
+- 2026-11-26 · Portfolio → Positions: one level less (the indices are one Section 24 / 12; the positions sheet is the content block itself, 16 sides, 24 top and bottom). A hairline separates the two; "Your positions" has a settings button (Tertiary Small, icon only) right of Refresh. Orders by date: 16 between an open day's last card and the next day's line.
+- 2026-11-26 · Portfolio empty states: new app setting "User status → Indian stocks" (Holdings & orders · Empty). Empty: Holdings IN shows "Build Wealth with Stocks" (Explore Stocks → Stocks home) and ₹0.00 on the IN P&L card (no MTF switch); Orders IND Open / SIP / History show their empty states with (0) counts. US empties follow User account state as before; Positions is always empty.
+- 2026-11-26 · Portfolio → Orders: the cards are grouped by the day they were placed (OrderDateGroups), IND and US, Open and History. Each day is a plain L3 List cell (date + chevron, no side inset, 44 tall) with a hairline between days; the newest day starts open. L3 gap: no disclosure row (aria-expanded).
+- 2026-11-26 · Portfolio → Orders, Indian cards: no shadow (border only). L3 gap: a clickable Card can't drop its elevation.
 - 2026-11-24 · Portfolio holdings, IN card for a user with MTF (option "MTF holdings", default Has MTF): "IN Holdings ⇅" is a switch like Total Returns — IN Holdings (total) → Stocks → MTF — and the card's current, invested and returns follow it (one card in place of the live app's three). Data: `inHoldingsSplit` (portfolioData.ts), stocks + MTF = the total. V1 card only.
 - 2026-11-24 · Portfolio holdings cards: the market glow is back in the bottom-right corner (IN green, US blue), over surface/default; still no shadow.
 - 2026-11-24 · Portfolio holdings cards: the Total Returns switch icon is 14 (was 16).
@@ -396,6 +403,10 @@ Every tap he wired is kept. The main path: FTUX sheet → Activate → Declarati
 - 2026-11-04 — **Bank sheet, eligible case cleaned up:** no logos over the list; Add bank moved to the sheet header,
   opening the supported-banks view. Sheets over Home now sit above its sticky search bar, action bar and marquee.
 - 2026-11-04 — **Bank sheet, two cases:** supported banks shown up front as logos; linked banks tagged Eligible (pre-picked) or Not supported (greyed out); ₹1 consent checkbox removed. New User status bank values Three (+ SBI) / SBI only.
+- 2026-11-26 — **Boost sheet** (Indian pad): "Activate Boost" / "How Boost works" (was "leverage", to match the card), the example's second row is the card's 4x (was 3x), a line that Boost is a simplified MTF under its terms, and "By proceeding you agree to the Terms & Conditions" under the button.
+- 2026-11-26 — **Sell: Limit and SL** (not in Figma): the sell pad's Market / Limit / SL tabs went nowhere. New H12 · Sell · Limit (us-stocks-106) and H13 · Sell · SL (us-stocks-107), same holding as H03; every sell pad switches between H03, H12 and H13.
+- 2026-11-26 — **Indian pad: Net Positions** (developer feedback): on the Intraday tab, with an open intraday position in the stock, "Net Positions: +1" sits under the quantity (label 14, secondary). Selling into a long intraday position hides the "no shares to sell" error. Preview: Settings → Trade → "Open intraday position" (+1 · −1 · None).
+- 2026-11-26 — **Declarations: four rows** (from the user's "US Stocks Declarations" HTML): W-8BEN, FATCA, Risk Disclosure, ViewTrade terms, each a short statement with its document as a link; ViewTrade IFSC line above "Agree and continue"; LRS row dropped.
 - 2026-11-04 — **Activation as bottom sheets:** the declarations and bank pages are now two sheets over the stock page (T&C-sheet style): two checkbox rows with the text beside them (whole row ticks), CTA on once both are ticked; the bank step and ₹1 check swap in on the same sheet. Stage bar removed.
 - 2026-11-04 — **Declarations simplified:** one card per declaration with its "I agree" row and checkbox at the foot of the card (no section headers), three short points each (TCS line dropped), Continue always on with a tooltip + red edges when something is unticked.
 - 2026-11-04 — **Activation is two pages now** (`us-stocks-94`…`97`): declarations (LRS, US tax), then the bank — a supported bank (ICICI, HDFC, Kotak, IDFC FIRST, Axis) + the ₹1 check, or add one. The risk disclosure sheet (`us-stocks-14`, and the Stocks flow's `stocks-12`) is gone; Confirm details (`us-stocks-15`) is hidden. Every Activate / Retry goes to 94.
@@ -22455,6 +22466,7 @@ export function UsMainNav({ value }: { value: Section }) {
   "portfolio.tab.orders": "Orders",
   "portfolio.indices": "Market Indices",
   "portfolio.expiresToday": "Expires today",
+  "portfolio.positionSettings": "Positions settings",
   "portfolio.positions": "Your positions",
   "portfolio.refresh": "Refresh",
   "portfolio.positionsEmpty.title": "Build Wealth Daily",
@@ -22486,16 +22498,22 @@ export function UsMainNav({ value }: { value: Section }) {
   "portfolio.usEmpty.none.title": "Build Wealth in Dollars",
   "portfolio.usEmpty.none.text": "Seems like you don’t have any US holdings right now",
   "portfolio.usEmpty.none.button": "Explore US Market",
+  "portfolio.inEmpty.title": "Build Wealth with Stocks",
+  "portfolio.inEmpty.text": "Seems like you don’t have any Indian holdings right now",
+  "portfolio.inEmpty.button": "Explore Stocks",
   "declarations.title": "Agree to invest abroad",
   "declarations.description": "Needed by RBI and US tax rules before you buy US Stocks",
-  "declarations.lrs.before": "I declare under RBI's ",
-  "declarations.lrs.link": "Liberalised Remittance Scheme",
-  "declarations.lrs.after": " that I'm a resident Indian sending my own money, within $250,000 a year across all my banks and apps, and not for margin trading or other barred uses.",
-  "declarations.tax.before": "I sign ",
-  "declarations.tax.link": "Form W-8BEN",
-  "declarations.tax.after": ": I'm not a US citizen, green card holder or US tax resident. 25% US tax is withheld on dividends, and I'll report my US holdings in my ITR.",
+  "declarations.w8ben.say": "I'm not a US citizen or US tax resident",
+  "declarations.w8ben.doc": "Form W-8BEN",
+  "declarations.fatca.say": "India is my only country of tax residence",
+  "declarations.fatca.doc": "FATCA declaration",
+  "declarations.risk.say": "I've read the risks of investing in US stocks",
+  "declarations.risk.doc": "Risk Disclosure",
+  "declarations.terms.say": "I accept ViewTrade's account terms",
+  "declarations.terms.doc": "Terms and conditions · 8 documents",
+  "declarations.trust": "Opened by ViewTrade IFSC · IFSCA regulated",
   "declarations.actionsLabel": "Declarations",
-  "declarations.cta": "I agree and continue",
+  "declarations.cta": "Agree and continue",
   "bankCheck.title": "Pick the bank you'll invest from",
   "bankCheck.description": "US Stocks need an eligible bank account",
   "bankCheck.supportedLabel": "Supported banks for US Stocks",
@@ -22801,6 +22819,20 @@ export const usStocks: Flow = {
       default: 'v1', // V1 by default (24 Nov, user)
       floatOn: ['us-stocks-05'],
     },
+    // Portfolio → Holdings, the market switch (26 Nov, the user's call): V2 · an IN / US pill group in place of the "Your
+    // holdings" heading, Sort on its right, no underline tabs above; V1 · underline IN Stocks / US Stocks tabs over the
+    // "Your holdings" heading, as it was.
+    {
+      id: 'holdingsSwitch',
+      group: 'Portfolio',
+      label: 'Holdings market switch',
+      values: [
+        { value: 'v1', label: 'V1 · tabs over the heading' },
+        { value: 'v2', label: 'V2 · pill group by Sort' },
+      ],
+      default: 'v2', // V2 by default (26 Nov, user)
+      floatOn: ['us-stocks-05'],
+    },
     // Portfolio → Holdings, a user with MTF holdings (24 Nov, the user's call): the IN card's "IN Holdings" label becomes a
     // switch — IN Holdings (total) ⇄ Stocks ⇄ MTF — one card in place of the three cards the live app shows.
     {
@@ -22845,6 +22877,21 @@ export const usStocks: Flow = {
           { value: 'us', label: 'US pad', short: 'US' },
         ],
       },
+    },
+    // An open intraday position in the stock (26 Nov, developer feedback): the Indian pad's Intraday tab shows
+    // "Net Positions: +1" (or −1) under the quantity, as the current pad does; None hides it.
+    {
+      id: 'intradayPos',
+      group: 'Trade',
+      label: 'Open intraday position',
+      picker: 'dropdown',
+      values: [
+        { value: '1', label: '+1 (bought today)' },
+        { value: '-1', label: '−1 (sold today)' },
+        { value: '0', label: 'None' },
+      ],
+      default: '1',
+      floatOn: ORDER_PAD_SCREEN_IDS,
     },
     // "TP/SL sheet" archived 24 Nov (the user's call): B · one price card per leg kept (TpslSheetB); A · box inside each
     // leg card archived. useTpslSheet() returns 'b'; A's code stays in TpslSheet.
@@ -23085,7 +23132,7 @@ export const registry: UsScreenEntry[] = [
   { figma: '5796:88163', tab: 'mutualFund', id: 'us-stocks-07', section: 'entry', name: "E5 · Mutual Fund home · US banner", note: "Mutual Fund home with a US Stocks on Lemonn banner." },
   { figma: '5826:93627', id: 'us-stocks-13', badge: 'changed', badgeNote: "Follows the user status in the prototype settings", section: 'ftux', name: "S03 · Stock page", note: "The US stock page in the user status picked in the prototype settings (User status): KYC pending → Complete KYC (as us-stocks-74); not activated, under review or failed → Activate US Stocks in place of Buy / Sell; activated → Buy / Sell (us-stocks-31), with Your Holdings when the user holds NVDA (us-stocks-32). Home, Search and Market open this page." },
   { figma: '9001:10', id: 'us-stocks-74', hidden: true, badge: 'new', badgeNote: "Not in Jojo's Figma: a user whose Lemonn KYC isn't done", section: 'ftux', name: "Stock page · KYC not done", note: "Stock page for a user whose Lemonn (Indian) KYC isn't complete: US Stocks can't be activated yet, so the button is Complete KYC (→ the KYC flow, kyc-01) in place of Activate. Back → the US tab with the KYC card (stocks-21)." },
-  { figma: '9001:60', id: 'us-stocks-94', over: 'us-stocks-13', badge: 'new', badgeNote: "Not in Figma: replaces the risk disclosure sheet", section: 'ftux', name: "Activate · Declarations", note: "Activate US Stocks, step 1 of 2, as a bottom sheet over the screen the user tapped Activate on (Home, a stock page, the wallet …): two checkbox rows — the LRS declaration and the US tax (W-8BEN) declaration, each written beside its checkbox with the scheme / form as a link; tapping anywhere on a row ticks it. I agree and continue turns on once both are ticked → the bank sheet (us-stocks-95). Closing it goes back to the stock page. Every Activate US Stocks / Retry in the app comes here." },
+  { figma: '9001:60', id: 'us-stocks-94', over: 'us-stocks-13', badge: 'new', badgeNote: "Not in Figma: replaces the risk disclosure sheet", section: 'ftux', name: "Activate · Declarations", note: "Activate US Stocks, step 1 of 2, as a bottom sheet over the screen the user tapped Activate on (Home, a stock page, the wallet …): four checkbox rows, each a short statement with its document as a link — Form W-8BEN, FATCA declaration, Risk Disclosure, ViewTrade terms (8 documents); tapping anywhere on a row ticks it. \"Opened by ViewTrade IFSC · IFSCA regulated\" above the button. Agree and continue turns on once all four are ticked → the bank sheet (us-stocks-95). Closing it goes back to the stock page. Every Activate US Stocks / Retry in the app comes here." },
   { figma: '9001:61', id: 'us-stocks-95', over: 'us-stocks-13', badge: 'new', badgeNote: "Not in Figma: follows User status → Bank accounts", section: 'ftux', name: "Activate · Bank", note: "Step 2 of 2, swapped in on the same sheet. The user's linked banks: supported ones as radio cards tagged Eligible (the first picked already), others greyed out and tagged Not supported. Add bank (Tertiary Small, header) shows the five supported banks' logos + Add bank account. Verify and activate → the automatic bank check (us-stocks-97). With no supported bank linked it shows us-stocks-96. User status → Bank accounts: Three (+ SBI) / SBI only show both cases." },
   { figma: '9001:62', id: 'us-stocks-96', over: 'us-stocks-13', badge: 'new', badgeNote: "Not in Figma: no supported bank linked", section: 'ftux', name: "Activate · Bank · no supported bank", note: "No supported bank linked (the user always has one — KYC adds it): a card on top says their bank can't send money abroad and shows the five supported banks' logos; then the user's own banks greyed out and tagged Not supported. Add bank account → Add bank account (deposit-12), which comes back to us-stocks-95 once verified; no Not now — closing the sheet (back, scrim) returns to the stock page." },
   { figma: '9001:63', id: 'us-stocks-97', over: 'us-stocks-13', badge: 'new', badgeNote: "Not in Figma: the bank check", section: 'ftux', name: "Activate · Bank · verifying", note: "The bank check (run by us on the bank details we already have, no money sent, nothing for the user to do) as a loader sheet over the stock page, as in account setup; can't be closed. Moves on by itself to activation submitted (stocks-18)." },
@@ -23121,6 +23168,8 @@ export const registry: UsScreenEntry[] = [
   { figma: '5837:95507', id: 'us-stocks-48', section: 'activated', name: "H04 · Sell · no shares", note: "Account has no shares of this stock to sell." },
   { figma: '5837:95447', id: 'us-stocks-49', section: 'activated', name: "H05 · Sell · more than you hold", note: "Sell quantity is more than the shares held." },
   { figma: '5837:95391', id: 'us-stocks-50', section: 'activated', name: "H11 · Sell · Open buy order", note: "An open buy order exists, so some shares are on hold." },
+  { figma: '9001:70', id: 'us-stocks-106', badge: 'new', badgeNote: "Not in Figma: the sell pad's Limit tab", section: 'activated', name: "H12 · Sell · Limit", note: "Sell pad, Limit tab: a limit price card (1% over the last price); sells only at that price or higher today. Market / Limit / SL on every sell pad switch between H03, H12 and H13." },
+  { figma: '9001:71', id: 'us-stocks-107', badge: 'new', badgeNote: "Not in Figma: the sell pad's SL tab", section: 'activated', name: "H13 · Sell · SL", note: "Sell pad, SL tab: trigger price and limit under the last price; places a sell limit once the price falls to the trigger." },
   { figma: '5837:95371', id: 'us-stocks-51', section: 'activated', name: "H06 · Sell result · executed", note: "Sell order executed. Proceeds withdrawable after 1 working day." },
   { figma: '5837:95352', id: 'us-stocks-52', section: 'activated', name: "H07 · Sell result · rejected", note: "Sell order rejected." },
   { figma: '5852:99084', id: 'us-stocks-53', group: 'wallet', section: 'wallet', name: "W0 · Wallet · Indian tab", note: "Wallet opens on the INR tab; tapping USD Wallet flips the body in place (same page) to the US state the user status picks. USD Wallet is tagged NEW." },
@@ -23201,15 +23250,43 @@ export const idForFigma = new Map(registry.map((s) => [s.figma, s.id]))
   color: var(--l3-content-secondary);
 }
 
-/* FLAG: inline text link — L3 Button has no inline link variant. */
-.inlineLink {
+.declarations {
+  display: flex;
+  flex-direction: column;
+  gap: var(--l3-spacing-24);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.declarationSay {
+  font: var(--l3-text-label-14);
+  color: var(--l3-content-primary);
+}
+
+/* FLAG: small text link with a chevron — L3 Button has no inline link variant (L3 gap). */
+.docLink {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  gap: var(--l3-spacing-02);
   padding: 0;
   border: 0;
   background: none;
-  font: inherit;
+  font: var(--l3-text-label-12);
   color: var(--l3-content-accent-discover-default);
-  text-decoration: underline;
   cursor: pointer;
+}
+
+/* "Opened by ViewTrade IFSC · IFSCA regulated" above the button, with a lock. */
+.trust {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--l3-spacing-04);
+  margin: 0;
+  font: var(--l3-text-description-12);
+  color: var(--l3-content-secondary);
 }
 
 /* A supported bank's short name under its logo (no-supported-bank sheet). */
@@ -23470,29 +23547,33 @@ function VerifyingSheet({ bank, backdrop }: { bank: string; backdrop?: boolean }
 ### `src/flows/us-stocks/screens/activate/DeclarationsScreen.tsx`
 
 ```tsx
-// us-stocks-94 · Activate US Stocks, step 1: the two declarations as a bottom sheet over the stock page, like the app's
-// "agree to our Terms & Conditions" sheet — one checkbox each with the declaration written beside it: LRS (RBI's scheme
-// for sending money abroad) and US tax (Form W-8BEN), the scheme / form as links to the full text. Not in Jojo's Figma:
-// built on 4 Nov from the brief. "I agree and continue" turns on once both are ticked → the bank sheet (us-stocks-95).
+// us-stocks-94 · Activate US Stocks, step 1: the declarations as a bottom sheet over the stock page, like the app's
+// "agree to our Terms & Conditions" sheet. Four rows (26 Nov, the user's "US Stocks Declarations" HTML): each a checkbox,
+// a short statement and the document behind it as a link (Form W-8BEN, FATCA declaration, Risk Disclosure, ViewTrade's
+// terms · 8 documents). Rows 24 apart, no separators (26 Nov, user); the whole row ticks the box, the link doesn't. Above the button:
+// "Opened by ViewTrade IFSC · IFSCA regulated" with a lock. "Agree and continue" turns on once all four are ticked →
+// the bank sheet (us-stocks-95).
 import { useId, useState } from 'react'
 import { BottomSheetHeader } from '@l3/components/BottomSheet'
 import { Button } from '@l3/components/Button'
 import { ButtonGroup } from '@l3/components/ButtonGroup'
 import { Checkbox } from '@l3/components/Checkbox'
+import { Icon } from '@l3/components/Icon'
 import { Stack } from '@l3/components/Stack'
+import { msChevronRight, msLock } from '@l3/icons/material'
 import { useUsNav } from '../../nav'
 import { ActivateSheet } from './ActivateSheet'
 import { t } from './copy'
 import { ACTIVATE_BANK } from './ids'
 import styles from './Activate.module.css'
 
-const DECLARATIONS = ['lrs', 'tax'] as const
+const DECLARATIONS = ['w8ben', 'fatca', 'risk', 'terms'] as const
 type DeclarationId = (typeof DECLARATIONS)[number]
 
 export function DeclarationsScreen({ backdrop }: { backdrop?: boolean }) {
   const { go } = useUsNav()
   const headingId = useId()
-  const [agreed, setAgreed] = useState<Record<DeclarationId, boolean>>({ lrs: false, tax: false })
+  const [agreed, setAgreed] = useState<Record<DeclarationId, boolean>>({ w8ben: false, fatca: false, risk: false, terms: false })
   const allAgreed = DECLARATIONS.every((id) => agreed[id])
   return (
     <ActivateSheet
@@ -23501,26 +23582,34 @@ export function DeclarationsScreen({ backdrop }: { backdrop?: boolean }) {
       header={<BottomSheetHeader size="sm" heading={t('declarations.title')} headingId={headingId} description={t('declarations.description')} />}
       footer={
         <ButtonGroup aria-label={t('declarations.actionsLabel')}>
+          <p className={styles.trust}>
+            <Icon icon={msLock} size={12} />
+            {t('declarations.trust')}
+          </p>
           <Button size="lg" fullWidth disabled={!allAgreed} onClick={() => go(ACTIVATE_BANK)}>{t('declarations.cta')}</Button>
         </ButtonGroup>
       }
     >
-      <Stack gap="24">
+      <ul className={styles.declarations}>
         {DECLARATIONS.map((id) => (
-          // The whole row ticks the box (a label); the link opens the full text without ticking it.
-          <label key={id} className={styles.declaration}>
-            <Stack direction="horizontal" align="start" gap="12">
-            <Checkbox checked={agreed[id]} onChange={(e) => setAgreed({ ...agreed, [id]: e.target.checked })} />
-            <span className={styles.declarationText}>
-              {t(`declarations.${id}.before`)}
-              {/* The full scheme / form text (not in the prototype). */}
-              <button type="button" className={styles.inlineLink} onClick={(e) => e.preventDefault()}>{t(`declarations.${id}.link`)}</button>
-              {t(`declarations.${id}.after`)}
-            </span>
-            </Stack>
-          </label>
+          // The whole row ticks the box (a label); the link opens the document without ticking it.
+          <li key={id}>
+            <label className={styles.declaration}>
+              <Stack direction="horizontal" align="start" gap="12">
+                <Checkbox checked={agreed[id]} onChange={(e) => setAgreed({ ...agreed, [id]: e.target.checked })} />
+                <Stack gap="04">
+                  <span className={styles.declarationSay}>{t(`declarations.${id}.say`)}</span>
+                  {/* The document itself (not in the prototype). */}
+                  <button type="button" className={styles.docLink} onClick={(e) => e.preventDefault()}>
+                    {t(`declarations.${id}.doc`)}
+                    <Icon icon={msChevronRight} size={16} />
+                  </button>
+                </Stack>
+              </Stack>
+            </label>
+          </li>
         ))}
-      </Stack>
+      </ul>
     </ActivateSheet>
   )
 }
@@ -29734,6 +29823,7 @@ import { lmSwitchArrowVertical } from '@l3/icons/lemonnade'
 import { Usd } from '../../../../../shared/money'
 import { useFlowOption } from '../../../../../shared/prototype'
 import { inHoldingsSplit } from '../portfolioData'
+import { useInPortfolioEmpty } from '../../../../../shared/userStatus'
 import { HoldingsCardV2 } from './HoldingsCardV2'
 import styles from './HoldingsCards.module.css'
 
@@ -29767,7 +29857,8 @@ export function HoldingsCards({
   const scrollingToPick = useRef(false)
   const [oneDay, setOneDay] = useState(false)
   const v2 = useFlowOption('us-stocks', 'pnlCard', 'v1') === 'v2' // Portfolio → "P&L card" (24 Nov, user)
-  const hasMtf = useFlowOption('us-stocks', 'inMtf', 'yes') === 'yes' // Portfolio → "MTF holdings" (24 Nov, user)
+  // Portfolio → "MTF holdings" (24 Nov, user); a user with no Indian stocks (User status → Indian stocks: Empty) has none.
+  const hasMtf = useFlowOption('us-stocks', 'inMtf', 'yes') === 'yes' && !useInPortfolioEmpty()
   const [inView, setInView] = useState<InView>('all')
 
   // bring the picked card into view
@@ -29861,19 +29952,7 @@ export function HoldingsCards({
           )
         })}
       </div>
-      <span className={styles.dots} role="tablist" aria-label="Market">
-        {order.map((id) => (
-          <button
-            key={id}
-            type="button"
-            role="tab"
-            aria-selected={id === market}
-            aria-label={labels[id].short}
-            className={styles.dot}
-            onClick={() => onMarket(id)}
-          />
-        ))}
-      </span>
+      {/* The page dots under the cards are gone (26 Nov, user: "hide"): the IN / US switch below already picks the card. */}
     </div>
   )
 }
@@ -30095,7 +30174,7 @@ import { Stack } from '@l3/components/Stack'
 import { Tab, Tabs } from '@l3/components/Tabs'
 import { msFilterList } from '@l3/icons/material'
 import { useUsMarketSnapshot } from '../../../../../shared/data/usStocks'
-import { useUsJourney } from '../../../../../shared/userStatus'
+import { useInPortfolioEmpty, useUsJourney } from '../../../../../shared/userStatus'
 import { useUsNav } from '../../../nav'
 import { historyOrders, openOrder, openOrders, type UsOrder } from '../../orders/data'
 import {
@@ -30117,6 +30196,7 @@ import {
 } from '../../orders/indianOrders'
 import { InOrderCard, InSipCard } from '../../orders/InOrderCard'
 import { OrderCard } from '../../orders/OrderCard'
+import { OrderDateGroups } from '../../orders/OrderDateGroups'
 import { NO_FILTERS, OrderFilterSheet, applyFilters, filterCount, type OrderFilters } from '../../orders/OrderFilterSheet'
 import { ORDER_KIND_LABEL, type OrderKind } from '../../orders/OrderKindSheet'
 import styles from './OrdersTab.module.css'
@@ -30160,6 +30240,11 @@ export function OrdersTab({ banner, initialMarket = 'in' }: { banner?: ReactNode
   const [inProduct, setInProduct] = useState<InProductPick>('all')
   const [inFilters, setInFilters] = useState<InFilters>(IN_NO_FILTERS)
   const lists = useUsOrderLists()
+  // User status → Indian stocks: Empty — no Indian orders or SIPs, so each Indian list shows its empty state.
+  const inEmpty = useInPortfolioEmpty()
+  const inOpen = inEmpty ? [] : inOpenOrders
+  const inHistory = inEmpty ? [] : inHistoryOrders
+  const sips = inEmpty ? [] : inSips
   const current = markets[market]
   // US has no SIP tab: coming over from SIP lands on Open.
   const usList: UsList = tab === 'history' ? 'history' : 'open'
@@ -30204,9 +30289,9 @@ export function OrdersTab({ banner, initialMarket = 'in' }: { banner?: ReactNode
             value={tab}
             onChange={(value) => setTab(value as OrderTab)}
             items={[
-              { value: 'open', label: `Open (${ofInProduct(inOpenOrders, inProduct).length})` },
-              { value: 'sip', label: `SIP (${inSips.length})` },
-              { value: 'history', label: `History (${ofInProduct(inHistoryOrders, inProduct).length})` },
+              { value: 'open', label: `Open (${ofInProduct(inOpen, inProduct).length})` },
+              { value: 'sip', label: `SIP (${sips.length})` },
+              { value: 'history', label: `History (${ofInProduct(inHistory, inProduct).length})` },
             ]}
           />
         )}
@@ -30217,15 +30302,15 @@ export function OrdersTab({ banner, initialMarket = 'in' }: { banner?: ReactNode
       ) : tab !== 'sip' ? (
         <InOrders
           list={tab}
-          orders={tab === 'open' ? inOpenOrders : inHistoryOrders}
+          orders={tab === 'open' ? inOpen : inHistory}
           product={inProduct}
           onProduct={setInProduct}
           filters={inFilters}
           onFilters={setInFilters}
         />
-      ) : inSips.length ? (
+      ) : sips.length ? (
         <Stack as="ul" gap="16" className={styles.list} aria-label="Indian SIPs">
-          {inSips.map((sip) => <li key={sip.id}><InSipCard sip={sip} /></li>)}
+          {sips.map((sip) => <li key={sip.id}><InSipCard sip={sip} /></li>)}
         </Stack>
       ) : (
         /* L3 Empty state with its default illustration, centred in the space under the tabs. */
@@ -30276,13 +30361,12 @@ function UsOrders({
   let content: ReactNode
   if (shown.length) {
     content = (
-      <Stack as="ul" gap="16" className={styles.list} aria-label={list === 'open' ? 'Open US orders' : 'US order history'}>
-        {shown.map((order) => (
-          <li key={order.id}>
-            <OrderCard order={order} onOpen={() => openOrder(go, order)} />
-          </li>
-        ))}
-      </Stack>
+      <OrderDateGroups
+        key={`${list}${kind}`}
+        orders={shown}
+        label={list === 'open' ? 'Open US orders' : 'US order history'}
+        renderCard={(order) => <OrderCard order={order} onOpen={() => openOrder(go, order)} />}
+      />
     )
   } else if (narrowed.length && activeFilters) {
     content = (
@@ -30375,9 +30459,12 @@ function InOrders({
   let content: ReactNode
   if (shown.length) {
     content = (
-      <Stack as="ul" gap="16" className={styles.list} aria-label={list === 'open' ? 'Open Indian orders' : 'Indian order history'}>
-        {shown.map((order) => <li key={order.id}><InOrderCard order={order} onOpen={() => openInOrder(go, order)} /></li>)}
-      </Stack>
+      <OrderDateGroups
+        key={`${list}${product}`}
+        orders={shown}
+        label={list === 'open' ? 'Open Indian orders' : 'Indian order history'}
+        renderCard={(order) => <InOrderCard order={order} onOpen={() => openInOrder(go, order)} />}
+      />
     )
   } else if (narrowed.length && activeFilters) {
     content = (
@@ -31090,9 +31177,10 @@ import { Tabs } from '@l3/components/Tabs'
 import { asset } from '../../../asset'
 import { openStock, stockFor } from '../../../data'
 import { useUsNav } from '../../../nav'
+import { useFlowOption } from '../../../../../shared/prototype'
 import { openStock as openInStock } from '../../../../../shared/data/openStock'
 import { Flag } from '../../../../../shared/ui/Flag'
-import { useUsJourney, type UsJourney } from '../../../../../shared/userStatus'
+import { useInPortfolioEmpty, useUsJourney, type UsJourney } from '../../../../../shared/userStatus'
 import { HoldingsCards, type HoldingsMarket } from '../components/HoldingsCards'
 import { t } from '../copy'
 import { ACTIVATE_US, KYC_START, STOCKS_HOME_ENTRY } from '../ids'
@@ -31102,6 +31190,9 @@ import type { SortValue } from '../sheets/SortSheet'
 import { HoldingCard } from './HoldingCard'
 import { PortfolioPage, SheetContent, SheetHeader } from './PortfolioPage'
 import styles from './Portfolio.module.css'
+
+/** The IN P&L card when the user holds no Indian stocks. */
+const IN_EMPTY_SUMMARY = { pnl: '₹0.00', pct: '0.00%', up: true, invested: '₹0.00', current: '₹0.00' }
 
 /** The US side of Holdings follows the user status (Settings → User status): which empty state, and where it leads. */
 function usEmpty(journey: UsJourney): { copy: 'kyc' | 'activate' | 'review' | 'failed' | 'none'; to: string } {
@@ -31131,38 +31222,64 @@ export function HoldingsTab({ market, onMarket, sort, onSort, sheetRef }: { mark
   const us = usHoldingNow()
   const holdsUs = journey === 'holding'
   const empty = usEmpty(journey)
+  const inEmpty = useInPortfolioEmpty()
+  const inSummary = inEmpty ? IN_EMPTY_SUMMARY : holdingsSummary.in
+  // Portfolio → "Holdings market switch" (26 Nov, user): V2 · the IN / US pill group takes the heading's place.
+  const pillSwitch = useFlowOption('us-stocks', 'holdingsSwitch', 'v2') === 'v2'
+  const marketItems = [
+    { value: 'in', label: t('portfolio.market.in'), iconLeft: <Flag code="in" /> },
+    { value: 'us', label: t('portfolio.market.us'), iconLeft: <Flag code="us" /> },
+  ]
+  const sortButton = <Button variant="tertiary" size="sm" iconLeft={<Icon icon={sortIcon} />} onClick={onSort}>{t('portfolio.sort')}</Button>
 
   return (
     <PortfolioPage
       sheetRef={sheetRef}
       top={
-        <Inset paddingInline="16" paddingBlock="24" className={styles.cardsInset}>
-          <HoldingsCards market={market} onMarket={onMarket} data={holdsUs ? { ...holdingsSummary, us: us.summary } : holdingsSummary} />
+        <Inset paddingInline="16" paddingBlock="24" className={styles.cardsInset} data-pill-switch={pillSwitch || undefined}>
+          <HoldingsCards market={market} onMarket={onMarket} data={{ in: inSummary, us: holdsUs ? us.summary : holdingsSummary.us }} />
         </Inset>
       }
     >
-      {/* The home's market tabs (V18): L3 underline tabs, round flags, "IN Stocks / US Stocks" (18 Nov). */}
-      <Tabs
-        appearance="underline"
-        width="fill"
-        aria-label={t('portfolio.markets')}
-        items={[
-          { value: 'in', label: t('portfolio.market.in'), iconLeft: <Flag code="in" /> },
-          { value: 'us', label: t('portfolio.market.us'), iconLeft: <Flag code="us" /> },
-        ]}
-        value={market}
-        onChange={(value) => onMarket(value as HoldingsMarket)}
-      />
-      <SheetContent>
-        <SheetHeader
-          title={t('portfolio.holdings')}
-          action={<Button variant="ghost" size="sm" iconLeft={<Icon icon={sortIcon} />} onClick={onSort}>{t('portfolio.sort')}</Button>}
+      {/* V1 · the home's market tabs (V18): L3 underline tabs, round flags, "IN Stocks / US Stocks" (18 Nov). */}
+      {!pillSwitch && (
+        <Tabs
+          appearance="underline"
+          width="fill"
+          aria-label={t('portfolio.markets')}
+          items={marketItems}
+          value={market}
+          onChange={(value) => onMarket(value as HoldingsMarket)}
         />
+      )}
+      <SheetContent>
+        {pillSwitch ? (
+          <Stack direction="horizontal" align="center" justify="between">
+            <Tabs
+              appearance="pill-group"
+              behavior="tabs"
+              width="hug"
+              aria-label={t('portfolio.markets')}
+              items={marketItems}
+              value={market}
+              onChange={(value) => onMarket(value as HoldingsMarket)}
+            />
+            {sortButton}
+          </Stack>
+        ) : (
+          <SheetHeader title={t('portfolio.holdings')} action={sortButton} />
+        )}
         {market === 'us' && !holdsUs ? (
           <EmptyState
             title={t(`portfolio.usEmpty.${empty.copy}.title`)}
             description={t(`portfolio.usEmpty.${empty.copy}.text`)}
             action={<Button variant="primary" size="sm" onClick={() => go(empty.to)}>{t(`portfolio.usEmpty.${empty.copy}.button`)}</Button>}
+          />
+        ) : market === 'in' && inEmpty ? (
+          <EmptyState
+            title={t('portfolio.inEmpty.title')}
+            description={t('portfolio.inEmpty.text')}
+            action={<Button variant="primary" size="sm" onClick={() => go(STOCKS_HOME_ENTRY)}>{t('portfolio.inEmpty.button')}</Button>}
           />
         ) : (
           <Stack as="ul" gap="16" className={styles.list}>
@@ -31209,6 +31326,11 @@ export function HoldingsTab({ market, onMarket, sort, onSort, sheetRef }: { mark
 /* Orders has no grey top: the sheet is the whole page, square. */
 .sheet[data-flat] {
   border-radius: 0;
+}
+
+/* Positions: a hairline between the market indices and the positions. */
+.sheet[data-divided] {
+  border-top: 1px solid var(--l3-border-light);
 }
 
 /* A block that takes the space left (so an empty state centres in it). */
@@ -31299,6 +31421,8 @@ export function HoldingsTab({ market, onMarket, sort, onSort, sheetRef }: { mark
 
 /* Holdings: 12 (not 24) under the P&L cards, above the market tabs (24 Nov, user). Inset has one block padding. */
 .cardsInset.cardsInset { padding-bottom: var(--l3-spacing-12); }
+/* V2 (pill group by Sort): the cards end 24 above the switch — the sheet's 8 + its content's 16 (26 Nov, no dots). */
+.cardsInset.cardsInset[data-pill-switch] { padding-bottom: 0; }
 ```
 
 ### `src/flows/us-stocks/screens/entry/portfolio/PortfolioPage.tsx`
@@ -31313,12 +31437,24 @@ import styles from './Portfolio.module.css'
  * One Portfolio tab's page: an optional grey top (summary cards, market indices) and the white sheet under it, which
  * runs down to the navbar. The sheet is 8 from its top edge and its bottom; what's inside brings its own 16 sides.
  * `sheetRef` is the part that slides when the tab changes. `flat`: no grey top, a square sheet (Orders).
+ * `padded` (Positions): the sheet is the content block itself — 16 sides, 24 top and bottom, 16 apart, no SheetContent
+ * inside — and a hairline separates it from the top (26 Nov, the user: "a clear separator line between the first
+ * section and the second").
  */
-export function PortfolioPage({ top, flat, sheetRef, children }: { top?: ReactNode; flat?: boolean; sheetRef?: Ref<HTMLElement>; children: ReactNode }) {
+export function PortfolioPage({ top, flat, padded, sheetRef, children }: { top?: ReactNode; flat?: boolean; padded?: boolean; sheetRef?: Ref<HTMLElement>; children: ReactNode }) {
   return (
     <Stack className={styles.page}>
       {top}
-      <Section as="section" ref={sheetRef} paddingBlock="08" gap="08" className={styles.sheet} data-flat={flat || undefined}>
+      <Section
+        as="section"
+        ref={sheetRef}
+        paddingBlock={padded ? '24' : '08'}
+        paddingInline={padded ? '16' : '00'}
+        gap={padded ? '16' : '08'}
+        className={styles.sheet}
+        data-flat={flat || undefined}
+        data-divided={padded || undefined}
+      >
         {children}
       </Section>
     </Stack>
@@ -31354,56 +31490,60 @@ import { Card } from '@l3/components/Card'
 import { EmptyState } from '@l3/components/EmptyState'
 import { Icon } from '@l3/components/Icon'
 import { Inset } from '@l3/components/Inset'
+import { Section } from '@l3/components/Section'
 import { Stack } from '@l3/components/Stack'
 import { Tag } from '@l3/components/Tag'
+import { msSettings } from '@l3/icons/material'
 import { Rail } from '../../../../../shared/ui/Rail'
 import { useUsNav } from '../../../nav'
 import { t } from '../copy'
 import { entryUrl } from '../entryAssets'
 import { FNO_HOME } from '../ids'
 import { marketIndices } from '../portfolioData'
-import { PortfolioPage, SheetContent, SheetHeader } from './PortfolioPage'
+import { PortfolioPage, SheetHeader } from './PortfolioPage'
 import styles from './Portfolio.module.css'
 
 /** Portfolio → Positions: market indices on the grey top; the positions (F&O only, so Indian only — no market tabs). */
 export function PositionsTab({ sheetRef }: { sheetRef?: Ref<HTMLElement> }) {
   const { go } = useUsNav()
   const top = (
-    <Inset paddingInline="00" paddingBlock="24">
-      <Stack gap="12">
-        <Inset paddingInline="16" paddingBlock="00">
-          <h2 className={styles.title}>{t('portfolio.indices')}</h2>
-        </Inset>
-        {/* Cards 189 wide at 392 (Figma): 1.85 across, the second one cut at the edge. */}
-        <Rail label={t('portfolio.indices')} visible={1.85}>
-          {marketIndices.map((index) => (
-            <Card key={index.key} surface="primary">
-              <Stack direction="horizontal" align="center" justify="between">
-                <span className={styles.indexName}>{index.name}</span>
-                <Tag variant="secondary" color="discover" size="sm">{t('portfolio.expiresToday')}</Tag>
-              </Stack>
-              <span className={styles.indexValue}>
-                {index.value} <span className={styles.up}>{index.change}</span> <span className={styles.up}>{index.pct}</span>
-              </span>
-            </Card>
-          ))}
-        </Rail>
-      </Stack>
-    </Inset>
+    <Section paddingBlock="24" gap="12">
+      <Inset paddingInline="16" paddingBlock="00">
+        <h2 className={styles.title}>{t('portfolio.indices')}</h2>
+      </Inset>
+      {/* Cards 189 wide at 392 (Figma): 1.85 across, the second one cut at the edge. */}
+      <Rail label={t('portfolio.indices')} visible={1.85}>
+        {marketIndices.map((index) => (
+          <Card key={index.key} surface="primary">
+            <Stack direction="horizontal" align="center" justify="between">
+              <span className={styles.indexName}>{index.name}</span>
+              <Tag variant="secondary" color="discover" size="sm">{t('portfolio.expiresToday')}</Tag>
+            </Stack>
+            <span className={styles.indexValue}>
+              {index.value} <span className={styles.up}>{index.change}</span> <span className={styles.up}>{index.pct}</span>
+            </span>
+          </Card>
+        ))}
+      </Rail>
+    </Section>
   )
   return (
-    <PortfolioPage top={top} sheetRef={sheetRef}>
-      <SheetContent>
-        <SheetHeader
-          title={t('portfolio.positions')}
-          action={<Button variant="ghost" size="sm" iconRight={<Icon icon={entryUrl('portfolio/refresh.svg')} />}>{t('portfolio.refresh')}</Button>}
-        />
-        <EmptyState
-          title={t('portfolio.positionsEmpty.title')}
-          description={t('portfolio.positionsEmpty.text')}
-          action={<Button variant="primary" size="sm" onClick={() => go(FNO_HOME)}>{t('portfolio.positionsEmpty.button')}</Button>}
-        />
-      </SheetContent>
+    <PortfolioPage top={top} sheetRef={sheetRef} padded>
+      <SheetHeader
+        title={t('portfolio.positions')}
+        action={
+          <Stack direction="horizontal" gap="08" align="center">
+            <Button variant="ghost" size="sm" iconRight={<Icon icon={entryUrl('portfolio/refresh.svg')} />}>{t('portfolio.refresh')}</Button>
+            <Button variant="tertiary" size="sm" iconLeft={<Icon icon={msSettings} />} aria-label={t('portfolio.positionSettings')} />
+          </Stack>
+        }
+      />
+      <EmptyState
+        className={styles.grow}
+        title={t('portfolio.positionsEmpty.title')}
+        description={t('portfolio.positionsEmpty.text')}
+        action={<Button variant="primary" size="sm" onClick={() => go(FNO_HOME)}>{t('portfolio.positionsEmpty.button')}</Button>}
+      />
     </PortfolioPage>
   )
 }
@@ -37305,7 +37445,7 @@ export function InOrderCard({ order, onOpen }: { order: InOrder; onOpen: () => v
   const ltp = getCompany(order.sym)?.market?.price ?? 0
   const side = order.side === 'buy' ? 'Buy' : 'Sell'
   return (
-    <Card className={styles.card} onClick={onOpen} aria-label={`${side} ${order.sym}, ${IN_TYPE_LABEL[order.type]} order, ${status.label}. Open order details`}>
+    <Card className={styles.noShadow} onClick={onOpen} aria-label={`${side} ${order.sym}, ${IN_TYPE_LABEL[order.type]} order, ${status.label}. Open order details`}>
       <Stack gap="08">
         <Stack direction="horizontal" align="center" justify="between" gap="08">
           <span className={styles.meta}>{IN_TYPE_LABEL[order.type]} · {order.product} · {order.validity}</span>
@@ -37337,7 +37477,7 @@ export function InOrderCard({ order, onOpen }: { order: InOrder; onOpen: () => v
 export function InSipCard({ sip }: { sip: InSip }) {
   const active = sip.status === 'active'
   return (
-    <Card className={styles.card} aria-label={`${sip.sym} SIP, ${formatInr(sip.amount, { decimals: 0 })} ${sip.frequency.toLowerCase()}, ${active ? 'active' : 'paused'}`}>
+    <Card className={styles.noShadow} aria-label={`${sip.sym} SIP, ${formatInr(sip.amount, { decimals: 0 })} ${sip.frequency.toLowerCase()}, ${active ? 'active' : 'paused'}`}>
       <Stack gap="08">
         <Stack direction="horizontal" align="center" justify="between" gap="08">
           <span className={styles.meta}>SIP · {sip.frequency}</span>
@@ -37587,6 +37727,36 @@ export function InOrderDetailsFor({ id, backdrop }: { id: string; backdrop?: boo
   font: var(--l3-text-label-12);
   color: var(--l3-content-secondary);
 }
+
+/* Indian order cards (26 Nov, user): tappable but without the clickable card's soft shadow — the 1px border/light stays.
+   L3 gap: a clickable Card has no prop to drop its elevation. */
+.noShadow[data-interactive][data-variant] {
+  box-shadow: inset 0 0 0 1px var(--l3-border-light);
+}
+
+/* Orders grouped by day (OrderDateGroups): the groups end 16 above what's below, as the flat list did; a day's cards
+   sit 8 under its row. */
+.dayGroups {
+  padding-bottom: var(--l3-spacing-16);
+}
+
+.dayList {
+  list-style: none;
+  margin: 0;
+  padding: var(--l3-spacing-08) 0 var(--l3-spacing-16);
+}
+
+/* The day row sits in the page margin with the cards, so it drops the plain row's own 16 inset (L3 rule for plain rows
+   inside a margin): the date lines up with the cards' edge. */
+.dayRow.dayRow[data-variant][data-size] {
+  padding-inline: 0;
+  padding-block: var(--l3-spacing-12); /* rows 44 tall, with hairlines between them */
+}
+
+/* A hairline between two days (26 Nov, user). */
+.dayGroup + .dayGroup {
+  border-top: 1px solid var(--l3-border-light);
+}
 ```
 
 ### `src/flows/us-stocks/screens/orders/OrderCard.tsx`
@@ -37682,6 +37852,82 @@ export function OrderCard({ order, onOpen }: { order: UsOrder; onOpen: () => voi
         </Stack>
       </Stack>
     </Card>
+  )
+}
+```
+
+### `src/flows/us-stocks/screens/orders/OrderDateGroups.tsx`
+
+```tsx
+// Portfolio → Orders: the cards grouped by the day they were placed (26 Nov, the user: "segregation of all the orders by
+// date", as the current app's Orders page). Each day is an L3 List cell ("24 Nov 2026" + a chevron) that opens or closes
+// its cards; the newest day starts open, the rest closed. Used by both the Indian and the US lists (Open and History).
+// FLAG (L3 gap): L3 has no accordion / disclosure row — a tappable ListCell renders a button with aria-pressed and takes
+// no aria-label / aria-expanded, so a screen reader hears the date but not whether it's open.
+import { useState, type ReactNode } from 'react'
+import { Icon } from '@l3/components/Icon'
+import { ListCell } from '@l3/components/ListCell'
+import { Stack } from '@l3/components/Stack'
+import { msKeyboardArrowDown, msKeyboardArrowUp } from '@l3/icons/material'
+import styles from './OrderCard.module.css'
+
+/** The sample orders carry no year unless it isn't this one ("24 Nov, 10:42 AM" / "24 Nov 2025, 10:10 AM"). */
+const SAMPLE_YEAR = 2026
+
+/** "24 Nov, 10:42 AM" → "24 Nov 2026"; "24 Nov 2025, 10:10 AM" → "24 Nov 2025". */
+export function orderDay(placedAt: string): string {
+  const day = placedAt.split(',')[0].trim()
+  return /\d{4}$/.test(day) ? day : `${day} ${SAMPLE_YEAR}`
+}
+
+export function OrderDateGroups<T extends { id: string; placedAt: string }>({
+  orders,
+  label,
+  renderCard,
+}: {
+  /** Newest first (the lists already are); groups keep that order. */
+  orders: T[]
+  /** The list's accessible name ("Indian order history"). */
+  label: string
+  renderCard: (order: T) => ReactNode
+}) {
+  const groups: { day: string; orders: T[] }[] = []
+  for (const order of orders) {
+    const day = orderDay(order.placedAt)
+    const group = groups.find((g) => g.day === day)
+    if (group) group.orders.push(order)
+    else groups.push({ day, orders: [order] })
+  }
+  const [open, setOpen] = useState<Set<string>>(() => new Set(groups.slice(0, 1).map((g) => g.day)))
+  const toggle = (day: string) => {
+    const next = new Set(open)
+    if (next.has(day)) next.delete(day)
+    else next.add(day)
+    setOpen(next)
+  }
+
+  return (
+    <Stack gap="00" className={styles.dayGroups} aria-label={label}>
+      {groups.map((group) => {
+        const isOpen = open.has(group.day)
+        return (
+          <section key={group.day} aria-label={group.day} className={styles.dayGroup}>
+            <ListCell
+              size="sm"
+              className={styles.dayRow}
+              label={group.day}
+              iconRight={<Icon icon={isOpen ? msKeyboardArrowUp : msKeyboardArrowDown} />}
+              onClick={() => toggle(group.day)}
+            />
+            {isOpen && (
+              <Stack as="ul" gap="16" className={styles.dayList}>
+                {group.orders.map((order) => <li key={order.id}>{renderCard(order)}</li>)}
+              </Stack>
+            )}
+          </section>
+        )
+      })}
+    </Stack>
   )
 }
 ```
@@ -39409,6 +39655,7 @@ export function LeverageCard() {
           </div>
       </PadCard>
       <LeverageSheet
+        multiplier={LEVERAGE}
         open={sheet}
         onClose={() => setSheet(false)}
         onConfirm={() => {
@@ -39416,7 +39663,7 @@ export function LeverageCard() {
           setOn(true)
         }}
       />
-      <LeverageSheet mode="explain" open={explainer} onClose={() => setExplainer(false)} onConfirm={() => setExplainer(false)} />
+      <LeverageSheet mode="explain" multiplier={LEVERAGE} open={explainer} onClose={() => setExplainer(false)} onConfirm={() => setExplainer(false)} />
     </>
   )
 }
@@ -39448,6 +39695,13 @@ export function LeverageCard() {
 .up { color: var(--l3-content-accent-success-default); }
 .down { color: var(--l3-content-accent-error-default); }
 
+/* Under the example: Boost is MTF under its terms. */
+.mtf { margin: 0; font: var(--l3-text-description-12); color: var(--l3-content-secondary); }
+
+/* "By proceeding you agree to the Terms & Conditions": a full row of its own in the dock, under the button. */
+.terms { margin: 0; font: var(--l3-text-description-12); color: var(--l3-content-secondary); text-align: center; }
+.link { padding: 0; border: 0; background: none; font: var(--l3-text-label-12); color: var(--l3-content-accent-discover-default); cursor: pointer; }
+
 /* In the dock above Confirm (24 Nov, the user's call): the row is 24 tall, the box's own height, so it sits the dock's 12
    gap above the button (a 48 row read as extra space), plus 8: 20 to Confirm (24 Nov, user). The checkbox's 48 tap
    target still reaches past the row. */
@@ -39474,6 +39728,9 @@ export function LeverageCard() {
 // ~/minted reference, "Combined asset page: Activate leverage confirmation sheet"). It explains leverage with a
 // $100 example at 1x and 3x, warns about liquidation, and has "Don't show this again" (ticked, as in Minted) +
 // Confirm. Confirm switches the card on; closing the sheet (backdrop, drag) leaves it off.
+// 26 Nov (the user's call, from production's "About Boost"): the card says Boost, so the sheet does too; the example's
+// second row is the card's multiplier (was 3x against the card's 4x); a line that Boost is a simplified MTF under its
+// terms; "By proceeding you agree to the Terms & Conditions" under the button. Indian pad only (US stocks have no Boost).
 // FLAG: copy hard-coded like the rest of the pad (no copy.ts in this flow yet).
 // FLAG: the example table is hand-laid (LeverageSheet.module.css) — L3 has no table.
 import { useId, useState } from 'react'
@@ -39498,17 +39755,13 @@ export function leverageSheetSeen(): boolean {
   }
 }
 
-const EXAMPLE = [
-  { leverage: 1, move: 1 },
-  { leverage: 3, move: 3 },
-]
-
 /**
  * `activate` (the first switch-on): Confirm + "Don't show this again". `explain` (a tap on the card's info strip, 19 Nov,
  * the user's call): the same explainer, read-only — "Got it" closes it, no checkbox.
  */
-export function LeverageSheet({ open, onClose, onConfirm, mode = 'activate' }: { open: boolean; onClose: () => void; onConfirm: () => void; mode?: 'activate' | 'explain' }) {
+export function LeverageSheet({ open, onClose, onConfirm, mode = 'activate', multiplier }: { open: boolean; onClose: () => void; onConfirm: () => void; mode?: 'activate' | 'explain'; multiplier: number }) {
   const explain = mode === 'explain'
+  const example = [1, multiplier]
   // The example's investment: $100 on the US pad, ₹10,000 on the Indian pad (padMoney.tsx); a 1% move scales with it.
   const invest = usePadCurrency() === 'inr' ? 10000 : 100
   const money = usePadMoney()
@@ -39531,7 +39784,7 @@ export function LeverageSheet({ open, onClose, onConfirm, mode = 'activate' }: {
       onClose={onClose}
       container={layer}
       aria-labelledby={headingId}
-      header={<BottomSheetHeader size="sm" heading={explain ? 'How leverage works' : 'Activate leverage'} headingId={headingId} description="Leverage multiplies your gains and your losses." />}
+      header={<BottomSheetHeader size="sm" heading={explain ? 'How Boost works' : 'Activate Boost'} headingId={headingId} description="Boost multiplies your gains and your losses." />}
       footer={
         <ButtonGroup aria-label="Leverage">
           {/* In the dock, just above Confirm (24 Nov, the user's call): a non-button child takes a full row of its own. */}
@@ -39542,6 +39795,12 @@ export function LeverageSheet({ open, onClose, onConfirm, mode = 'activate' }: {
           {explain
             ? <Button size="lg" onClick={onClose}>Got it</Button>
             : <Button size="lg" onClick={confirm}>Confirm</Button>}
+          {/* Under the button (26 Nov, the user's call). */}
+          <p className={styles.terms}>
+            By proceeding you agree to the{' '}
+            {/* The terms themselves (not in the prototype). */}
+            <button type="button" className={styles.link}>Terms & Conditions</button>
+          </p>
         </ButtonGroup>
       }
     >
@@ -39549,19 +39808,20 @@ export function LeverageSheet({ open, onClose, onConfirm, mode = 'activate' }: {
         <div className={styles.table} role="table" aria-label={`Example with ${money(invest, { decimals: 0 })}`}>
           <Grid columns={4} gap="00" className={`${styles.row} ${styles.head}`} role="row">
             <span role="columnheader">Investment</span>
-            <span role="columnheader">Leverage</span>
+            <span role="columnheader">Boost</span>
             <span role="columnheader">Price +1%</span>
             <span role="columnheader">Price −1%</span>
           </Grid>
-          {EXAMPLE.map(({ leverage, move }) => (
+          {example.map((leverage) => (
             <Grid key={leverage} columns={4} gap="00" className={styles.row} role="row">
               <span role="cell"><PadAmount value={invest} decimals={0} /></span>
               <span role="cell">{leverage}x</span>
-              <span role="cell" className={styles.up}><PadAmount value={(move * invest) / 100} decimals={0} sign /></span>
-              <span role="cell" className={styles.down}><PadAmount value={(-move * invest) / 100} decimals={0} /></span>
+              <span role="cell" className={styles.up}><PadAmount value={(leverage * invest) / 100} decimals={0} sign /></span>
+              <span role="cell" className={styles.down}><PadAmount value={(-leverage * invest) / 100} decimals={0} /></span>
             </Grid>
           ))}
         </div>
+        <p className={styles.mtf}>Boost is a simplified version of MTF. The risks are the same, and all Boost orders follow the MTF terms.</p>
       </Stack>
     </BottomSheet>
   )
@@ -40324,6 +40584,7 @@ function OrderPadV1({ config, backdrop, sheet }: OrderPadProps) {
 
 .helper { margin: 0; font: var(--l3-text-label-12); color: var(--l3-content-secondary); text-align: center; white-space: nowrap; }
 .helperLine + .helperLine { margin-left: var(--l3-spacing-08); }
+.netPositions { margin: 0; font: var(--l3-text-label-14); color: var(--l3-content-secondary); text-align: center; }
 .error { margin: 0; font: var(--l3-text-label-12); color: var(--l3-content-accent-error-default); text-align: center; }
 
 /* Limit / trigger price cards: PriceField.tsx (one component for every price card, 19 Nov). */
@@ -40501,7 +40762,7 @@ import { usShortName } from '../../../../shared/data/usShortNames'
 import { inShortName } from '../../../../shared/data/inShortNames'
 import { al, forCurrentStock } from './format'
 import type { Derived, OrderPadConfig, OrderType, PadChip, PadMode } from './types'
-import { usePadVersion, usePriceCards, useTpslCard, useAmountBox, useAmountCard, useAmountCardStacked, useAmountGlow, useAmountSize, useOrderTypesLeft, useValidityPlace } from './version'
+import { usePadVersion, usePriceCards, useTpslCard, useAmountBox, useAmountCard, useAmountCardStacked, useAmountGlow, useAmountSize, useOrderTypesLeft, useValidityPlace, useIntradayPosition } from './version'
 import { LeverageCard } from './LeverageCard'
 import { TPSL_INDIA, TPSL_US, TpslControl } from './Tpsl'
 import { FeeBreakdownSheet } from './FeeBreakdown'
@@ -41031,7 +41292,14 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
     />
     )
 
-  const fieldError = typeof config.fieldError === 'function' ? config.fieldError(derived) : config.fieldError
+  // Indian pad, Intraday tab only, with an open intraday position in this stock (developer feedback, 26 Nov): the current
+  // pad's "Net Positions: +1" under the quantity. Selling into a long intraday position is allowed, so the "no shares to
+  // sell" error doesn't apply there.
+  const intradayPosition = useIntradayPosition()
+  const netPositions = india && indian.product === 'intraday' && intradayPosition !== 0 ? intradayPosition : null
+  const coversPosition = netPositions !== null && netPositions > 0 && config.side === 'sell'
+  const noSharesError = coversPosition && !!derived.error && /no shares/i.test(derived.error)
+  const fieldError = noSharesError ? false : typeof config.fieldError === 'function' ? config.fieldError(derived) : config.fieldError
   const unitLabel = mode === 'amount' ? 'Amount' : 'Shares'
   const switchLabel = `${unitLabel}. Switch to ${mode === 'amount' ? 'shares' : 'amount'}`
 
@@ -41103,6 +41371,7 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
         </Stack>
       )}
       {amountField}
+      {netPositions !== null && <p className={styles.netPositions}>Net Positions: {netPositions > 0 ? '+' : ''}{netPositions}</p>}
       {config.toggle && !india && validityPlace !== 'v3' && (
         <Select size="sm" subtle icon="swap" onClick={switchMode} aria-label={switchLabel}>
           {unitLabel}
@@ -41267,7 +41536,7 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
           <Stack gap="16" align="center" className={styles.fields} ref={fields}>
           {!amountBox && !amountCard && chipTabs}
           {/* No helper line under the amount: the order's ₹ value is in the Buy / Sell button. Only an error shows here. */}
-          {derived.error && <p className={styles.error}>{forCurrentStock(derived.error)}</p>}
+          {derived.error && !noSharesError && <p className={styles.error}>{forCurrentStock(derived.error)}</p>}
           {/* Indian pad, Delivery Market on NSE only (production: "Boost returns by 4X"; leverage is MTF, which BSE doesn't
               have): Minted's leverage card (Enable leverage upto 2x / 3x / 4x). */}
           {india && indian.product === 'delivery' && indian.exchange === 'NSE' && config.type === 'market' && <LeverageCard />}
@@ -43510,6 +43779,10 @@ export const tradeIds = {
   H05: '5837:95447',
   /** H11 · Sell · Open buy order */
   H11: '5837:95391',
+  /** H12 · Sell · Limit (not in Figma, 26 Nov: the sell pad's Limit tab) */
+  H12: '9001:70',
+  /** H13 · Sell · SL (not in Figma, 26 Nov: the sell pad's SL tab) */
+  H13: '9001:71',
   /** H06 · Sell order executed */
   H06: '5837:95371',
   /** H07 · Sell order rejected */
@@ -43552,6 +43825,8 @@ export const screens: UsScreenMap = {
   [ids.H04]: padScreen(ids.H04), // Sell · No shares
   [ids.H05]: padScreen(ids.H05), // Sell · More than you hold
   [ids.H11]: padScreen(ids.H11), // Sell · Open buy order
+  [ids.H12]: padScreen(ids.H12), // Sell · Limit
+  [ids.H13]: padScreen(ids.H13), // Sell · SL
   [ids.T11]: FeeBreakdownScreen, // Fee Breakdown sheet
   [ids.T12]: OrderProcessing, // Order processing (moves on to T14 after 2 s)
   [ids.T13]: resultScreen(ids.T13), // Buy order created
@@ -43956,7 +44231,7 @@ export const orderPads: Record<string, OrderPadConfig> = {
     reqLabel: 'Proceeds',
     chips: heldChips,
     derive: (value, _prices, mode, { usd }) => ({ left: heldHint(value, mode), right: usd(476.84), req: usd(value * 187.865), error: sellLimitError(value), note: SELL_NOTE }),
-    to: { cta: ids.H06 },
+    to: { limit: ids.H12, sl: ids.H13, cta: ids.H06 },
   }),
   [ids.H04]: sell({
     label: 'Sell NVDA · No shares',
@@ -43965,6 +44240,7 @@ export const orderPads: Record<string, OrderPadConfig> = {
     fieldError: true,
     derive: () => ({ error: 'Your account has no shares to sell', note: SELL_NOTE }),
     cta: { label: 'Sell', disabled: true },
+    to: { limit: ids.H12, sl: ids.H13 },
   }),
   [ids.H05]: sell({
     label: 'Sell NVDA · More than you hold',
@@ -43973,6 +44249,7 @@ export const orderPads: Record<string, OrderPadConfig> = {
     fieldError: (derived) => !!derived.error,
     chips: heldChips,
     derive: (value, _prices, mode, { usd }) => ({ left: heldHint(value, mode), right: usd(476.84), error: sellLimitError(value), note: SELL_NOTE }),
+    to: { limit: ids.H12, sl: ids.H13 },
   }),
   [ids.H11]: sell({
     label: 'Sell NVDA · Open buy order',
@@ -43986,7 +44263,45 @@ export const orderPads: Record<string, OrderPadConfig> = {
       note: SELL_NOTE,
     }),
     cta: { label: 'Sell', disabled: true },
-    to: { cta: ids.H06 },
+    to: { limit: ids.H12, sl: ids.H13, cta: ids.H06 },
+  }),
+  // Sell · Limit and Sell · SL (26 Nov, not in Figma): the sell pad's order type tabs had nowhere to go. Same holding as
+  // H03; Limit sells only at the limit price or higher, SL places a sell limit once the price falls to the trigger.
+  [ids.H12]: sell({
+    label: 'Sell NVDA · Limit',
+    type: 'limit',
+    value: HELD_SHARES,
+    avail: il(HELD_SHARES),
+    reqLabel: 'Proceeds',
+    chips: heldChips,
+    prices: [{ label: 'Limit', pct: 1 }],
+    fieldError: (derived) => !!derived.error,
+    derive: (value, [limit], mode, { usd }) => ({
+      left: heldHint(value, mode),
+      right: usd(value * limit),
+      req: usd(value * limit),
+      error: sellLimitError(value),
+      note: `Sells only if NVDA trades at ${usd(limit)} or higher today`,
+    }),
+    to: { market: ids.H03, sl: ids.H13, cta: ids.H06 },
+  }),
+  [ids.H13]: sell({
+    label: 'Sell NVDA · SL',
+    type: 'sl',
+    value: HELD_SHARES,
+    avail: il(HELD_SHARES),
+    reqLabel: 'Proceeds',
+    chips: heldChips,
+    prices: [{ label: 'Trigger Price', pct: -3.5 }, { label: 'Limit', pct: -4 }],
+    fieldError: (derived) => !!derived.error,
+    derive: (value, [trigger, limit], mode, { usd }) => ({
+      left: heldHint(value, mode),
+      right: usd(value * limit),
+      req: usd(value * limit),
+      error: sellLimitError(value),
+      note: `Sells at ${usd(limit)} or more once NVDA falls to ${usd(trigger)}`,
+    }),
+    to: { market: ids.H03, limit: ids.H12, cta: ids.H06 },
   }),
 }
 ```
@@ -44267,6 +44582,13 @@ export const useTpslSheet = (): TpslSheetVersion => 'b'
 export type ValidityPlace = 'v1' | 'v2' | 'v3'
 // Archived 23 Nov (the user's call): V3 only, the setting is gone. V1 / V2's code stays in OrderPadV2, unused.
 export const useValidityPlace = (): ValidityPlace => 'v3'
+
+// An open intraday position in the stock (flow option "Open intraday position", group Trade, 26 Nov, developer feedback):
+// the Indian pad's Intraday tab shows "Net Positions: +1" under the quantity. 0 · none (the line is hidden).
+export const useIntradayPosition = (): number => {
+  const value = Number(useFlowOption('us-stocks', 'intradayPos', '1'))
+  return Number.isFinite(value) ? value : 0
+}
 ```
 
 ### `src/flows/us-stocks/screens/types.ts`
@@ -74681,6 +75003,17 @@ export const userStatusOptions: FlowOption[] = [
     floatOn: [...STATUS_SCREENS, 'us-stocks-28'],
   },
   {
+    // Indian stocks in Portfolio (26 Nov, user: developers need every empty state). Empty = no Indian holdings, no open
+    // orders, no SIPs and no order history: Holdings shows its empty state and ₹0 on the IN P&L card, and each Orders
+    // list (Open, SIP, History) its own. Positions are always empty in the prototype.
+    id: 'inPortfolio',
+    group: 'User status',
+    label: 'Indian stocks',
+    values: [{ value: 'some', label: 'Holdings & orders' }, { value: 'none', label: 'Empty' }],
+    default: 'some',
+    floatOn: ['us-stocks-05', 'us-stocks-06', 'us-stocks-77', 'us-stocks-91', 'us-stocks-92'],
+  },
+  {
     // Bank accounts linked to Lemonn (KYC adds the first). None = the add-money screens ask for one first.
     id: 'banks',
     group: 'User status',
@@ -74695,6 +75028,9 @@ export const userStatusOptions: FlowOption[] = [
 
 const option = (id: string) => userStatusOptions.find((o) => o.id === id)!
 const useStatus = (id: string) => useFlowOption(USER_STATUS, id, option(id).default)
+
+/** True when the user has no Indian holdings or orders ("User status → Indian stocks: Empty"). */
+export const useInPortfolioEmpty = () => useStatus('inPortfolio') === 'none'
 
 export type UserStatus = { kyc: KycStatus; us: UsActivation; usWallet: UsWallet; usHoldings: UsHoldings; banks: BankLinks }
 
