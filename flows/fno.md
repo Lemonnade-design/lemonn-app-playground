@@ -325,7 +325,8 @@ sample signals in `data.ts` (`zingSignals`, `SignalFilter`, `matchesFilter`).
 - **Expiring This Week, Version 2** (`ExpiringCalendar`; prototype setting “Expiring This Week”, Commodities, Version 1 = the card rail above; Version 4 is the default): the same section as a short calendar. The calendar's first 3 entries (`expiryPreview(3)` in `commodities/data.ts`) on their days, drawn like the calendar page (`CalendarDay`, shared with fno-38): the grey date block left (today not marked, not sticky here), one card per contract or event (8 apart), days 16 apart, so it's three rows on one day or spread over two or three days. Within a day events come first (they're timed) and stay short (name over time, then the asset cards; the readings are on the calendar page). Contract rows as on fno-38: kind under the name, option chain (options) → fno-17 and ScalpPro → fno-05, row → asset page fno-21. View all → the Commodity calendar (fno-38).
 - **Expiring This Week, Version 3** (`ExpiringCalendarCard`): Version 2's three entries in **one card**. Each day is a band: the date (weekday over the number, every date the same weight) as the card's grey left column, attached edge to edge and as tall as that day's rows, the rows beside it. Hairlines between days (across the date column too) and between a day's rows. Rows behave as in Version 2; View all → fno-38.
 - **Expiring This Week, Version 4** (`ExpiringDayPicker`, **default**): a day picker over the next month (31 days) of the real MCX calendar. A row of small date cards (weekday over the number, 48 wide, 10 apart), only days that have something; it scrolls sideways and runs edge to edge (the screen's 16 inset as padding inside the row), fading at an end only while there's more to scroll that way (CSS mask, `data-more-before` / `-after`). Weeks run Monday to Sunday; each later week starts with a thin grey pill the cards' height (18 after the last day, 10 before the next), its text turned 90° in 8 upper case: “NEXT WEEK”, then the week's Monday (“7 DEC”). The selected day (first, to start) has a dark border on grey. Under the row, that day's contracts (option chain + ScalpPro) and events (on one line), one card each, 8 apart. View all (a Ghost Small button with a calendar icon before the label, `ExpiringHeader`, shared by all versions) → fno-38.
-- **Expiring This Week — in the app: four versions, shown as V1–V4** (user, 26 Nov; value ids kept so old links work): **V1** = `v6` All Events, **V2** = `v7` Upcoming Events, **V3** = `v8` Date pills, **V4** = `v4` the day row (Version 4 below, back from the archive with its timeline page `ExpiryTimeline`; title in Heading 16 like the others). Default V1. Event phase (Pre / Post) shows with V1–V3. Archived (code in `commodities/archive/`): the old Versions 1, 2, 3 and 5 (ExpiringThisWeek, ExpiringCalendar, ExpiringCalendarCard, ExpiringDayWeek + EventsToday) and their settings Day view, Event card and Expiring card buttons. **Share link for a review:** `?present=fno.expiringVersion#/fno-08` — only the version switch shows: on a phone a floating one-tap button (V1 → V2 → V3 → V4, drag it anywhere), beside the phone mockup the four versions as pills (one tap picks); no panel, settings button, install prompt or other settings.
+- **Expiring This Week — in the app: five versions, shown as V1–V5** (user, 26 Nov; value ids kept so old links work): **V1** = `v6` All Events, **V2** = `v7` Upcoming Events, **V3** = `v8` Date pills, **V4** = `v4` the day row (Version 4 below, back from the archive with its timeline page `ExpiryTimeline`; title in Heading 16 like the others), **V5** = `v9` Timeline (below). Default V1. Event phase (Pre / Post) shows with V1–V3. V5 has its own setting, Timeline (Option 1 / Option 2), which also floats on the share link while V5 is on. Archived (code in `commodities/archive/`): the old Versions 1, 2, 3 and 5 (ExpiringThisWeek, ExpiringCalendar, ExpiringCalendarCard, ExpiringDayWeek + EventsToday) and their settings Day view, Event card and Expiring card buttons. **Share link for a review:** `?present=fno.expiringVersion#/fno-08` — only the version switch shows: on a phone a floating one-tap button (V1 → V2 → V3 → V4 → V5, drag it anywhere), beside the phone mockup the five versions as pills (one tap picks); no panel, settings button, install prompt or other settings.
+- **Expiring This Week, V5 · Timeline** (`v9`, `TimelineDays` + `TimelineCard`, data `timelineEventsSample`; Figma 7076:26456 “Timeline view”, two options): Upcoming Events with a vertical timeline down the left. Setting **“Timeline”** (shows only with V5): **Option 1** (default) and **Option 2**; on the share link it is a second one-tap button (O1 ⇄ O2) under the version one, shown only while V5 is on (beside the phone mockup: its two pills under the versions). Both: a node per card on one line from the first node to the last, cards 16 apart; a live event's node is a green 12 dot (indicator-up) in a blinking 20 halo (indicator-up light; still with reduced motion), what's coming a grey 12 dot (surface-quaternary); the line is solid green (border indicator-up light) from a live node to the next when that one is live too or starts soon, dashed grey (border-intense, 4 on 4 off) otherwise. **Option 1:** the time on the left (“5:00 PM” Label 12, right-aligned in 56; a day's first time has the day over it — “TODAY” / “27th Nov”, Label 10 secondary, 2 above), 8 to its node (level with the time), 12 to the card; the list starts 8 from the screen edge. Card: art 20, 8 to the name (Label 12) over its tags 4 below — Options Expiry / Event (grey), plus Live (green) or “In 2 hours” (yellow, clock); option chain + ScalpPro on the right. Sample: today Gold options expiry live 5:00 PM, EIA Crude oil 7:00 PM in 2 hours; tomorrow EIA gold report and Natural Gas options expiry 7:00 PM. **Option 2:** no time column; the node centred on its card, 16 from the screen edge, 16 to the card (rail 20). Card: name (Label 14) with its grey tag (Expiry / Event) 8 to its right, over “Today • 7:30 AM” (Label 12, secondary) 4 below. Sample: today Gold expiry 7:30 AM and EIA Crude oil 9:00 AM both live; tomorrow Gold 7:30 AM and Natural Gas 9:00 AM. Differences from Figma: its times are placeholders out of order (9:00 PM before 7:00 PM; “26th Nov” after Today) — here they run in order from today; “EAI gold report” spelt EIA. No Event phase on V5 (its Figma has no forecast). View all (fno-38): V3's page (plain sticky month, divider) with the same timeline per month and the filter tabs.
 - **Expiring This Week, Version 5** (`ExpiringDayWeek`): no View all and no calendar page — people don't look at expiries more than a month out. On the right of the section header, where View all was, a Day / Week switch (L3 pill-group Tabs, small, hugging its labels; Day first). **Day:** today only — one event and two commodity expiries, 3 cards (`todaySample`: today's real entries first, topped up as a sample from the coming days when today has fewer) — drawn like Version 2 but the grey block on the left holds the **time** it happens instead of the date — “9:00” over “PM” (an event's release time; a contract's expiry at the MCX evening close, `MCX_CLOSE` = 11:30 PM in winter, `entryTime` in `commodities/data.ts`). Entries at the same time share one block (one card each, 8 apart); times run earliest first, 16 apart. An event row drops its time there (the block says it). Nothing today → one line in a card, “Nothing expires today”. **Week:** Version 4's day row over the next month, but only the days a contract expires (a day with only an EIA event isn't a date here; an event on an expiry day still shows with it) — e.g. Fri 27, the NEXT WEEK pill, Mon 30, Fri 4, then the 14 DEC pill. Rows act as on fno-38 (option chain → fno-17, ScalpPro → fno-05, row → asset page fno-21).
   - **Day view, Versions 2 and 3** (setting “Day view”, shown with Version 5; Version 2 is the default; Version 1 = the time-block list above) — Figma 7006:4490 “Events today” (`EventsToday`), three items from its sample (`eventsTodaySample`; user, 25 Nov): 9:00 AM Gold expiry (grey “Expiry” tag, option chain + ScalpPro); 9:00 AM EIA crude oil inventories (Event · “Bullish Trend” ↗, note “In last bullish trend, Gold has moved ▲ 1.2%”); 12:30 PM EIA crude oil inventories (Event · “Bearish Trend” ↘). Events may also carry the commodities they move (↑ Gold · ↓ Crude oil) and a “Last time, … has moved” note. In Day view the title reads “Events today”. Time “9:00” (Label 14) over “AM” (Description 12), 48 wide; card 12 to its right; rows 16 apart; the list 12 from the screen edge. Names Label 12; tags L3 Tag small tertiary (the grey ones in content-secondary); an event with a note adds a hairline 16 in from each side and a footer: filled bulb 16, the line in Label 10, the move ▲/▼ in Heading 10 success / error. **Version 2:** time on the page, pictures in a 24 L3 Avatar, 16 more after the first row. **Version 3:** time in a grey block (radius 12), pictures bare at 20 (the flag in a 20 circle). Difference from Figma: the header keeps the Day / Week switch where Figma has View all (Version 5 has no View all page). **Week view (with Versions 2 / 3):** the same vertical layout (`EventsWeek`) instead of the date row — this week's expiry days (today + 6; only days a contract expires, an event on one still shows), the day on the left like Version 2's date block (weekday, Description 12, over the date, Label 16; plain or grey as the version), its cards on the right 8 apart, contracts tagged “Options expiry” / “Futures expiry”, the title “Expiring This Week”.
 - **Expiring This Week, Version 6 · All Events** (`AllEvents.tsx`; Figma 7030:9072, the user's chosen design, 26 Nov): header “All Events” with View all (L3 SectionHeader view-all → fno-38). A fixed sample (`allEventsSample` in `commodities/data.ts`), two days (today and tomorrow): Gold expiry and an EIA event on the first; EIA crude oil inventories and USD Core PCE on the second. The day on the left in a grey block (weekday Description 12 secondary over the date Label 14; 48 wide, radius 12), beside the day's first card; every card on its own row, rows 16 apart (later cards of a day keep the block's slot empty). Cards: art 20 (the US flag: Figma 7035:9401 art, 15 in a 20 slot), 8 to the name (Label 12), grey “Expiry” / “Event” tag and the event's trend tag (4 apart, 6 below an event's name), option chain + ScalpPro on the right (the PCE card before its release has none). A note under a hairline: bulb, Label 10 line, ▲/▼ move in Heading 10. Setting **Event phase** (shown with Version 6): **Pre-event** (default) — “Forecast: Bullish / Bearish”, notes “In last trend, Gold has moved ▲ 1.2%”, “Last time, Crude oil has moved ▼ 4.5%”; **Post-event** — “Actual: Bullish”, notes “Since the report, Gold has moved ▲ 1.2%”, “Since the report, Crude oil has moved ▼ 10.5%”. Tag colours and arrows are as drawn (some red tags read “Bullish”). **View all page (fno-38 in Version 6, `AllEventsPage`; Figma 6995:25579):** Actionbar “Commodity Calendar” with the All / Options / Futures / Events filter tabs under it (flat, icons, sticky in the Actionbar's bottom slot, as on the other versions' calendar; days with nothing in the tab drop out; an empty tab says “Nothing on the calendar here yet” — the sample has no futures), each month under a grey band (surface-secondary, “NOV 2026” Heading 14 spaced 4 — local token `--app-month-band-tracking`, L3 has no tracking token; 8 above and below the text, 16 above on the page's first band), its days 20 below in the same list, 16 from the sides; the sample repeats in the next month as drawn, with “EIA gold inventories” as the first day's event. Difference from Figma: the dates are today and tomorrow, not fixed to Wed 25 / Thu 26.
@@ -551,6 +552,8 @@ The source uses old D2 controls alongside L3; their code equivalents are L3 comp
 - Section header size: L3 SectionHeader's title is heading-14 with no size option; fno-38's month titles are set to heading-20 locally (`.calendarMonthHead h2`).
 
 ### Changelog
+- 2026-11-26 — Expiring This Week V5 · Timeline rebuilt from Figma 7076:26456 as two options (setting “Timeline”, Option 1 time on the left / Option 2 time in the card), a second one-tap switch on the share link while V5 is on (preview: `presentIncludes` lets a presentation link carry settings that depend on the presented one). Event phase no longer applies to V5.
+- 2026-11-26 — Expiring This Week V5 · Timeline: a vertical timeline (day markers, a node per card, the live one blinking green) on home and its View all page; in the one-tap switch.
 - 2026-11-26 — Expiring This Week relabelled V1–V4 (v6, v7, v8, v4); Version 4 (day row + timeline page) back from the archive and in the one-tap switch.
 - 2026-11-26 — Expiring This Week: Versions 1–5 archived (and their Day view / Event card / card-buttons settings); only 6 / 7 / 8 + Event phase remain. New presentation link `?present=fno.expiringVersion` (shared preview: `PRESENT` in src/shared/prototype.ts) showing only a one-tap version switch.
 - 2026-11-26 — Expiring This Week Version 8 · Date pills (Figma 7042:19186); V6–V8 section titles in Heading 16; V7 page month bands grey (surface-secondary).
@@ -3541,6 +3544,51 @@ h�Ҝÿ}�`l��&0:s9Ї�Guw�,�H&��Z�qؒ~�y�Jot��
 /* The section's title in Heading 16 (user, 26 Nov; Figma 7035:14545 / 7042:19186 draw it so). L3 SectionHeader's title is
    fixed at Heading 14 — no size prop (L3 gap). */
 .header.header h2 { font: var(--l3-text-heading-16); }
+
+/* Version 5 · Timeline (TimelineDays, Figma 7076:26456): a node per card on one vertical line; cards 16 apart. */
+.timeline { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: var(--l3-spacing-16); }
+/* Option 1 starts 8 from the screen edge (the section's 16, less 8). */
+.timeline[data-option='one'] { margin-left: calc(-1 * var(--l3-spacing-08)); }
+/* A row: [time 56 · 8] · rail · the card. Where the node sits down the row (its centre): Option 1 level with the time
+   (20 down; 30 under a day label: 8 + label 12 + 2 + half the time's 16), Option 2 the card's middle. */
+.tlRow { --tl-node: var(--l3-spacing-20); display: flex; align-items: stretch; gap: var(--l3-spacing-12); }
+.tlRow[data-dated] { --tl-node: calc(var(--l3-spacing-08) + var(--l3-spacing-12) + var(--l3-spacing-02) + var(--l3-spacing-08)); }
+.timeline[data-option='two'] .tlRow { --tl-node: 50%; gap: var(--l3-spacing-16); }
+.tlRow > :last-child { flex: 1; min-width: 0; }
+.tlTime { box-sizing: border-box; flex: none; width: var(--l3-spacing-56); margin-right: calc(var(--l3-spacing-08) - var(--l3-spacing-12)); display: flex; flex-direction: column; align-items: flex-end; gap: var(--l3-spacing-02); padding-top: var(--l3-spacing-12); text-align: right; }
+.tlRow[data-dated] .tlTime { padding-top: var(--l3-spacing-08); }
+.tlDay { font: var(--l3-text-label-10); color: var(--l3-content-secondary); }
+.tlClock { font: var(--l3-text-label-12); color: var(--l3-content-primary); white-space: nowrap; }
+/* The rail: 12 wide (Option 2: 20). The line is two halves per row — above the node (reaching up over the 16 gap) and
+   below it — so each stretch between two nodes can be green or dashed grey; none above the first node or below the last. */
+.tlRail { position: relative; flex: none; width: var(--l3-size-12); }
+.timeline[data-option='two'] .tlRail { width: var(--l3-size-20); }
+.tlRail::before, .tlRail::after { content: ''; position: absolute; left: calc(50% - 1px); width: 2px; /* 2px line */
+  background: repeating-linear-gradient(var(--l3-border-intense) 0 var(--l3-spacing-04), transparent var(--l3-spacing-04) var(--l3-spacing-08)); }
+.tlRail::before { top: calc(-1 * var(--l3-spacing-16)); height: calc(var(--tl-node) + var(--l3-spacing-16)); }
+.tlRail::after { top: var(--tl-node); bottom: 0; }
+.tlRow[data-first] .tlRail::before, .tlRow[data-last] .tlRail::after { display: none; }
+.tlRow[data-green-up] .tlRail::before, .tlRow[data-green-down] .tlRail::after { background: var(--l3-border-accent-indicator-up-light); }
+/* What's coming: a grey 12 dot (surface-quaternary); the dashes border-intense. */
+.tlNode { position: absolute; z-index: 1; top: var(--tl-node); left: 50%; width: var(--l3-size-12); height: var(--l3-size-12); translate: -50% -50%; border-radius: var(--l3-radius-full); background: var(--l3-surface-quaternary); }
+/* Live: a green 12 dot in a 20 halo (indicator-up light) that blinks — breathes out and fades; still with reduced motion. */
+.tlLive { position: absolute; z-index: 1; top: var(--tl-node); left: 50%; width: var(--l3-size-20); height: var(--l3-size-20); translate: -50% -50%; }
+.tlLive::before, .tlLive::after { content: ''; position: absolute; border-radius: var(--l3-radius-full); }
+.tlLive::before { inset: 0; background: var(--l3-surface-accent-indicator-up-light); animation: liveBlink 1.2s ease-in-out infinite; }
+.tlLive::after { inset: var(--l3-spacing-04); background: var(--l3-surface-accent-indicator-up-default); }
+@media (prefers-reduced-motion: reduce) { .tlLive::before { animation: none; } }
+/* The card: 12 in; art 20 and its text 8 apart, the buttons 12 to the right. */
+.tlBody { display: flex; align-items: center; gap: var(--l3-spacing-12); padding: var(--l3-spacing-12); }
+.tlBody[data-tappable] { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.tlBody[data-tappable]:active { background: var(--l3-surface-secondary); }
+@media (hover: hover) { .tlBody[data-tappable]:hover { background: var(--l3-surface-secondary); } }
+.tlMain { flex: 1; min-width: 0; display: flex; align-items: center; gap: var(--l3-spacing-08); }
+.tlText { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: var(--l3-spacing-04); }
+.tlTags { display: flex; align-items: center; gap: var(--l3-spacing-08); }
+/* Option 2: the name (Label 14) and its tag 8 apart, over the day and time. */
+.tlTitle { display: flex; align-items: center; gap: var(--l3-spacing-08); max-width: 100%; }
+.tlName { margin: 0; min-width: 0; font: var(--l3-text-label-14); color: var(--l3-content-primary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tlWhen { margin: 0; font: var(--l3-text-label-12); color: var(--l3-content-secondary); white-space: nowrap; }
 ```
 
 ### `src/flows/fno/commodities/components/AllEvents.tsx`
@@ -3552,12 +3600,12 @@ import { Icon } from '@l3/components/Icon'
 import { SectionHeader } from '@l3/components/SectionHeader'
 import { Tag } from '@l3/components/Tag'
 import { Tabs } from '@l3/components/Tabs'
-import { msApps, msArrowDropDown, msArrowDropUp, msCandlestickChart, msEvent, msTrendingDown, msTrendingUp, msWbIncandescentFill } from '@l3/icons/material'
+import { msApps, msArrowDropDown, msArrowDropUp, msCandlestickChart, msEvent, msSchedule, msTrendingDown, msTrendingUp, msWbIncandescentFill } from '@l3/icons/material'
 import { useState } from 'react'
 import { useFlowOption } from '../../../../shared/prototype'
 import { Screen } from '../../../../shared/ui/Screen'
 import { t } from '../../copy'
-import { allEventsSample, upcomingEventsSample, type AllEventsDay, type AllEventsItem, type AllEventsPhase } from '../data'
+import { allEventsSample, timelineEventsSample, upcomingEventsSample, type AllEventsDay, type AllEventsItem, type AllEventsPhase } from '../data'
 import { RowActions, dayFrom } from './CalendarDay'
 import parts from '../../components/HomeParts.module.css'
 import styles from './AllEvents.module.css'
@@ -3597,11 +3645,12 @@ const TAB_ICONS: Record<Tab, string> = { all: msApps, option: msCandlestickChart
  * - Version 7 (Figma 7035:13357): the band in surface-accent-discover-light (12 above on the first, 8 below), days 24 below
  *   in the version 7 list (date line, a time block per card).
  */
-export function AllEventsPage({ onBack, timed = false, pill = false, ...actions }: Actions & { onBack: () => void; timed?: boolean; pill?: boolean }) {
+export function AllEventsPage({ onBack, timed = false, pill = false, timeline = false, ...actions }: Actions & { onBack: () => void; timed?: boolean; pill?: boolean; timeline?: boolean }) {
   const phase = usePhase()
+  const timelineOption = useTimelineOption()
   const [tab, setTab] = useState<Tab>('all')
   // The tab's cards: All, an expiry's contract type, or the events; days left empty drop out.
-  const days = (timed ? upcomingEventsSample(phase) : allEventsSample(phase, true))
+  const days = (timeline ? timelineEventsSample(timelineOption) : timed ? upcomingEventsSample(phase) : allEventsSample(phase, true))
     .map((d) => ({ ...d, items: d.items.filter((item) => tab === 'all' || (tab === 'event' ? item.kind === 'event' : item.contract === tab)) }))
     .filter((d) => d.items.length)
   const month = (offset: number) => {
@@ -3611,13 +3660,14 @@ export function AllEventsPage({ onBack, timed = false, pill = false, ...actions 
   return <Screen top={<Actionbar title={t('expiryAll.title')} onBack={onBack} backLabel={t('lot.back')}
     bottom={<Tabs aria-label={t('expiryAll.filter')} value={tab} onChange={(v) => setTab(v as Tab)}
       items={TABS.map((value) => ({ value, label: t(`expiryAll.tab.${value}`), iconLeft: <Icon icon={TAB_ICONS[value]} size={16} /> }))} />} />}>
-    {days.length ? <div className={styles.page} data-timed={timed || undefined} data-pill={pill || undefined}>
+    {days.length ? <div className={styles.page} data-timed={timed || undefined} data-pill={pill || timeline || undefined}>
       {[0, 1].map((offset) => {
         const monthDays = days.map((d) => ({ ...d, inDays: d.inDays + offset * 30 }))
         return <section key={offset} className={styles.month} aria-label={month(offset)}>
           <h2 className={styles.band}>{month(offset)}</h2>
           <div className={styles.monthBody}>
-            {timed ? <TimedDays days={monthDays} sameDates={offset > 0} pill={pill} {...actions} />
+            {timeline ? <TimelineDays days={monthDays} sameDates={offset > 0} {...actions} />
+              : timed ? <TimedDays days={monthDays} sameDates={offset > 0} pill={pill} {...actions} />
               : <EventDays days={monthDays} sameDates={offset > 0} {...actions} />}
           </div>
         </section>
@@ -3633,11 +3683,12 @@ export function AllEventsPage({ onBack, timed = false, pill = false, ...actions 
  * Description 12 secondary; 48 wide, 8 × 6 in, radius 12), 12 to the card. Day groups and cards 16 apart, the list 16
  * from the screen edge. An expiry's tag reads “Options Expiry”.
  */
-export function UpcomingEventsSection({ onViewAll, pill = false, ...actions }: Actions & { onViewAll: () => void; pill?: boolean }) {
+export function UpcomingEventsSection({ onViewAll, pill = false, timeline = false, ...actions }: Actions & { onViewAll: () => void; pill?: boolean; timeline?: boolean }) {
   const phase = usePhase()
+  const timelineOption = useTimelineOption()
   return <section className={parts.contractSection} aria-label={t('upcomingEvents.title')}>
     <SectionHeader className={styles.header} title={t('upcomingEvents.title')} action={{ type: 'view-all', label: t('viewAll'), onClick: onViewAll }} />
-    <TimedDays days={upcomingEventsSample(phase)} pill={pill} {...actions} />
+    {timeline ? <TimelineDays days={timelineEventsSample(timelineOption)} {...actions} /> : <TimedDays days={upcomingEventsSample(phase)} pill={pill} {...actions} />}
   </section>
 }
 
@@ -3677,6 +3728,80 @@ function TimedDays({ days, sameDates, pill, ...actions }: Actions & { days: AllE
       </section>
     })}
   </div>
+}
+
+/** Version 5's two timelines (setting “Timeline”, Figma 7076:26456). */
+type TimelineOption = 'one' | 'two'
+const useTimelineOption = () => useFlowOption('fno', 'timelineOption', 'one') as TimelineOption
+
+/**
+ * Version 5 (`v9`) · Timeline (Figma 7076:26456 — two options, setting “Timeline”). A vertical line down the left with a
+ * node per card, every card 16 apart; the line runs from the first node to the last. A live event's node is a green dot
+ * (12, indicator-up) in a blinking green halo (20, indicator-up light); what's coming is a grey dot (12, border-dark). The
+ * line is solid green from a live node to the next one when that one is live too or starts soon, dashed grey otherwise.
+ * - Option 1: the time on the left (“5:00 PM” Label 12, right-aligned in 56; the day over a day's first time — “TODAY”,
+ *   “27th Nov”, Label 10 secondary, 2 above), 8 to its node, 12 to the card. The node sits level with the time. Card: art
+ *   20, name Label 12 over its tags (Options Expiry / Event grey, plus Live green or “In 2 hours” yellow with a clock), 4
+ *   apart. The list starts 8 from the screen edge.
+ * - Option 2: no time column: the node centred on its card, 16 from the screen edge, 16 to the card. Card: name Label 14
+ *   with its grey tag (Expiry / Event) beside it, over “Today • 9:00 AM” (Label 12 secondary), 4 apart.
+ */
+function TimelineDays({ days, sameDates, ...actions }: Actions & { days: AllEventsDay[]; sameDates?: boolean }) {
+  const option = useTimelineOption()
+  const rows = days.flatMap((day) => {
+    // The page's second month repeats the sample's dates, only the month changes.
+    const base = dayFrom(sameDates ? day.inDays - 30 : day.inDays)
+    const date = sameDates ? new Date(base.getFullYear(), base.getMonth() + 1, base.getDate()) : base
+    const today = !sameDates && day.inDays === 0
+    return day.items.map((item, at) => ({ item: sameDates ? { ...item, live: false, startsIn: undefined } : item, first: at === 0, today, date }))
+  })
+  // A stretch of line is green from a live node to the next when that one is live too or starts soon.
+  const green = (i: number) => Boolean(rows[i]?.item.live && (rows[i + 1]?.item.live || rows[i + 1]?.item.startsIn))
+  return <ol className={styles.timeline} data-option={option} aria-label={t('upcomingEvents.title')}>
+    {rows.map(({ item, first, today, date }, i) => {
+      const day = today ? t('upcomingEvents.today') : ordinalDate(date)
+      return <li key={`${i}-${item.id}`} className={styles.tlRow} data-dated={(option === 'one' && first) || undefined}
+        data-first={i === 0 || undefined} data-last={i === rows.length - 1 || undefined}
+        data-green-up={green(i - 1) || undefined} data-green-down={green(i) || undefined}>
+        {option === 'one' && <span className={styles.tlTime}>
+          {first && <span className={styles.tlDay}>{today ? day.toUpperCase() : day}</span>}
+          <span className={styles.tlClock}>{item.time}</span>
+        </span>}
+        <span className={styles.tlRail}>{item.live
+          ? <span className={styles.tlLive} role="img" aria-label={t('allEvents.live')} />
+          : <span className={styles.tlNode} />}</span>
+        <TimelineCard item={item} option={option} when={t('timeline.when', { day, time: item.time ?? '' })} {...actions} />
+      </li>
+    })}
+  </ol>
+}
+
+/** Version 5's card, per option (see TimelineDays). */
+function TimelineCard({ item, option, when, onAsset, onOptionChain, onScalper }: Actions & { item: AllEventsItem; option: TimelineOption; when: string }) {
+  const grey = <Tag variant="tertiary" size="sm" className={styles.greyTag}>
+    {item.kind === 'expiry' ? (option === 'one' ? t('upcomingEvents.optionsExpiry') : t('timeline.expiry')) : t('eventsToday.event')}
+  </Tag>
+  return <Card padding="none" className={styles.card}>
+    <div className={styles.tlBody} data-tappable={item.kind === 'expiry' || undefined} onClick={item.kind === 'expiry' ? onAsset : undefined}>
+      <div className={styles.tlMain}>
+        <img src={item.image} alt="" className={styles.art} />
+        {option === 'one'
+          ? <div className={styles.tlText}>
+            <p className={styles.name}>{item.name}</p>
+            <div className={styles.tlTags}>
+              {grey}
+              {item.live && <Tag variant="tertiary" size="sm" color="profit">{t('timeline.live')}</Tag>}
+              {item.startsIn && <Tag variant="tertiary" size="sm" color="warning" iconLeft={<Icon icon={msSchedule} />}>{t('timeline.startsIn', { hours: item.startsIn })}</Tag>}
+            </div>
+          </div>
+          : <div className={styles.tlText}>
+            <div className={styles.tlTitle}><p className={styles.tlName}>{item.name}</p>{grey}</div>
+            <p className={styles.tlWhen}>{when}</p>
+          </div>}
+      </div>
+      {item.actions && <RowActions name={item.name} chain onOptionChain={onOptionChain} onScalper={onScalper} />}
+    </div>
+  </Card>
 }
 
 /** The list: one row per card, the day's block beside its first card (a day's later cards keep the slot empty). */
@@ -4115,8 +4240,8 @@ export function CommoditiesFeed({ instrument, lists, onCommodity, onAsset, onPic
   const expiringVersion = useFlowOption('fno', 'expiringVersion', 'v6')
   return <Stack gap="32" className={parts.feed}>
     <CommodityShortcuts onOpen={onCommodity} />
-    {expiringVersion === 'v7' || expiringVersion === 'v8'
-      ? <UpcomingEventsSection pill={expiringVersion === 'v8'} onAsset={onAsset} onOptionChain={onChain} onScalper={onScalper} onViewAll={onExpiries} />
+    {expiringVersion === 'v7' || expiringVersion === 'v8' || expiringVersion === 'v9'
+      ? <UpcomingEventsSection pill={expiringVersion === 'v8'} timeline={expiringVersion === 'v9'} onAsset={onAsset} onOptionChain={onChain} onScalper={onScalper} onViewAll={onExpiries} />
       : expiringVersion === 'v4'
       ? <ExpiringDayPicker onAsset={onAsset} onOptionChain={onChain} onScalper={onScalper} onViewAll={onExpiries} />
       : <AllEventsSection onAsset={onAsset} onOptionChain={onChain} onScalper={onScalper} onViewAll={onExpiries} />}
@@ -4794,6 +4919,8 @@ export type AllEventsItem = {
   actions: boolean
   tag?: AllEventsTag
   note?: { kind: 'trend' | 'last' | 'since'; name: string; change: number }
+  /** Version 5 (Figma 7076:26456): starts in this many hours (a yellow “In 2 hours” tag with a clock). */
+  startsIn?: number
 }
 export type AllEventsDay = { inDays: number; items: AllEventsItem[] }
 
@@ -4834,6 +4961,31 @@ export function upcomingEventsSample(phase: AllEventsPhase): AllEventsDay[] {
     { inDays: 1, items: [
       ae('ue-eia-crude', 'EIA crude oil inventories', crudeOil, { time: '09:00 AM',
         tag: { kind: pre ? 'forecast' : 'actual', trend: 'bearish', tone: 'loss', arrow: 'down', side: 'left' } })] },
+  ]
+}
+
+/**
+ * Version 5 · Timeline (Figma 7076:26456), one sample per option as drawn. Option 1: today Gold's options expiry live,
+ * EIA crude oil in 2 hours; tomorrow the EIA gold report and Natural Gas's options expiry. Option 2: today Gold and EIA
+ * crude oil both live, tomorrow Gold and Natural Gas. Figma's times are placeholders out of order (9:00 PM before 7:00 PM;
+ * “26th Nov” after Today) — here they run in order from today. Figma's “EAI gold report” is spelt EIA.
+ */
+export function timelineEventsSample(option: 'one' | 'two'): AllEventsDay[] {
+  if (option === 'one') return [
+    { inDays: 0, items: [
+      ae('tl-gold', 'Gold', goldMini, { kind: 'expiry', contract: 'option', time: '5:00 PM', live: true }),
+      ae('tl-eia-crude', 'EIA Crude oil', crudeOil, { time: '7:00 PM', startsIn: 2 })] },
+    { inDays: 1, items: [
+      ae('tl-eia-gold', 'EIA gold report', goldMini, { time: '7:00 PM' }),
+      ae('tl-gas', 'Natural Gas', naturalGas, { kind: 'expiry', contract: 'option', time: '7:00 PM' })] },
+  ]
+  return [
+    { inDays: 0, items: [
+      ae('tl2-gold', 'Gold', goldMini, { kind: 'expiry', contract: 'option', time: '7:30 AM', live: true }),
+      ae('tl2-eia-crude', 'EIA Crude oil', crudeOil, { time: '9:00 AM', live: true })] },
+    { inDays: 1, items: [
+      ae('tl2-gold-next', 'Gold', goldMini, { kind: 'expiry', contract: 'option', time: '7:30 AM' }),
+      ae('tl2-gas', 'Natural Gas', naturalGas, { kind: 'expiry', contract: 'option', time: '9:00 AM' })] },
   ]
 }
 ```
@@ -5108,7 +5260,7 @@ type Props = { onBack: () => void; onAsset: () => void; onOptionChain: () => voi
 export function CommodityCalendar(props: Props) {
   const expiringVersion = useFlowOption('fno', 'expiringVersion', 'v6')
   if (expiringVersion === 'v4') return <ExpiryTimeline {...props} />
-  return <AllEventsPage timed={expiringVersion !== 'v6'} pill={expiringVersion === 'v8'} {...props} />
+  return <AllEventsPage timed={expiringVersion !== 'v6'} pill={expiringVersion === 'v8'} timeline={expiringVersion === 'v9'} {...props} />
 }
 ```
 
@@ -8256,7 +8408,13 @@ function addMinutes(start: string, add: number) {
   "allEvents.empty": "Nothing on the calendar here yet",
   "upcomingEvents.title": "Upcoming Events",
   "upcomingEvents.optionsExpiry": "Options Expiry",
-  "allEvents.live": "Live now"
+  "allEvents.live": "Live now",
+  "upcomingEvents.today": "Today",
+  "upcomingEvents.tomorrow": "Tomorrow",
+  "timeline.live": "Live",
+  "timeline.startsIn": "In {hours} hours",
+  "timeline.expiry": "Expiry",
+  "timeline.when": "{day} • {time}"
 }
 ```
 
@@ -8610,13 +8768,18 @@ export const fno: Flow = {
     { id: 'breakevenSheet', group: 'Scalper', label: 'Breakeven sheet', values: [{ value: 'v1', label: 'Version 1' }, { value: 'v2', label: 'Version 2' }], default: 'v2', floatOn: ['fno-36'] },
     // Expiring This Week (Commodities, fno-08 / -09 / -10 and its View all page fno-38), shown as Versions 1–4 (user,
     // 26 Nov; the values keep their ids so old links still work): v6 = V1 All Events (Figma 7030:9072), v7 = V2 Upcoming
-    // Events (7035:14545, a time per card), v8 = V3 date pills (7042:19186), v4 = V4 the day row (and the timeline page).
+    // Events (7035:14545, a time per card), v8 = V3 date pills (7042:19186), v4 = V4 the day row (and the timeline page), v9 = V5 a vertical timeline (no Figma).
     // The rest (old Versions 1–3, 5) and their settings are archived (commodities/archive/).
     // Phone app mode: a floating one-tap switch (V1 → V2 → V3 → V4) on those screens; `?present=fno.expiringVersion` shows
     // only that switch (the link to share — see src/shared/prototype.ts PRESENT).
-    { id: 'expiringVersion', group: 'Commodities', label: 'Expiring This Week', values: [{ value: 'v6', label: 'Version 1 · All Events' }, { value: 'v7', label: 'Version 2 · Upcoming Events' }, { value: 'v8', label: 'Version 3 · Date pills' }, { value: 'v4', label: 'Version 4 · Day row' }], default: 'v6', floatOn: ['fno-08', 'fno-09', 'fno-10', 'fno-38'],
-      quickSwitch: { on: ['fno-08', 'fno-09', 'fno-10', 'fno-38'], values: [{ value: 'v6', label: 'Version 1 · All Events', short: 'V1' }, { value: 'v7', label: 'Version 2 · Upcoming Events', short: 'V2' }, { value: 'v8', label: 'Version 3 · Date pills', short: 'V3' }, { value: 'v4', label: 'Version 4 · Day row', short: 'V4' }] } },
-    // The events before their release (Forecast + past moves) or after (Actual + the move since).
+    { id: 'expiringVersion', group: 'Commodities', label: 'Expiring This Week', values: [{ value: 'v6', label: 'Version 1 · All Events' }, { value: 'v7', label: 'Version 2 · Upcoming Events' }, { value: 'v8', label: 'Version 3 · Date pills' }, { value: 'v4', label: 'Version 4 · Day row' }, { value: 'v9', label: 'Version 5 · Timeline' }], default: 'v6', floatOn: ['fno-08', 'fno-09', 'fno-10', 'fno-38'],
+      quickSwitch: { on: ['fno-08', 'fno-09', 'fno-10', 'fno-38'], values: [{ value: 'v6', label: 'Version 1 · All Events', short: 'V1' }, { value: 'v7', label: 'Version 2 · Upcoming Events', short: 'V2' }, { value: 'v8', label: 'Version 3 · Date pills', short: 'V3' }, { value: 'v4', label: 'Version 4 · Day row', short: 'V4' }, { value: 'v9', label: 'Version 5 · Timeline', short: 'V5' }] } },
+    // Version 5's two timelines (Figma 7076:26456): Option 1 time on the left, Option 2 the time in the card. Shows (and
+    // floats, also on the presentation link — it depends on expiringVersion) only while Version 5 is on.
+    { id: 'timelineOption', group: 'Commodities', label: 'Timeline', values: [{ value: 'one', label: 'Option 1 · Time on the left' }, { value: 'two', label: 'Option 2 · Time in the card' }], default: 'one', showIf: { expiringVersion: ['v9'] }, floatOn: ['fno-08', 'fno-09', 'fno-10', 'fno-38'],
+      quickSwitch: { on: ['fno-08', 'fno-09', 'fno-10', 'fno-38'], values: [{ value: 'one', label: 'Option 1 · Time on the left', short: 'O1' }, { value: 'two', label: 'Option 2 · Time in the card', short: 'O2' }] } },
+    // The events before their release (Forecast + past moves) or after (Actual + the move since). Not on Version 5 (its
+    // Figma has no forecast).
     { id: 'eventPhase', group: 'Commodities', label: 'Event phase', values: [{ value: 'pre', label: 'Pre-event · Forecast' }, { value: 'post', label: 'Post-event · Actual' }], default: 'pre', showIf: { expiringVersion: ['v6', 'v7', 'v8'] }, floatOn: ['fno-08', 'fno-09', 'fno-10', 'fno-38'] },
   ],
   // The F&O tab's parts, as the preview lists them (like the tab's own pages). Positions isn't built yet.
@@ -12348,6 +12511,15 @@ export const PRESENT = (() => {
   const [flow, option] = (linkParams.get('present') ?? '').split('.')
   return flow && option ? { flow, option } : null
 })()
+/**
+ * Whether a setting belongs on a presentation link: the presented one, or a setting of the same flow that depends on it
+ * (`showIf` names it — e.g. V5's Option 1 / Option 2 under the version switch). The dependent one still shows only while
+ * it applies.
+ */
+export function presentIncludes(flow: string, option: { id: string; showIf?: Record<string, string[]> }) {
+  if (!PRESENT || flow !== PRESENT.flow) return false
+  return option.id === PRESENT.option || Boolean(option.showIf && PRESENT.option in option.showIf)
+}
 // A showcase frame sits in a page of phones: the app focusing its sheet must never scroll that page to it.
 if (SHOWCASE) {
   const focus = HTMLElement.prototype.focus

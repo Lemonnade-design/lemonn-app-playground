@@ -201,6 +201,14 @@ Every tap he wired is kept. The main path: FTUX sheet → Activate → Declarati
 → Pay on bank → Money ready → Stock → Buy → Executed → Wallet → Withdraw.
 
 ### Changelog
+
+- 2026-11-26 · Order pad V7 top bar: a Share icon (L3 ghost ActionbarAction) left of the TP/SL switch, a 1px hairline between them, as some live-app accounts show it. EDGE CASE: not shown to a normal user in the live app, only on some internal staff accounts; the condition and what it shares are unknown (maybe internal testing). Developers confirm with product and show it only then; the prototype hides it by default — Settings → Trade → "Share icon (edge case)" shows it (Web Share of the page link). L3 gap: no divider between Actionbar actions.
+- 2026-11-26 · Fee breakdown sheet audit: the whole breakdown sits in an L3 static Card; Charges and Taxes start collapsed, a chevron right after the label opens their sub-fees (as Balance details); Brokerage, Charges and Taxes labels primary, sub-fees and the note secondary; Estimated fee in Heading/16; amounts never wrap (they broke one character per line beside the long note). US Brokerage label is "Brokerage (0.25%)". L3 gaps: KeyValueRow's label is always secondary, its value cell can shrink, the total row has no heading size.
+- 2026-11-26 · Order pad → Fee breakdown sheet: every line of the live app's full-page Fee Breakdown, in the sheet. Brokerage with the live app's note under it on both pads ("We will block 2.5% of the order value as brokerage margin… greater than ₹20 per order will be refunded at the end of the day"; US adds its 0.25% rate, refund cap $0.25 is a FLAG placeholder), Charges and Taxes each with a subtotal and their sub-fees indented under them (US: IFSCA turnover fee · GST; Indian: Exchange, SEBI turnover, IPFT charges · GST, STT / CTT, State stamp duty), a hairline between groups, Estimated fee as the L3 total at the foot (live: on top), the approximate note in the header. The total still equals the 0.3% in Req. L3 gap: KeyValueList has no grouped rows.
+- 2026-11-26 · Help: the top bar shows its line from the start (not only once scrolled) and the page starts 24 under it (was 8).
+- 2026-11-26 · Help: a search icon in the top bar (Tertiary Small) opens Help · Search (us-stocks-108, not in Figma), drawn like the app's global search — the top bar is the search field (back · field · ✕), the phone keyboard up, the field focused. Content as the live app's help search: "Search articles" in the field and a "Search articles" empty state before typing (live: binoculars; L3 EmptyState art here; live Cancel = back + ✕). Typing filters the help topics by title and description (articles aren't built): "Topics (n)", "No help topics found" + Clear search when nothing matches.
+- 2026-11-26 · Portfolio → Holdings: "Holdings market switch" archived. V2 · the IN / US pill group by Sort is the only look; V1 · underline tabs over the heading archived (its code stays in HoldingsTab, unused).
+- 2026-11-26 · Portfolio → Orders → Filters: the sheet is 4½ side-nav tiles tall (416), so the half tile says more groups scroll below; the side nav and the panel scroll on their own. (Opening already slides up with the scrim fading in — L3 BottomSheet.)
 - 2026-11-26 · Portfolio → Orders: opening / closing a day animates — its cards' block grows from 0 to its height (400 ms, L3 standard easing) as they fade in, the row's border fades and its padding eases to the plain row's, the chevron turns. A closed day's cards stay in the page, inert. Off with reduced motion.
 - 2026-11-26 · Portfolio → Orders: a closed day is an L3 card cell (flat, border all round, 44 tall), 8 from the next; an open day turns back into a plain row with no border, its cards under it (was plain rows with a hairline between days).
 - 2026-11-26 · Portfolio → Orders: the header copies Market's top bar. Row 1: the IN Stocks / US Stocks primary pill (one tap flips it) | a divider | Open · SIP · History secondary pills at L3's default size (12 above, 8 below). Row 2: the list's name in Heading/14 with ⇅ (All orders → Stocks → ETFs on US, → Delivery → Intraday on Indian; a ghost button with the tertiary Small box so its grey has room) and the round filter button on the right, its dot on while filters apply (was the Filters pill with a count). L3 gaps: no heading with a switch; no round Button.
@@ -22578,6 +22586,14 @@ export function UsMainNav({ value }: { value: Section }) {
   "help.contactBody": "Need more help? Our support team members are ready to help you.",
   "help.contact": "Contact Support",
   "help.contactHours": "Available 24x7",
+  "help.search.open": "Search help",
+  "help.search.title": "Search help",
+  "help.search.placeholder": "Search articles",
+  "help.search.clear": "Clear search",
+  "help.search.results": "Topics ({count})",
+  "help.search.emptyTitle": "No help topics found",
+  "help.search.emptyBody": "Try another word, or contact support.",
+  "help.search.emptyClear": "Clear search",
   "help.topic.usStocks.label": "US Stocks",
   "help.topic.usStocks.description": "Help with US stocks, your USD wallet and sending money abroad",
   "help.topic.kyc.label": "KYC & Account related",
@@ -22846,20 +22862,8 @@ export const usStocks: Flow = {
   options: [
     // "P&L card" archived 26 Nov (the user's call): V1 · Total ⇄ 1D switch kept; V2 · both returns shown archived.
     // HoldingsCards reads no option now; the V2 code stays in HoldingsCards.tsx.
-    // Portfolio → Holdings, the market switch (26 Nov, the user's call): V2 · an IN / US pill group in place of the "Your
-    // holdings" heading, Sort on its right, no underline tabs above; V1 · underline IN Stocks / US Stocks tabs over the
-    // "Your holdings" heading, as it was.
-    {
-      id: 'holdingsSwitch',
-      group: 'Portfolio',
-      label: 'Holdings market switch',
-      values: [
-        { value: 'v1', label: 'V1 · tabs over the heading' },
-        { value: 'v2', label: 'V2 · pill group by Sort' },
-      ],
-      default: 'v2', // V2 by default (26 Nov, user)
-      floatOn: ['us-stocks-05'],
-    },
+    // "Holdings market switch" archived 26 Nov (the user's call): V2 · an IN / US pill group by Sort kept; V1 · underline
+    // tabs over the "Your holdings" heading archived. HoldingsTab reads no option now; the V1 code stays in HoldingsTab.
     // Portfolio → Holdings, a user with MTF holdings (24 Nov, the user's call): the IN card's "IN Holdings" label becomes a
     // switch — IN Holdings (total) ⇄ Stocks ⇄ MTF — one card in place of the three cards the live app shows.
     {
@@ -22918,6 +22922,19 @@ export const usStocks: Flow = {
         { value: '0', label: 'None' },
       ],
       default: '1',
+      floatOn: ORDER_PAD_SCREEN_IDS,
+    },
+    // The order pad's Share icon left of TP/SL (26 Nov, the user): an edge case (some internal staff accounts in the live
+    // app, condition unknown), so hidden by default.
+    {
+      id: 'shareIcon',
+      group: 'Trade',
+      label: 'Share icon (edge case)',
+      values: [
+        { value: 'off', label: 'Hidden' },
+        { value: 'on', label: 'Shown' },
+      ],
+      default: 'off',
       floatOn: ORDER_PAD_SCREEN_IDS,
     },
     // "TP/SL sheet" archived 24 Nov (the user's call): B · one price card per leg kept (TpslSheetB); A · box inside each
@@ -23211,6 +23228,7 @@ export const registry: UsScreenEntry[] = [
   { figma: '9001:66', id: 'us-stocks-102', badge: 'new', badgeNote: "From the live app's Balance details", section: 'wallet', name: "Balance Details · INR wallet", note: "The INR wallet's View details: Available balance (opening balance, Credits, Debits) and Withdrawable balance (Settlement pending), as in the live app. Groups open in place." },
   { figma: '9001:67', id: 'us-stocks-103', badge: 'new', badgeNote: "From the live app's Balance details", section: 'wallet', name: "Balance Details · INR · expanded", note: "Every group open: Deposits, Stocks Sell, Stocks Pledge, Equity / Commodity Options Cfs; Withdrawals, Stocks, F&O, MTF, Stocks & MTF PnL, MTM PnL; Deposit and Net Credit." },
   { figma: '9001:68', id: 'us-stocks-104', badge: 'new', badgeNote: "From the live app's help page", section: 'wallet', name: "Help", note: "Balance Details' Help. Help topics (icon, title, description) then Contact Lemonn Support, whose Contact Support card emails support. Title Help (live: Lemonn); US Stocks topic added; Logout left out. Topic article pages aren't built." },
+  { figma: '9001:72', id: 'us-stocks-108', badge: 'new', badgeNote: "Not in Figma: the global search's look over the help topics", section: 'wallet', name: "Help · Search", note: "Help's search icon. The top bar is the search field (back · field · ✕ once typed), keyboard up. Live app's content: \"Search articles\" field and empty state before typing; typing filters the help topics by title and description; no match: No help topics found + Clear search." },
   { figma: '5852:100550', id: 'us-stocks-62', section: 'wallet', name: "H08 · Withdraw · enter amount", note: "Withdraw: enter $ amount, see ₹ estimate." },
   { figma: '5852:100492', id: 'us-stocks-63', section: 'wallet', name: "H09 · Withdraw · more than withdrawable", note: "Error: amount is more than the withdrawable balance." },
   { figma: '5852:100472', id: 'us-stocks-64', section: 'wallet', name: "H10 · Withdraw · request placed", note: "Withdraw request placed. Usually 1–2 working days." },
@@ -31240,7 +31258,6 @@ import { Tabs } from '@l3/components/Tabs'
 import { asset } from '../../../asset'
 import { openStock, stockFor } from '../../../data'
 import { useUsNav } from '../../../nav'
-import { useFlowOption } from '../../../../../shared/prototype'
 import { openStock as openInStock } from '../../../../../shared/data/openStock'
 import { Flag } from '../../../../../shared/ui/Flag'
 import { useInPortfolioEmpty, useUsJourney, type UsJourney } from '../../../../../shared/userStatus'
@@ -31287,8 +31304,9 @@ export function HoldingsTab({ market, onMarket, sort, onSort, sheetRef }: { mark
   const empty = usEmpty(journey)
   const inEmpty = useInPortfolioEmpty()
   const inSummary = inEmpty ? IN_EMPTY_SUMMARY : holdingsSummary.in
-  // Portfolio → "Holdings market switch" (26 Nov, user): V2 · the IN / US pill group takes the heading's place.
-  const pillSwitch = useFlowOption('us-stocks', 'holdingsSwitch', 'v2') === 'v2'
+  // "Holdings market switch" archived 26 Nov (user): V2 · the IN / US pill group takes the heading's place, kept. The V1
+  // code (underline tabs over the heading) stays below, unused.
+  const pillSwitch = true
   // V2 tabs carry each market's holdings count in the label, "IN Stocks (2)" (26 Nov, user); none when it's empty.
   const counts = { in: inEmpty ? 0 : sortedHoldings(sort).length, us: holdsUs ? 1 : 0 }
   const marketLabel = (market: HoldingsMarket) => {
@@ -38436,7 +38454,10 @@ export function OrderDetailsFor({ id, backdrop }: { id: string; backdrop?: boole
 .body {
   display: grid;
   grid-template-columns: var(--l3-size-96) minmax(0, 1fr);
-  max-height: 100%; /* as tall as the side nav's tiles (user, 26 Nov: lower than the chart tools' 576) */
+  /* 4½ side-nav tiles tall (26 Nov, user): the half tile says more groups scroll below. 16 above + 4 × (80 tile + 10
+     gap) + half a tile = 416. Was as tall as all the tiles. */
+  height: calc(var(--l3-spacing-16) + 4 * (var(--l3-size-80) + var(--l3-spacing-10)) + var(--l3-size-40));
+  max-height: 100%;
   box-shadow: inset 0 1px 0 var(--l3-border-light); /* the line under the sheet's header (1px: Figma stroke weight) */
 }
 
@@ -39890,6 +39911,63 @@ export const inOrderById = (id: string) => [...inOpenOrders, ...inHistoryOrders]
   font: var(--l3-text-label-12);
   color: var(--l3-content-accent-discover-default);
 }
+
+/* Fee sheet groups (26 Nov, the live app's Fee Breakdown): a hairline between Brokerage, Charges and Taxes; sub-fees
+   indented 16 under their group's row. L3 gap: KeyValueList has no grouped / nested rows. */
+.group + .group {
+  padding-top: var(--l3-spacing-16);
+  border-top: 1px solid var(--l3-border-light); /* 1px hairline */
+}
+
+.sub {
+  padding-inline-start: var(--l3-spacing-16);
+}
+
+/* The brokerage-margin note under the Brokerage row, full width (live app's Fee Breakdown). */
+.note {
+  margin: 0;
+  font: var(--l3-text-description-12);
+  color: var(--l3-content-secondary);
+}
+
+/* 26 Nov audit: amounts keep their width (L3's value cell may shrink and wraps anywhere, so beside a long label "₹53.16"
+   broke into one character per line). L3 gap. */
+.fees dd {
+  flex: none;
+  white-space: nowrap;
+}
+
+/* Group labels (Brokerage, Charges, Taxes) in primary; sub-fees and notes stay secondary. L3 gap: KeyValueRow's label
+   is always secondary unless it's the total. */
+.head dt > span:first-child {
+  color: var(--l3-content-primary);
+}
+
+/* Charges / Taxes label is its toggle: the text with the chevron right after it, no button box (as Balance details). */
+.toggle[data-variant] {
+  --btn-height: auto;
+  --btn-padding-inline: var(--l3-spacing-00);
+  --btn-padding-block: var(--l3-spacing-00);
+  --btn-label-padding: var(--l3-spacing-00);
+  --btn-gap: var(--l3-spacing-04);
+  --btn-font: inherit;
+  --btn-content: inherit;
+}
+
+.toggle > span:last-child > span {
+  transition: rotate var(--l3-motion-duration-short) var(--l3-motion-easing-standard);
+}
+
+.toggle[aria-expanded='true'] > span:last-child > span {
+  rotate: 180deg;
+}
+
+/* The Estimated fee total in heading text (26 Nov, the user): label and amount at Heading/16. L3 gap: the list's total
+   row is Label/14 · Label/16. */
+.fees [data-total] dt > span:first-child,
+.fees [data-total] dd > span > span:first-child {
+  font: var(--l3-text-heading-16);
+}
 ```
 
 ### `src/flows/us-stocks/screens/trade/FeeBreakdown.tsx`
@@ -39898,31 +39976,66 @@ export const inOrderById = (id: string) => [...inOpenOrders, ...inHistoryOrders]
 // T11 · Fee Breakdown sheet over the order pad (opened from "View Charges" on the SL order, and "Req." on order pad V2).
 // Built as the app's other breakdowns (Add money's "Charges breakdown"): one L3 KeyValueList — a row per fee with what it
 // is under its name, the estimated total at the foot — the "approximate" note as the header's description, and Got it.
-// Differs from Figma (the user's call, 19 Nov: use the breakdown component): Figma's separate Brokerage / Charges / Taxes
-// groups with "•" sub-rows, hand-drawn dividers, notes and a ✕ are now that one list.
+// 26 Nov (the user, with the live app's full-page Fee Breakdown): every line of the live page, in the sheet — Brokerage
+// (with the live app's brokerage-margin note, on both pads; FLAG: the US refund cap $0.25 is a placeholder — the live
+// note is the Indian ₹20), Charges and Taxes each with its subtotal and its sub-fees under it (L3 KeyValueRow sm, indented),
+// a hairline between the groups, Estimated fee as the list's L3 total at the foot (live: at the top), the "approximate"
+// note as the header's description (live: at the bottom). L3 gap: KeyValueList has no grouped / nested rows.
+// 26 Nov audit (the user): the whole breakdown in an L3 static Card; Charges and Taxes collapsed, a chevron right after
+// the label opens the sub-fees (as Balance details); group labels primary, notes and sub-fees secondary; amounts never
+// wrap (KeyValueRow's value shrank to one character wide beside a long label).
+import { useState } from 'react'
 import { BottomSheet, BottomSheetHeader } from '@l3/components/BottomSheet'
 import { Button } from '@l3/components/Button'
 import { ButtonGroup } from '@l3/components/ButtonGroup'
+import { Card } from '@l3/components/Card'
+import { Icon } from '@l3/components/Icon'
 import { KeyValueList, KeyValueRow } from '@l3/components/KeyValueList'
+import { Stack } from '@l3/components/Stack'
+import { msKeyboardArrowDown } from '@l3/icons/material'
 import { useSheetLayer } from '../../components/Phone'
 import { useUsNav } from '../../nav'
 import { PadAmount, usePadCurrency } from './padMoney'
-import { TwoLineLabel } from '../money/components/TwoLineLabel'
 import { useSheetClose } from '../money/useSheetClose'
 import { OrderPad } from './OrderPad'
 import { tradeIds } from './ids'
 import { orderPads } from './orderPads'
+import styles from './FeeBreakdown.module.css'
 
-const FEES = { total: 1.13, brokerage: 0.94, charges: 0.02, taxes: 0.17 }
+/** The T11 screen's Figma total ($1.13), as an order value at the pads' 0.3% (CHARGE_FACTOR). */
+const FIGMA_ORDER = 1.13 / 0.003
 
-/** The fees on an order of `orderUsd` — the 0.3% the pads add to "Req." (CHARGE_FACTOR), split: brokerage 0.25%, GST 18%
- * of it (0.045%), IFSCA turnover fee 0.005%. */
-export function feesFor(orderUsd: number) {
+/** The fees on an order of `orderUsd` — the 0.3% the pads add to "Req." (CHARGE_FACTOR), split as the live app's Fee
+ * Breakdown: Brokerage, Charges (its sub-fees), Taxes (its sub-fees). US: brokerage 0.25%, IFSCA turnover fee 0.005%,
+ * GST 18% of brokerage. Indian (sample rates): exchange 0.00297%, SEBI 0.0001%, IPFT 0.0001%, STT 0.1%, stamp duty
+ * 0.015%, GST 18% on brokerage + exchange + SEBI; brokerage is what's left of the 0.3%, so the total still matches Req. */
+export function feesFor(orderUsd: number, market: 'usd' | 'inr' = 'usd') {
+  const total = orderUsd * 0.003
+  if (market === 'inr') {
+    const exchange = orderUsd * 0.0000297
+    const sebi = orderUsd * 0.000001
+    const ipft = orderUsd * 0.000001
+    const stt = orderUsd * 0.001
+    const stamp = orderUsd * 0.00015
+    const brokerage = (total - exchange - sebi - ipft - stt - stamp - 0.18 * (exchange + sebi)) / 1.18
+    const gst = 0.18 * (brokerage + exchange + sebi)
+    return {
+      total,
+      brokerage,
+      charges: [{ label: 'Exchange charges', value: exchange }, { label: 'SEBI turnover charges', value: sebi }, { label: 'IPFT charges', value: ipft }],
+      taxes: [{ label: 'GST', value: gst }, { label: 'STT / CTT', value: stt }, { label: 'State stamp duty', value: stamp }],
+    }
+  }
   const brokerage = orderUsd * 0.0025
-  const taxes = brokerage * 0.18
-  const charges = orderUsd * 0.00005
-  return { total: brokerage + taxes + charges, brokerage, charges, taxes }
+  return {
+    total,
+    brokerage,
+    charges: [{ label: 'IFSCA turnover fee', value: orderUsd * 0.00005 }],
+    taxes: [{ label: 'GST', value: brokerage * 0.18 }],
+  }
 }
+
+const sum = (rows: { value: number }[]) => rows.reduce((a, r) => a + r.value, 0)
 
 /** The SL order pad drawn behind (its own screen, us-stocks-41, stays put: this is a sheet over it), with the fee sheet on top. */
 export function FeeBreakdownScreen({ backdrop }: { backdrop?: boolean }) {
@@ -39930,13 +40043,42 @@ export function FeeBreakdownScreen({ backdrop }: { backdrop?: boolean }) {
   return <OrderPad config={orderPads[tradeIds.T08]} backdrop sheet={backdrop ? undefined : <FeeBreakdownSheet onClose={() => back(tradeIds.T08)} />} />
 }
 
-/** Fee Breakdown: fixed Figma amounts (the SL screen), or the fees on `orderUsd` (order pad V2's "Req." link). */
+/** Fee Breakdown: the T11 Figma total (the SL screen), or the fees on `orderUsd` (order pad V2's "Req." link). */
 export function FeeBreakdownSheet({ onClose, orderUsd }: { onClose: () => void; orderUsd?: number }) {
-  const fees = orderUsd === undefined ? FEES : feesFor(orderUsd)
-  // On the Indian pad (₹, padMoney.tsx) the last fee is the exchange's, not IFSCA's.
-  const exchangeFee = usePadCurrency() === 'inr' ? 'Exchange transaction fee' : 'IFSCA turnover fee'
+  const market = usePadCurrency() === 'inr' ? 'inr' : 'usd'
+  const fees = feesFor(orderUsd ?? FIGMA_ORDER, market)
   const layer = useSheetLayer()
   const { open, close } = useSheetClose(onClose)
+  // Charges and Taxes start collapsed (26 Nov, the user): the chevron right after the label opens the sub-fees.
+  const [shown, setShown] = useState<Record<'Charges' | 'Taxes', boolean>>({ Charges: false, Taxes: false })
+  const group = (title: 'Charges' | 'Taxes', rows: { label: string; value: number }[], total?: number) => (
+    <KeyValueList
+      aria-label={title}
+      className={styles.group}
+      total={total === undefined ? undefined : { label: 'Estimated fee', value: <PadAmount value={total} /> }}
+    >
+      <KeyValueRow
+        className={styles.head}
+        label={
+          // As Balance details: the label and its chevron are one tap target (L3 ghost sm, its box cleared).
+          <Button
+            variant="ghost"
+            size="sm"
+            className={styles.toggle}
+            iconRight={<Icon icon={msKeyboardArrowDown} size={16} />}
+            aria-label={`${shown[title] ? 'Hide' : 'Show'} ${title.toLowerCase()} breakdown`}
+            aria-expanded={shown[title]}
+            onClick={() => setShown((now) => ({ ...now, [title]: !now[title] }))}
+          >
+            {title}
+          </Button>
+        }
+        value={<PadAmount value={sum(rows)} />}
+      />
+      {shown[title] &&
+        rows.map((r) => <KeyValueRow key={r.label} size="sm" className={styles.sub} label={r.label} value={<PadAmount value={r.value} />} />)}
+    </KeyValueList>
+  )
   return (
     <BottomSheet
       open={open}
@@ -39947,7 +40089,7 @@ export function FeeBreakdownSheet({ onClose, orderUsd }: { onClose: () => void; 
         <BottomSheetHeader
           heading="Fee breakdown"
           headingId="fee-title"
-          description="Approximate — the final fee may vary slightly at the time of execution."
+          description="The amounts are approximate and may vary slightly at the time of execution."
         />
       }
       footer={
@@ -39956,11 +40098,26 @@ export function FeeBreakdownSheet({ onClose, orderUsd }: { onClose: () => void; 
         </ButtonGroup>
       }
     >
-      <KeyValueList aria-label="Fee breakdown" total={{ label: 'Estimated fee', value: <PadAmount value={fees.total} /> }}>
-        <KeyValueRow label={<TwoLineLabel top="Brokerage" sub="(0.25% of the order value)" />} value={<PadAmount value={fees.brokerage} />} />
-        <KeyValueRow label={<TwoLineLabel top="GST" sub="(18% on brokerage)" />} value={<PadAmount value={fees.taxes} />} />
-        <KeyValueRow label={exchangeFee} value={<PadAmount value={fees.charges} />} />
-      </KeyValueList>
+      <Card className={styles.fees}>
+        <Stack gap="16">
+          <Stack gap="04" className={styles.group}>
+            <KeyValueList aria-label="Brokerage">
+              <KeyValueRow
+                className={styles.head}
+                label={market === 'inr' ? 'Brokerage' : 'Brokerage (0.25%)'}
+                value={<PadAmount value={fees.brokerage} />}
+              />
+            </KeyValueList>
+            <p className={styles.note}>
+              {market === 'inr'
+                ? 'Note: We will block 2.5% of the order value as brokerage margin. However, any brokerage amount greater than ₹20 per order will be refunded at the end of the day.'
+                : 'Note: We will block 2.5% of the order value as brokerage margin. However, any brokerage amount greater than $0.25 per order will be refunded at the end of the day.'}
+            </p>
+          </Stack>
+          {group('Charges', fees.charges)}
+          {group('Taxes', fees.taxes, fees.total)}
+        </Stack>
+      </Card>
     </BottomSheet>
   )
 }
@@ -41104,6 +41261,15 @@ function OrderPadV1({ config, backdrop, sheet }: OrderPadProps) {
   user-select: none;
 }
 .slToggle:active { background: var(--l3-surface-secondary); }
+/* V7: a hairline between Share and the TP/SL switch (26 Nov, user), 20 tall, 12 from the icon and from "TP/SL" (the
+   actions' 8 gap + 4). L3 gap: Actionbar has no divider between actions. */
+.barDivider {
+  flex: none;
+  width: 1px; /* 1px hairline */
+  height: var(--l3-size-20);
+  margin-inline: var(--l3-spacing-04);
+  background: var(--l3-border-light);
+}
 
 /* V8: the amount card's left label ("Quantity"), over the Amount / Shares switch. */
 .qtyLabel { font: var(--l3-text-label-14); color: var(--l3-content-primary); }
@@ -41156,7 +41322,7 @@ import { Stack } from '@l3/components/Stack'
 import { Icon } from '@l3/components/Icon'
 import { Switch } from '@l3/components/Switch'
 import { Tab, Tabs } from '@l3/components/Tabs'
-import { msAdd } from '@l3/icons/material'
+import { msAdd, msShare } from '@l3/icons/material'
 import { Tooltip } from '@l3/components/Tooltip'
 import { lmAutoTpSl, lmSwitchArrowVertical } from '@l3/icons/lemonnade' // lmAutoTpSl: the V3 / V4 TP/SL button, not a gear (23 Nov, user)
 import { SlGuide } from './SlGuide'
@@ -41171,7 +41337,7 @@ import { usShortName } from '../../../../shared/data/usShortNames'
 import { inShortName } from '../../../../shared/data/inShortNames'
 import { al, forCurrentStock } from './format'
 import type { Derived, OrderPadConfig, OrderType, PadChip, PadMode } from './types'
-import { usePadVersion, usePriceCards, useTpslCard, useAmountBox, useAmountCard, useAmountCardStacked, useAmountGlow, useAmountSize, useOrderTypesLeft, useValidityPlace, useIntradayPosition } from './version'
+import { usePadVersion, usePriceCards, useTpslCard, useAmountBox, useAmountCard, useAmountCardStacked, useAmountGlow, useAmountSize, useOrderTypesLeft, useValidityPlace, useIntradayPosition, useShareIcon } from './version'
 import { LeverageCard } from './LeverageCard'
 import { TPSL_INDIA, TPSL_US, TpslControl } from './Tpsl'
 import { FeeBreakdownSheet } from './FeeBreakdown'
@@ -41279,6 +41445,7 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
   // TP/SL card V3 (flow option "TP/SL card", 23 Nov, the user's call): Market / Limit / SL centred, with a settings
   // button at the row's right edge that opens the TP/SL sheet (TpslControl, through tpslOpen).
   const tpslCard = useTpslCard()
+  const shareIcon = useShareIcon()
   const amountBox = useAmountBox() // V5 / V6: the amount section in a bounding box
   const amountCard = useAmountCard() // V8: the amount in a card, its label and switch at the left
   const amountCardStacked = useAmountCardStacked() // V9: the same card, label on top, the amount under it
@@ -41509,6 +41676,21 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
         tpslCard === 'v7' ? (
           // V7 (23 Nov, user): V4's top bar with a labelled L3 Switch in place of the settings button.
           <>
+            {/* Share, as the live app's pad (26 Nov, user): an L3 ghost action, then a hairline, then the TP/SL switch.
+                EDGE CASE: in the live app it shows only on some (internal staff) accounts, not for a normal user; the
+                condition and what it shares are unknown (maybe internal testing). Developers: confirm with product and
+                show it only when that condition holds. The prototype hides it by default: Settings → Trade → "Share icon (edge case)". */}
+            {shareIcon && (
+              <>
+                <ActionbarAction
+                  variant="ghost"
+                  icon={msShare}
+                  label={`Share ${stockName}`}
+                  onClick={() => { navigator.share?.({ title: stockName, url: window.location.href }).catch(() => {}) }}
+                />
+                <span className={styles.barDivider} aria-hidden="true" />
+              </>
+            )}
             {/* The whole pill (text, switch and the room round them) is the tap target (24 Nov, user). */}
             <label className={styles.slToggle}>
               <span>{(padVersion === 'india' ? TPSL_INDIA : TPSL_US).title}</span>
@@ -44998,6 +45180,10 @@ export const useIntradayPosition = (): number => {
   const value = Number(useFlowOption('us-stocks', 'intradayPos', '1'))
   return Number.isFinite(value) ? value : 0
 }
+
+// The order pad's Share icon (flow option "Share icon", group Trade, 26 Nov, the user): an edge case — the live app shows
+// it only on some (internal staff) accounts; the condition is unknown. Hidden by default.
+export const useShareIcon = (): boolean => useFlowOption('us-stocks', 'shareIcon', 'off') === 'on'
 ```
 
 ### `src/flows/us-stocks/screens/types.ts`
@@ -46423,8 +46609,9 @@ export function GrowNudge() {
 ### `src/flows/us-stocks/screens/wallet/HelpScreen.module.css`
 
 ```css
+/* 24 under the top bar's line (26 Nov, user; was 8). */
 .body {
-  padding: var(--l3-spacing-08) var(--l3-spacing-16) var(--l3-spacing-00);
+  padding: var(--l3-spacing-24) var(--l3-spacing-16) var(--l3-spacing-00);
 }
 
 /* A hairline between topics, as in the live app. */
@@ -46442,6 +46629,12 @@ export function GrowNudge() {
 .heading h2 {
   font: var(--l3-text-heading-16);
 }
+
+/* Help → Search: the empty state fills the page under the bar, centred (as global search). */
+.fill {
+  flex: 1;
+  min-height: 100%;
+}
 ```
 
 ### `src/flows/us-stocks/screens/wallet/HelpScreen.tsx`
@@ -46452,13 +46645,13 @@ export function GrowNudge() {
 // is "Help" (live: "Lemonn"), every topic has a real icon (live: some show a letter), the typos are fixed
 // ("regarding", "Margin Trading Facility"), "Understand Investing & Trading Basics" is shortened to fit one line, US Stocks is added first, and Logout is left out (not a help action).
 // Topics are grouped into sections (Trading, Money & charges, …); the live app has one flat list.
-// The topics' article pages aren't built.
-import { Actionbar } from '@l3/components/Actionbar'
+// The topics' article pages aren't built. The top bar's search icon (26 Nov) opens Help → Search (HelpSearchScreen).
+import { Actionbar, ActionbarAction } from '@l3/components/Actionbar'
 import { Icon } from '@l3/components/Icon'
 import { ListCell } from '@l3/components/ListCell'
 import { SectionHeader } from '@l3/components/SectionHeader'
 import { Stack } from '@l3/components/Stack'
-import { msPerson } from '@l3/icons/material'
+import { msPerson, msSearch } from '@l3/icons/material'
 import { Phone } from '../../components/Phone'
 import { useUsNav } from '../../nav'
 import { emailSupport } from '../../../../shared/support'
@@ -46469,14 +46662,15 @@ import { chevronRightIcon } from './lib/icons'
 import styles from './HelpScreen.module.css'
 
 export function HelpScreen() {
-  const { back } = useUsNav()
+  const { back, open } = useUsNav()
   const chevron = <Icon icon={chevronRightIcon} size={20} />
 
   return (
     <Phone
       label={t('help.title')}
       gesture="none"
-      header={<Actionbar title={t('help.title')} onBack={() => back(FIGMA.balanceDetails)} />}
+      topLine
+      header={<Actionbar title={t('help.title')} onBack={() => back(FIGMA.balanceDetails)} actions={<ActionbarAction icon={msSearch} label={t('help.search.open')} onClick={() => open(FIGMA.helpSearch)} />} />}
     >
       <Stack gap="32" className={styles.body}>
         {HELP_GROUPS.map((group) => (
@@ -46513,6 +46707,96 @@ export function HelpScreen() {
           />
         </Stack>
       </Stack>
+    </Phone>
+  )
+}
+```
+
+### `src/flows/us-stocks/screens/wallet/HelpSearchScreen.tsx`
+
+```tsx
+// Help → Search (26 Nov, the user): the Help page's search icon opens this page. It looks like the app's global search
+// (flows/search): the top bar IS the search field (back · field · ✕ once something is typed), the phone keyboard stays
+// up, the field is focused. Content as the live app's help search: "Search articles" in the field and, before typing,
+// a "Search articles" empty state (live: binoculars art; L3 EmptyState's own art here). Typing filters the help topics
+// (label and description) — the live app searches articles, which aren't built. No match: an empty state with Clear
+// search. Live "Cancel" is our back arrow + ✕ (L3 search bar).
+import { useState } from 'react'
+import { Actionbar, ActionbarAction } from '@l3/components/Actionbar'
+import { Button } from '@l3/components/Button'
+import { EmptyState } from '@l3/components/EmptyState'
+import { Icon } from '@l3/components/Icon'
+import { ListCell } from '@l3/components/ListCell'
+import { SectionHeader } from '@l3/components/SectionHeader'
+import { Stack } from '@l3/components/Stack'
+import { msClose, msDeleteForever } from '@l3/icons/material'
+import { usePreview } from '../../../../shared/prototype'
+import { TextKeyboard, typeText } from '../../../../shared/ui/TextKeyboard'
+import { Phone } from '../../components/Phone'
+import { useUsNav } from '../../nav'
+import { t } from '../money/copy'
+import { FIGMA } from './data'
+import { HELP_GROUPS } from './helpTopics'
+import { chevronRightIcon } from './lib/icons'
+import styles from './HelpScreen.module.css'
+
+type Topic = (typeof HELP_GROUPS)[number]['topics'][number]
+const TOPICS: Topic[] = HELP_GROUPS.flatMap((group): Topic[] => [...group.topics])
+
+export function HelpSearchScreen() {
+  const { back } = useUsNav()
+  const { interactive } = usePreview()
+  const [query, setQuery] = useState('')
+  const q = query.trim().toLowerCase()
+  const shown = TOPICS.filter(({ id }) => `${t(`help.topic.${id}.label`)} ${t(`help.topic.${id}.description`)}`.toLowerCase().includes(q))
+  const chevron = <Icon icon={chevronRightIcon} size={20} />
+
+  return (
+    <Phone
+      label={t('help.search.title')}
+      gesture="none"
+      header={
+        <Actionbar
+          onBack={() => back(FIGMA.help)}
+          search={{ value: query, onChange: setQuery, placeholder: t('help.search.placeholder'), label: t('help.search.placeholder'), autoFocus: interactive }}
+          actions={query ? <ActionbarAction variant="ghost" icon={msClose} label={t('help.search.clear')} onClick={() => setQuery('')} /> : undefined}
+        />
+      }
+      footer={<TextKeyboard onKey={(k) => setQuery((v) => typeText(v, k))} />}
+    >
+      {!q ? (
+        <Stack direction="horizontal" className={styles.fill}>
+          <EmptyState title={t('help.search.placeholder')} />
+        </Stack>
+      ) : shown.length > 0 ? (
+        <Stack gap="04" className={styles.body}>
+          <SectionHeader className={styles.heading} title={t('help.search.results', { count: shown.length })} />
+          <div role="list" aria-label={t('help.search.results', { count: shown.length })}>
+            {shown.map(({ id, icon }) => (
+              <div role="listitem" key={id} className={styles.topic}>
+                <ListCell
+                  as="button"
+                  size="sm"
+                  iconLeft={<Icon icon={icon} />}
+                  label={t(`help.topic.${id}.label`)}
+                  description={t(`help.topic.${id}.description`)}
+                  multiline
+                  iconRight={chevron}
+                  onClick={() => {}}
+                />
+              </div>
+            ))}
+          </div>
+        </Stack>
+      ) : (
+        <Stack direction="horizontal" className={styles.fill}>
+          <EmptyState
+            title={t('help.search.emptyTitle')}
+            description={t('help.search.emptyBody')}
+            action={<Button size="sm" iconLeft={<Icon icon={msDeleteForever} />} onClick={() => setQuery('')}>{t('help.search.emptyClear')}</Button>}
+          />
+        </Stack>
+      )}
     </Phone>
   )
 }
@@ -47273,6 +47557,8 @@ export const FIGMA = {
   /** The same, every group open. */
   balanceDetailsInrExpanded: '9001:67',
   help: '9001:68',
+  /** Help → Search (not in Figma: the global search's look over the help topics). */
+  helpSearch: '9001:72',
   /** W0 · Wallet · Indian tab. */
   walletInr: '5852:99084',
   /** M01 · Add money · enter ₹. */
@@ -47431,6 +47717,7 @@ import type { UsScreenMap } from '../types'
 import { AllTransactionsScreen } from './AllTransactions'
 import { BalanceDetails } from './BalanceDetails'
 import { HelpScreen } from './HelpScreen'
+import { HelpSearchScreen } from './HelpSearchScreen'
 import { FIGMA } from './data'
 import {
   WalletActivationFailedScreen,
@@ -47484,6 +47771,7 @@ export const screens: UsScreenMap = {
   [FIGMA.balanceDetailsInr]: () => <BalanceDetails wallet="inr" />,
   [FIGMA.balanceDetailsInrExpanded]: () => <BalanceDetails wallet="inr" expanded />,
   [FIGMA.help]: () => <HelpScreen />,
+  [FIGMA.helpSearch]: () => <HelpSearchScreen />,
   '5776:84195': WalletTransferInProgressScreen,
   '9001:22': WalletMoneySentScreen,
   '5852:98799': WalletWithdrawalInProgressScreen,
@@ -73392,6 +73680,15 @@ export const PRESENT = (() => {
   const [flow, option] = (linkParams.get('present') ?? '').split('.')
   return flow && option ? { flow, option } : null
 })()
+/**
+ * Whether a setting belongs on a presentation link: the presented one, or a setting of the same flow that depends on it
+ * (`showIf` names it — e.g. V5's Option 1 / Option 2 under the version switch). The dependent one still shows only while
+ * it applies.
+ */
+export function presentIncludes(flow: string, option: { id: string; showIf?: Record<string, string[]> }) {
+  if (!PRESENT || flow !== PRESENT.flow) return false
+  return option.id === PRESENT.option || Boolean(option.showIf && PRESENT.option in option.showIf)
+}
 // A showcase frame sits in a page of phones: the app focusing its sheet must never scroll that page to it.
 if (SHOWCASE) {
   const focus = HTMLElement.prototype.focus
@@ -75138,6 +75435,224 @@ export function SupportedBanks({ label }: { /** The list's accessible name, "Sup
       ))}
     </Stack>
   )
+}
+```
+
+### `src/shared/ui/TextKeyboard.module.css`
+
+```css
+/* OS text keyboard mock (Figma "L3: System keyboard", 260 tall at 360): 5 rows of 40 tall keys on a grey tray. */
+.keyboard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--l3-spacing-08);
+  padding: var(--l3-spacing-12) var(--l3-spacing-06) var(--l3-spacing-16);
+  /* On a real phone, clear the home indicator (like the L3 button dock does). */
+  padding-bottom: calc(var(--l3-spacing-16) + env(safe-area-inset-bottom, var(--l3-spacing-00)));
+  background: var(--l3-surface-secondary);
+}
+
+.row {
+  display: flex;
+  gap: var(--l3-spacing-04);
+}
+
+/* The A–L row is inset by about half a key, like a phone keyboard. */
+.row[data-row='2'] {
+  padding-inline: var(--l3-spacing-16);
+}
+
+.key {
+  display: flex;
+  flex: 1 1 0;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  height: var(--l3-size-40);
+  padding: 0;
+  border: 0;
+  border-radius: var(--l3-radius-08);
+  background: var(--l3-surface-primary);
+  color: var(--l3-content-primary);
+  font: var(--l3-text-description-18);
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.key[data-wide] {
+  flex-grow: 1.5;
+}
+
+.key[data-kind='space'] {
+  flex-grow: 5;
+  font: var(--l3-text-label-12);
+}
+
+.key[data-kind='fn'] {
+  background: var(--l3-surface-tertiary);
+  font: var(--l3-text-label-14);
+}
+
+/* The keyboard's action key (Search) — the phone's own accent, not an app colour. */
+.key[data-kind='go'] {
+  background: var(--l3-surface-accent-discover-default);
+  color: var(--l3-content-inverted);
+}
+
+.key :is(svg, span):not(.popup) {
+  width: var(--l3-icon-size-20);
+  height: var(--l3-icon-size-20);
+}
+
+/* Function keys (Shift, Delete, ?123, Space, Enter): pressed, they darken and give a little. */
+.key:not([data-kind='letter'])[data-held] {
+  background-image: linear-gradient(var(--l3-state-layer-dark-pressed), var(--l3-state-layer-dark-pressed));
+  transform: scale(var(--l3-motion-scale-press-default));
+}
+
+/*
+ * Letter keys: while held, a magnified bubble of the key pops up above it (Gboard / iPhone): the key's width plus a
+ * little, two keys tall, the character large near its top; it grows out of the key (120 ms). The key itself dims under
+ * it. Keys at a row's ends keep the bubble inside the keyboard's edge.
+ */
+.key {
+  position: relative;
+}
+
+.key[data-kind='letter'][data-held] {
+  background: var(--l3-surface-tertiary);
+}
+
+.popup {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  box-sizing: border-box;
+  width: calc(100% + var(--l3-spacing-12));
+  height: calc(var(--l3-size-40) * 2 + var(--l3-spacing-08));
+  padding-top: var(--l3-spacing-06);
+  border-radius: var(--l3-radius-12);
+  background: var(--l3-surface-primary);
+  box-shadow: var(--l3-shadow-elevation-high);
+  color: var(--l3-content-primary);
+  font: var(--l3-text-heading-28);
+  pointer-events: none;
+  transform: translateX(-50%);
+  transform-origin: 50% 100%;
+  animation: key-pop var(--l3-motion-duration-short) var(--l3-motion-easing-decelerate) both;
+}
+
+.key[data-edge='start'] .popup {
+  left: 0;
+  transform: none;
+  transform-origin: 0 100%;
+}
+
+.key[data-edge='end'] .popup {
+  right: 0;
+  left: auto;
+  transform: none;
+  transform-origin: 100% 100%;
+}
+
+@keyframes key-pop {
+  from {
+    opacity: 0;
+    scale: 0.6;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .key:not([data-kind='letter'])[data-held] {
+    transform: none;
+  }
+
+  .popup {
+    animation: none;
+  }
+}
+```
+
+### `src/shared/ui/TextKeyboard.tsx`
+
+```tsx
+import { useState, type PointerEvent } from 'react'
+import { Icon } from '@l3/components/Icon'
+import { msArrowUpward, msBackspace, msKeyboardTab } from '@l3/icons/material'
+import styles from './TextKeyboard.module.css'
+
+type Key = { key: string; label?: string; kind?: 'letter' | 'fn' | 'space' | 'go'; wide?: boolean }
+
+const ROWS: Key[][] = [
+  '1234567890'.split('').map((k) => ({ key: k })),
+  'QWERTYUIOP'.split('').map((k) => ({ key: k })),
+  'ASDFGHJKL'.split('').map((k) => ({ key: k })),
+  [{ key: 'Shift', kind: 'fn', wide: true }, ...'ZXCVBNM'.split('').map((k) => ({ key: k })), { key: 'Backspace', kind: 'fn', wide: true }],
+  [{ key: '?123', kind: 'fn', wide: true }, { key: ',' }, { key: ' ', label: 'EN • LV', kind: 'space' }, { key: '.' }, { key: 'Enter', kind: 'go', wide: true }],
+]
+
+/**
+ * The phone's own text keyboard (OS chrome, NOT part of the app or L3 — Figma "L3: System keyboard", isNumeric =
+ * False). Drawn so search screens read like the phone; in the prototype the keys type into the screen. Real apps get the
+ * system keyboard by focusing the text field (search: `enterKeyHint="search"`). `data-surface` tells the OS navigation
+ * bar below it to take the keyboard's grey.
+ */
+export function TextKeyboard({ onKey }: { onKey?: (key: string) => void }) {
+  // The key being held: a letter / digit / punctuation key shows its pop-up (a magnified bubble above it, like Gboard and
+  // the iPhone keyboard) until the finger lifts; function keys just darken.
+  const [held, setHeld] = useState<string | null>(null)
+  const release = () => setHeld(null)
+  return (
+    <div className={styles.keyboard} role="group" aria-label="Keyboard" data-surface="secondary">
+      {ROWS.map((row, i) => (
+        <div key={i} className={styles.row} data-row={i}>
+          {row.map((k, j) => (
+            <button
+              key={k.key}
+              type="button"
+              className={styles.key}
+              data-kind={k.kind ?? 'letter'}
+              data-wide={k.wide || undefined}
+              data-held={held === k.key || undefined}
+              data-edge={j === 0 ? 'start' : j === row.length - 1 ? 'end' : undefined}
+              aria-label={label(k)}
+              onPointerDown={(e) => {
+                keepFocus(e)
+                setHeld(k.key)
+              }}
+              onPointerUp={release}
+              onPointerLeave={release}
+              onPointerCancel={release}
+              onClick={() => onKey?.(k.key)}
+            >
+              {k.key === 'Shift' ? <Icon icon={msArrowUpward} /> : k.key === 'Backspace' ? <Icon icon={msBackspace} /> : k.key === 'Enter' ? <Icon icon={msKeyboardTab} /> : (k.label ?? k.key)}
+              {(k.kind ?? 'letter') === 'letter' && held === k.key && (
+                <span className={styles.popup} aria-hidden="true">{k.label ?? k.key}</span>
+              )}
+            </button>
+          ))}
+        </div>
+      ))}
+    </div>
+  )
+}
+
+const label = (k: Key) =>
+  ({ Shift: 'Shift', Backspace: 'Delete', Enter: 'Search', ' ': 'Space', '?123': 'Numbers and symbols' } as Record<string, string>)[k.key]
+
+/** Like the OS keyboard, a key press doesn't take focus: the field being typed into keeps its Typing state. */
+const keepFocus = (e: PointerEvent) => e.preventDefault()
+
+/** Apply a keyboard key to a text value: letters, digits, space, comma, full stop and delete (Shift / ?123 do nothing here). */
+export const typeText = (value: string, key: string) => {
+  if (key === 'Backspace') return value.slice(0, -1)
+  if (key.length !== 1) return value
+  // Like a phone keyboard: the first letter is a capital, the rest lower case.
+  return value + (value === '' ? key.toUpperCase() : key.toLowerCase())
 }
 ```
 
