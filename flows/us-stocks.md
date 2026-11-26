@@ -201,6 +201,9 @@ Every tap he wired is kept. The main path: FTUX sheet → Activate → Declarati
 → Pay on bank → Money ready → Stock → Buy → Executed → Wallet → Withdraw.
 
 ### Changelog
+- 2026-11-26 · Portfolio → Orders: opening / closing a day animates — its cards' block grows from 0 to its height (400 ms, L3 standard easing) as they fade in, the row's border fades and its padding eases to the plain row's, the chevron turns. A closed day's cards stay in the page, inert. Off with reduced motion.
+- 2026-11-26 · Portfolio → Orders: a closed day is an L3 card cell (flat, border all round, 44 tall), 8 from the next; an open day turns back into a plain row with no border, its cards under it (was plain rows with a hairline between days).
+- 2026-11-26 · Portfolio → Orders: the header copies Market's top bar. Row 1: the IN Stocks / US Stocks primary pill (one tap flips it) | a divider | Open · SIP · History secondary pills at L3's default size (12 above, 8 below). Row 2: the list's name in Heading/14 with ⇅ (All orders → Stocks → ETFs on US, → Delivery → Intraday on Indian; a ghost button with the tertiary Small box so its grey has room) and the round filter button on the right, its dot on while filters apply (was the Filters pill with a count). L3 gaps: no heading with a switch; no round Button.
 - 2026-11-26 · Portfolio → Holdings: Sort is a ghost button with the tertiary Small box (32 high, 6 / 8 padding, no border) so its hover / press grey has room; negative margins keep the label where it was. Orders: the All orders picker hugs its label again (the 12px ⇅ override no longer squashes the text). L3 gap: a ghost button hugs its content outside a button row.
 - 2026-11-26 · Portfolio → Orders: every empty state has a way out — Open / History "Find stocks", SIP "Create stock SIP" — to Market on the side the user is on (Indian → Indian stocks, US → US stocks). A list empty only because of what's picked (filters or the All orders picker) shows one generic state, "Nothing found with these filters" + Clear filters (resets both). The list has no top padding; the All orders picker's ⇅ is 12. Filters: selected option cards are grey with a black edge (not discover).
 - 2026-11-26 · Portfolio → Orders: the IN / US picker is Market's primary pill (flag, IN / US, ↕; one tap flips it) and Open · SIP · History are secondary pills, as on Market's top bar. Filters: option cards' right padding 12 (the checkbox's touch area pads the rest), the sheet hugs its side nav (no fixed 576). P&L card V2 archived (V1 · Total ⇄ 1D switch kept). L3 gap: ListCell has no selected tone.
@@ -30019,21 +30022,6 @@ export function MaskImg({ src, w, h = w, className }: { src: string; w: number; 
   display: flex;
 }
 
-/* No line under the row (2 Nov): 16 to what follows. */
-.tabRow {
-  align-items: center;
-  gap: var(--l3-spacing-12);
-  margin: 0 0 var(--l3-spacing-16);
-  display: flex;
-}
-
-.pills [role=tab][data-appearance] {
-  --tab-height: var(--l3-size-32);
-  --tab-font: var(--l3-text-label-14);
-  --tab-padding-inline: var(--l3-spacing-12); /* L3 pill md 8 + 4 (24 Nov, user) */
-  flex: none; /* hug: each pill as wide as its label (24 Nov, user: equal widths cut "History (6)") */
-}
-
 /* FLAG: hand-made pill (unused in JSX) — use L3 Tabs pill / Tag */
 .pill {
   align-items: center;
@@ -30051,21 +30039,6 @@ export function MaskImg({ src, w, h = w, className }: { src: string; w: number; 
   display: inline-flex;
 }
 
-/* FLAG: restyles L3 Select into an outlined pill */
-/* The IN / US picker (26 Nov, user: as Market's top bar): one primary pill; the block around it takes the tap. */
-.picker {
-  display: flex;
-  flex: none;
-  align-self: stretch;
-  align-items: center;
-  cursor: pointer;
-}
-
-.picker [role='tab'] > span:last-child {
-  width: var(--l3-icon-size-14);
-  height: var(--l3-icon-size-14);
-}
-
 .switchLabel {
   animation: label-in .2s var(--l3-motion-easing-standard);
   display: inline-block;
@@ -30077,36 +30050,6 @@ export function MaskImg({ src, w, h = w, className }: { src: string; w: number; 
     translate: 0 4px;  /* FLAG: raw px */
   }
 
-}
-
-.rule {
-  width: 1px;
-  height: var(--l3-size-20);
-  background: var(--l3-border-light);
-  flex: none;
-}
-
-.tabs {
-  flex: 1;
-  min-width: 0;
-  /* Pills that don't fit scroll out to the screen's right edge, not cut 16 short of it (24 Nov, user): the row runs
-     into the page's right inset and pads it back, so they're only cut on the left, at the rule. */
-  margin-right: calc(-1 * var(--l3-spacing-16));
-  padding-right: var(--l3-spacing-16);
-  scroll-padding-inline-end: var(--l3-spacing-16);
-}
-
-.stack {
-  gap: var(--l3-spacing-16);
-  padding: var(--l3-spacing-08) 0 var(--l3-spacing-16);
-  flex-direction: column;
-  display: flex;
-}
-
-.fullBleed.fullBleed {
-  width: calc(100% + 2 * var(--l3-spacing-16));
-  margin: 0 calc(-1 * var(--l3-spacing-16));
-  box-shadow: inset 0 -1px 0 var(--l3-border-light);
 }
 
 /* FLAG: hand-made empty state — use L3 EmptyState */
@@ -30158,11 +30101,6 @@ export function MaskImg({ src, w, h = w, className }: { src: string; w: number; 
 
 }
 
-/* US: "All orders ⇕" + Filters row, 16 above the cards (Figma). */
-.pickerRow {
-  margin-bottom: var(--l3-spacing-16);
-}
-
 /* The US order cards: a plain list, 16 from the last card to the navbar. */
 .list {
   list-style: none;
@@ -30170,18 +30108,75 @@ export function MaskImg({ src, w, h = w, className }: { src: string; w: number; 
   padding: 0 0 var(--l3-spacing-16);
 }
 
-/* The two control rows in Portfolio's Actionbar (sticky, 26 Nov): the Section brings the spacing, so the rows drop their
-   own bottom margins. */
-.bar > .tabRow,
-.bar > .pickerRow {
-  margin: 0;
+/* ---- The header rows in Portfolio's Actionbar, as Market's top bar (26 Nov, user; market/screens/Market.module.css) ---- */
+
+/* Picker | pills: L3 pill chips at their default size, 12 above (26 Nov, user: under the underline tabs) and 8 below. */
+.pillRow {
+  padding-block: var(--l3-spacing-12) var(--l3-spacing-08);
 }
 
-/* The All orders / product picker's ⇅ at 12, not the sm pill's 16 (26 Nov, user: "reduce icon size by 4px").
-   L3 gap: a Tab's icon size follows the tab size only. */
-.kindPicker > span:last-child {
-  width: var(--l3-icon-size-12);
-  height: var(--l3-icon-size-12);
+/* The IN / US picker: the tap area is the whole block around the pill, the row's full height. */
+.picker {
+  display: flex;
+  flex: none;
+  align-self: stretch;
+  align-items: center;
+  cursor: pointer;
+}
+
+/* The picker's ↕ at 14. L3 gap: a Tab's icon slot is fixed at 16, whatever the Icon's size. */
+.picker [role='tab'] > span:last-child {
+  width: var(--l3-icon-size-14);
+  height: var(--l3-icon-size-14);
+}
+
+/* A 1px vertical divider between the picker and the pills. */
+.divider {
+  flex: none;
+  align-self: center;
+  width: 1px; /* 1px hairline */
+  height: var(--l3-size-24);
+  background: var(--l3-border-light);
+}
+
+/* The pills take the rest of the row (they scroll sideways), 16 from the divider and after the last. */
+.tabs {
+  flex: 1;
+  min-width: 0;
+}
+
+.tabs [role='tablist'] {
+  padding-inline: var(--l3-spacing-16);
+}
+
+/* The heading row: the list's name takes the rest, the round filter button on the right. */
+.heading {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+}
+
+/* The list's name in Heading/14, as Market's "All (56)", with the ⇅ at 14 beside it. L3 gap: no heading with a switch,
+   so an L3 ghost Button carries it in the heading's type. */
+.headingButton.headingButton {
+  font: var(--l3-text-heading-14);
+  color: var(--l3-content-primary);
+  /* The tertiary Small box without its border (26 Nov, user, as Holdings' Sort): the hover / press grey has room; the
+     negative margins keep the label where it was. L3 gap: a ghost button hugs its content outside a button row. */
+  height: var(--btn-height);
+  min-width: var(--btn-height);
+  padding: var(--btn-padding-block) var(--btn-padding-inline);
+  margin: calc(-1 * var(--btn-padding-block)) calc(-1 * var(--btn-padding-inline));
+}
+
+.filterButton {
+  display: inline-flex;
+  flex: none;
+}
+
+/* Round filter button, as on Market. L3 gap: L3 Button has no round shape, so its radius variable is set to full. */
+.filterButton button[data-size] {
+  --btn-radius: var(--l3-radius-full);
 }
 ```
 
@@ -30207,12 +30202,13 @@ import { Badge } from '@l3/components/Badge'
 import { Button } from '@l3/components/Button'
 import { EmptyState } from '@l3/components/EmptyState'
 import { Icon } from '@l3/components/Icon'
+import { Inset } from '@l3/components/Inset'
 import { lmSwitchArrowVertical } from '@l3/components/icons/glyphs'
-import { Section } from '@l3/components/Section'
 import { Stack } from '@l3/components/Stack'
-import { Tab, Tabs } from '@l3/components/Tabs'
-import { msFilterList } from '@l3/icons/material'
+import { Tabs } from '@l3/components/Tabs'
+import { msFilterAlt } from '@l3/icons/material'
 import { Flag } from '../../../../../shared/ui/Flag'
+import { CenteredTabs } from '../../../../../shared/ui/CenteredTabs'
 import { handToMarket } from '../../../../../shared/data/marketHandoff'
 import { t } from '../copy'
 import { useUsMarketSnapshot } from '../../../../../shared/data/usStocks'
@@ -30243,8 +30239,8 @@ type UsList = 'open' | 'history'
 export type OrderMarket = 'in' | 'us'
 
 const markets: Record<OrderMarket, { code: string; name: string }> = {
-  in: { code: 'IN', name: 'Indian' },
-  us: { code: 'US', name: 'US' },
+  in: { code: 'IN Stocks', name: 'Indian' },
+  us: { code: 'US Stocks', name: 'US' },
 }
 
 /** What the US side was showing last (kept across remounts: Portfolio → Order Details → back). */
@@ -30297,60 +30293,60 @@ export function useOrdersTab(initialMarket: OrderMarket = 'in'): { controls: Rea
     filters: inFilters,
     onFilters: setInFilters,
   }
-  // In the Actionbar's bottom slot: 16 at the sides, 12 above and below, 12 between the two rows (L3 chip row in a bar).
+  // In the Actionbar's bottom slot, laid out as Market's top bar (26 Nov, user: "copy the header of the market page"):
+  // the IN / US picker | the list pills (8 above and below), then the heading row — what the list shows, ⇅ to step it —
+  // with the round filter button on the right (12 above and below, 16 at the sides).
   const controls = (
-    <Section paddingInline="16" paddingBlock="12" gap="12" className={styles.bar}>
-      <div className={styles.tabRow}>
-        {/* The IN / US picker as on Market's top bar (26 Nov, user): one primary pill (flag, code, ↕), one tap flips it. */}
+    <Stack gap="00">
+      <Stack direction="horizontal" align="center" className={styles.pillRow}>
+        {/* One primary pill (flag, "IN Stocks", ↕), one tap flips it; the block around it takes the tap, as on Market. */}
         <div className={styles.picker} onClick={() => setMarket((m) => (m === 'in' ? 'us' : 'in'))}>
-          <Tabs
-            appearance="pill"
-            size="md"
-            aria-label={`Showing ${current.name} orders, tap for ${market === 'in' ? 'US' : 'Indian'}`}
-            items={[{ value: market, label: current.code, iconLeft: <Flag code={market} />, iconRight: <Icon icon={lmSwitchArrowVertical} size={14} /> }]}
-            value={market}
-            onChange={() => {}}
-          />
+          <Inset paddingInline="16" paddingBlock="00">
+            <Tabs
+              appearance="pill"
+              size="md"
+              aria-label={`Showing ${current.name} orders, tap for ${market === 'in' ? 'US' : 'Indian'}`}
+              items={[{ value: market, label: current.code, iconLeft: <Flag code={market} />, iconRight: <Icon icon={lmSwitchArrowVertical} size={14} /> }]}
+              value={market}
+              onChange={() => {}}
+            />
+          </Inset>
         </div>
-        <span className={styles.rule} aria-hidden="true" />
-        {market === 'us' ? (
-          <Tabs
-            appearance="pill"
-            emphasis="secondary"
-            behavior="tabs"
-            width="hug"
-            aria-label="US orders"
-            className={`${styles.pills} ${styles.tabs}`}
-            value={usList}
-            onChange={(value) => {
-              lastUsList = value
-              setTab(value)
-            }}
-            items={[
-              { value: 'open', label: `Open (${countOf(lists.open, kind)})` },
-              { value: 'history', label: `History (${countOf(lists.history, kind)})` },
-            ]}
-          />
-        ) : (
-          <Tabs
-            appearance="pill"
-            emphasis="secondary"
-            behavior="tabs"
-            width="hug"
-            aria-label="Orders"
-            className={`${styles.pills} ${styles.tabs}`}
-            value={tab}
-            onChange={(value) => setTab(value as OrderTab)}
-            items={[
-              { value: 'open', label: `Open (${ofInProduct(inOpen, inProduct).length})` },
-              { value: 'sip', label: `SIP (${sips.length})` },
-              { value: 'history', label: `History (${ofInProduct(inHistory, inProduct).length})` },
-            ]}
-          />
-        )}
-      </div>
+        <span className={styles.divider} aria-hidden="true" />
+        <div className={styles.tabs}>
+          {market === 'us' ? (
+            <CenteredTabs
+              appearance="pill"
+              emphasis="secondary"
+              aria-label="US orders"
+              value={usList}
+              onChange={(value) => {
+                lastUsList = value as UsList
+                setTab(value as UsList)
+              }}
+              items={[
+                { value: 'open', label: `Open (${countOf(lists.open, kind)})` },
+                { value: 'history', label: `History (${countOf(lists.history, kind)})` },
+              ]}
+            />
+          ) : (
+            <CenteredTabs
+              appearance="pill"
+              emphasis="secondary"
+              aria-label="Orders"
+              value={tab}
+              onChange={(value) => setTab(value as OrderTab)}
+              items={[
+                { value: 'open', label: `Open (${ofInProduct(inOpen, inProduct).length})` },
+                { value: 'sip', label: `SIP (${sips.length})` },
+                { value: 'history', label: `History (${ofInProduct(inHistory, inProduct).length})` },
+              ]}
+            />
+          )}
+        </div>
+      </Stack>
       {market === 'us' ? <UsOrders part="controls" {...usProps} /> : tab !== 'sip' ? <InOrders part="controls" {...inProps} /> : null}
-    </Section>
+    </Stack>
   )
   const list =
     market === 'us' ? (
@@ -30455,35 +30451,16 @@ function UsOrders({
   if (part === 'list') return content
   return (
     <>
-      <Stack direction="horizontal" align="center" justify="between" gap="12" className={styles.pickerRow}>
-        <Tab
-          action
-          appearance="pill"
-          size="sm"
-          className={styles.kindPicker}
-          iconRight={<Icon icon={lmSwitchArrowVertical} size={12} />}
-          aria-label={`Showing ${ORDER_KIND_LABEL[kind]}, tap for ${ORDER_KIND_LABEL[nextKind(kind)]}`}
-          onClick={() => onKind(nextKind(kind))}
-        >
-          {ORDER_KIND_LABEL[kind]}
-        </Tab>
-        {/* FLAG: Figma's "Filters" is a blue text link with a count; L3 has no text link with a badge, so it's the
-            L3 action pill (Tab action — "open a filter sheet") with an L3 Badge. */}
-        <Tab
-          action
-          appearance="pill"
-          size="sm"
-          iconLeft={<Icon icon={msFilterList} />}
-          badge={activeFilters ? <Badge count={activeFilters} color="discover" label="filters on" /> : undefined}
-          aria-label={activeFilters ? `Filters, ${activeFilters} on. Change` : 'Filters'}
-          onClick={() => {
-            setFilterRun((n) => n + 1)
-            setSheet('filters')
-          }}
-        >
-          Filters
-        </Tab>
-      </Stack>
+      <HeadingRow
+        label={ORDER_KIND_LABEL[kind]}
+        next={ORDER_KIND_LABEL[nextKind(kind)]}
+        onNext={() => onKind(nextKind(kind))}
+        activeFilters={activeFilters}
+        onFilters={() => {
+          setFilterRun((n) => n + 1)
+          setSheet('filters')
+        }}
+      />
       <OrderFilterSheet
         key={filterRun}
         open={sheet === 'filters'}
@@ -30559,33 +30536,16 @@ function InOrders({
   if (part === 'list') return content
   return (
     <>
-      <Stack direction="horizontal" align="center" justify="between" gap="12" className={styles.pickerRow}>
-        <Tab
-          action
-          appearance="pill"
-          size="sm"
-          className={styles.kindPicker}
-          iconRight={<Icon icon={lmSwitchArrowVertical} size={12} />}
-          aria-label={`Showing ${IN_PRODUCT_LABEL[product]}, tap for ${IN_PRODUCT_LABEL[nextInProduct(product)]}`}
-          onClick={() => onProduct(nextInProduct(product))}
-        >
-          {IN_PRODUCT_LABEL[product]}
-        </Tab>
-        <Tab
-          action
-          appearance="pill"
-          size="sm"
-          iconLeft={<Icon icon={msFilterList} />}
-          badge={activeFilters ? <Badge count={activeFilters} color="discover" label="filters on" /> : undefined}
-          aria-label={activeFilters ? `Filters, ${activeFilters} on. Change` : 'Filters'}
-          onClick={() => {
-            setFilterRun((n) => n + 1)
-            setOpen(true)
-          }}
-        >
-          Filters
-        </Tab>
-      </Stack>
+      <HeadingRow
+        label={IN_PRODUCT_LABEL[product]}
+        next={IN_PRODUCT_LABEL[nextInProduct(product)]}
+        onNext={() => onProduct(nextInProduct(product))}
+        activeFilters={activeFilters}
+        onFilters={() => {
+          setFilterRun((n) => n + 1)
+          setOpen(true)
+        }}
+      />
       <OrderFilterSheet
         key={filterRun}
         open={open}
@@ -30598,6 +30558,38 @@ function InOrders({
         onClose={() => setOpen(false)}
       />
     </>
+  )
+}
+
+/**
+ * The heading row under the pills, as Market's "All (56)" row: the list's name at Heading/14 with the ⇅ switch — each
+ * tap steps it (US: All orders → Stocks → ETFs; Indian: All orders → Delivery → Intraday) — and the round filter button
+ * on the right, its dot on while filters are applied.
+ * FLAG (L3 gap): L3 has no heading-with-switch; it's an L3 ghost Button set in Heading/14 (OrdersTab.module.css).
+ */
+function HeadingRow({ label, next, onNext, activeFilters, onFilters }: { label: string; next: string; onNext: () => void; activeFilters: number; onFilters: () => void }) {
+  return (
+    <Inset paddingInline="16" paddingBlock="12">
+      <Stack direction="horizontal" align="center" gap="00">
+        <span className={styles.heading}>
+          <Button
+            variant="ghost"
+            size="sm"
+            className={styles.headingButton}
+            iconRight={<Icon icon={lmSwitchArrowVertical} size={14} />}
+            aria-label={`Showing ${label}, tap for ${next}`}
+            onClick={onNext}
+          >
+            {label}
+          </Button>
+        </span>
+        <span className={styles.filterButton}>
+          <Badge dot={activeFilters > 0} label={activeFilters ? `${activeFilters} filters on` : 'No filters on'}>
+            <Button variant="tertiary" size="sm" iconLeft={<Icon icon={msFilterAlt} />} aria-label="Filters" onClick={onFilters} />
+          </Badge>
+        </span>
+      </Stack>
+    </Inset>
   )
 }
 ```
@@ -37849,16 +37841,57 @@ export function InOrderDetailsFor({ id, backdrop }: { id: string; backdrop?: boo
   padding: var(--l3-spacing-08) 0 var(--l3-spacing-16);
 }
 
-/* The day row sits in the page margin with the cards, so it drops the plain row's own 16 inset (L3 rule for plain rows
-   inside a margin): the date lines up with the cards' edge. */
-.dayRow.dayRow[data-variant][data-size] {
+/* An open day's plain row sits in the page margin with the cards, so it drops the plain row's own 16 inset (L3 rule for
+   plain rows inside a margin): the date lines up with the cards' edge. A closed day is an L3 card cell (its own border
+   and padding), 8 from the next (26 Nov, user: was a hairline between plain rows). */
+.dayRow.dayRow[data-variant='plain'][data-size] {
   padding-inline: 0;
-  padding-block: var(--l3-spacing-12); /* rows 44 tall, with hairlines between them */
+  padding-block: var(--l3-spacing-12);
+  box-shadow: inset 0 0 0 1px transparent; /* the card's 1px edge, clear, so it fades out rather than snaps */
 }
 
-/* A hairline between two days (26 Nov, user). */
-.dayGroup + .dayGroup {
-  border-top: 1px solid var(--l3-border-light);
+/* Opening and closing a day (26 Nov, user): the row's border fades and its padding eases to the plain row's, the
+   chevron turns, and the cards' block grows from 0 to its height (grid row 0fr → 1fr) as they fade in. */
+.dayRow.dayRow {
+  transition:
+    padding var(--l3-motion-duration-medium) var(--l3-motion-easing-standard),
+    box-shadow var(--l3-motion-duration-medium) var(--l3-motion-easing-standard),
+    border-radius var(--l3-motion-duration-medium) var(--l3-motion-easing-standard);
+}
+
+.dayChevron {
+  transition: rotate var(--l3-motion-duration-medium) var(--l3-motion-easing-standard);
+}
+
+.dayGroup[data-open] .dayChevron {
+  rotate: 180deg;
+}
+
+.dayBody {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition:
+    grid-template-rows var(--l3-motion-duration-long) var(--l3-motion-easing-standard),
+    opacity var(--l3-motion-duration-medium) var(--l3-motion-easing-standard);
+}
+
+.dayBody[data-open] {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.dayBodyInner {
+  min-height: 0;
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dayRow.dayRow,
+  .dayChevron,
+  .dayBody {
+    transition: none;
+  }
 }
 ```
 
@@ -37964,14 +37997,14 @@ export function OrderCard({ order, onOpen }: { order: UsOrder; onOpen: () => voi
 ```tsx
 // Portfolio → Orders: the cards grouped by the day they were placed (26 Nov, the user: "segregation of all the orders by
 // date", as the current app's Orders page). Each day is an L3 List cell ("24 Nov 2026" + a chevron) that opens or closes
-// its cards; the newest day starts open, the rest closed. Used by both the Indian and the US lists (Open and History).
+// its cards; the newest day starts open, the rest closed. A closed day is a bordered card cell, an open one a plain row. Used by both the Indian and the US lists (Open and History).
 // FLAG (L3 gap): L3 has no accordion / disclosure row — a tappable ListCell renders a button with aria-pressed and takes
 // no aria-label / aria-expanded, so a screen reader hears the date but not whether it's open.
 import { useState, type ReactNode } from 'react'
 import { Icon } from '@l3/components/Icon'
 import { ListCell } from '@l3/components/ListCell'
 import { Stack } from '@l3/components/Stack'
-import { msKeyboardArrowDown, msKeyboardArrowUp } from '@l3/icons/material'
+import { msKeyboardArrowDown } from '@l3/icons/material'
 import styles from './OrderCard.module.css'
 
 /** The sample orders carry no year unless it isn't this one ("24 Nov, 10:42 AM" / "24 Nov 2025, 10:10 AM"). */
@@ -38010,23 +38043,30 @@ export function OrderDateGroups<T extends { id: string; placedAt: string }>({
   }
 
   return (
-    <Stack gap="00" className={styles.dayGroups} aria-label={label}>
+    <Stack gap="08" className={styles.dayGroups} aria-label={label}>
       {groups.map((group) => {
         const isOpen = open.has(group.day)
         return (
-          <section key={group.day} aria-label={group.day} className={styles.dayGroup}>
+          <section key={group.day} aria-label={group.day} className={styles.dayGroup} data-open={isOpen || undefined}>
+            {/* Closed: an L3 card cell (border all round, flat) so each day reads as its own tile; open: a plain row,
+                no border, its cards under it (26 Nov, user). */}
             <ListCell
+              {...(isOpen ? {} : { variant: 'card' as const, raised: false })}
               size="sm"
               className={styles.dayRow}
               label={group.day}
-              iconRight={<Icon icon={isOpen ? msKeyboardArrowUp : msKeyboardArrowDown} />}
+              iconRight={<Icon icon={msKeyboardArrowDown} className={styles.dayChevron} />}
               onClick={() => toggle(group.day)}
             />
-            {isOpen && (
-              <Stack as="ul" gap="16" className={styles.dayList}>
-                {group.orders.map((order) => <li key={order.id}>{renderCard(order)}</li>)}
-              </Stack>
-            )}
+            {/* Always there, so it can open and close: its height eases between 0 and its cards' (a 0fr → 1fr grid
+                row), the cards fade in; closed, it's inert (26 Nov, user: "should feel like expanding"). */}
+            <div className={styles.dayBody} data-open={isOpen || undefined} inert={!isOpen}>
+              <div className={styles.dayBodyInner}>
+                <Stack as="ul" gap="16" className={styles.dayList}>
+                  {group.orders.map((order) => <li key={order.id}>{renderCard(order)}</li>)}
+                </Stack>
+              </div>
+            </div>
           </section>
         )
       })}
