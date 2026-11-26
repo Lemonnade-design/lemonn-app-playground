@@ -201,7 +201,8 @@ Every tap he wired is kept. The main path: FTUX sheet → Activate → Declarati
 → Pay on bank → Money ready → Stock → Buy → Executed → Wallet → Withdraw.
 
 ### Changelog
-- 2026-11-26 · Portfolio → Orders: the IN / US picker is Market's primary pill (flag, IN / US, ↕; one tap flips it) and Open · SIP · History are secondary pills, as on Market's top bar. Filters: option cards' right padding 12 (the checkbox's touch area pads the rest), selected cards take the discover edge; the sheet hugs its side nav (no fixed 576). P&L card V2 archived (V1 · Total ⇄ 1D switch kept). L3 gap: ListCell has no selected tone.
+- 2026-11-26 · Portfolio → Orders: every empty state has a way out — Open / History "Find stocks", SIP "Create stock SIP" — to Market on the side the user is on (Indian → Indian stocks, US → US stocks). A list empty only because of what's picked (filters or the All orders picker) shows one generic state, "Nothing found with these filters" + Clear filters (resets both). The list has no top padding; the All orders picker's ⇅ is 12. Filters: selected option cards are grey with a black edge (not discover).
+- 2026-11-26 · Portfolio → Orders: the IN / US picker is Market's primary pill (flag, IN / US, ↕; one tap flips it) and Open · SIP · History are secondary pills, as on Market's top bar. Filters: option cards' right padding 12 (the checkbox's touch area pads the rest), the sheet hugs its side nav (no fixed 576). P&L card V2 archived (V1 · Total ⇄ 1D switch kept). L3 gap: ListCell has no selected tone.
 - 2026-11-26 · Portfolio → Orders → Filters redesigned with the F&O chart tools sheet layout: the sheet's L3 header "Filters · Clear all" over both columns, an L3 SideNav on the left (Segment (Indian only), Company, Date, Buy/Sell, Order type, Status on History) and the group's panel on the right; Cancel / Apply dock. Selected tile = grey fill + black edge, not blue; tile labels Label/12. Options are plain L3 ListCell cards (flat, `raised={false}`, L3's own selected look), the checkbox on the right (`trailing`). Company is a search (3+ letters, one company; the hint is the field's helper text). Date is From / To fields that open the phone's own date picker (no future days; To not before From). One sheet and one filter model (`OrderFilterSheet.tsx`) for both the Indian and the US lists; the Filters badge counts picks. L3 gaps: SideNav has no count badge (the corner flag carries it) and no outline on the selected tile; no L3 date field opens the OS picker (an L3 TextField fronts a hidden native date input).
 - 2026-11-26 · Portfolio → Holdings (V2): the IN / US pill tabs show each market's holdings count in the label, "IN Stocks (2)" (none when the market is empty); a hairline separates the P&L cards from the switch, as on Positions (24 above it, 24 below), and the sheet is one level (the padded sheet holds the switch row and the list; no SheetContent wrapper).
 - 2026-11-26 · Portfolio → Orders: the two control rows (IND / US switch + Open · SIP · History, and All orders + Filters) are in the Actionbar's bottom slot under the section tabs, so they stay put while the orders scroll (12 above, between and below; the list starts 16 under the bar). OrdersTab is now `useOrdersTab()` → `{ controls, list }`.
@@ -22669,6 +22670,10 @@ export function UsMainNav({ value }: { value: Section }) {
   "transactions.note.withdrawalInProgress": "On its way to your bank, {eta}.",
   "transactions.note.withdrawalDelayed": "Taking longer than usual. It should reach your bank {eta}.",
   "transactions.note.withdrawalFailed": "Your bank didn't accept it. The money is back in your {wallet}.",
+  "orders.findStocks": "Find stocks",
+  "orders.createSip": "Create stock SIP",
+  "orders.noMatch": "Nothing found with these filters",
+  "orders.clearFilters": "Clear filters",
   "filters.title": "Filters",
   "filters.clearAll": "Clear all",
   "filters.cancel": "Cancel",
@@ -28936,10 +28941,10 @@ export function PortfolioScreen({ tab: initialTab = 'holdings', market: initialM
   )
 }
 
-/** Orders' list (its control rows are in the Actionbar): 16 from the bar (the sheet's 8 + 8) and from the sides. */
+/** Orders' list (its control rows are in the Actionbar): no top padding (26 Nov, user), 16 from the sides. */
 function OrdersPage({ children }: { children: ReactNode }) {
   return (
-    <Section paddingInline="16" paddingBlock="08" className={styles.grow}>
+    <Section paddingInline="16" paddingBlock="00" className={styles.grow}>
       {children}
     </Section>
   )
@@ -30170,6 +30175,13 @@ export function MaskImg({ src, w, h = w, className }: { src: string; w: number; 
 .bar > .pickerRow {
   margin: 0;
 }
+
+/* The All orders / product picker's ⇅ at 12, not the sm pill's 16 (26 Nov, user: "reduce icon size by 4px").
+   L3 gap: a Tab's icon size follows the tab size only. */
+.kindPicker > span > span:last-child {
+  width: var(--l3-icon-size-12);
+  height: var(--l3-icon-size-12);
+}
 ```
 
 ### `src/flows/us-stocks/screens/entry/components/OrdersTab.tsx`
@@ -30200,6 +30212,8 @@ import { Stack } from '@l3/components/Stack'
 import { Tab, Tabs } from '@l3/components/Tabs'
 import { msFilterList } from '@l3/icons/material'
 import { Flag } from '../../../../../shared/ui/Flag'
+import { handToMarket } from '../../../../../shared/data/marketHandoff'
+import { t } from '../copy'
 import { useUsMarketSnapshot } from '../../../../../shared/data/usStocks'
 import { useInPortfolioEmpty, useUsJourney } from '../../../../../shared/userStatus'
 import { useUsNav } from '../../../nav'
@@ -30245,6 +30259,7 @@ const EMPTY_KIND: Record<OrderKind, string> = { all: '', stock: ' of stocks', et
  * bottom slot so they stay put; `list` — the orders by date (or the empty state), which scrolls.
  */
 export function useOrdersTab(initialMarket: OrderMarket = 'in'): { controls: ReactNode; list: ReactNode } {
+  const { go } = useUsNav()
   // Back from Indian Order Details: the IND side and the list the order was in (read once, then cleared).
   const [fromIn] = useState(() => inOrdersReturn.pending)
   useEffect(() => { inOrdersReturn.pending = false }, [])
@@ -30347,10 +30362,21 @@ export function useOrdersTab(initialMarket: OrderMarket = 'in'): { controls: Rea
         </Stack>
       ) : (
         /* L3 Empty state with its default illustration, centred in the space under the tabs. */
-        <EmptyState key={`${tab}${market}`} className={styles.empty} title="You do not have any Indian SIPs" />
+        <EmptyState
+          key={`${tab}${market}`}
+          className={styles.empty}
+          title="You do not have any Indian SIPs"
+          action={<Button size="sm" onClick={() => toMarket(go, 'in')}>{t('orders.createSip')}</Button>}
+        />
       )
 
   return { controls, list }
+}
+
+/** Empty states' way out (26 Nov, user): Market, on the side the user is on (Indian orders → Indian stocks, US → US). */
+function toMarket(go: (id: string) => void, market: 'in' | 'us') {
+  handToMarket({ market })
+  go('market-01')
 }
 
 /** The US sample orders the user has (none until their US account is active). */
@@ -30405,12 +30431,13 @@ function UsOrders({
         renderCard={(order) => <OrderCard order={order} onOpen={() => openOrder(go, order)} />}
       />
     )
-  } else if (narrowed.length && activeFilters) {
+  } else if (orders.length && (activeFilters || kind !== 'all')) {
+    // Empty only because of what's picked (filters or the All orders picker): one generic state, Clear filters resets both.
     content = (
       <EmptyState
         className={styles.empty}
-        title="No orders match these filters"
-        action={<Button size="sm" onClick={() => onFilters(emptyFilters(groups))}>Clear filters</Button>}
+        title={t('orders.noMatch')}
+        action={<Button size="sm" onClick={() => { onFilters(emptyFilters(groups)); onKind('all') }}>{t('orders.clearFilters')}</Button>}
       />
     )
   } else {
@@ -30419,6 +30446,7 @@ function UsOrders({
         key={`${list}${kind}`}
         className={styles.empty}
         title={list === 'open' ? `No pending US orders${EMPTY_KIND[kind]}` : `No US orders${EMPTY_KIND[kind]} in your history yet`}
+        action={<Button size="sm" onClick={() => toMarket(go, 'us')}>{t('orders.findStocks')}</Button>}
       />
     )
   }
@@ -30431,7 +30459,8 @@ function UsOrders({
           action
           appearance="pill"
           size="sm"
-          iconRight={<Icon icon={lmSwitchArrowVertical} />}
+          className={styles.kindPicker}
+          iconRight={<Icon icon={lmSwitchArrowVertical} size={12} />}
           aria-label={`Showing ${ORDER_KIND_LABEL[kind]}, tap for ${ORDER_KIND_LABEL[nextKind(kind)]}`}
           onClick={() => onKind(nextKind(kind))}
         >
@@ -30506,12 +30535,13 @@ function InOrders({
         renderCard={(order) => <InOrderCard order={order} onOpen={() => openInOrder(go, order)} />}
       />
     )
-  } else if (narrowed.length && activeFilters) {
+  } else if (orders.length && (activeFilters || product !== 'all')) {
+    // Empty only because of what's picked (filters or the All orders picker): one generic state, Clear filters resets both.
     content = (
       <EmptyState
         className={styles.empty}
-        title="No orders match these filters"
-        action={<Button size="sm" onClick={() => onFilters(emptyFilters(groups))}>Clear filters</Button>}
+        title={t('orders.noMatch')}
+        action={<Button size="sm" onClick={() => { onFilters(emptyFilters(groups)); onProduct('all') }}>{t('orders.clearFilters')}</Button>}
       />
     )
   } else {
@@ -30520,6 +30550,7 @@ function InOrders({
         key={`${list}${product}`}
         className={styles.empty}
         title={list === 'open' ? `You do not have any pending${productWord} Indian orders` : `No${productWord} Indian orders in your history yet`}
+        action={<Button size="sm" onClick={() => toMarket(go, 'in')}>{t('orders.findStocks')}</Button>}
       />
     )
   }
@@ -30532,7 +30563,8 @@ function InOrders({
           action
           appearance="pill"
           size="sm"
-          iconRight={<Icon icon={lmSwitchArrowVertical} />}
+          className={styles.kindPicker}
+          iconRight={<Icon icon={lmSwitchArrowVertical} size={12} />}
           aria-label={`Showing ${IN_PRODUCT_LABEL[product]}, tap for ${IN_PRODUCT_LABEL[nextInProduct(product)]}`}
           onClick={() => onProduct(nextInProduct(product))}
         >
@@ -38406,13 +38438,15 @@ export function OrderDetailsFor({ id, backdrop }: { id: string; backdrop?: boole
 }
 
 /* Option cards (user, 26 Nov): the checkbox's own touch area already pads the right, so the card's right padding is
-   12, not 16; selected cards take the discover edge in place of L3's black. L3 gap: ListCell has no selected tone. */
+   12, not 16; a selected card is grey with a black edge, as the selected side-nav tile. L3 gap: ListCell's selected
+   card has no fill. */
 .panel.panel [data-variant='card'][data-interactive] {
   padding-inline-end: var(--l3-spacing-12);
 }
 
 .panel.panel [data-variant='card'][data-interactive][data-flat][data-selected] {
-  box-shadow: inset 0 0 0 1px var(--l3-border-accent-discover-default); /* 1px: Figma stroke weight has no variable */
+  background-color: var(--l3-surface-secondary);
+  box-shadow: inset 0 0 0 1px var(--l3-border-dark); /* 1px: Figma stroke weight has no variable */
 }
 ```
 
@@ -63674,6 +63708,38 @@ export function useLiveQuote(key: string, price: number, changePct: number): Liv
    "industry": "Banks—Regional"
   }
  }
+}
+```
+
+### `src/shared/data/marketHandoff.ts`
+
+```ts
+/**
+ * What another screen asks the Market page to open on — e.g. Home's "View all" on Top Movers opens Market on the US
+ * list, Top gainers, with the cap picked on Home. The caller sets it right before going to Market; Market reads it once
+ * when it opens (and clears it), so going back to Market later shows its defaults again. In a real app this is the
+ * navigation argument of the Market route.
+ */
+export type MarketHandoff = {
+  market: 'in' | 'us'
+  /** A Market list tab id ('all', 'gainers', 'losers', 'under-100', 'under-500'). */
+  tab?: string
+  /** Market filters, by group: 'sort' and 'index' take one id, the others a list (see src/flows/market/data.ts). */
+  filters?: Partial<{ sort: string; index: string; quick: string[]; cap: string[]; sector: string[] }>
+}
+
+let pending: MarketHandoff | null = null
+
+/** Ask the Market page to open on this market / tab / filters (call it right before going to Market). */
+export function handToMarket(handoff: MarketHandoff) {
+  pending = handoff
+}
+
+/** The Market page: what was handed to it, once (then it's cleared). */
+export function takeMarketHandoff(): MarketHandoff | null {
+  const handoff = pending
+  pending = null
+  return handoff
 }
 ```
 

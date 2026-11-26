@@ -336,6 +336,7 @@
     "src/shared/data/inShortNames.ts",
     "src/shared/data/live.ts",
     "src/shared/data/market-snapshot.json",
+    "src/shared/data/marketHandoff.ts",
     "src/shared/data/openStock.ts",
     "src/shared/data/us-market-snapshot.json",
     "src/shared/data/usBanks.ts",
