@@ -26879,61 +26879,6 @@ export const viewUsStock = (symbol: string) => { viewed = symbol }
 export const viewedUsStock = () => viewed
 ```
 
-### `src/shared/data/user.ts`
-
-```ts
-// The sample user every flow uses. FICTIONAL — the live screenshots contain a real customer's details; never copy them.
-export type User = {
-  name: string
-  fatherName: string
-  mobile: string
-  email: string
-  pan: string
-  dob: string
-  occupation: string
-  maritalStatus: string
-}
-
-export const user: User = {
-  name: 'Rohan Mehta',
-  fatherName: 'Suresh Mehta',
-  mobile: '9876543210',
-  email: 'rohan.mehta@gmail.com',
-  pan: 'ABCPM1234K',
-  dob: '14 Aug 1996',
-  occupation: 'Private sector',
-  maritalStatus: 'Single',
-}
-
-export type BankAccount = { bank: string; accountNumber: string; ifsc: string; type: 'Savings' | 'Current'; branch: string }
-
-export const bankAccount: BankAccount = {
-  bank: 'HDFC Bank',
-  accountNumber: '50100234567821',
-  ifsc: 'HDFC0001234',
-  type: 'Savings',
-  branch: 'Andheri West, Mumbai',
-}
-
-/** A linked bank account as the money screens show it: the bank's logo symbol (companies.ts) and the last 4 digits. */
-export type LinkedBank = BankAccount & { id: string; logoSymbol: string; last4: string; primary?: boolean }
-
-/** The user's linked bank accounts, primary first. "User status → Bank accounts" picks how many the prototype shows. */
-export const linkedBanks: LinkedBank[] = [
-  { ...bankAccount, id: 'hdfc', logoSymbol: 'HDFCBANK', last4: '7821', primary: true },
-  { id: 'icici', bank: 'ICICI Bank', accountNumber: '002101554410', ifsc: 'ICIC0000021', type: 'Savings', branch: 'Powai, Mumbai', logoSymbol: 'ICICIBANK', last4: '4410' },
-]
-
-/**
- * A linked account at a bank that can't send money abroad for US Stocks (not an LRS partner) — "User status → Bank
- * accounts: Three" and "SBI only" add it, to show the US Stocks bank step with an account it can't use.
- */
-export const otherBank: LinkedBank = { id: 'sbi', bank: 'State Bank of India', accountNumber: '38201945520', ifsc: 'SBIN0000300', type: 'Savings', branch: 'Fort, Mumbai', logoSymbol: 'SBIN', last4: '5520' }
-
-/** The instant-balance offer (₹, for intraday, MTF and F&O): Profile's row and the Indian wallet's card show it. */
-export const INSTANT_BALANCE = 149
-```
-
 ### `src/shared/money.module.css`
 
 ```css
@@ -27650,8 +27595,6 @@ export const Flag = ({ code }: { code: FlagCode }) => (
 ```tsx
 import { useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import { MaskIcon } from '@l3/components/MaskIcon'
-import { useFlowOption } from '../prototype'
-import { USER_STATUS } from '../userStatus'
 import stocksIcon from './assets/floating-nav/stocks.svg'
 import marketIcon from './assets/floating-nav/market.svg'
 import marketSelectedIcon from './assets/floating-nav/market-selected.svg'
@@ -27661,10 +27604,13 @@ import fnoIcon from './assets/floating-nav/fno.svg'
 import fnoSelectedIcon from './assets/floating-nav/fno-selected.svg'
 import styles from './FloatingNav.module.css'
 
-/** App setting "Bottom navbar" (A/B, 20 Nov): V1 docked (L3 Bottom Navbar) · V2 floating, the default at launch (20 Nov) ·
- * V3 V2's floating nav with L3's coloured icon on the chosen tab and the glow under it, not over it (23 Nov, user). */
-export const BOTTOM_NAV_OPTION = 'bottomNav'
-const useBottomNavVersion = () => useFlowOption(USER_STATUS, BOTTOM_NAV_OPTION, 'v2') // V2 by default (20 Nov, user)
+/** Bottom navbar, was an app setting (A/B, 20 Nov): V1 docked (L3 Bottom Navbar) · V2 floating · V3 V2's floating nav
+ * with L3's coloured icon on the chosen tab and the glow under it, not over it (23 Nov). 26 Nov, the user: "keep version 3
+ * default, archive other" — V3 is fixed and the setting is gone; V1 / V2 stay in code here: change this value to bring
+ * one back. */
+type BottomNavVersion = 'v1' | 'v2' | 'v3'
+const BOTTOM_NAV_VERSION = 'v3' as BottomNavVersion
+const useBottomNavVersion = (): BottomNavVersion => BOTTOM_NAV_VERSION
 /** V2 and V3: the floating nav (this frame and its own Figma icons). */
 export const useFloatingNav = () => useBottomNavVersion() !== 'v1'
 /** V3: the chosen tab shows L3's coloured (two-tone brand) icon instead of the black-and-white one. */
@@ -28907,191 +28853,5 @@ export function useSwipeBetween({ canGo, onSwitch, page, area, slides, fades }: 
     /** Switch by tap (tabs, market button): the same switch as a swipe, towards `direction`. */
     go: (direction: 1 | -1, commit: () => void) => leave(direction, commit),
   }
-}
-```
-
-### `src/shared/userStatus.ts`
-
-```ts
-// Where the user is in the app — the prototype's app-level settings ("User status" in the preview panel, the phone's
-// settings sheet and a floating card beside the phone). Every screen that depends on it reads it here, so they all stay
-// in sync: pick "User account state: Active · money on the way" once and the Home's US tab, a US stock page and the wallet all
-// show that state. Picking never moves on by itself; taps in the prototype don't change it.
-// In a real app these come from the user's account (KYC status, US Stocks activation, wallet, holdings).
-import type { FlowOption } from '../flows/types'
-import { setFlowOption, useFlowOption } from './prototype'
-import { linkedBanks, otherBank, type LinkedBank } from './data/user'
-
-/** The settings' owner in the preview (as a flow id: where the picks are remembered). */
-export const USER_STATUS = 'app'
-
-export type KycStatus = 'done' | 'pending'
-export type UsActivation = 'kyc' | 'off' | 'review' | 'support' | 'failed' | 'active'
-export type UsWallet = 'empty' | 'onTheWay' | 'funded'
-export type UsHoldings = 'none' | 'some'
-export type BankLinks = 'none' | 'one' | 'two' | 'three' | 'sbi'
-
-/**
- * Screens that change with the user status: the settings float beside the phone on these (desktop preview). The Home,
- * its US tab screens (each one sets the status to its own state on arrival, then follows a pick), a US stock page and
- * the wallet's US tab.
- */
-/** The add-money screens and the wallet: the bank row and its sheet change with the user's linked banks. */
-const BANK_SCREENS = ['deposit-01', 'deposit-06', 'deposit-07', 'deposit-08', 'deposit-09', 'us-stocks-21', 'us-stocks-22', 'us-stocks-23', 'us-stocks-24', 'us-stocks-53', 'us-stocks-54', 'us-stocks-95']
-
-const STATUS_SCREENS = ['stocks-01', 'stocks-09', 'stocks-10', 'stocks-13', 'stocks-14', 'stocks-15', 'stocks-16', 'stocks-17', 'stocks-19', 'stocks-20', 'stocks-21', 'us-stocks-13', 'us-stocks-54']
-
-/** The app-level user status settings. */
-export const userStatusOptions: FlowOption[] = [
-  {
-    // One list for the whole way in, in order — one row of states (18 Nov, the user's call; was three settings: US
-    // Stocks activation, then USD wallet and US holdings under "Active"): not active while the Lemonn KYC is pending
-    // (US Stocks can't be activated until it's done), not active, the activation steps, then active with $0, money on
-    // the way, money in the wallet, US holdings. The values are the UsJourney steps.
-    id: 'account',
-    group: 'User status',
-    label: 'User account state',
-    picker: 'dropdown',
-    values: [
-      { value: 'kyc', label: 'Not active · KYC pending' },
-      { value: 'activate', label: 'Not active' },
-      { value: 'review', label: 'Under review' },
-      { value: 'support', label: 'Under review · contact support' },
-      { value: 'failed', label: 'Activation failed' },
-      { value: 'activated', label: 'Active · $0' },
-      { value: 'onTheWay', label: 'Active · money on the way' },
-      { value: 'ready', label: 'Active · has money' },
-      { value: 'holding', label: 'Active · US holdings' },
-    ],
-    // The prototype opens on a user who's all set: activated, money in the wallet, holding US stocks.
-    default: 'holding',
-    floatOn: STATUS_SCREENS,
-  },
-  {
-    // Money on the way, more than once: a US deposit takes 1–2 working days, so adding money again before the first one
-    // lands means two or three on the way (20 Nov). The wallet's bar and Home's card add them up; their sheet shows each one.
-    id: 'deposits',
-    group: 'User status',
-    label: 'Deposits on the way',
-    showIf: { account: ['onTheWay'] },
-    values: [{ value: 'one', label: 'One' }, { value: 'two', label: 'Two' }, { value: 'three', label: 'Three' }],
-    default: 'one',
-    floatOn: [...STATUS_SCREENS, 'us-stocks-28', 'us-stocks-93'],
-  },
-  {
-    // How the oldest deposit on the way is doing (20 Nov). Taking longer: past its day, still with the US bank — the
-    // sheet says it's taking longer than usual, the money is safe, and a failed one is refunded to the bank it came from.
-    // Failed: the US bank sent it back — where it stopped, the refund, Try again and Contact support. Home's card and the
-    // wallet's bar say so.
-    id: 'depositStatus',
-    group: 'User status',
-    label: 'Deposit status',
-    showIf: { account: ['onTheWay'] },
-    values: [{ value: 'onTime', label: 'On time' }, { value: 'delayed', label: 'Taking longer' }, { value: 'failed', label: 'Failed' }],
-    default: 'onTime',
-    floatOn: [...STATUS_SCREENS, 'us-stocks-28'],
-  },
-  {
-    // Indian stocks in Portfolio (26 Nov, user: developers need every empty state). Empty = no Indian holdings, no open
-    // orders, no SIPs and no order history: Holdings shows its empty state and ₹0 on the IN P&L card, and each Orders
-    // list (Open, SIP, History) its own. Positions are always empty in the prototype.
-    id: 'inPortfolio',
-    group: 'User status',
-    label: 'Indian stocks',
-    values: [{ value: 'some', label: 'Holdings & orders' }, { value: 'none', label: 'Empty' }],
-    default: 'some',
-    floatOn: ['us-stocks-05', 'us-stocks-06', 'us-stocks-77', 'us-stocks-91', 'us-stocks-92'],
-  },
-  {
-    // Bank accounts linked to Lemonn (KYC adds the first). None = the add-money screens ask for one first.
-    id: 'banks',
-    group: 'User status',
-    label: 'Bank accounts',
-    picker: 'dropdown', // a dropdown like User account state (18 Nov: five choices didn't fit a segmented row)
-    // Three / SBI only: with an account at a bank US Stocks money can't go from (State Bank of India).
-    values: [{ value: 'none', label: 'None' }, { value: 'one', label: 'One' }, { value: 'two', label: 'Two' }, { value: 'three', label: 'Three (+ SBI)' }, { value: 'sbi', label: 'SBI only' }],
-    default: 'three',
-    floatOn: BANK_SCREENS,
-  },
-]
-
-const option = (id: string) => userStatusOptions.find((o) => o.id === id)!
-const useStatus = (id: string) => useFlowOption(USER_STATUS, id, option(id).default)
-
-/** True when the user has no Indian holdings or orders ("User status → Indian stocks: Empty"). */
-export const useInPortfolioEmpty = () => useStatus('inPortfolio') === 'none'
-
-export type UserStatus = { kyc: KycStatus; us: UsActivation; usWallet: UsWallet; usHoldings: UsHoldings; banks: BankLinks }
-
-/** The user status as picked (settings under one that's off keep their last pick). KYC comes from the activation list. */
-export function useUserStatus(): UserStatus {
-  return { ...statusOf(useStatus('account') as UsJourney), banks: useStatus('banks') as BankLinks }
-}
-
-/** One account state as the activation, wallet and holdings it means. */
-function statusOf(step: UsJourney): Omit<UserStatus, 'banks'> {
-  const us: UsActivation = step === 'activate' ? 'off' : ['kyc', 'review', 'support', 'failed'].includes(step) ? (step as UsActivation) : 'active'
-  return {
-    kyc: us === 'kyc' ? 'pending' : 'done',
-    us,
-    usWallet: step === 'activated' ? 'empty' : step === 'onTheWay' ? 'onTheWay' : 'funded',
-    usHoldings: step === 'holding' ? 'some' : 'none',
-  }
-}
-
-/**
- * The bank accounts the user has linked, as picked in "User status → Bank accounts" (primary first). Money in the USD
- * wallet (on the way or landed) came from a bank, so then "None" counts as one — as in the real app, a user with money
- * moving always has a bank.
- */
-export function useLinkedBanks(): LinkedBank[] {
-  const picked = useStatus('banks') as BankLinks
-  const { us, usWallet } = statusOf(useStatus('account') as UsJourney)
-  const moneyMoved = us === 'active' && usWallet !== 'empty'
-  const banks = picked === 'none' && moneyMoved ? 'one' : picked
-  const linked = { none: [], one: linkedBanks.slice(0, 1), two: linkedBanks, three: [...linkedBanks, otherBank], sbi: [{ ...otherBank, primary: true }] }[banks]
-  return addedBank ? [...linked, addedBank] : linked
-}
-
-// A bank account added in the prototype ("Add bank account" → verified). Kept in memory, so a reload starts without it.
-let addedBank: LinkedBank | undefined
-let addBankOpener: string | undefined
-let addBankForUsStocks = false
-
-/**
- * An add-money screen (₹ or US) or the US Stocks activation opens "Add bank account": remember which, so the verified
- * account comes back to it. `usStocks`: the account is for US Stocks, so it must be at a bank that can send money abroad.
- */
-export const startAddBank = (fromScreen?: string, { usStocks = false }: { usStocks?: boolean } = {}) => { addBankOpener = fromScreen; addBankForUsStocks = usStocks }
-/** "Add bank account" was opened from US Stocks: only the supported banks can be added. */
-export const addBankForUs = () => addBankForUsStocks
-/** The add-money screen that opened "Add bank account" (undefined when it was opened straight from the screen list). */
-export const addBankReturnScreen = () => addBankOpener
-/** The ₹1 check passed: the account joins the linked banks, and the add-money screens pick it. */
-export const linkBank = (bank: LinkedBank) => { addedBank = bank }
-/** The account added in this session, if any. */
-export const newlyLinkedBank = () => addedBank
-
-/**
- * Where the user is with US Stocks, as one step: KYC pending → 'kyc'; not activated → 'activate'; under review /
- * contact support / failed; activated → $0 'activated', 'onTheWay', or with money 'ready' / 'holding'.
- * (The Stocks flow's UsState uses the same names.)
- */
-export type UsJourney = 'kyc' | 'activate' | 'review' | 'support' | 'failed' | 'activated' | 'onTheWay' | 'ready' | 'holding'
-
-export function usJourney({ kyc, us, usWallet, usHoldings }: UserStatus): UsJourney {
-  if (kyc === 'pending' || us === 'kyc') return 'kyc'
-  if (us === 'off') return 'activate'
-  if (us !== 'active') return us
-  if (usWallet === 'empty') return 'activated'
-  if (usWallet === 'onTheWay') return 'onTheWay'
-  return usHoldings === 'some' ? 'holding' : 'ready'
-}
-
-export const useUsJourney = () => usJourney(useUserStatus())
-
-/** Sets the user status to one US Stocks step (a US tab screen showing its own state sets it on arrival). */
-export function setUsJourney(step: UsJourney) {
-  setFlowOption(USER_STATUS, 'account', option('account').default, step)
 }
 ```

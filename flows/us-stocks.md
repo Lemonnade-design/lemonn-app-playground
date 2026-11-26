@@ -201,6 +201,8 @@ Every tap he wired is kept. The main path: FTUX sheet → Activate → Declarati
 → Pay on bank → Money ready → Stock → Buy → Executed → Wallet → Withdraw.
 
 ### Changelog
+- 2026-11-26 · Portfolio → Orders: the IN / US picker is Market's primary pill (flag, IN / US, ↕; one tap flips it) and Open · SIP · History are secondary pills, as on Market's top bar. Filters: option cards' right padding 12 (the checkbox's touch area pads the rest), selected cards take the discover edge; the sheet hugs its side nav (no fixed 576). P&L card V2 archived (V1 · Total ⇄ 1D switch kept). L3 gap: ListCell has no selected tone.
+- 2026-11-26 · Portfolio → Orders → Filters redesigned with the F&O chart tools sheet layout: the sheet's L3 header "Filters · Clear all" over both columns, an L3 SideNav on the left (Segment (Indian only), Company, Date, Buy/Sell, Order type, Status on History) and the group's panel on the right; Cancel / Apply dock. Selected tile = grey fill + black edge, not blue; tile labels Label/12. Options are plain L3 ListCell cards (flat, `raised={false}`, L3's own selected look), the checkbox on the right (`trailing`). Company is a search (3+ letters, one company; the hint is the field's helper text). Date is From / To fields that open the phone's own date picker (no future days; To not before From). One sheet and one filter model (`OrderFilterSheet.tsx`) for both the Indian and the US lists; the Filters badge counts picks. L3 gaps: SideNav has no count badge (the corner flag carries it) and no outline on the selected tile; no L3 date field opens the OS picker (an L3 TextField fronts a hidden native date input).
 - 2026-11-26 · Portfolio → Holdings (V2): the IN / US pill tabs show each market's holdings count in the label, "IN Stocks (2)" (none when the market is empty); a hairline separates the P&L cards from the switch, as on Positions (24 above it, 24 below), and the sheet is one level (the padded sheet holds the switch row and the list; no SheetContent wrapper).
 - 2026-11-26 · Portfolio → Orders: the two control rows (IND / US switch + Open · SIP · History, and All orders + Filters) are in the Actionbar's bottom slot under the section tabs, so they stay put while the orders scroll (12 above, between and below; the list starts 16 under the bar). OrdersTab is now `useOrdersTab()` → `{ controls, list }`.
 - 2026-11-26 · Portfolio → Holdings: new option "Holdings market switch". V2 (default) · an L3 pill group (IN Stocks / US Stocks, flags) where the "Your holdings" heading was, Sort (Ghost Small) on its right, no underline tabs above, 24 below the cards; V1 · the underline tabs over the heading, as before. The page dots under the P&L cards are gone (both versions).
@@ -22666,7 +22668,32 @@ export function UsMainNav({ value }: { value: Section }) {
   "transactions.note.depositRefunded": "The deposit didn't go through. The money is back in your bank account.",
   "transactions.note.withdrawalInProgress": "On its way to your bank, {eta}.",
   "transactions.note.withdrawalDelayed": "Taking longer than usual. It should reach your bank {eta}.",
-  "transactions.note.withdrawalFailed": "Your bank didn't accept it. The money is back in your {wallet}."
+  "transactions.note.withdrawalFailed": "Your bank didn't accept it. The money is back in your {wallet}.",
+  "filters.title": "Filters",
+  "filters.clearAll": "Clear all",
+  "filters.cancel": "Cancel",
+  "filters.apply": "Apply",
+  "filters.segment": "Segment",
+  "filters.cash": "Cash",
+  "filters.fno": "F&O",
+  "filters.commodity": "Commodity",
+  "filters.company": "Company",
+  "filters.companySearch": "Search for a company",
+  "filters.companyOne": "You can pick one company",
+  "filters.companyHint": "Type at least 3 letters to search",
+  "filters.companyNone": "No company matches “{query}”",
+  "filters.companyResults": "Companies",
+  "filters.clearSearch": "Clear search",
+  "filters.date": "Date",
+  "filters.from": "From",
+  "filters.to": "To",
+  "filters.selectDate": "Select date",
+  "filters.dateLabel": "Order dates",
+  "filters.side": "Buy/Sell",
+  "filters.buy": "Buy",
+  "filters.sell": "Sell",
+  "filters.type": "Order type",
+  "filters.status": "Status"
 }
 ```
 
@@ -22808,20 +22835,8 @@ export const usStocks: Flow = {
     { id: 'wallet', title: 'USD wallet' },
   ],
   options: [
-    // Portfolio → Holdings' P&L card (24 Nov, the user's call: "a V2 for better UX"): V2 · the market named with its flag,
-    // current value as the one big number, Total and today's returns side by side (no hidden switch), L3 PriceChange;
-    // V1 · the card as it was (IND / Invested side by side, a Total ⇄ 1D switch, the returns pill).
-    {
-      id: 'pnlCard',
-      group: 'Portfolio',
-      label: 'P&L card',
-      values: [
-        { value: 'v1', label: 'V1 · Total ⇄ 1D switch' },
-        { value: 'v2', label: 'V2 · both returns shown' },
-      ],
-      default: 'v1', // V1 by default (24 Nov, user)
-      floatOn: ['us-stocks-05'],
-    },
+    // "P&L card" archived 26 Nov (the user's call): V1 · Total ⇄ 1D switch kept; V2 · both returns shown archived.
+    // HoldingsCards reads no option now; the V2 code stays in HoldingsCards.tsx.
     // Portfolio → Holdings, the market switch (26 Nov, the user's call): V2 · an IN / US pill group in place of the "Your
     // holdings" heading, Sort on its right, no underline tabs above; V1 · underline IN Stocks / US Stocks tabs over the
     // "Your holdings" heading, as it was.
@@ -29865,7 +29880,7 @@ export function HoldingsCards({
   const railRef = useRef<HTMLDivElement>(null)
   const scrollingToPick = useRef(false)
   const [oneDay, setOneDay] = useState(false)
-  const v2 = useFlowOption('us-stocks', 'pnlCard', 'v1') === 'v2' // Portfolio → "P&L card" (24 Nov, user)
+  const v2 = false as boolean // "P&L card" V2 archived 26 Nov (the user's call); its code is kept below
   // Portfolio → "MTF holdings" (24 Nov, user); a user with no Indian stocks (User status → Indian stocks: Empty) has none.
   const hasMtf = useFlowOption('us-stocks', 'inMtf', 'yes') === 'yes' && !useInPortfolioEmpty()
   const [inView, setInView] = useState<InView>('all')
@@ -30031,23 +30046,18 @@ export function MaskImg({ src, w, h = w, className }: { src: string; w: number; 
 }
 
 /* FLAG: restyles L3 Select into an outlined pill */
-.switcher[data-size] {
-  gap: var(--l3-spacing-04);
-  height: var(--l3-size-32);
-  padding: 0 var(--l3-spacing-12) 0 var(--l3-spacing-14);
-  border-radius: var(--l3-radius-full);
-  box-shadow: inset 0 0 0 1px var(--l3-border-dark);
-  font: var(--l3-text-label-14);
-  color: var(--l3-content-primary);
-  background: 0 0;
+/* The IN / US picker (26 Nov, user: as Market's top bar): one primary pill; the block around it takes the tap. */
+.picker {
+  display: flex;
   flex: none;
-  /* One width for IND and USD, so switching doesn't move the Open / History pills (3 Nov). */
-  width: var(--l3-size-80);
-  justify-content: center;
+  align-self: stretch;
+  align-items: center;
+  cursor: pointer;
 }
 
-.switcher[data-size]:hover span {
-  text-decoration: none;
+.picker [role='tab'] > span:last-child {
+  width: var(--l3-icon-size-14);
+  height: var(--l3-icon-size-14);
 }
 
 .switchLabel {
@@ -30178,7 +30188,7 @@ export function MaskImg({ src, w, h = w, className }: { src: string; w: number; 
 // History, the picker and the applied filters across remounts (module-level, like `currentOrder` in orders/data.ts), so
 // coming back from Order Details shows the same list. The Indian side starts on Open each time, as before.
 // "All orders ⇕" is an L3 action pill with the switch icon (AGENTS: a switcher beside order tabs), as Filters next to it.
-// FLAG: the IND / USD Select is restyled into an outlined pill and the Tabs row is custom-sized (see OrdersTab.module.css).
+// FLAG: the Tabs row is custom-sized (see OrdersTab.module.css). The IN / US picker is a one-item primary pill, as on Market.
 import { useEffect, useState, type ReactNode } from 'react'
 import { Badge } from '@l3/components/Badge'
 import { Button } from '@l3/components/Button'
@@ -30186,20 +30196,16 @@ import { EmptyState } from '@l3/components/EmptyState'
 import { Icon } from '@l3/components/Icon'
 import { lmSwitchArrowVertical } from '@l3/components/icons/glyphs'
 import { Section } from '@l3/components/Section'
-import { Select } from '@l3/components/Select'
 import { Stack } from '@l3/components/Stack'
 import { Tab, Tabs } from '@l3/components/Tabs'
 import { msFilterList } from '@l3/icons/material'
+import { Flag } from '../../../../../shared/ui/Flag'
 import { useUsMarketSnapshot } from '../../../../../shared/data/usStocks'
 import { useInPortfolioEmpty, useUsJourney } from '../../../../../shared/userStatus'
 import { useUsNav } from '../../../nav'
 import { historyOrders, openOrder, openOrders, type UsOrder } from '../../orders/data'
 import {
-  IN_NO_FILTERS,
   IN_PRODUCT_LABEL,
-  applyInFilters,
-  inFilterCount,
-  inFilterGroups,
   inHistoryOrders,
   inOpenOrders,
   inOrdersReturn,
@@ -30207,14 +30213,13 @@ import {
   inSips,
   nextInProduct,
   ofInProduct,
-  type InFilters,
   type InOrder,
   type InProductPick,
 } from '../../orders/indianOrders'
 import { InOrderCard, InSipCard } from '../../orders/InOrderCard'
 import { OrderCard } from '../../orders/OrderCard'
 import { OrderDateGroups } from '../../orders/OrderDateGroups'
-import { NO_FILTERS, OrderFilterSheet, applyFilters, filterCount, type OrderFilters } from '../../orders/OrderFilterSheet'
+import { OrderFilterSheet, applyFilters, emptyFilters, filterCount, inFilterGroups, usFilterGroups, type Filters } from '../../orders/OrderFilterSheet'
 import { ORDER_KIND_LABEL, type OrderKind } from '../../orders/OrderKindSheet'
 import styles from './OrdersTab.module.css'
 
@@ -30223,14 +30228,14 @@ type UsList = 'open' | 'history'
 export type OrderMarket = 'in' | 'us'
 
 const markets: Record<OrderMarket, { code: string; name: string }> = {
-  in: { code: 'IND', name: 'Indian' },
-  us: { code: 'USD', name: 'US' },
+  in: { code: 'IN', name: 'Indian' },
+  us: { code: 'US', name: 'US' },
 }
 
 /** What the US side was showing last (kept across remounts: Portfolio → Order Details → back). */
 let lastUsList: UsList = 'open'
 let lastKind: OrderKind = 'all'
-let lastFilters: OrderFilters = NO_FILTERS
+let lastFilters: Filters = {}
 
 const EMPTY_KIND: Record<OrderKind, string> = { all: '', stock: ' of stocks', etf: ' of ETFs' }
 
@@ -30246,17 +30251,17 @@ export function useOrdersTab(initialMarket: OrderMarket = 'in'): { controls: Rea
   const [tab, setTab] = useState<OrderTab>(fromIn ? inOrdersReturn.list : initialMarket === 'us' ? lastUsList : 'open')
   const [market, setMarket] = useState<OrderMarket>(fromIn ? 'in' : initialMarket)
   const [kind, setKindState] = useState<OrderKind>(lastKind)
-  const [filters, setFiltersState] = useState<OrderFilters>(lastFilters)
+  const [filters, setFiltersState] = useState<Filters>(lastFilters)
   const setKind = (next: OrderKind) => {
     lastKind = next
     setKindState(next)
   }
-  const setFilters = (next: OrderFilters) => {
+  const setFilters = (next: Filters) => {
     lastFilters = next
     setFiltersState(next)
   }
   const [inProduct, setInProduct] = useState<InProductPick>('all')
-  const [inFilters, setInFilters] = useState<InFilters>(IN_NO_FILTERS)
+  const [inFilters, setInFilters] = useState<Filters>({})
   const lists = useUsOrderLists()
   // User status → Indian stocks: Empty — no Indian orders or SIPs, so each Indian list shows its empty state.
   const inEmpty = useInPortfolioEmpty()
@@ -30280,19 +30285,22 @@ export function useOrdersTab(initialMarket: OrderMarket = 'in'): { controls: Rea
   const controls = (
     <Section paddingInline="16" paddingBlock="12" gap="12" className={styles.bar}>
       <div className={styles.tabRow}>
-        <Select
-          size="md"
-          icon="swap"
-          onClick={() => setMarket((m) => (m === 'in' ? 'us' : 'in'))}
-          className={styles.switcher}
-          aria-label={`Showing ${current.name} orders, tap for ${market === 'in' ? 'US' : 'Indian'}`}
-        >
-          <span className={styles.switchLabel} key={market}>{current.code}</span>
-        </Select>
+        {/* The IN / US picker as on Market's top bar (26 Nov, user): one primary pill (flag, code, ↕), one tap flips it. */}
+        <div className={styles.picker} onClick={() => setMarket((m) => (m === 'in' ? 'us' : 'in'))}>
+          <Tabs
+            appearance="pill"
+            size="md"
+            aria-label={`Showing ${current.name} orders, tap for ${market === 'in' ? 'US' : 'Indian'}`}
+            items={[{ value: market, label: current.code, iconLeft: <Flag code={market} />, iconRight: <Icon icon={lmSwitchArrowVertical} size={14} /> }]}
+            value={market}
+            onChange={() => {}}
+          />
+        </div>
         <span className={styles.rule} aria-hidden="true" />
         {market === 'us' ? (
           <Tabs
             appearance="pill"
+            emphasis="secondary"
             behavior="tabs"
             width="hug"
             aria-label="US orders"
@@ -30310,6 +30318,7 @@ export function useOrdersTab(initialMarket: OrderMarket = 'in'): { controls: Rea
         ) : (
           <Tabs
             appearance="pill"
+            emphasis="secondary"
             behavior="tabs"
             width="hug"
             aria-label="Orders"
@@ -30374,16 +30383,17 @@ function UsOrders({
   orders: UsOrder[]
   kind: OrderKind
   onKind: (kind: OrderKind) => void
-  filters: OrderFilters
-  onFilters: (filters: OrderFilters) => void
+  filters: Filters
+  onFilters: (filters: Filters) => void
 }) {
   const { go } = useUsNav()
   const [sheet, setSheet] = useState<'filters' | null>(null)
   // A fresh filter sheet each time it opens (its picks start from the applied filters), kept while it closes.
   const [filterRun, setFilterRun] = useState(0)
   const narrowed = ofKind(orders, kind)
-  const shown = applyFilters(narrowed, filters, list)
-  const activeFilters = filterCount(filters, list)
+  const groups = usFilterGroups(list)
+  const shown = applyFilters(narrowed, filters, groups)
+  const activeFilters = filterCount(filters, groups)
 
   let content: ReactNode
   if (shown.length) {
@@ -30400,7 +30410,7 @@ function UsOrders({
       <EmptyState
         className={styles.empty}
         title="No orders match these filters"
-        action={<Button size="sm" onClick={() => onFilters(NO_FILTERS)}>Clear filters</Button>}
+        action={<Button size="sm" onClick={() => onFilters(emptyFilters(groups))}>Clear filters</Button>}
       />
     )
   } else {
@@ -30447,7 +30457,7 @@ function UsOrders({
       <OrderFilterSheet
         key={filterRun}
         open={sheet === 'filters'}
-        list={list}
+        groups={groups}
         value={filters}
         onApply={(next) => {
           onFilters(next)
@@ -30474,15 +30484,16 @@ function InOrders({
   orders: InOrder[]
   product: InProductPick
   onProduct: (product: InProductPick) => void
-  filters: InFilters
-  onFilters: (filters: InFilters) => void
+  filters: Filters
+  onFilters: (filters: Filters) => void
 }) {
   const { go } = useUsNav()
   const [open, setOpen] = useState(false)
   const [filterRun, setFilterRun] = useState(0)
   const narrowed = ofInProduct(orders, product)
-  const shown = applyInFilters(narrowed, filters, list)
-  const activeFilters = inFilterCount(filters, list)
+  const groups = inFilterGroups(list)
+  const shown = applyFilters(narrowed, filters, groups)
+  const activeFilters = filterCount(filters, groups)
   const productWord = product === 'all' ? '' : ` ${product.toLowerCase()}`
 
   let content: ReactNode
@@ -30500,7 +30511,7 @@ function InOrders({
       <EmptyState
         className={styles.empty}
         title="No orders match these filters"
-        action={<Button size="sm" onClick={() => onFilters(IN_NO_FILTERS)}>Clear filters</Button>}
+        action={<Button size="sm" onClick={() => onFilters(emptyFilters(groups))}>Clear filters</Button>}
       />
     )
   } else {
@@ -30542,13 +30553,11 @@ function InOrders({
           Filters
         </Tab>
       </Stack>
-      <OrderFilterSheet<InFilters>
+      <OrderFilterSheet
         key={filterRun}
         open={open}
-        list={list}
+        groups={groups}
         value={filters}
-        groups={inFilterGroups(list)}
-        empty={IN_NO_FILTERS}
         onApply={(next) => {
           onFilters(next)
           setOpen(false)
@@ -38327,127 +38336,419 @@ export function OrderDetailsFor({ id, backdrop }: { id: string; backdrop?: boole
 
 ```css
 /* Order filter / picker sheets. Plain ListCell rows bring their own 16 side padding, so their list runs to the sheet's
-   edges (the sheet content already has 16): label text lines up with the group titles. */
+   edges (the sheet content already has 16): label text lines up with the group titles. (OrderKindSheet.) */
 .rows {
   margin-inline: calc(-1 * var(--l3-spacing-16));
+}
+
+/* ---- Filters (26 Nov): the F&O chart tools sheet's layout (fno/sheets/ChartToolsSheet.module.css) ---- */
+
+/* The sheet brings its own layout: no content padding, edge to edge. */
+.sheet.sheet [data-sheet-content] {
+  padding: 0;
+}
+
+/* A 96 side-nav column with a hairline on its right; the panel beside it scrolls. The nav sets the height. */
+.body {
+  display: grid;
+  grid-template-columns: var(--l3-size-96) minmax(0, 1fr);
+  max-height: 100%; /* as tall as the side nav's tiles (user, 26 Nov: lower than the chart tools' 576) */
+  box-shadow: inset 0 1px 0 var(--l3-border-light); /* the line under the sheet's header (1px: Figma stroke weight) */
+}
+
+/* Selected tile: L3's neutral grey plus a black edge (user, 26 Nov). L3 gap: SideNav's selected tile has no outline. */
+.nav.nav [aria-selected='true'] {
+  box-shadow: inset 0 0 0 1px var(--l3-border-dark); /* 1px: Figma stroke weight has no variable */
+}
+
+/* Tile labels at Label/12 (user, 26 Nov: 12px; L3's is Label/14) so "Order type" fits the 80 tile. L3 gap: SideNav has
+   no label size. */
+.nav.nav [role='tab'] > span:last-child {
+  font: var(--l3-text-label-12);
+}
+
+.nav {
+  padding: var(--l3-spacing-16) var(--l3-spacing-08);
+  overflow-y: auto;
+  box-shadow: inset -1px 0 0 var(--l3-border-light); /* 1px: Figma stroke weight has no variable */
+}
+
+.panel {
+  height: 0; /* adds nothing to the row's height (the nav sets it), then fills it */
+  min-height: 100%;
+  overflow-x: clip;
+  overflow-y: auto;
+  padding: var(--l3-spacing-16) var(--l3-spacing-16) var(--l3-spacing-24);
+}
+
+.hint {
+  margin: 0;
+  font: var(--l3-text-description-14);
+  color: var(--l3-content-secondary);
+}
+
+/* A date field: the L3 field on top, the native date input behind it (only its OS picker is used). */
+.dateField {
+  position: relative;
+}
+
+.dateField :is(input[readonly]) {
+  cursor: pointer;
+}
+
+.native {
+  position: absolute;
+  inset: auto 0 0;
+  width: 100%;
+  height: 1px; /* invisible; it's there for its picker, which anchors to it */
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Option cards (user, 26 Nov): the checkbox's own touch area already pads the right, so the card's right padding is
+   12, not 16; selected cards take the discover edge in place of L3's black. L3 gap: ListCell has no selected tone. */
+.panel.panel [data-variant='card'][data-interactive] {
+  padding-inline-end: var(--l3-spacing-12);
+}
+
+.panel.panel [data-variant='card'][data-interactive][data-flat][data-selected] {
+  box-shadow: inset 0 0 0 1px var(--l3-border-accent-discover-default); /* 1px: Figma stroke weight has no variable */
 }
 ```
 
 ### `src/flows/us-stocks/screens/orders/OrderFilterSheet.tsx`
 
 ```tsx
-// Portfolio → Orders (US) → Filters: an L3 Bottom sheet of checkbox rows in groups — Side, Order type, and on History
-// Status — with Clear / Apply. Several can be picked in a group (multi-select → checkbox rows, DESIGN_SYSTEM 7.1b);
-// nothing picked in a group means "any". Changes apply on Apply; tapping away keeps the filters as they were.
-// The Indian side passes its own `groups` (Side, Order type, Product, Status; 24 Nov) and its own empty filters.
-import { useState } from 'react'
+// Portfolio → Orders → Filters (26 Nov redesign, the user: "the filters of the orders page, redesigned with the
+// Scalper's bottom sheet layout"). The live app's sheet — filter groups on the left, the chosen group on the right,
+// Cancel / Apply below — rebuilt as the F&O chart tools sheet: an L3 SideNav (96 wide, discover selection) beside a
+// panel with a sticky header ("Filters" · Clear all), in an L3 BottomSheet with a ButtonGroup dock.
+// Groups (the live app's, plus Order type the prototype already had):
+// - Segment (Indian only): Cash · F&O · Commodity — checkbox cards, several at once;
+// - Company: search (3 letters or more), one company at a time;
+// - Date: From / To, picked on an L3 range calendar (no future days);
+// - Buy/Sell · Order type · Status (History only) — checkbox cards.
+// Nothing picked in a group means "any". A group with picks shows how many on its tile (the tile's corner flag).
+// Changes apply on Apply; Cancel or tapping away keeps the filters as they were.
+// FLAG (L3 gap): SideNav has no count badge on a tile — the count rides in its corner flag, made for "NEW".
+import { useRef, useState } from 'react'
 import { BottomSheet, BottomSheetHeader } from '@l3/components/BottomSheet'
 import { Button } from '@l3/components/Button'
 import { ButtonGroup } from '@l3/components/ButtonGroup'
 import { Checkbox } from '@l3/components/Checkbox'
+import { Icon } from '@l3/components/Icon'
 import { ListCell } from '@l3/components/ListCell'
-import { SectionHeader } from '@l3/components/SectionHeader'
+import { SideNav } from '@l3/components/SideNav'
 import { Stack } from '@l3/components/Stack'
+import { TextField } from '@l3/components/TextField'
+import { msCalendarMonth, msCategory, msClose, msDomain, msSearch, msSwapVert, msTaskAlt, msTune } from '@l3/icons/material'
 import { useSheetLayer } from '../../components/Phone'
+import { catalogue } from '../../data'
+import { t } from '../entry/copy'
+import { orderDay } from './OrderDateGroups'
 import styles from './OrderFilterSheet.module.css'
-import { STATUS_TAG, TYPE_LABEL, type OrderSide, type OrderStatus, type OrderType, type UsOrder } from './data'
+import { STATUS_TAG, TYPE_LABEL, type OrderStatus, type OrderType } from './data'
+import { IN_STATUS_TAG, IN_TYPE_LABEL, type InOrderStatus, type InOrderType } from './indianOrders'
+import { companies as inCompanies } from '../../../../shared/data/companies'
 
-export type OrderFilters = { side: OrderSide[]; type: OrderType[]; status: OrderStatus[] }
-export const NO_FILTERS: OrderFilters = { side: [], type: [], status: [] }
+/** Every filter is a list of picked values: a checkbox group its options, `company` one symbol, `date` [from, to?] (ISO days). */
+export type Filters = Record<string, string[]>
 
-/** History's statuses (Open orders are all "working", so the Open list has no Status group). */
-const HISTORY_STATUSES: OrderStatus[] = ['executed', 'partial-executed', 'failed', 'cancelled', 'expired']
+type Option = { value: string; label: string; description?: string }
+export type FilterGroup =
+  | { kind: 'check'; key: string; title: string; options: Option[] }
+  | { kind: 'company'; key: 'company'; title: string; companies: Option[] }
+  | { kind: 'date'; key: 'date'; title: string }
 
-/** How many filters are on for a list (Status counts on History only) — the badge on Filters. */
-export function filterCount(filters: OrderFilters, list: 'open' | 'history') {
-  return filters.side.length + filters.type.length + (list === 'history' ? filters.status.length : 0)
+const ICON: Record<string, typeof msTune> = { segment: msCategory, company: msDomain, date: msCalendarMonth, side: msSwapVert, type: msTune, status: msTaskAlt }
+
+export const emptyFilters = (groups: FilterGroup[]): Filters => Object.fromEntries(groups.map((g) => [g.key, []]))
+
+/** The badge on Filters: each checkbox picked, plus one for a company and one for a date range. */
+export function filterCount(filters: Filters, groups: FilterGroup[]) {
+  return groups.reduce((n, g) => {
+    const picks = filters[g.key] ?? []
+    return n + (g.kind === 'check' ? picks.length : picks.length ? 1 : 0)
+  }, 0)
 }
 
-/** The orders that pass the filters (an empty group lets everything through). */
-export function applyFilters(orders: UsOrder[], filters: OrderFilters, list: 'open' | 'history') {
-  return orders.filter(
-    (o) =>
-      (!filters.side.length || filters.side.includes(o.side)) &&
-      (!filters.type.length || filters.type.includes(o.type)) &&
-      (list === 'open' || !filters.status.length || filters.status.includes(o.status)),
+const iso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+const fromIso = (s: string) => new Date(`${s}T00:00:00`)
+/** "24 Nov, 10:42 AM" → the day it was placed. */
+const placedDay = (placedAt: string) => iso(new Date(orderDay(placedAt)))
+const shortDate = new Intl.DateTimeFormat('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+
+/**
+ * The orders that pass the filters (an empty group lets everything through). A checkbox group matches the order's field
+ * of the same name; `segment` reads Cash for orders that don't say (every sample order is a stock).
+ */
+export function applyFilters<O extends { sym: string; placedAt: string }>(orders: O[], filters: Filters, groups: FilterGroup[]) {
+  return orders.filter((order) =>
+    groups.every((g) => {
+      const picks = filters[g.key] ?? []
+      if (!picks.length) return true
+      if (g.kind === 'company') return picks.includes(order.sym)
+      if (g.kind === 'date') {
+        const day = placedDay(order.placedAt)
+        const [from, to] = picks // either may be '' (only From: from that day on; only To: up to it)
+        return (!from || day >= from) && (!to || day <= to)
+      }
+      const field = (order as Record<string, unknown>)[g.key] ?? (g.key === 'segment' ? 'cash' : undefined)
+      return picks.includes(String(field))
+    }),
   )
 }
 
-/** One group of checkbox rows: the filter key it sets and its options. */
-export type FilterGroup = { key: string; title: string; options: { value: string; label: string }[] }
-type AnyFilters = Record<string, string[]>
+/** History's statuses (Open orders are all still working, so the Open list has no Status group). */
+const HISTORY_STATUSES: OrderStatus[] = ['executed', 'partial-executed', 'failed', 'cancelled', 'expired']
 
-export function OrderFilterSheet<F extends AnyFilters = OrderFilters>({
+export const companyGroup = (companies: Option[]): FilterGroup => ({ kind: 'company', key: 'company', title: t('filters.company'), companies })
+export const dateGroup = (): FilterGroup => ({ kind: 'date', key: 'date', title: t('filters.date') })
+export const sideGroup = (): FilterGroup => ({
+  kind: 'check',
+  key: 'side',
+  title: t('filters.side'),
+  options: [{ value: 'buy', label: t('filters.buy') }, { value: 'sell', label: t('filters.sell') }],
+})
+/** Indian side: Cash · F&O · Commodity. */
+export const segmentGroup = (): FilterGroup => ({
+  kind: 'check',
+  key: 'segment',
+  title: t('filters.segment'),
+  options: [{ value: 'cash', label: t('filters.cash') }, { value: 'fno', label: t('filters.fno') }, { value: 'commodity', label: t('filters.commodity') }],
+})
+
+/** The US groups for a list. */
+export function usFilterGroups(list: 'open' | 'history'): FilterGroup[] {
+  return [
+    companyGroup(Object.entries(catalogue).map(([sym, s]) => ({ value: sym, label: s.name, description: sym }))),
+    dateGroup(),
+    sideGroup(),
+    { kind: 'check', key: 'type', title: t('filters.type'), options: (['market', 'limit', 'sl'] as OrderType[]).map((v) => ({ value: v, label: TYPE_LABEL[v] })) },
+    ...(list === 'history'
+      ? [{ kind: 'check' as const, key: 'status', title: t('filters.status'), options: HISTORY_STATUSES.map((s) => ({ value: s, label: STATUS_TAG[s].label })) }]
+      : []),
+  ]
+}
+
+const IN_HISTORY_STATUSES: InOrderStatus[] = ['executed', 'partial-executed', 'rejected', 'cancelled', 'expired']
+
+/** The Indian groups for a list: Segment first (the live app's order), Status on History only. */
+export function inFilterGroups(list: 'open' | 'history'): FilterGroup[] {
+  return [
+    segmentGroup(),
+    companyGroup(Object.values(inCompanies).map((c) => ({ value: c.symbol, label: c.name, description: c.symbol }))),
+    dateGroup(),
+    sideGroup(),
+    { kind: 'check', key: 'type', title: t('filters.type'), options: (Object.keys(IN_TYPE_LABEL) as InOrderType[]).map((v) => ({ value: v, label: IN_TYPE_LABEL[v] })) },
+    ...(list === 'history'
+      ? [{ kind: 'check' as const, key: 'status', title: t('filters.status'), options: IN_HISTORY_STATUSES.map((s) => ({ value: s, label: IN_STATUS_TAG[s].label })) }]
+      : []),
+  ]
+}
+
+export function OrderFilterSheet({
   open,
-  list,
+  groups,
   value,
   onApply,
   onClose,
-  groups: customGroups,
-  empty,
 }: {
   open: boolean
-  list: 'open' | 'history'
-  value: F
-  onApply: (filters: F) => void
+  groups: FilterGroup[]
+  value: Filters
+  onApply: (filters: Filters) => void
   onClose: () => void
-  /** Another market's groups (the Indian side); the US groups when left out. */
-  groups?: FilterGroup[]
-  /** What Clear resets to (NO_FILTERS for the US). */
-  empty?: F
 }) {
   const layer = useSheetLayer()
-  const [draft, setDraft] = useState<F>(value)
-
-  const groups: FilterGroup[] = customGroups ?? [
-    { key: 'side', title: 'Side', options: [{ value: 'buy', label: 'Buy' }, { value: 'sell', label: 'Sell' }] },
-    { key: 'type', title: 'Order type', options: (['market', 'limit', 'sl'] as OrderType[]).map((t) => ({ value: t, label: TYPE_LABEL[t] })) },
-    ...(list === 'history'
-      ? [{ key: 'status' as const, title: 'Status', options: HISTORY_STATUSES.map((s) => ({ value: s, label: STATUS_TAG[s].label })) }]
-      : []),
-  ]
-
-  const toggle = (key: string, item: string, on: boolean) =>
-    setDraft((prev) => ({ ...prev, [key]: on ? [...(prev[key] ?? []), item] : (prev[key] ?? []).filter((v) => v !== item) }))
+  const [draft, setDraft] = useState<Filters>(value)
+  const [section, setSection] = useState(groups[0].key)
+  const group = groups.find((g) => g.key === section) ?? groups[0]
+  const set = (key: string, picks: string[]) => setDraft((prev) => ({ ...prev, [key]: picks }))
+  const picked = filterCount(draft, groups)
 
   return (
     <BottomSheet
       open={open}
       onClose={onClose}
       container={layer}
-      aria-labelledby="order-filters-title"
-      header={<BottomSheetHeader heading="Filters" headingId="order-filters-title" />}
+      aria-label={t('filters.title')}
+      className={styles.sheet}
+      header={
+        <BottomSheetHeader
+          heading={t('filters.title')}
+          trailing={<Button variant="ghost" size="sm" disabled={!picked} onClick={() => setDraft(emptyFilters(groups))}>{t('filters.clearAll')}</Button>}
+        />
+      }
       footer={
-        <ButtonGroup direction="horizontal" aria-label="Filters">
-          <Button variant="secondary" size="lg" onClick={() => setDraft(empty ?? (NO_FILTERS as unknown as F))}>Clear</Button>
-          <Button variant="primary" size="lg" onClick={() => onApply(draft)}>Apply</Button>
+        <ButtonGroup direction="horizontal" aria-label={t('filters.title')}>
+          <Button variant="secondary" size="lg" onClick={onClose}>{t('filters.cancel')}</Button>
+          <Button variant="primary" size="lg" onClick={() => onApply(draft)}>{t('filters.apply')}</Button>
         </ButtonGroup>
       }
     >
-      <Stack gap="24">
-        {groups.map((group) => (
-          <Stack key={group.key} gap="08" role="group" aria-labelledby={`order-filter-${group.key}`}>
-            <SectionHeader title={<span id={`order-filter-${group.key}`}>{group.title}</span>} headingLevel={3} />
-            <Stack className={styles.rows}>
-              {group.options.map((option) => {
-                const checked = (draft[group.key] ?? []).includes(option.value)
-                return (
-                  <ListCell
-                    key={option.value}
-                    as="label"
-                    size="sm"
-                    label={option.label}
-                    trailing={<Checkbox checked={checked} onChange={(e) => toggle(group.key, option.value, e.target.checked)} />}
-                  />
-                )
-              })}
-            </Stack>
-          </Stack>
-        ))}
-      </Stack>
+      <div className={styles.body}>
+        <SideNav
+          selectedTone="neutral"
+          aria-label={t('filters.title')}
+          aria-controls="order-filters-panel"
+          value={group.key}
+          onChange={setSection}
+          className={styles.nav}
+          items={groups.map((g) => {
+            const n = filterCount({ [g.key]: draft[g.key] ?? [] }, [g])
+            return { value: g.key, label: g.title, icon: <Icon icon={ICON[g.key] ?? msTune} />, flag: n ? String(n) : undefined }
+          })}
+        />
+        <section id="order-filters-panel" className={styles.panel} role="tabpanel" aria-label={group.title}>
+          {group.kind === 'check' && <CheckPanel group={group} picks={draft[group.key] ?? []} onChange={(p) => set(group.key, p)} />}
+          {group.kind === 'company' && <CompanyPanel companies={group.companies} picks={draft.company ?? []} onChange={(p) => set('company', p)} />}
+          {group.kind === 'date' && <DatePanel picks={draft.date ?? []} onChange={(p) => set('date', p)} />}
+        </section>
+      </div>
     </BottomSheet>
   )
 }
+
+/** Checkbox cards, several at once (the box on the right: L3 label rows carry the control in `trailing`): a picked one turns discover blue, as an indicator on the chart. */
+function CheckPanel({ group, picks, onChange }: { group: Extract<FilterGroup, { kind: 'check' }>; picks: string[]; onChange: (picks: string[]) => void }) {
+  return (
+    <Stack gap="12" role="group" aria-label={group.title}>
+      {group.options.map((option) => {
+        const checked = picks.includes(option.value)
+        return (
+          <ListCell
+            key={option.value}
+            as="label"
+            variant="card"
+            label={option.label}
+            selected={checked}
+            raised={false}
+            trailing={
+              <Checkbox
+                checked={checked}
+                onChange={(e) => onChange(e.target.checked ? [...picks, option.value] : picks.filter((v) => v !== option.value))}
+              />
+            }
+          />
+        )
+      })}
+    </Stack>
+  )
+}
+
+/** One company: search by name or symbol (3 letters or more); the picked one stays on top, ✕ takes it off. */
+function CompanyPanel({ companies, picks, onChange }: { companies: Option[]; picks: string[]; onChange: (picks: string[]) => void }) {
+  const [query, setQuery] = useState('')
+  const q = query.trim().toLowerCase()
+  const chosen = companies.find((c) => c.value === picks[0])
+  const results = q.length >= MIN_QUERY
+    ? companies.filter((c) => c.value !== chosen?.value && (c.label.toLowerCase().includes(q) || c.value.toLowerCase().includes(q))).slice(0, MAX_RESULTS)
+    : []
+
+  return (
+    <Stack gap="16">
+      <TextField
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder={t('filters.companySearch')}
+        aria-label={t('filters.companySearch')}
+        helperText={q.length < MIN_QUERY && !chosen ? t('filters.companyHint') : t('filters.companyOne')}
+        iconLeft={<Icon icon={msSearch} />}
+        iconRight={query ? <Button variant="ghost" size="sm" iconLeft={<Icon icon={msClose} />} aria-label={t('filters.clearSearch')} onClick={() => setQuery('')} /> : undefined}
+      />
+      {chosen && (
+        <ListCell
+          variant="card"
+          label={chosen.label}
+          description={chosen.description}
+          selected
+          iconRight={<Icon icon={msClose} />}
+          onClick={() => onChange([])}
+          raised={false}
+        />
+      )}
+      {q.length < MIN_QUERY ? null : results.length ? (
+        <Stack gap="12" aria-label={t('filters.companyResults')}>
+          {results.map((c) => (
+            <ListCell
+              key={c.value}
+              variant="card"
+              label={c.label}
+              description={c.description}
+              onClick={() => {
+                onChange([c.value])
+                setQuery('')
+              }}
+              raised={false}
+            />
+          ))}
+        </Stack>
+      ) : (
+        <p className={styles.hint}>{t('filters.companyNone', { query: query.trim() })}</p>
+      )}
+    </Stack>
+  )
+}
+
+/**
+ * From / To, as the live app: two date fields, each opening the phone's own date picker (a native date input behind the
+ * L3 field; `showPicker()`). No future days; To can't be before From, nor From after To.
+ * FLAG (L3 gap): L3 has no date field that opens the OS picker, so an L3 TextField fronts a hidden native input.
+ */
+function DatePanel({ picks, onChange }: { picks: string[]; onChange: (picks: string[]) => void }) {
+  const [from = '', to = ''] = picks
+  const today = iso(new Date())
+  const set = (nextFrom: string, nextTo: string) => onChange(nextFrom || nextTo ? [nextFrom, nextTo] : [])
+  return (
+    <Stack gap="16">
+      <DateField label={t('filters.from')} day={from} max={to || today} onPick={(d) => set(d, to)} />
+      <DateField label={t('filters.to')} day={to} min={from || undefined} max={today} onPick={(d) => set(from, d)} />
+    </Stack>
+  )
+}
+
+/** One date field: the L3 field shows the day; a tap opens the OS date picker of the native input behind it. */
+function DateField({ label, day, min, max, onPick }: { label: string; day: string; min?: string; max: string; onPick: (day: string) => void }) {
+  const native = useRef<HTMLInputElement>(null)
+  const open = () => {
+    const input = native.current
+    if (!input) return
+    try {
+      input.showPicker()
+    } catch {
+      input.focus()
+    }
+  }
+  return (
+    <div className={styles.dateField}>
+      <TextField
+        label={label}
+        readOnly
+        value={day ? shortDate.format(fromIso(day)) : ''}
+        placeholder={t('filters.selectDate')}
+        iconRight={<Icon icon={msCalendarMonth} />}
+        onClick={open}
+        onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && open()}
+      />
+      <input
+        ref={native}
+        type="date"
+        tabIndex={-1}
+        aria-hidden="true"
+        className={styles.native}
+        value={day}
+        min={min}
+        max={max}
+        onChange={(e) => onPick(e.target.value)}
+      />
+    </div>
+  )
+}
+
+/** Company search starts at 3 letters (live app) and shows at most 8 matches. */
+const MIN_QUERY = 3
+const MAX_RESULTS = 8
 ```
 
 ### `src/flows/us-stocks/screens/orders/OrderKindSheet.tsx`
@@ -39442,41 +39743,13 @@ export const inSips: InSip[] = [
 
 // ── Filters (24 Nov, the user's call: the Indian side gets the US filter row) ──────────────────────────────────────
 // The picker steps All orders → Delivery → Intraday (the product, as Stocks / ETFs on the US side); the Filters sheet
-// (OrderFilterSheet, given these groups) narrows by side, order type and, on History, status. Empty group = any.
+// (OrderFilterSheet, inFilterGroups) narrows by segment, company, date, side, order type and, on History, status.
 
 export type InProductPick = 'all' | InProduct
 export const IN_PRODUCT_LABEL: Record<InProductPick, string> = { all: 'All orders', Delivery: 'Delivery', Intraday: 'Intraday' }
 export const nextInProduct = (p: InProductPick): InProductPick => (p === 'all' ? 'Delivery' : p === 'Delivery' ? 'Intraday' : 'all')
 export const ofInProduct = (orders: InOrder[], p: InProductPick) => (p === 'all' ? orders : orders.filter((o) => o.product === p))
 
-export type InFilters = { side: string[]; type: string[]; status: string[] }
-export const IN_NO_FILTERS: InFilters = { side: [], type: [], status: [] }
-
-const IN_HISTORY_STATUSES: InOrderStatus[] = ['executed', 'partial-executed', 'rejected', 'cancelled', 'expired']
-
-/** The sheet's groups for a list: Status only on History (every Open order is still working). */
-export function inFilterGroups(list: 'open' | 'history') {
-  return [
-    { key: 'side', title: 'Side', options: [{ value: 'buy', label: 'Buy' }, { value: 'sell', label: 'Sell' }] },
-    { key: 'type', title: 'Order type', options: (Object.keys(IN_TYPE_LABEL) as InOrderType[]).map((v) => ({ value: v, label: IN_TYPE_LABEL[v] })) },
-    ...(list === 'history'
-      ? [{ key: 'status', title: 'Status', options: IN_HISTORY_STATUSES.map((s) => ({ value: s, label: IN_STATUS_TAG[s].label })) }]
-      : []),
-  ]
-}
-
-export function inFilterCount(f: InFilters, list: 'open' | 'history') {
-  return f.side.length + f.type.length + (list === 'history' ? f.status.length : 0)
-}
-
-export function applyInFilters(orders: InOrder[], f: InFilters, list: 'open' | 'history') {
-  return orders.filter(
-    (o) =>
-      (!f.side.length || f.side.includes(o.side)) &&
-      (!f.type.length || f.type.includes(o.type)) &&
-      (list === 'open' || !f.status.length || f.status.includes(o.status)),
-  )
-}
 
 // ── Order Details (24 Nov, the user's call: "we need the details page of the Indian stocks also") ───────────────────
 
@@ -74020,8 +74293,6 @@ export const Flag = ({ code }: { code: FlagCode }) => (
 ```tsx
 import { useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import { MaskIcon } from '@l3/components/MaskIcon'
-import { useFlowOption } from '../prototype'
-import { USER_STATUS } from '../userStatus'
 import stocksIcon from './assets/floating-nav/stocks.svg'
 import marketIcon from './assets/floating-nav/market.svg'
 import marketSelectedIcon from './assets/floating-nav/market-selected.svg'
@@ -74031,10 +74302,13 @@ import fnoIcon from './assets/floating-nav/fno.svg'
 import fnoSelectedIcon from './assets/floating-nav/fno-selected.svg'
 import styles from './FloatingNav.module.css'
 
-/** App setting "Bottom navbar" (A/B, 20 Nov): V1 docked (L3 Bottom Navbar) · V2 floating, the default at launch (20 Nov) ·
- * V3 V2's floating nav with L3's coloured icon on the chosen tab and the glow under it, not over it (23 Nov, user). */
-export const BOTTOM_NAV_OPTION = 'bottomNav'
-const useBottomNavVersion = () => useFlowOption(USER_STATUS, BOTTOM_NAV_OPTION, 'v2') // V2 by default (20 Nov, user)
+/** Bottom navbar, was an app setting (A/B, 20 Nov): V1 docked (L3 Bottom Navbar) · V2 floating · V3 V2's floating nav
+ * with L3's coloured icon on the chosen tab and the glow under it, not over it (23 Nov). 26 Nov, the user: "keep version 3
+ * default, archive other" — V3 is fixed and the setting is gone; V1 / V2 stay in code here: change this value to bring
+ * one back. */
+type BottomNavVersion = 'v1' | 'v2' | 'v3'
+const BOTTOM_NAV_VERSION = 'v3' as BottomNavVersion
+const useBottomNavVersion = (): BottomNavVersion => BOTTOM_NAV_VERSION
 /** V2 and V3: the floating nav (this frame and its own Figma icons). */
 export const useFloatingNav = () => useBottomNavVersion() !== 'v1'
 /** V3: the chosen tab shows L3's coloured (two-tone brand) icon instead of the black-and-white one. */

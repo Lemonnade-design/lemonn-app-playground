@@ -41,7 +41,7 @@ Prototype: https://lemonnade-design.github.io/lemonn-app-prototype/#/stocks · m
 | `stocks-37` | Stock · event filters | — | `stocks-01` | Choose filter: one checkbox per event type, Done applies. |
 | `stocks-38` | Performance (ⓘ) | — | `stocks-32` | Daily Performance ⓘ: what each number means. |
 | `stocks-39` | Glossary · Fundamentals (ⓘ) | — | `stocks-32` | Fundamentals ⓘ: what each ratio means. |
-| `stocks-40` | Splash | — | `stocks-01` | The launch splash: the Lemonn logo centred for 2 s, then it fades into Home (a tap skips ahead). Hidden at launch for now (src/shared/ui/Splash: SPLASH_SCREENS is empty), so the app opens straight on the home; this page still plays it. |
+| `stocks-40` | Splash | — | `stocks-01`, `stocks-32` | The launch splash: the Lemonn logo centred for 2 s, then it fades into Home (a tap skips ahead). Hidden at launch for now (src/shared/ui/Splash: SPLASH_SCREENS is empty), so the app opens straight on the home; this page still plays it. |
 
 ## Spec (README.md)
 
@@ -433,6 +433,7 @@ lower on the page is scrolled into view first). `components/MarketSwitchGuide.ts
   16 / 24 icon or an Avatar only — event rows are plain buttons laid out with Stack.
 
 ### Changelog
+- 2026-11-26 — **Invest in Ideas** cards drop the 1Y return (the app only has the basket's name and its stocks), and each card opens its own page, as the live app: `stocks-41` Oil Price Dependents · `stocks-42` High Growth Media (`screens/IdeaPage.tsx`). Top: overlapping logos, "Name (N)", a short description (sample text) and the disclaimer. Then the basket's stocks as list rows (price + day change, tap → the stock page), and a "More ideas" rail of the other baskets.
 - 2026-11-26 — **Invest in Ideas** (Home, Indian tab) is drawn like the US tab's Explore by themes: the same rail (1.9 across) of theme cards — overlapping logos (3, then +n), the basket's name, its 1Y return (sample) and "N stocks ›" (`BasketCard` in `components/us/ThemeCard.tsx`, shared by both). Was big cards with a 3 × 2 logo grid.
 - 2026-11-25 — US coming soon: new setting "Coming soon flag" — V2 (default) the white circle stays and the flag melts into it, as the Minted app's waving flags: tilted 4°, fading away at the left and the bottom, a soft white blur over its left edge (inside the circle) · V1 the flag in the white circle as it was.
 - 2026-11-25 — US coming soon: the in-review card adds one line under "Verification in progress" — "We'll notify you once your account is activated" (L3 Description/12, secondary, ListCell description).
@@ -22675,17 +22676,17 @@ import { BasketCard } from './us/ThemeCard'
 import styles from './Home.module.css'
 
 /** Invest in ideas: curated baskets, drawn like the US tab's Explore by themes (26 Nov, the user's call): the same rail
- *  (1.9 across) of theme cards — overlapping logos, the name, its 1Y return and "N stocks ›". */
-export function IdeaBaskets({ onOpen }: { onOpen?: (id: string) => void }) {
+ *  (1.9 across) of theme cards — overlapping logos, the name and "N stocks ›". No return: the API has none for a basket.
+ *  A card opens that basket's page (IdeaPage). `title` / `except`: the page's "More ideas" rail, without its own basket. */
+export function IdeaBaskets({ onOpen, title = t('baskets.title'), except }: { onOpen?: (id: string) => void; title?: string; except?: string }) {
   return (
-    <Stack as="section" gap="16" aria-label={t('baskets.title')}>
-      <Inset paddingInline="16" paddingBlock="00"><SectionHeader title={t('baskets.title')} /></Inset>
+    <Stack as="section" gap="16" aria-label={title}>
+      <Inset paddingInline="16" paddingBlock="00"><SectionHeader title={title} /></Inset>
       <Rail label={t('baskets.railLabel')} visible={1.9}>
-        {ideaBaskets.map((b) => (
+        {ideaBaskets.filter((b) => b.id !== except).map((b) => (
           <BasketCard
             key={b.id}
             name={b.name}
-            return1y={b.return1y}
             count={b.stocks.length}
             logos={b.stocks.map((s) => ({ key: s.symbol, src: s.logoUrl, initials: s.initials }))}
             onClick={onOpen ? () => onOpen(b.id) : undefined}
@@ -25758,19 +25759,23 @@ export function ThemeCard({ theme, onOpen }: { theme: Theme; onOpen: (id: ThemeI
 
 type StackLogo = { key: string; src?: string; initials: string }
 
-/** The theme card's look for any basket of stocks (also the Indian home's Invest in Ideas, 26 Nov, the user's call). */
-export function BasketCard({ name, return1y, count, logos, onClick }: { name: string; return1y: number; count: number; logos: StackLogo[]; onClick?: () => void }) {
+/** The theme card's look for any basket of stocks (also the Indian home's Invest in Ideas, 26 Nov, the user's call).
+ *  `return1y` left out (Ideas: the API has no return for a basket): the name stands alone. */
+export function BasketCard({ name, return1y, count, logos, onClick }: { name: string; return1y?: number; count: number; logos: StackLogo[]; onClick?: () => void }) {
+  const label = return1y === undefined ? t('baskets.cardLabel', { name, count }) : t('us.themes.cardLabel', { name, pct: return1y.toFixed(1), count })
   return (
-    <Card onClick={onClick} surface="primary" className={styles.card} aria-label={t('us.themes.cardLabel', { name, pct: return1y.toFixed(1), count })}>
+    <Card onClick={onClick} surface="primary" className={styles.card} aria-label={label}>
       <Stack gap="12">
         <LogoStack logos={logos} max={3} />
         {/* Name and 1Y return read as one block: 4 apart (the card's other parts stay 12 apart). */}
         <Stack gap="04">
           <span className={styles.name}>{name}</span>
-          <span className={styles.return}>
-            <PriceChange value={return1y} size="md" />
-            <span className={styles.returnLabel}>{t('us.themes.return1y')}</span>
-          </span>
+          {return1y !== undefined && (
+            <span className={styles.return}>
+              <PriceChange value={return1y} size="md" />
+              <span className={styles.returnLabel}>{t('us.themes.return1y')}</span>
+            </span>
+          )}
         </Stack>
         <span className={styles.foot}>
           <span>{t('us.themes.stocks', { count })}</span>
@@ -29881,6 +29886,11 @@ export function useLiveHeatmap(symbols: string[] = heatSymbols): HeatValue[] {
   "baskets.description": "Curated industry-based stock offerings",
   "baskets.railLabel": "Idea baskets",
   "baskets.count": "{count} Stocks",
+  "baskets.cardLabel": "{name}, {count} stocks",
+  "baskets.nameCount": "{name} ({count})",
+  "baskets.disclaimer": "The securities are quoted as an example, not as a recommendation.",
+  "baskets.more": "More ideas",
+  "baskets.back": "Back",
   "smartInvest.tagAuto": "Auto Buy & Sell",
   "disclosure.readMore": "Read More",
   "disclosure.readLess": "Read Less",
@@ -30470,14 +30480,16 @@ export const highlights: Highlight[] = [
   { id: 'fno', title: 'F&O', description: 'Trade in Futures and Options', changePct: -0.54, caption: 'Nifty 50', cta: 'Explore' },
 ]
 
-/** Invest in ideas: curated baskets of stocks. */
-/** return1y: the basket's 1-year return in % (sample), shown on its card like a US theme's. */
-export type IdeaBasket = { id: string; name: string; return1y: number; stocks: Stock[] }
+/** Invest in ideas: curated baskets of stocks — a name, a line on what ties them together, and the stocks. No return:
+ *  the API has none for a basket (26 Nov, the user). */
+export type IdeaBasket = { id: string; name: string; description: string; stocks: Stock[] }
 export const ideaBaskets: IdeaBasket[] = [
-  { id: 'oil-price-dependents', name: 'Oil Price Dependents', return1y: 12.4, stocks: [stocks.JINDRILL, stocks.HINDOILEXP, stocks.OIL, stocks.ONGC, stocks.RELIANCE] },
+  { id: 'oil-price-dependents', name: 'Oil Price Dependents', description: 'Companies whose earnings rise and fall with the price of crude: explorers, drillers and refiners. When oil climbs, they tend to climb with it.', stocks: [stocks.JINDRILL, stocks.HINDOILEXP, stocks.OIL, stocks.ONGC, stocks.RELIANCE] },
   // the second basket only peeks in at the screen edge on the live app; its full name isn't visible there
-  { id: 'high-growth', name: 'High Growth Media', return1y: 28.6, stocks: [stocks.TVTODAY, stocks.NTPC, stocks.IRFC, stocks.COALINDIA, stocks.HAL, stocks.SBIN, stocks.NHPC] },
+  { id: 'high-growth', name: 'High Growth Media', description: 'Companies that grew revenue fastest over the last three years, across media, power, rail finance and defence. Higher growth, and bigger swings.', stocks: [stocks.TVTODAY, stocks.NTPC, stocks.IRFC, stocks.COALINDIA, stocks.HAL, stocks.SBIN, stocks.NHPC] },
 ]
+/** Each basket's own page (stocks-41 …), in the order above. */
+export const ideaScreenId = (id: string) => `stocks-${41 + ideaBaskets.findIndex((b) => b.id === id)}`
 
 /** The broker's regulatory line (shared with Profile). */
 export { disclosure } from '../../shared/data/broker'
@@ -30672,6 +30684,8 @@ import { t } from './copy'
 import { activeHomeVersions, DEFAULT_HOME_VERSION } from './components/homeVersions'
 import { themes, themeScreenId, type ThemeId, type UsState } from './components/us/data'
 import { ThemePage } from './screens/ThemePage'
+import { IdeaPage } from './screens/IdeaPage'
+import { ideaBaskets, ideaScreenId } from './data'
 import { BrandsPage } from './screens/BrandsPage'
 import { AnalystPicksPage } from './screens/AnalystPicksPage'
 import { setUsJourney, useUsJourney } from '../../shared/userStatus'
@@ -30693,7 +30707,7 @@ function StockPageFromAnywhere({ onBack, ...props }: ComponentProps<typeof Stock
   return <StockPage {...props} onBack={() => { if (!preview.back?.()) onBack() }} />
 }
 
-const chrome = (go: Go) => ({ onStock: (sym: string) => { openStock(sym); go('stocks-32') }, onTab: (t: Parameters<typeof goToTab>[1]) => goToTab(go, t), onSearch: (m: 'in' | 'us') => go(searchFor(m)), onProfile: () => go('profile-01'), onWatchlist: () => go('market-11'), onCommodities: () => go('fno-08'), onAddMoney: () => go('deposit-01') })
+const chrome = (go: Go) => ({ onStock: (sym: string) => { openStock(sym); go('stocks-32') }, onTab: (t: Parameters<typeof goToTab>[1]) => goToTab(go, t), onSearch: (m: 'in' | 'us') => go(searchFor(m)), onProfile: () => go('profile-01'), onWatchlist: () => go('market-11'), onCommodities: () => go('fno-08'), onAddMoney: () => go('deposit-01'), onIdea: (id: string) => go(ideaScreenId(id)) })
 
 /** Wallet icon on the US tab, by where the user is (screens of the US Stocks flow): Indian wallet · under review · failed · $0 · funded. */
 // The Indian stock page's Buy / Sell open the shared order pad (US Stocks flow) in its Indian version (23 Nov, the
@@ -30845,6 +30859,17 @@ export const stocks: Flow = {
     { id: 'stocks-39', name: 'Glossary · Fundamentals (ⓘ)', figma: '', badge: 'new', note: 'Fundamentals ⓘ: what each ratio means.', render: (go) => <Glossary kind="fundamentals" onBack={() => go('stocks-32')} /> },
     // The launch splash (hidden at launch for now).
     { id: 'stocks-40', name: 'Splash', figma: '', badge: 'new', tab: true, note: 'The launch splash: the Lemonn logo centred for 2 s, then it fades into Home (a tap skips ahead). Hidden at launch for now (src/shared/ui/Splash: SPLASH_SCREENS is empty), so the app opens straight on the home; this page still plays it.', render: (go) => <SplashScreen onDone={() => go('stocks-01')} home={<HomeInState go={go} />} /> },
+    // Invest in Ideas: one page per basket (26 Nov, the user: the live app's basket page, in the new design).
+    ...ideaBaskets.map((basket, i) => ({
+      id: ideaScreenId(basket.id),
+      name: `Invest in Ideas · ${basket.name}`,
+      figma: '',
+      badge: 'new' as const,
+      note: i === 0
+        ? 'A basket from Home\'s Invest in Ideas. Back + "Invest in Ideas"; the basket\'s logos, name (count), what ties its stocks together and "quoted as an example"; a hairline; its stocks as list rows (→ the stock page); "More ideas": the other baskets as Home\'s rail of cards (→ their pages). No returns: the API has none for a basket.'
+        : `Invest in Ideas, opened on ${basket.name}. Same page as stocks-41.`,
+      render: (go: Go) => <IdeaPage basket={basket.id} onStock={(sym) => { openStock(sym); go('stocks-32') }} onIdea={(id) => go(ideaScreenId(id))} />,
+    })),
   ],
 }
 ```
@@ -31915,6 +31940,8 @@ type Props = {
   onUsPicks?: () => void
   /** US tab: Brands You Know's View all → the Brands page. */
   onUsBrands?: () => void
+  /** An Invest in Ideas card → that basket's page. */
+  onIdea?: (id: string) => void
   /** Prototype: after 2 s go on to this screen (the under-review Home moves on to "activated" by itself). */
   autoNext?: string
   /** A sheet over the page: the US Stocks intro, "activation submitted". */
@@ -31967,7 +31994,7 @@ const riskAgreedThisSession = () => {
   try { return sessionStorage.getItem(RISK_AGREED_KEY) === '1' } catch { return false }
 }
 
-export function Home({ scrollTo = 'top', market = 'in', movers, onStock, onTab, onSearch, onWatchlist, onProfile, onWallet, onCommodities, onAddMoney, usState = 'activate', onActivateUs, onUsAddMoney, onUsHoldings, onInHoldings, onUsStock, onUsMarket, onUsTheme, onUsEtfs, onUsFractional, onUsEtf, onUsPicks, onUsBrands, autoNext, sheet, introOnOpen = false }: Props) {
+export function Home({ scrollTo = 'top', market = 'in', movers, onStock, onTab, onSearch, onWatchlist, onProfile, onWallet, onCommodities, onAddMoney, usState = 'activate', onActivateUs, onUsAddMoney, onUsHoldings, onInHoldings, onUsStock, onUsMarket, onUsTheme, onUsEtfs, onUsFractional, onUsEtf, onUsPicks, onUsBrands, onIdea, autoNext, sheet, introOnOpen = false }: Props) {
   // Money on the way: its card opens the deposit explainer over Home (the timed move to "money ready" waits while it's open).
   const [explaining, setExplaining] = useState(false)
   const depositsOnTheWay = useDepositsOnTheWay()
@@ -32619,7 +32646,7 @@ export function Home({ scrollTo = 'top', market = 'in', movers, onStock, onTab, 
               <Announcement />
               <div data-home="sectors"><Sectors /></div>
               <div data-home="highlights"><Highlights /></div>
-              <div data-home="more"><IdeaBaskets /></div>
+              <div data-home="more"><IdeaBaskets onOpen={onIdea} /></div>
               <Disclosure />
             </Stack>
           ) : usComingSoon ? (
@@ -32694,6 +32721,98 @@ function horizontalRail(el: HTMLElement, root: HTMLElement): HTMLElement | null 
     if (x === 'auto' || x === 'scroll') return node
   }
   return null
+}
+```
+
+### `src/flows/stocks/screens/IdeaPage.module.css`
+
+```css
+/* About the basket: a hairline separates it from the list of its stocks (as the Portfolio pages' sections). */
+.about {
+  border-bottom: 1px solid var(--l3-border-light);
+}
+
+.name {
+  margin: 0;
+  font: var(--l3-text-heading-18);
+  color: var(--l3-content-primary);
+}
+
+.desc {
+  margin: 0;
+  font: var(--l3-text-description-14);
+  color: var(--l3-content-secondary);
+}
+
+/* "Quoted as an example": the page's fine print. */
+.disclaimer {
+  margin: 0;
+  font: var(--l3-text-description-12);
+  color: var(--l3-content-secondary);
+}
+```
+
+### `src/flows/stocks/screens/IdeaPage.tsx`
+
+```tsx
+// stocks-41 …: one Invest in Ideas basket — what a card on Home opens (26 Nov, the user: as the live app's page, in the
+// new design, like the US theme page). Back + "Invest in Ideas", then:
+// 1. About the basket: its logos overlapping, its name with the stock count in brackets, a line on what ties the stocks
+//    together and "quoted as an example, not as a recommendation". A hairline closes it.
+// 2. Its stocks as edge-to-edge list rows (logo, symbol, name, price, today's move), as a US theme's "All stocks".
+// 3. "More ideas": the other baskets as the same rail of cards as Home's (each opens its own page).
+// No return anywhere: the API sends none for a basket.
+import { Actionbar } from '@l3/components/Actionbar'
+import { Section } from '@l3/components/Section'
+import { Stack } from '@l3/components/Stack'
+import { usePreview } from '../../../shared/prototype'
+import { useMarketSnapshot } from '../../../shared/data/companies'
+import { formatInr } from '../../../shared/money'
+import { Screen } from '../../../shared/ui/Screen'
+import { StockListCard } from '../../../shared/ui/StockListCard'
+import { IdeaBaskets } from '../components/Ideas'
+import { LogoStack } from '../components/us/ThemeCard'
+import { t } from '../copy'
+import { ideaBaskets } from '../data'
+import styles from './IdeaPage.module.css'
+
+type IdeaPageProps = {
+  /** The basket shown (the card that was tapped). */
+  basket: string
+  /** A stock was tapped → its page. */
+  onStock?: (symbol: string) => void
+  /** Another basket from "More ideas" → its page. */
+  onIdea?: (id: string) => void
+}
+
+export function IdeaPage({ basket: id, onStock, onIdea }: IdeaPageProps) {
+  useMarketSnapshot()
+  const { back, go } = usePreview()
+  const basket = ideaBaskets.find((b) => b.id === id) ?? ideaBaskets[0]
+  return (
+    <Screen
+      top={<Actionbar title={t('baskets.title')} headingLevel={2} onBack={() => { if (!back?.()) go('stocks-01') }} backLabel={t('baskets.back')} />}
+    >
+      <Stack gap="32">
+        <Stack gap="00">
+          <Section paddingInline="16" paddingBlock="24" gap="12" className={styles.about} aria-label={basket.name}>
+            <LogoStack logos={basket.stocks.map((s) => ({ key: s.symbol, src: s.logoUrl, initials: s.initials }))} max={5} />
+            <Stack gap="08">
+              <h3 className={styles.name}>{t('baskets.nameCount', { name: basket.name, count: basket.stocks.length })}</h3>
+              <p className={styles.desc}>{basket.description}</p>
+            </Stack>
+            <p className={styles.disclaimer}>{t('baskets.disclaimer')}</p>
+          </Section>
+          <Stack gap="00">
+            {basket.stocks.map((s) => (
+              <StockListCard key={s.symbol} symbol={s.symbol} name={s.name} logoUrl={s.logoUrl} initials={s.initials} price={formatInr(s.price)} changePct={s.changePct} look="list" onOpen={onStock ? () => onStock(s.symbol) : undefined} />
+            ))}
+          </Stack>
+        </Stack>
+        <IdeaBaskets title={t('baskets.more')} except={basket.id} onOpen={onIdea} />
+      </Stack>
+    </Screen>
+  )
 }
 ```
 
@@ -59584,8 +59703,6 @@ export const Flag = ({ code }: { code: FlagCode }) => (
 ```tsx
 import { useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import { MaskIcon } from '@l3/components/MaskIcon'
-import { useFlowOption } from '../prototype'
-import { USER_STATUS } from '../userStatus'
 import stocksIcon from './assets/floating-nav/stocks.svg'
 import marketIcon from './assets/floating-nav/market.svg'
 import marketSelectedIcon from './assets/floating-nav/market-selected.svg'
@@ -59595,10 +59712,13 @@ import fnoIcon from './assets/floating-nav/fno.svg'
 import fnoSelectedIcon from './assets/floating-nav/fno-selected.svg'
 import styles from './FloatingNav.module.css'
 
-/** App setting "Bottom navbar" (A/B, 20 Nov): V1 docked (L3 Bottom Navbar) · V2 floating, the default at launch (20 Nov) ·
- * V3 V2's floating nav with L3's coloured icon on the chosen tab and the glow under it, not over it (23 Nov, user). */
-export const BOTTOM_NAV_OPTION = 'bottomNav'
-const useBottomNavVersion = () => useFlowOption(USER_STATUS, BOTTOM_NAV_OPTION, 'v2') // V2 by default (20 Nov, user)
+/** Bottom navbar, was an app setting (A/B, 20 Nov): V1 docked (L3 Bottom Navbar) · V2 floating · V3 V2's floating nav
+ * with L3's coloured icon on the chosen tab and the glow under it, not over it (23 Nov). 26 Nov, the user: "keep version 3
+ * default, archive other" — V3 is fixed and the setting is gone; V1 / V2 stay in code here: change this value to bring
+ * one back. */
+type BottomNavVersion = 'v1' | 'v2' | 'v3'
+const BOTTOM_NAV_VERSION = 'v3' as BottomNavVersion
+const useBottomNavVersion = (): BottomNavVersion => BOTTOM_NAV_VERSION
 /** V2 and V3: the floating nav (this frame and its own Figma icons). */
 export const useFloatingNav = () => useBottomNavVersion() !== 'v1'
 /** V3: the chosen tab shows L3's coloured (two-tone brand) icon instead of the black-and-white one. */

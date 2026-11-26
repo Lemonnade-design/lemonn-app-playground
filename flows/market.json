@@ -235,7 +235,6 @@
     "src/shared/data/openStock.ts",
     "src/shared/data/us-market-snapshot.json",
     "src/shared/data/usStocks.ts",
-    "src/shared/data/user.ts",
     "src/shared/money.module.css",
     "src/shared/money.tsx",
     "src/shared/prototype.ts",
@@ -266,7 +265,6 @@
     "src/shared/ui/assets/floating-nav/mutual-fund.svg",
     "src/shared/ui/assets/floating-nav/portfolio.svg",
     "src/shared/ui/assets/floating-nav/stocks.svg",
-    "src/shared/ui/useSwipeBetween.ts",
-    "src/shared/userStatus.ts"
+    "src/shared/ui/useSwipeBetween.ts"
   ]
 }
