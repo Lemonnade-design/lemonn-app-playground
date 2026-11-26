@@ -173,7 +173,7 @@ logo, 128 px) is kept in `screens/activate/assets/idfcfirstb.png` until L3 adds 
 - **94 · Declarations** — header "Agree to invest abroad", then four checkbox rows, 24 apart with no separators. Each
   row has a short statement and, under it, the document behind it as a link with a chevron: "I'm not a US citizen or US
   tax resident" (Form W-8BEN), "India is my only country of tax residence" (FATCA declaration), "I've read the risks of
-  investing in US stocks" (Risk Disclosure), "I accept ViewTrade's account terms" (Terms and conditions · 8 documents).
+  investing in US stocks" (Risk Disclosure), "I accept ViewTrade's account terms" (Terms and conditions).
   Tapping anywhere on a row ticks it; the link opens the document without ticking. Above the button, "Opened by
   ViewTrade IFSC · IFSCA regulated" with a lock. "Agree and continue" (Large, full width) turns on once all four are
   ticked → 95. L3 gap: no small text link with a chevron, so the document links are styled locally.
@@ -202,6 +202,7 @@ Every tap he wired is kept. The main path: FTUX sheet → Activate → Declarati
 
 ### Changelog
 
+- 26 Nov 2026 · Declarations sheet (us-stocks-94): an "I agree to all of the above" checkbox above Agree and continue ticks or clears all four rows (ticked only when all four are; part-ticked stays clear, no dash); "Opened by ViewTrade IFSC · IFSCA regulated" moved under the button; the terms link reads just "Terms and conditions".
 - 2026-11-26 · Order pad V7 top bar: a Share icon (L3 ghost ActionbarAction) left of the TP/SL switch, a 1px hairline between them, as some live-app accounts show it. EDGE CASE: not shown to a normal user in the live app, only on some internal staff accounts; the condition and what it shares are unknown (maybe internal testing). Developers confirm with product and show it only then; the prototype hides it by default — Settings → Trade → "Share icon (edge case)" shows it (Web Share of the page link). L3 gap: no divider between Actionbar actions.
 - 2026-11-26 · Fee breakdown sheet audit: the whole breakdown sits in an L3 static Card; Charges and Taxes start collapsed, a chevron right after the label opens their sub-fees (as Balance details); Brokerage, Charges and Taxes labels primary, sub-fees and the note secondary; Estimated fee in Heading/16; amounts never wrap (they broke one character per line beside the long note). US Brokerage label is "Brokerage (0.25%)". L3 gaps: KeyValueRow's label is always secondary, its value cell can shrink, the total row has no heading size.
 - 2026-11-26 · Order pad → Fee breakdown sheet: every line of the live app's full-page Fee Breakdown, in the sheet. Brokerage with the live app's note under it on both pads ("We will block 2.5% of the order value as brokerage margin… greater than ₹20 per order will be refunded at the end of the day"; US adds its 0.25% rate, refund cap $0.25 is a FLAG placeholder), Charges and Taxes each with a subtotal and their sub-fees indented under them (US: IFSCA turnover fee · GST; Indian: Exchange, SEBI turnover, IPFT charges · GST, STT / CTT, State stamp duty), a hairline between groups, Estimated fee as the L3 total at the foot (live: on top), the approximate note in the header. The total still equals the 0.3% in Req. L3 gap: KeyValueList has no grouped rows.
@@ -22528,7 +22529,8 @@ export function UsMainNav({ value }: { value: Section }) {
   "declarations.risk.say": "I've read the risks of investing in US stocks",
   "declarations.risk.doc": "Risk Disclosure",
   "declarations.terms.say": "I accept ViewTrade's account terms",
-  "declarations.terms.doc": "Terms and conditions · 8 documents",
+  "declarations.terms.doc": "Terms and conditions",
+  "declarations.acceptAll": "I agree to all of the above",
   "declarations.trust": "Opened by ViewTrade IFSC · IFSCA regulated",
   "declarations.actionsLabel": "Declarations",
   "declarations.cta": "Agree and continue",
@@ -23176,7 +23178,7 @@ export const registry: UsScreenEntry[] = [
   { figma: '5796:88163', tab: 'mutualFund', id: 'us-stocks-07', section: 'entry', name: "E5 · Mutual Fund home · US banner", note: "Mutual Fund home with a US Stocks on Lemonn banner." },
   { figma: '5826:93627', id: 'us-stocks-13', badge: 'changed', badgeNote: "Follows the user status in the prototype settings", section: 'ftux', name: "S03 · Stock page", note: "The US stock page in the user status picked in the prototype settings (User status): KYC pending → Complete KYC (as us-stocks-74); not activated, under review or failed → Activate US Stocks in place of Buy / Sell; activated → Buy / Sell (us-stocks-31), with Your Holdings when the user holds NVDA (us-stocks-32). Home, Search and Market open this page." },
   { figma: '9001:10', id: 'us-stocks-74', hidden: true, badge: 'new', badgeNote: "Not in Jojo's Figma: a user whose Lemonn KYC isn't done", section: 'ftux', name: "Stock page · KYC not done", note: "Stock page for a user whose Lemonn (Indian) KYC isn't complete: US Stocks can't be activated yet, so the button is Complete KYC (→ the KYC flow, kyc-01) in place of Activate. Back → the US tab with the KYC card (stocks-21)." },
-  { figma: '9001:60', id: 'us-stocks-94', over: 'us-stocks-13', badge: 'new', badgeNote: "Not in Figma: replaces the risk disclosure sheet", section: 'ftux', name: "Activate · Declarations", note: "Activate US Stocks, step 1 of 2, as a bottom sheet over the screen the user tapped Activate on (Home, a stock page, the wallet …): four checkbox rows, each a short statement with its document as a link — Form W-8BEN, FATCA declaration, Risk Disclosure, ViewTrade terms (8 documents); tapping anywhere on a row ticks it. \"Opened by ViewTrade IFSC · IFSCA regulated\" above the button. Agree and continue turns on once all four are ticked → the bank sheet (us-stocks-95). Closing it goes back to the stock page. Every Activate US Stocks / Retry in the app comes here." },
+  { figma: '9001:60', id: 'us-stocks-94', over: 'us-stocks-13', badge: 'new', badgeNote: "Not in Figma: replaces the risk disclosure sheet", section: 'ftux', name: "Activate · Declarations", note: "Activate US Stocks, step 1 of 2, as a bottom sheet over the screen the user tapped Activate on (Home, a stock page, the wallet …): four checkbox rows, each a short statement with its document as a link — Form W-8BEN, FATCA declaration, Risk Disclosure, ViewTrade terms; tapping a row ticks it, the link doesn't. An \"I agree to all of the above\" checkbox above the button ticks all four. \"Opened by ViewTrade IFSC · IFSCA regulated\" under the button. Agree and continue turns on once all four are ticked → the bank sheet (us-stocks-95). Closing it goes back to the stock page. Every Activate US Stocks / Retry in the app comes here." },
   { figma: '9001:61', id: 'us-stocks-95', over: 'us-stocks-13', badge: 'new', badgeNote: "Not in Figma: follows User status → Bank accounts", section: 'ftux', name: "Activate · Bank", note: "Step 2 of 2, swapped in on the same sheet. The user's linked banks: supported ones as radio cards tagged Eligible (the first picked already), others greyed out and tagged Not supported. Add bank (Tertiary Small, header) shows the five supported banks' logos + Add bank account. Verify and activate → the automatic bank check (us-stocks-97). With no supported bank linked it shows us-stocks-96. User status → Bank accounts: Three (+ SBI) / SBI only show both cases." },
   { figma: '9001:62', id: 'us-stocks-96', over: 'us-stocks-13', badge: 'new', badgeNote: "Not in Figma: no supported bank linked", section: 'ftux', name: "Activate · Bank · no supported bank", note: "No supported bank linked (the user always has one — KYC adds it): a card on top says their bank can't send money abroad and shows the five supported banks' logos; then the user's own banks greyed out and tagged Not supported. Add bank account → Add bank account (deposit-12), which comes back to us-stocks-95 once verified; no Not now — closing the sheet (back, scrim) returns to the stock page." },
   { figma: '9001:63', id: 'us-stocks-97', over: 'us-stocks-13', badge: 'new', badgeNote: "Not in Figma: the bank check", section: 'ftux', name: "Activate · Bank · verifying", note: "The bank check (run by us on the bank details we already have, no money sent, nothing for the user to do) as a loader sheet over the stock page, as in account setup; can't be closed. Moves on by itself to activation submitted (stocks-18)." },
@@ -23323,7 +23325,14 @@ export const idForFigma = new Map(registry.map((s) => [s.figma, s.id]))
   cursor: pointer;
 }
 
-/* "Opened by ViewTrade IFSC · IFSCA regulated" above the button, with a lock. */
+/* "I agree to all of the above" above the button (26 Nov, user). */
+.acceptAll {
+  display: block;
+  align-self: stretch;
+  cursor: pointer;
+}
+
+/* "Opened by ViewTrade IFSC · IFSCA regulated" under the button, with a lock. */
 .trust {
   display: flex;
   align-items: center;
@@ -23595,8 +23604,9 @@ function VerifyingSheet({ bank, backdrop }: { bank: string; backdrop?: boolean }
 // us-stocks-94 · Activate US Stocks, step 1: the declarations as a bottom sheet over the stock page, like the app's
 // "agree to our Terms & Conditions" sheet. Four rows (26 Nov, the user's "US Stocks Declarations" HTML): each a checkbox,
 // a short statement and the document behind it as a link (Form W-8BEN, FATCA declaration, Risk Disclosure, ViewTrade's
-// terms · 8 documents). Rows 24 apart, no separators (26 Nov, user); the whole row ticks the box, the link doesn't. Above the button:
-// "Opened by ViewTrade IFSC · IFSCA regulated" with a lock. "Agree and continue" turns on once all four are ticked →
+// terms). Rows 24 apart, no separators (26 Nov, user); the whole row ticks the box, the link doesn't. Above the button an "I agree to all of the
+// above" checkbox ticks all four at once (26 Nov, user); under it "Opened by ViewTrade IFSC · IFSCA
+// regulated" with a lock. "Agree and continue" turns on once all four are ticked →
 // the bank sheet (us-stocks-95).
 import { useId, useState } from 'react'
 import { BottomSheetHeader } from '@l3/components/BottomSheet'
@@ -23620,6 +23630,7 @@ export function DeclarationsScreen({ backdrop }: { backdrop?: boolean }) {
   const headingId = useId()
   const [agreed, setAgreed] = useState<Record<DeclarationId, boolean>>({ w8ben: false, fatca: false, risk: false, terms: false })
   const allAgreed = DECLARATIONS.every((id) => agreed[id])
+  const setAll = (on: boolean) => setAgreed({ w8ben: on, fatca: on, risk: on, terms: on })
   return (
     <ActivateSheet
       backdrop={backdrop}
@@ -23627,11 +23638,18 @@ export function DeclarationsScreen({ backdrop }: { backdrop?: boolean }) {
       header={<BottomSheetHeader size="sm" heading={t('declarations.title')} headingId={headingId} description={t('declarations.description')} />}
       footer={
         <ButtonGroup aria-label={t('declarations.actionsLabel')}>
+          {/* Accept all (26 Nov, user): ticks or clears all four at once; two states only, ticked when all four are, otherwise clear (no dash). */}
+          <label className={styles.acceptAll}>
+            <Stack direction="horizontal" align="center" gap="12">
+              <Checkbox checked={allAgreed} onChange={(e) => setAll(e.target.checked)} />
+              <span className={styles.declarationSay}>{t('declarations.acceptAll')}</span>
+            </Stack>
+          </label>
+          <Button size="lg" fullWidth disabled={!allAgreed} onClick={() => go(ACTIVATE_BANK)}>{t('declarations.cta')}</Button>
           <p className={styles.trust}>
             <Icon icon={msLock} size={12} />
             {t('declarations.trust')}
           </p>
-          <Button size="lg" fullWidth disabled={!allAgreed} onClick={() => go(ACTIVATE_BANK)}>{t('declarations.cta')}</Button>
         </ButtonGroup>
       }
     >
