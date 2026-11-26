@@ -39,6 +39,8 @@ Prototype: https://lemonnade-design.github.io/lemonn-app-prototype/#/stocks · m
 | `stocks-35` | Stock · Events | — | `stocks-01` | Events by year, latest first; Filters on the first year; View more lists older years. |
 | `stocks-36` | Stock · event details | — | `stocks-01` | A tapped event: period and release date. |
 | `stocks-37` | Stock · event filters | — | `stocks-01` | Choose filter: one checkbox per event type, Done applies. |
+| `stocks-50` | Stock · F&O | — | `stocks-01` | Only for stocks traded in F&O (most large caps; the API says per stock): a third tab after Overview and Events, redone in L3 from the live app. Open Interest (OI): total put and call OI, a put | call split bar (L3 gap: no split ProgressBar), the put : call ratio. Top options by trade volume (or price, via the Volume ⇅ select), All / Call / Put; a row opens the option chain. Other {symbol} Futures: the three monthly futures as cards that swipe sideways, near month first. On this tab the dock is Option Chain (fno-17) · ScalpPro (fno-05). Shown on Reliance. |
+| `stocks-51` | Stock · no F&O | — | `stocks-01` | A stock not traded in F&O (South Indian Bank): Overview and Events only, the usual SIP · Buy · Sell dock. |
 | `stocks-38` | Performance (ⓘ) | — | `stocks-32` | Daily Performance ⓘ: what each number means. |
 | `stocks-39` | Glossary · Fundamentals (ⓘ) | — | `stocks-32` | Fundamentals ⓘ: what each ratio means. |
 | `stocks-40` | Splash | — | `stocks-01`, `stocks-32` | The launch splash: the Lemonn logo centred for 2 s, then it fades into Home (a tap skips ahead). Hidden at launch for now (src/shared/ui/Splash: SPLASH_SCREENS is empty), so the app opens straight on the home; this page still plays it. |
@@ -433,6 +435,12 @@ lower on the page is scrolled into view first). `components/MarketSwitchGuide.ts
   16 / 24 icon or an Avatar only — event rows are plain buttons laid out with Stack.
 
 ### Changelog
+- 2026-11-26 · Stock page tabs (Overview / Events / F&O, or the two without F&O) are equal widths. L3 gap: Tabs' fill sizes each tab from its label.
+- 2026-11-26 · SIP button as the Figma "spi butotn" (4018:39843): white, intense grey border, radius 8, the green calendar icon (Figma asset `assets/sip-icon.svg`) over bold 12 "SIP", 48 square (Figma 6 + 20 + 16 + 8 = 50). L3 gap: Button has no stacked icon-over-label layout or this border / radius.
+- 2026-11-26 · F&O tab: "Other {SYMBOL} Futures" after Top options, as in the live app: the stock's three monthly futures as cards that swipe sideways (name "BEL Fut" + expiry "29 Dec 2026", a hairline, price · change), near month first; a tap opens the option chain for now (no stock futures page yet). SIP label pinned absolute, the icon back in its centred place.
+- 2026-11-26 · Stock page dock: the SIP button shows a small "SIP" (label 10) pinned near its bottom edge (absolute), the icon left centred where it was. L3 gap: Button has no stacked icon-over-label layout.
+- 2026-11-26 · F&O Top options: no extra inline padding on the list (the rows already pad 16; it was doubled).
+- 2026-11-26 · F&O tab on the Indian stock page, only for stocks traded in F&O (`stockFno`, sample: all but SOUTHBANK): Open Interest (put / call OI, split bar, put : call ratio) and Top options (All / Call / Put, Volume ⇅ Price), dock Option Chain → fno-17 · ScalpPro → fno-05. New board frames stocks-50 (F&O, Reliance) and stocks-51 (no F&O). L3 gap: no two-colour split ProgressBar.
 - 2026-11-26 — **Invest in Ideas** cards drop the 1Y return (the app only has the basket's name and its stocks), and each card opens its own page, as the live app: `stocks-41` Oil Price Dependents · `stocks-42` High Growth Media (`screens/IdeaPage.tsx`). Top: overlapping logos, "Name (N)", a short description (sample text) and the disclaimer. Then the basket's stocks as list rows (price + day change, tap → the stock page), and a "More ideas" rail of the other baskets.
 - 2026-11-26 — **Invest in Ideas** (Home, Indian tab) is drawn like the US tab's Explore by themes: the same rail (1.9 across) of theme cards — overlapping logos (3, then +n), the basket's name, its 1Y return (sample) and "N stocks ›" (`BasketCard` in `components/us/ThemeCard.tsx`, shared by both). Was big cards with a 3 × 2 logo grid.
 - 2026-11-25 — US coming soon: new setting "Coming soon flag" — V2 (default) the white circle stays and the flag melts into it, as the Minted app's waving flags: tilted 4°, fading away at the left and the bottom, a soft white blur over its left edge (inside the circle) · V1 the flag in the white circle as it was.
@@ -1711,6 +1719,23 @@ D�W�k��&�� �?��DQ�y�� !i� ���n]�G��FS�
 <linearGradient id="paint1_linear_0_22" x1="8.27486" y1="10.0739" x2="8.56244" y2="15.4118" gradientUnits="userSpaceOnUse">
 <stop stop-color="#F6BC2F" style="stop-color:#F6BC2F;stop-color:color(display-p3 0.9647 0.7373 0.1843);stop-opacity:1;"/>
 <stop offset="1" stop-color="#B97502" style="stop-color:#B97502;stop-color:color(display-p3 0.7255 0.4588 0.0078);stop-opacity:1;"/>
+</linearGradient>
+</defs>
+</svg>
+```
+
+### `src/flows/stocks/assets/sip-icon.svg`
+
+```tsx
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="icon">
+<path id="Subtract" d="M14.167 1.66699C14.6271 1.66717 15 2.03987 15 2.5V3.33301H15.833C16.2913 3.33301 16.6844 3.49685 17.0107 3.82324C17.3369 4.14955 17.5 4.54186 17.5 5V16.667C17.4999 17.1251 17.337 17.5175 17.0107 17.8438C16.6844 18.1701 16.2913 18.333 15.833 18.333H4.16699C3.70866 18.333 3.31565 18.1701 2.98926 17.8438C2.66304 17.5175 2.50012 17.1251 2.5 16.667V5C2.5 4.54186 2.66314 4.14955 2.98926 3.82324C3.31565 3.49685 3.70866 3.33301 4.16699 3.33301H5V2.5C5 2.03987 5.37292 1.66717 5.83301 1.66699C6.29325 1.66699 6.66699 2.03976 6.66699 2.5V3.33301H13.333V2.5C13.333 2.03976 13.7068 1.66699 14.167 1.66699ZM10.8057 4.16699C10.4844 4.16699 10.1806 4.3043 9.96973 4.54102L9.88574 4.64844L7.91113 7.5H5C4.53982 7.5 4.16708 7.87285 4.16699 8.33301V15.833C4.16699 16.2932 4.53976 16.667 5 16.667H15C15.4602 16.667 15.833 16.2932 15.833 15.833V8.33301C15.8329 7.87285 15.4602 7.5 15 7.5H12.2549L12.5146 5.4248C12.5981 4.75693 12.0773 4.16705 11.4043 4.16699H10.8057Z" fill="url(#paint0_linear_4701_34)"/>
+<path id="Vector" d="M8.30541 15.8212C8.13155 15.8212 7.99799 15.6672 8.02258 15.4951L8.46539 12.3955C8.48998 12.2233 8.35642 12.0693 8.18255 12.0693H6.37735C6.14688 12.0693 6.01126 11.8105 6.14244 11.621L10.5707 5.22464C10.6241 5.14756 10.7118 5.10156 10.8056 5.10156H11.4042C11.5761 5.10156 11.709 5.25218 11.6877 5.42271L11.232 9.06828C11.2107 9.23881 11.3437 9.38943 11.5155 9.38943H13.7978C14.04 9.38943 14.1723 9.67195 14.0173 9.85804L9.13362 15.7184C9.07934 15.7836 8.99893 15.8212 8.91414 15.8212H8.30541Z" fill="#B1E50E" style="fill:#B1E50E;fill:color(display-p3 0.6941 0.8980 0.0549);fill-opacity:1;"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear_4701_34" x1="12.4998" y1="-2.91683" x2="9.58309" y2="24.1665" gradientUnits="userSpaceOnUse">
+<stop stop-color="#048245" style="stop-color:#048245;stop-color:color(display-p3 0.0157 0.5098 0.2706);stop-opacity:1;"/>
+<stop offset="1" stop-color="#BBF198" style="stop-color:#BBF198;stop-color:color(display-p3 0.7333 0.9451 0.5961);stop-opacity:1;"/>
 </linearGradient>
 </defs>
 </svg>
@@ -24447,6 +24472,137 @@ export function StockEvents({ events, shown, onFilters, onEvent, expanded = fals
 }
 ```
 
+### `src/flows/stocks/components/StockFno.tsx`
+
+```tsx
+import { useState, type ReactNode } from 'react'
+import { Card } from '@l3/components/Card'
+import { Inset } from '@l3/components/Inset'
+import { ListCell } from '@l3/components/ListCell'
+import { PriceChange } from '@l3/components/PriceChange'
+import { SectionHeader } from '@l3/components/SectionHeader'
+import { Select } from '@l3/components/Select'
+import { Stack } from '@l3/components/Stack'
+import { Tabs } from '@l3/components/Tabs'
+import { inr } from '../../../shared/data/format'
+import { t } from '../copy'
+import type { OptionType, StockFnoData } from '../data'
+import styles from '../screens/StockPage.module.css'
+
+const count = (n: number) => n.toLocaleString('en-IN')
+
+type Filter = 'all' | OptionType
+type Sort = 'volume' | 'price'
+
+type Props = {
+  symbol: string
+  fno: StockFnoData
+  /** A tapped option: the option chain (the F&O flow). */
+  onOption: () => void
+  /** A tapped futures contract (no stock futures page in the prototype yet: the option chain for now). */
+  onFuture: () => void
+}
+
+/** A section: its 16 heading, then the content 16 under it (as on Overview). */
+function Section({ title, description, children }: { title: string; description?: string; children: ReactNode }) {
+  return (
+    <Stack as="section" gap="16" aria-label={title}>
+      <SectionHeader className={styles.heading} title={title} description={description} />
+      {children}
+    </Stack>
+  )
+}
+
+/**
+ * The F&O tab — only for stocks traded in F&O (26 Nov, redone in L3 from the live app's tab). Open interest: total put
+ * and call OI, a put | call split bar and the put : call ratio. Top options: the most traded contracts, All / Call /
+ * Put, sorted by volume or price; a tap opens the option chain. Other {symbol} Futures: the stock's monthly
+ * futures as cards that swipe sideways, near month first.
+ */
+export function StockFno({ symbol, fno, onOption, onFuture }: Props) {
+  const [filter, setFilter] = useState<Filter>('all')
+  const [sort, setSort] = useState<Sort>('volume')
+  const total = fno.putOi + fno.callOi
+  const putShare = (fno.putOi / total) * 100
+  const options = fno.options
+    .filter((o) => filter === 'all' || o.type === filter)
+    .sort((a, b) => (sort === 'volume' ? b.volume - a.volume : b.price - a.price))
+
+  return (
+    <Stack gap="24">
+      <Section title={t('fno.oi')}>
+        <Card>
+          <Stack gap="12">
+            <dl className={styles.lowHigh}>
+              <div className={styles.stat}><dt>{t('fno.putOi')}</dt><dd>{count(fno.putOi)}</dd></div>
+              <div className={styles.stat} data-end><dt>{t('fno.callOi')}</dt><dd>{count(fno.callOi)}</dd></div>
+            </dl>
+            {/* L3 gap: ProgressBar has no two-colour split. */}
+            <div className={styles.oiSplit} role="img" aria-label={t('fno.split', { put: Math.round(putShare), call: 100 - Math.round(putShare) })}>
+              <span className={styles.oiPut} style={{ flexBasis: `${putShare}%` }} />
+              <span className={styles.oiCall} />
+            </div>
+            <dl className={styles.pcr}>
+              <dt>{t('fno.pcr')}</dt>
+              <dd>{(fno.putOi / fno.callOi).toFixed(2)}</dd>
+            </dl>
+          </Stack>
+        </Card>
+      </Section>
+      <Section title={t('fno.top')} description={t(sort === 'volume' ? 'fno.byVolume' : 'fno.byPrice')}>
+        <Stack direction="horizontal" gap="08" align="center" justify="between">
+          <Tabs appearance="pill" emphasis="primary" size="sm" behavior="filter" aria-label={t('fno.type')} value={filter} onChange={(v) => setFilter(v as Filter)}
+            items={[{ value: 'all', label: t('fno.all') }, { value: 'call', label: t('fno.call') }, { value: 'put', label: t('fno.put') }]} />
+          <Select size="sm" subtle aria-label={t('fno.sort')} onClick={() => setSort(sort === 'volume' ? 'price' : 'volume')}>
+            {t(sort === 'volume' ? 'fno.sortVolume' : 'fno.sortPrice')}
+          </Select>
+        </Stack>
+        <Card padding="none">
+          <ul className={styles.optionList} aria-label={t('fno.top')}>
+            {options.map((o) => (
+              <li key={`${o.strike}-${o.type}`}>
+                <ListCell
+                  as="button"
+                  density="breathable"
+                  label={`${symbol} ${count(o.strike)}`}
+                  description={t('fno.contract', { type: t(o.type === 'call' ? 'fno.call' : 'fno.put'), expiry: o.expiry })}
+                  trailing={inr(o.price)}
+                  caption={<PriceChange value={o.changePct} size="sm" arrow />}
+                  onClick={onOption}
+                />
+              </li>
+            ))}
+          </ul>
+        </Card>
+      </Section>
+      <Section title={t('fno.futures', { symbol })}>
+        {/* Swipes sideways, running to the screen edges; the next card peeks in. */}
+        <ul className={styles.futures} aria-label={t('fno.futures', { symbol })}>
+          {fno.futures.map((f) => (
+            <li key={f.expiry}>
+              <Card padding="none" onClick={onFuture} aria-label={t('fno.futureLabel', { symbol, expiry: f.expiry, price: inr(f.price) })}>
+                <Inset paddingInline="12" paddingBlock="12">
+                  <Stack gap="04">
+                    <span className={styles.futureName}>{t('fno.future', { symbol })}</span>
+                    <span className={styles.futureDate}>{f.expiry}</span>
+                  </Stack>
+                </Inset>
+                <Inset paddingInline="12" paddingBlock="12" className={styles.futurePrice}>
+                  <Stack direction="horizontal" gap="08" align="center" justify="between">
+                    <span>{inr(f.price)}</span>
+                    <PriceChange value={f.changePct} size="sm" arrow />
+                  </Stack>
+                </Inset>
+              </Card>
+            </li>
+          ))}
+        </ul>
+      </Section>
+    </Stack>
+  )
+}
+```
+
 ### `src/flows/stocks/components/StockOverview.tsx`
 
 ```tsx
@@ -30316,7 +30472,29 @@ export function useLiveHeatmap(symbols: string[] = heatSymbols): HeatValue[] {
   "us.soon.review.title": "Verification in progress",
   "us.soon.review.note": "We'll notify you once your account is activated",
   "us.soon.ready.title": "All set! We'll notify you at launch",
-  "f3.in.ipoNew": "{count} New"
+  "f3.in.ipoNew": "{count} New",
+  "stock.fno": "F&O",
+  "stock.optionChain": "Option Chain",
+  "stock.scalpPro": "ScalpPro",
+  "fno.oi": "Open Interest (OI)",
+  "fno.putOi": "Total Put OI",
+  "fno.callOi": "Total Call OI",
+  "fno.split": "Put {put}%, call {call}% of open interest",
+  "fno.pcr": "Put : Call ratio",
+  "fno.top": "Top options",
+  "fno.byVolume": "By trade volume",
+  "fno.byPrice": "By price",
+  "fno.type": "Option type",
+  "fno.all": "All",
+  "fno.call": "Call",
+  "fno.put": "Put",
+  "fno.sort": "Sort options",
+  "fno.sortVolume": "Volume",
+  "fno.sortPrice": "Price",
+  "fno.contract": "{type} · {expiry}",
+  "fno.futures": "Other {symbol} Futures",
+  "fno.future": "{symbol} Fut",
+  "fno.futureLabel": "{symbol} futures, {expiry}, {price}"
 }
 ```
 
@@ -30663,6 +30841,84 @@ export function priceSeries(page: StockPageData, range: ChartRange, price: numbe
 
 /** IPOs open or opening soon: the count on Home's IPO shortcut tag ("5 New"). API: GET /ipos?status=open,upcoming → its length. */
 export const newIpoCount = 5
+
+/** F&O on the stock page (26 Nov, from the live app): stocks traded in F&O get a third tab with their open interest
+ *  and the most traded options. */
+export type OptionType = 'call' | 'put'
+export type TopOption = {
+  /** Strike, ₹. */
+  strike: number
+  type: OptionType
+  /** As the app writes it: "29 Dec 26". */
+  expiry: string
+  /** Premium, ₹. */
+  price: number
+  changePct: number
+  /** Contracts traded today. */
+  volume: number
+}
+/** A futures contract on the stock, one per monthly expiry. */
+export type StockFuture = {
+  /** As the app writes it on the card: "29 Dec 2026". */
+  expiry: string
+  price: number
+  changePct: number
+}
+export type StockFnoData = {
+  /** Open interest, shares. */
+  putOi: number
+  callOi: number
+  /** Most traded first. */
+  options: TopOption[]
+  /** Near month first. */
+  futures: StockFuture[]
+}
+
+/** sample: the catalogue stocks NOT traded in F&O (every other one is). The API says per stock. */
+const NO_FNO = new Set(['SOUTHBANK'])
+/** sample: the month's expiry (NSE's monthly contracts end on the last Tuesday). */
+const FNO_EXPIRY = '29 Dec 26'
+/** sample: the three monthly futures (last Tuesday of Dec, Jan, Feb). */
+const FUTURE_EXPIRIES = ['29 Dec 2026', '26 Jan 2027', '23 Feb 2027']
+
+/** A stock's F&O data, or undefined when it isn't traded in F&O (then the page has no F&O tab). */
+export function stockFno(symbol: string, price: number): StockFnoData | undefined {
+  if (NO_FNO.has(symbol)) return undefined
+  const seed = seedOf(symbol)
+  const step = price < 100 ? 1 : price < 250 ? 2.5 : price < 500 ? 5 : price < 1000 ? 10 : price < 2500 ? 20 : price < 5000 ? 50 : 100
+  const atm = Math.round(price / step) * step
+  const tick = (n: number) => Math.max(0.05, Math.round(n * 20) / 20)
+  const options: TopOption[] = []
+  for (let i = -3; i <= 3; i++) {
+    const strike = atm + i * step
+    for (const type of ['call', 'put'] as const) {
+      const n = options.length
+      const intrinsic = Math.max(0, type === 'call' ? price - strike : strike - price)
+      const timeValue = price * 0.022 * Math.max(0.15, 1 - Math.abs(strike - price) / (price * 0.12))
+      // most trades sit near the money; calls a little above it, puts a little below
+      const near = Math.abs(i + (type === 'call' ? -1 : 1))
+      options.push({
+        strike,
+        type,
+        expiry: FNO_EXPIRY,
+        price: tick(intrinsic + timeValue * (1 + wiggle(seed, n) * 0.3)),
+        changePct: round(wiggle(seed, n + 20) * 24),
+        volume: Math.round((60_000 / (1 + near)) * (0.7 + Math.abs(wiggle(seed, n + 40)))),
+      })
+    }
+  }
+  return {
+    putOi: Math.round((40_00_000 + Math.abs(wiggle(seed, 60)) * 40_00_000) / 25) * 25,
+    callOi: Math.round((40_00_000 + Math.abs(wiggle(seed, 61)) * 40_00_000) / 25) * 25,
+    options: options.sort((a, b) => b.volume - a.volume).slice(0, 8),
+    // sample: each later month trades a little above the stock (cost of carry ≈ 0.6% a month)
+    futures: FUTURE_EXPIRIES.map((expiry, i) => ({
+      expiry,
+      price: tick(price * (1 + 0.006 * (i + 1)) * (1 + wiggle(seed, 70 + i) * 0.002)),
+      changePct: round(((price - (price / (1 + wiggle(seed, 3) * 0.04))) / price) * 100 + wiggle(seed, 80 + i) * 0.3),
+    })),
+  }
+}
 ```
 
 ### `src/flows/stocks/index.tsx`
@@ -30716,6 +30972,9 @@ const chrome = (go: Go) => ({ onStock: (sym: string) => { openStock(sym); go('st
 const indianPad = (go: Go) => ({
   onBuy: () => { setPadMarket('india'); go('us-stocks-33') },
   onSell: () => { setPadMarket('india'); go('us-stocks-47') },
+  // F&O tab (26 Nov): the F&O flow's option chain and Scalper — they show their own sample underlying, not this stock.
+  onOptionChain: () => go('fno-17'),
+  onScalpPro: () => go('fno-05'),
 })
 const walletFor: Record<UsState, string> = { kyc: 'us-stocks-53', activate: 'us-stocks-53', review: 'us-stocks-55', support: 'us-stocks-57', failed: 'us-stocks-56', activated: 'us-stocks-20', onTheWay: 'us-stocks-28', ready: 'us-stocks-59', holding: 'us-stocks-59' }
 
@@ -30855,6 +31114,8 @@ export const stocks: Flow = {
     { id: 'stocks-35', name: 'Stock · Events', figma: '', badge: 'new', note: 'Events by year, latest first; Filters on the first year; View more lists older years.', render: (go) => <StockPage {...indianPad(go)} tab="events" onBack={() => go('stocks-01')} onGlossary={(k) => go(k === 'performance' ? 'stocks-38' : 'stocks-39')} /> },
     { id: 'stocks-36', name: 'Stock · event details', figma: '', badge: 'new', note: 'A tapped event: period and release date.', render: (go) => <StockPage {...indianPad(go)} tab="events" sheet="event" onBack={() => go('stocks-01')} onGlossary={(k) => go(k === 'performance' ? 'stocks-38' : 'stocks-39')} /> },
     { id: 'stocks-37', name: 'Stock · event filters', figma: '', badge: 'new', note: 'Choose filter: one checkbox per event type, Done applies.', render: (go) => <StockPage {...indianPad(go)} tab="events" sheet="filter" onBack={() => go('stocks-01')} onGlossary={(k) => go(k === 'performance' ? 'stocks-38' : 'stocks-39')} /> },
+    { id: 'stocks-50', name: 'Stock · F&O', figma: '', badge: 'new', note: 'Only for stocks traded in F&O (most large caps; the API says per stock): a third tab after Overview and Events, redone in L3 from the live app. Open Interest (OI): total put and call OI, a put | call split bar (L3 gap: no split ProgressBar), the put : call ratio. Top options by trade volume (or price, via the Volume ⇅ select), All / Call / Put; a row opens the option chain. Other {symbol} Futures: the three monthly futures as cards that swipe sideways, near month first. On this tab the dock is Option Chain (fno-17) · ScalpPro (fno-05). Shown on Reliance.', render: (go) => <StockPage {...indianPad(go)} symbol="RELIANCE" tab="fno" onBack={() => go('stocks-01')} onGlossary={(k) => go(k === 'performance' ? 'stocks-38' : 'stocks-39')} /> },
+    { id: 'stocks-51', name: 'Stock · no F&O', figma: '', badge: 'new', note: 'A stock not traded in F&O (South Indian Bank): Overview and Events only, the usual SIP · Buy · Sell dock.', render: (go) => <StockPage {...indianPad(go)} symbol="SOUTHBANK" onBack={() => go('stocks-01')} onGlossary={(k) => go(k === 'performance' ? 'stocks-38' : 'stocks-39')} /> },
     { id: 'stocks-38', name: 'Performance (ⓘ)', figma: '', badge: 'new', note: 'Daily Performance ⓘ: what each number means.', render: (go) => <Glossary kind="performance" onBack={() => go('stocks-32')} /> },
     { id: 'stocks-39', name: 'Glossary · Fundamentals (ⓘ)', figma: '', badge: 'new', note: 'Fundamentals ⓘ: what each ratio means.', render: (go) => <Glossary kind="fundamentals" onBack={() => go('stocks-32')} /> },
     // The launch splash (hidden at launch for now).
@@ -32834,10 +33095,33 @@ export function IdeaPage({ basket: id, onStock, onIdea }: IdeaPageProps) {
 .compactPrice { display: inline-flex; align-items: center; gap: var(--l3-spacing-04); }
 .chart { height: var(--app-size-stock-chart); }
 
+/* Overview / Events / F&O share the width equally (FLAG L3 gap: Tabs' fill grows each tab from its label width,
+   so a longer label gets a wider tab). */
+.stockTabs.stockTabs > [role='tab'] { flex: 1 1 0; min-width: 0; }
 /* The in-page tabs keep their place while the Actionbar shows the stuck copy. */
 .tabsSlot[data-stuck] { visibility: hidden; }
 
-.sip.sip { flex: none; }
+/* SIP: the Figma "spi butotn" (4018:39843) as drawn — white, the intense grey border, radius 8, the green calendar
+   icon (20, Figma asset) over "SIP" in bold 12 / 16, padding 6 top, 8 sides. FLAG (L3 gap): Button has no stacked
+   icon-over-label layout or this border / radius, so they are set on the button's own variables here. Kept at the
+   dock's 48 height (Figma's 6 + 20 + 16 + 8 would be 50). */
+.sip.sip {
+  --btn-radius: var(--l3-radius-08);
+  --btn-icon-size: var(--l3-icon-size-20);
+  --btn-border: var(--l3-border-intense);
+  --btn-surface: var(--l3-surface-primary);
+  --btn-padding-inline: var(--l3-spacing-08);
+  --btn-label-padding: 0;
+  --btn-gap: 0;
+  --btn-font: var(--l3-text-heading-12);
+  flex: none;
+  width: var(--l3-size-control-lg);
+  flex-direction: column;
+  justify-content: flex-start;
+  padding-top: var(--l3-spacing-06);
+  padding-bottom: var(--l3-spacing-06);
+  color: var(--l3-content-primary);
+}
 
 /* Overview (23 Nov, synced with the US stock page): white cards with a hairline border come from L3 Card (static);
    section headings at heading 16 (L3 gap: SectionHeader has no 16 size). */
@@ -32932,6 +33216,25 @@ export function IdeaPage({ basket: id, onStock, onIdea }: IdeaPageProps) {
 .eventRow:focus-visible { outline: 2px solid var(--l3-content-accent-discover-default); outline-offset: -2px; }
 .eventTitle { font: var(--l3-text-label-14); color: var(--l3-content-primary); }
 .eventLine { font: var(--l3-text-description-12); color: var(--l3-content-secondary); }
+
+/* F&O tab: put | call open interest as one bar (L3 gap: ProgressBar has no two-colour split), the put : call ratio
+   under it, the top options as rows with a hairline between. */
+.oiSplit { display: flex; gap: 2px; height: var(--l3-size-08); }
+.oiPut, .oiCall { border-radius: var(--l3-radius-full); }
+.oiPut { flex: none; background: var(--l3-surface-accent-indicator-down-default); }
+.oiCall { flex: 1; background: var(--l3-surface-accent-indicator-up-default); }
+.pcr { display: flex; justify-content: space-between; align-items: center; margin: 0; padding-top: var(--l3-spacing-12); border-top: 1px solid var(--l3-border-light); }
+.pcr dt { font: var(--l3-text-description-12); color: var(--l3-content-secondary); }
+.pcr dd { margin: 0; font: var(--l3-text-heading-12); color: var(--l3-content-primary); }
+.optionList { margin: 0; padding: 0; list-style: none; } /* the rows bring their own 16 inline padding */
+.optionList li + li { border-top: 1px solid var(--l3-border-light); }
+/* Other futures: a sideways row of cards running to the screen edges (the tab's 16 inset given back inside), the next
+   card peeking in; name + expiry, a hairline, price · change. */
+.futures { display: flex; gap: var(--l3-spacing-12); margin: 0 calc(-1 * var(--l3-spacing-16)); padding: 0 var(--l3-spacing-16); list-style: none; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-inline: var(--l3-spacing-16); scrollbar-width: none; }
+.futures li { flex: 0 0 calc(50% - var(--l3-spacing-24)); scroll-snap-align: start; }
+.futureName { font: var(--l3-text-label-16); color: var(--l3-content-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.futureDate { font: var(--l3-text-description-14); color: var(--l3-content-secondary); }
+.futurePrice { border-top: 1px solid var(--l3-border-light); font: var(--l3-text-label-14); color: var(--l3-content-primary); }
 ```
 
 ### `src/flows/stocks/screens/StockPage.tsx`
@@ -32956,13 +33259,15 @@ import { inr } from '../../../shared/data/format'
 import { useOpenStock } from '../../../shared/data/openStock'
 import { Screen } from '../../../shared/ui/Screen'
 import { StockEvents } from '../components/StockEvents'
+import { StockFno } from '../components/StockFno'
 import { StockOverview } from '../components/StockOverview'
 import { t } from '../copy'
-import { CHART_RANGES, EVENT_TYPES, priceSeries, stockPage, type ChartRange, type CorporateEvent, type EventType, type Exchange } from '../data'
+import { CHART_RANGES, EVENT_TYPES, priceSeries, stockFno, stockPage, type ChartRange, type CorporateEvent, type EventType, type Exchange } from '../data'
 import { EventFilterSheet, EventSheet } from '../sheets/EventSheets'
+import sipIcon from '../assets/sip-icon.svg'
 import styles from './StockPage.module.css'
 
-export type StockTab = 'overview' | 'events'
+export type StockTab = 'overview' | 'events' | 'fno'
 /** Board frames: open the page scrolled to a part. */
 export type StockPart = 'top' | 'depth' | 'shareholding'
 
@@ -32981,17 +33286,24 @@ type Props = {
   onBuy?: () => void
   onSell?: () => void
   onGlossary: (kind: 'performance' | 'fundamentals') => void
+  /** Board: show this stock instead of the one tapped last. */
+  symbol?: string
+  /** F&O tab (stocks traded in F&O): Option Chain / a top option → the option chain; ScalpPro → the Scalper. */
+  onOptionChain?: () => void
+  onScalpPro?: () => void
 }
 
 /**
  * stocks-32 … 37 · The stock (asset) page — rebuilt from the live app over ADB (2026-11-02; no Figma yet), with the top
  * part shaped like the US stock page: name, price and the change over the chart range, logo; sector and cap tags, the
- * advanced-chart button and the NSE / BSE switch; the line chart and its ranges; Overview / Events tabs. Once the
+ * advanced-chart button and the NSE / BSE switch; the line chart and its ranges; Overview / Events tabs, plus F&O for
+ * stocks traded in F&O (26 Nov; its dock is Option Chain · ScalpPro). Once the
  * header scrolls away the Actionbar shows symbol + price, and the tabs stick under it. SIP · Buy · Sell docked.
  */
-export function StockPage({ tab: initialTab = 'overview', scrollTo = 'top', range: initialRange = '1D', exchange: initialExchange = 'NSE', aboutOpen, eventsExpanded, sheet: initialSheet, onBack, onBuy, onSell, onGlossary }: Props) {
+export function StockPage({ tab: initialTab = 'overview', scrollTo = 'top', range: initialRange = '1D', exchange: initialExchange = 'NSE', aboutOpen, eventsExpanded, sheet: initialSheet, onBack, onBuy, onSell, onGlossary, symbol, onOptionChain, onScalpPro }: Props) {
   useMarketSnapshot()
-  const page = stockPage(useOpenStock())
+  const opened = useOpenStock()
+  const page = stockPage(symbol ?? opened)
   const [tab, setTab] = useState<StockTab>(initialTab)
   const [range, setRange] = useState<ChartRange>(initialRange)
   const [exchange, setExchange] = useState<Exchange>(initialExchange)
@@ -33002,6 +33314,9 @@ export function StockPage({ tab: initialTab = 'overview', scrollTo = 'top', rang
   )
 
   const price = page.price[exchange]
+  const fno = stockFno(page.symbol, page.price.NSE)
+  // A stock opened on F&O that has none (another stock tapped since) falls back to Overview.
+  const shownTab: StockTab = tab === 'fno' && !fno ? 'overview' : tab
   const series = priceSeries(page, range, price)
   // 1D: the day's change from the previous close; other ranges: from the first point of the line.
   const from = range === '1D' ? page.prevClose : series[0]
@@ -33041,8 +33356,8 @@ export function StockPage({ tab: initialTab = 'overview', scrollTo = 'top', rang
     if (body && tabs && stuck) body.scrollTop += tabs.getBoundingClientRect().bottom - body.getBoundingClientRect().top
   }
   const tabs = (
-    <Tabs appearance="underline" width="fill" aria-label={t('stock.tabs')} value={tab} onChange={pickTab}
-      items={[{ value: 'overview', label: t('stock.overview') }, { value: 'events', label: t('stock.events') }]} />
+    <Tabs className={styles.stockTabs} appearance="underline" width="fill" aria-label={t('stock.tabs')} value={shownTab} onChange={pickTab}
+      items={[{ value: 'overview', label: t('stock.overview') }, { value: 'events', label: t('stock.events') }, ...(fno ? [{ value: 'fno', label: t('stock.fno') }] : [])]} />
   )
 
   const watch = t(saved ? 'stock.watchlistRemove' : 'stock.watchlistAdd', { symbol: page.symbol })
@@ -33061,10 +33376,17 @@ export function StockPage({ tab: initialTab = 'overview', scrollTo = 'top', rang
   // Buy / Sell open the order pad (Indian version, 23 Nov). No SIP flow in the prototype yet: SIP goes nowhere.
   const dock = (
     <ButtonGroup aria-label={t('stock.trade', { symbol: page.symbol })} direction="horizontal">
-      {/* SIP is icon-only, square, so Buy and Sell get the width (19 Nov, the user's call). */}
-      <Button variant="secondary" aria-label={t('stock.sip')} iconLeft={<Icon icon={msEventRepeat} size={20} />} className={styles.sip} onClick={() => {}} />
+      {/* SIP: the Figma "spi butotn" (4018:39843, 26 Nov) — the green calendar icon over a bold SIP, square, so Buy and Sell get the width. */}
+      <Button variant="secondary" iconLeft={<img src={sipIcon} alt="" />} className={styles.sip} onClick={() => {}}>{t('stock.sip')}</Button>
       <Button variant="brand" onClick={onBuy}>{t('stock.buy')}</Button>
       <Button variant="secondary" onClick={onSell}>{t('stock.sell')}</Button>
+    </ButtonGroup>
+  )
+  // F&O tab: the option chain and ScalpPro (both in the F&O flow) take the dock's place.
+  const fnoDock = (
+    <ButtonGroup aria-label={t('stock.fno')} direction="horizontal">
+      <Button variant="secondary" onClick={onOptionChain}>{t('stock.optionChain')}</Button>
+      <Button onClick={onScalpPro}>{t('stock.scalpPro')}</Button>
     </ButtonGroup>
   )
   const sheetEl = sheet?.kind === 'filter'
@@ -33072,7 +33394,7 @@ export function StockPage({ tab: initialTab = 'overview', scrollTo = 'top', rang
     : sheet?.kind === 'event' ? <EventSheet event={sheet.event} onClose={() => setSheet(null)} /> : undefined
 
   return (
-    <Screen top={top} bottom={dock} sheet={sheetEl}>
+    <Screen top={top} bottom={shownTab === 'fno' ? fnoDock : dock} sheet={sheetEl}>
       <Stack ref={pageRef} gap="24" className={styles.page}>
         <Inset paddingInline="16" paddingBlock="00">
           <Stack gap="16">
@@ -33112,7 +33434,9 @@ export function StockPage({ tab: initialTab = 'overview', scrollTo = 'top', rang
         <Stack gap="24">
           <div ref={tabsRef} className={styles.tabsSlot} data-stuck={stuck || undefined}>{tabs}</div>
           <Inset paddingInline="16" paddingBlock="00">
-            {tab === 'overview'
+            {shownTab === 'fno' && fno
+              ? <StockFno symbol={page.symbol} fno={fno} onOption={() => onOptionChain?.()} onFuture={() => onOptionChain?.()} />
+              : shownTab === 'overview'
               ? <StockOverview page={page} price={price} aboutOpen={aboutOpen} onGlossary={onGlossary} />
               : <StockEvents events={page.events} shown={shown} expanded={eventsExpanded} onFilters={() => setSheet({ kind: 'filter' })} onEvent={(event) => setSheet({ kind: 'event', event })} />}
           </Inset>

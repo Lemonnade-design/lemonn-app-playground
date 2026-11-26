@@ -108,6 +108,58 @@ meaning (below minimum / above LRS) with $ limits; the ₹ limits in the Figma h
 **L3 gaps:** no big amount input and no in-app number keypad (both drawn in `AmountEntry`, on L3 tokens, flagged there);
 quick-add chips are L3 Tabs (pill, action) used as buttons.
 
+### Withdraw (`us-stocks-62`, `63`, `screens/money/WithdrawScreen.tsx`)
+
+Laid out as Add money (26 Nov, user: "match the deposit"): the same shared `AmountEntry` + `AmountDock`, so the two money
+screens read as one pair. The user types the **US dollars** to take out; the ₹ that lands in the bank is the line under it.
+
+- Top: L3 Actionbar "Withdraw", back → wallet; description "$417.03 withdrawable" (`WITHDRAWABLE_USD`); a ghost ⓘ action
+  opens "Withdrawable balance" (`WithdrawableSheet`: USD wallet balance $520.40 − settling $103.37 = withdrawable; sold
+  shares settle in 1 working day). The live screen has its ⓘ on a balance card; L3 Actionbar actions are where it fits here.
+- Body: big centred `$` amount; under it "You get ≈ ₹X in your bank", a Tertiary Small button that opens the Withdrawal
+  breakdown sheet (`WithdrawBreakdownSheet`: you withdraw, indicative rate, the bank, total "Lands in your bank"); under
+  that the chips **Min $1** / 25% / 50% / 75% / **Max $417.03**: the limits are on the chips (26 Nov, user), no limits
+  line. Each sets the amount. At 360 wide they just fit (≈ 322 of 328); a Max over ~$9,999.99 would need a shorter label.
+- Dock: the bank row "Withdraw to · HDFC Bank ••7821 · in 1–2 working days" (chevron → "Send to", the linked banks US
+  Stocks can use — the same sheet as Add money's "Pay from"; no bank → "Add bank account"), the keypad with "." (2
+  decimals), and a Large **brand** "Withdraw $X (≈ ₹Y)" button, disabled while empty or invalid → request placed (`64`).
+- Limits: minimum $1 (`MIN_WITHDRAW_USD`), maximum the withdrawable balance, both on the chips; red "Minimum $1" / "Only
+  $417.03 is withdrawable" under the amount when typed past them. Empty: nothing under the amount.
+- ₹ maths: `usd × withdrawRate(live)` (live + ₹0.93, `money/amounts.ts`), rounded to whole rupees.
+- States: H08 `5852:100550` $100 · H09 `5852:100492` $500, more than withdrawable.
+- Copy: `copy.json` (`withdraw.*`; the add-bank words reuse `addMoney.*`).
+
+**Differences from Figma:** H08 / H09 had a "Withdrawable Balance" card, a "Enter Amount" TextField on the phone keyboard
+with Min | Max helper text, an "≈ ₹" link beside it, % chips and a hand-made bank strip + "Requests before 1 PM IST are
+reviewed the same day" note in the dock. Here it is Add money's layout: balance in the Actionbar, the in-app keypad, the
+bank as a ListCell row, the timing in the bank row ("in 1–2 working days").
+
+**L3 gaps:** as Add money (no big amount input, no in-app keypad; % chips are L3 Tabs used as buttons).
+
+#### INR wallet (`us-stocks-112`, `113`; not in Figma, 26 Nov)
+
+The INR wallet's Withdraw went nowhere (user). It is the same screen with `wallet="inr"`: "₹10.00 withdrawable" (the INR
+wallet's numbers, `WALLET_BALANCE_INR` / `WITHDRAWABLE_INR`; the ⓘ: ₹1,100.00 − ₹1,090.00 settling), ₹ amount and chips
+Min ₹1 / 25% / 50% / 75% / Max ₹10.00, no "You get ≈ ₹" line or breakdown (it is ₹ already), any linked bank with
+"same day if before 1 PM", brand "Withdraw ₹X", back → the INR tab. Withdraw → request placed in ₹ (`113`: credited today
+by 6 PM; Continue → the INR tab).
+
+#### Withdrawal failed: the money went into trades (`us-stocks-109`, `110`, `111`; not in Figma, 26 Nov)
+
+A withdrawal is processed by 11 AM the next working day; until then the wallet money can still buy shares. If the user
+places a $100 withdrawal and then buys $480 of shares, the wallet ($520.40) is down to $40.40 when it is processed: less
+than asked, so the withdrawal fails and nothing leaves the wallet (`FAILED_WITHDRAWAL_USD`, `AFTER_TRADES_USD` in
+`money/amounts.ts`).
+
+- Wallet (`109`, `WalletWithdrawalFailedScreen`): $40.40 total and withdrawable; the bottom bar turns danger: "$100
+  withdrawal didn't go through · You used it for trades · nothing left your wallet". Tap → the sheet. Withdraw is on.
+- Sheet (`110`, `wallet/sheets/WithdrawFailedSheet.tsx`): L3 BottomSheet lg with an error spot, "$100.00 withdrawal
+  didn't go through", why, a card "You asked to withdraw $100.00 · Withdrawable now $40.40", brand "Withdraw $40.40" and
+  secondary "Not now". Under the $1 minimum there is nothing to retry: one "Got it".
+- Retry (`111`): the Withdraw screen with `withdrawable` / `balance` = $40.40, prefilled with it; the Max chip reads "Max $40.40" and the ⓘ
+  sheet drops its settling row. Withdraw → request placed (`64`).
+- Copy: `withdrawFailed.*`.
+
 ### Portfolio (`us-stocks-05`, `06`, `77`, `screens/entry/PortfolioScreen.tsx`)
 
 - `PortfolioScreen` is the frame only: Actionbar (search, wallet) with the Positions · Holdings · Orders tabs in its
@@ -203,6 +255,11 @@ Every tap he wired is kept. The main path: FTUX sheet → Activate → Declarati
 
 ### Changelog
 
+- 26 Nov 2026 · INR wallet: Withdraw now opens Withdraw in ₹ (us-stocks-112) and its request placed (113); it went nowhere before.
+- 26 Nov 2026 · Withdraw: the "Min $1 · Max $417.03" line is gone; the limits are on the chips, Min $1 · 25% · 50% · 75% · Max $417.03.
+- 26 Nov 2026 · Withdrawal failed because the money went into trades (us-stocks-109, 110, 111, not in Figma): a red bar on the wallet, a sheet saying why with "Withdrawable now $40.40" and a brand "Withdraw $40.40", and Withdraw prefilled with what is left. Withdraw takes its withdrawable balance as a prop.
+- 26 Nov 2026 · Withdraw (us-stocks-62, 63), checked against the live Withdraw INR screen: an ⓘ in the Actionbar opens "Withdrawable balance" (wallet − settling = withdrawable); "Min $1 · Max $417.03" stays right under the amount while typing, above "You get ≈ ₹"; the bank row says "Withdraw to".
+- 26 Nov 2026 · Withdraw (us-stocks-62, 63) rebuilt on Add money's layout: balance in the Actionbar, big $ amount with "You get ≈ ₹" under it, 25% / 50% / 75% / Max chips, the keypad dock with the bank row and a brand "Withdraw $X" button. The TextField, balance card and hand-made bank strip (MoneyDock) are gone.
 - 26 Nov 2026 · Declarations sheet (us-stocks-94): 4 more space between the agree row and Agree and continue.
 - 26 Nov 2026 · Declarations sheet (us-stocks-94): Agree and continue looks disabled again until the agree box is ticked; a tap on it before then shakes the agree row.
 - 26 Nov 2026 · Declarations sheet (us-stocks-94): Agree and continue is always on; tapped before "I agree to all of the above" is ticked, the agree row shakes.
@@ -22480,6 +22537,39 @@ export function UsMainNav({ value }: { value: Section }) {
   "addMoney.notSupported": "Not supported",
   "addMoney.addBankCta": "Add bank account",
   "addMoney.ctaInr": "({inr})",
+  "withdraw.title": "Withdraw",
+  "withdraw.available": "{amount} withdrawable",
+  "withdraw.errorMin": "Minimum {min}",
+  "withdraw.errorMax": "Only {max} is withdrawable",
+  "withdraw.get": "You get ≈ {inr} in your bank",
+  "withdraw.getLabel": "You get about {inr} in your bank. See the breakdown",
+  "withdraw.chipLabel": "{percent}% of the withdrawable balance",
+  "withdraw.chipMin": "Min {min}",
+  "withdraw.chipMinLabel": "Withdraw the minimum, {min}",
+  "withdraw.chipMax": "Max {max}",
+  "withdraw.chipMaxLabel": "Withdraw the most you can, {max}",
+  "withdraw.methodLabel": "Withdraw to",
+  "withdraw.sheetTitle": "Send to",
+  "withdraw.landsBy": "in 1–2 working days",
+  "withdraw.landsByInr": "same day if before 1 PM",
+  "withdraw.cta": "Withdraw {amount}",
+  "withdraw.ctaEmpty": "Withdraw",
+  "withdraw.ctaInr": "(≈ {inr})",
+  "withdraw.infoLabel": "About the withdrawable balance",
+  "withdraw.withdrawableTitle": "Withdrawable balance",
+  "withdraw.withdrawableBody": "Money from shares you sell settles in 1 working day. You can withdraw it once it has settled.",
+  "withdraw.walletBalance": "USD wallet balance",
+  "withdraw.settling": "Settling (shares sold)",
+  "withdraw.withdrawableTotal": "Withdrawable",
+  "withdraw.gotIt": "Got it",
+  "withdrawFailed.bar": "You used it for trades · nothing left your wallet",
+  "withdrawFailed.title": "{amount} withdrawal didn't go through",
+  "withdrawFailed.body": "You bought shares with this money before we could send it to your bank. Nothing left your USD wallet.",
+  "withdrawFailed.requested": "You asked to withdraw",
+  "withdrawFailed.now": "Withdrawable now",
+  "withdrawFailed.retry": "Withdraw {amount}",
+  "withdrawFailed.notNow": "Not now",
+  "withdrawFailed.gotIt": "Got it",
   "portfolio.title": "Portfolio",
   "portfolio.search": "Search",
   "portfolio.wallet": "Wallet",
@@ -23237,8 +23327,8 @@ export const registry: UsScreenEntry[] = [
   { figma: '9001:67', id: 'us-stocks-103', badge: 'new', badgeNote: "From the live app's Balance details", section: 'wallet', name: "Balance Details · INR · expanded", note: "Every group open: Deposits, Stocks Sell, Stocks Pledge, Equity / Commodity Options Cfs; Withdrawals, Stocks, F&O, MTF, Stocks & MTF PnL, MTM PnL; Deposit and Net Credit." },
   { figma: '9001:68', id: 'us-stocks-104', badge: 'new', badgeNote: "From the live app's help page", section: 'wallet', name: "Help", note: "Balance Details' Help. Help topics (icon, title, description) then Contact Lemonn Support, whose Contact Support card emails support. Title Help (live: Lemonn); US Stocks topic added; Logout left out. Topic article pages aren't built." },
   { figma: '9001:72', id: 'us-stocks-108', badge: 'new', badgeNote: "Not in Figma: the global search's look over the help topics", section: 'wallet', name: "Help · Search", note: "Help's search icon. The top bar is the search field (back · field · ✕ once typed), keyboard up. Live app's content: \"Search articles\" field and empty state before typing; typing filters the help topics by title and description; no match: No help topics found + Clear search." },
-  { figma: '5852:100550', id: 'us-stocks-62', section: 'wallet', name: "H08 · Withdraw · enter amount", note: "Withdraw: enter $ amount, see ₹ estimate." },
-  { figma: '5852:100492', id: 'us-stocks-63', section: 'wallet', name: "H09 · Withdraw · more than withdrawable", note: "Error: amount is more than the withdrawable balance." },
+  { figma: '5852:100550', id: 'us-stocks-62', section: 'wallet', name: "H08 · Withdraw · enter amount", note: "Withdraw, laid out as Add money (26 Nov, user): withdrawable balance in the Actionbar with an ⓘ (→ Withdrawable balance sheet), big $ amount ($100) with \"You get ≈ ₹\" (tap → breakdown) under it, Min $1 / 25% / 50% / 75% / Max $417.03 chips (the limits are on the chips), keypad dock with the \"Withdraw to\" bank row and a brand Withdraw button. Figma's TextField, balance card and bank strip are replaced." },
+  { figma: '5852:100492', id: 'us-stocks-63', section: 'wallet', name: "H09 · Withdraw · more than withdrawable", note: "$500, more than the withdrawable $417.03: red \"Only $417.03 is withdrawable\" under the amount, the button off." },
   { figma: '5852:100472', id: 'us-stocks-64', section: 'wallet', name: "H10 · Withdraw · request placed", note: "Withdraw request placed. Usually 1–2 working days." },
   { figma: '5852:98799', id: 'us-stocks-65', section: 'wallet', name: "W3 · Withdrawing · in progress", note: "Withdrawal in progress, tracked on the wallet." },
   { figma: '5852:98736', id: 'us-stocks-66', section: 'wallet', name: "W3 · Withdrawing · sent to bank", note: "Withdrawal sent to the bank." },
@@ -23246,6 +23336,11 @@ export const registry: UsScreenEntry[] = [
   { figma: '5852:98614', id: 'us-stocks-68', section: 'wallet', name: "W3b · 2 withdrawals pending", note: "Two or more withdrawals pending, grouped in one tracker." },
   { figma: '5852:98522', id: 'us-stocks-69', section: 'wallet', name: "W3c · Withdrawal requests sheet", note: "Sheet listing each pending withdrawal request." },
   { figma: '5852:98459', id: 'us-stocks-70', section: 'wallet', name: "W3d · Withdrawal taking longer", note: "Transfer delayed: taking longer than usual." },
+  { figma: '9001:73', id: 'us-stocks-109', badge: 'new', badgeNote: "Not in Figma: a withdrawal that failed because the money went into trades", section: 'wallet', name: "W3e · Withdrawal failed · used for trades", note: "$100 withdrawal placed, then $480 of shares bought before it was processed: the wallet is down to $40.40 and the withdrawal didn't go through. Red bar \"$100 withdrawal didn't go through · You used it for trades · nothing left your wallet\"; tap → the sheet (us-stocks-110). Withdraw opens the retry (us-stocks-111)." },
+  { figma: '9001:74', id: 'us-stocks-110', badge: 'new', badgeNote: "Not in Figma", section: 'wallet', name: "W3e · Withdrawal failed · sheet", note: "Why it failed (shares bought with the money before it was sent; nothing left the wallet), You asked to withdraw $100.00 · Withdrawable now $40.40, brand \"Withdraw $40.40\" (→ us-stocks-111) and Not now. Under $1 withdrawable: Got it only." },
+  { figma: '9001:75', id: 'us-stocks-111', badge: 'new', badgeNote: "Not in Figma", section: 'wallet', name: "H08 · Withdraw · retry after failed", note: "Withdraw with what is left after the trades: $40.40 withdrawable in the Actionbar, $40.40 prefilled, Max chip \"Max $40.40\"; the ⓘ sheet shows no settling row. Withdraw → request placed (us-stocks-64)." },
+  { figma: '9001:76', id: 'us-stocks-112', badge: 'new', badgeNote: "Not in Figma: the INR wallet's Withdraw", section: 'wallet', name: "Withdraw · INR wallet", note: "The INR wallet's Withdraw: the US Withdraw in ₹. \"₹10.00 withdrawable\" with the ⓘ (₹1,100.00 − ₹1,090.00 settling), ₹10 typed, Min ₹1 / 25% / 50% / 75% / Max ₹10.00 chips, no ≈ ₹ line, any linked bank (\"same day if before 1 PM\"), brand Withdraw ₹10 → us-stocks-113." },
+  { figma: '9001:77', id: 'us-stocks-113', badge: 'new', badgeNote: "Not in Figma", section: 'wallet', name: "Withdraw · INR · request placed", note: "₹10 on its way to the bank: Amount, To, Credited today by 6 PM. Continue → the wallet's INR tab." },
   { figma: '9001:64', id: 'us-stocks-100', badge: 'new', badgeNote: "Design from Kuber Spot → V2 (5219:109907), rows as the Market list", section: 'wallet', name: "All transactions · INR wallet", note: "The wallet's All Transactions link, from the INR tab. Deposits and withdrawals newest first under month headings, in every state (completed, in progress, failed, refunded); rows drawn as the Market page's stock rows. A row opens its details sheet (amount, bank, date, transaction ID, a note for anything not done, Got it + Contact support). The INR / USD switch stays under the top bar." },
   { figma: '9001:65', id: 'us-stocks-101', badge: 'new', badgeNote: "Design from Kuber Spot → V2 (5219:109907), rows as the Market list", section: 'wallet', name: "All transactions · USD wallet", note: "From the USD tab. Follows the user status: empty before US Stocks is active, empty with Add money once active, the deposits on the way (in progress, taking longer, failed: a row opens the deposit progress sheet), the first deposit once it landed, the full history once trading (withdrawals in progress, completed, failed; deposits completed, refunded). Amounts in $ through the app's ₹ setting; details show the ₹ paid or received." },
   { figma: '9001:1', id: 'us-stocks-71', badge: 'new', badgeNote: "ETF list: Regular / Boosted tabs", section: 'activated', name: "ETFs · Regular & Boosted", note: "The ETF list from the ETFs quick action. Regular: the Country / Sector filter under the tabs and fund cards named in plain words. Boosted (leveraged): a line on what 3x means that opens How Boosted ETFs work, then the long and short funds with their leverage (eight looks in the prototype settings)." },
@@ -36622,62 +36717,9 @@ export function ChargesBreakdownSheet({ open, onClose, amount, rate, charges }: 
 ```css
 /* FLAG: layout is raw display:flex + gap/padding on every block, not L3 Stack / Section / Inset (applies to the whole file). */
 
-.content {
-  gap: var(--l3-spacing-24);
-  padding: var(--l3-spacing-16) var(--l3-spacing-16) var(--l3-spacing-24);
-  flex-direction: column;
-  display: flex;
-}
-
-.valueIcon {
-  color: var(--l3-content-primary);
-  display: inline-flex;
-}
-
-.amount {
-  gap: var(--l3-spacing-12);
-  flex-direction: column;
-  display: flex;
-}
-
-.fieldWrap {
-  position: relative;
-}
-
-.conversion {
-  top: calc(var(--l3-spacing-16) + var(--l3-spacing-08));
-  right: var(--l3-spacing-12);
-  height: calc(var(--l3-size-40) + var(--l3-spacing-04));
-  align-items: center;
-  gap: var(--l3-spacing-04);
-  font: var(--l3-text-description-14);
-  color: var(--l3-content-secondary);
-  cursor: pointer;
-  background: 0 0;
-  border: 0;
-  padding: 0;
-  display: flex;
-  position: absolute;
-}
-
 .em {
   font: var(--l3-text-label-12);
   color: var(--l3-content-primary);
-}
-
-.error {
-  color: var(--l3-content-accent-error-default);
-}
-
-.chips {
-  gap: var(--l3-spacing-08);
-  grid-template-columns: repeat(4,minmax(0,1fr));
-  display: grid;
-}
-
-.chip {
-  justify-content: center;
-  width: 100%;
 }
 
 .summary {
@@ -36846,13 +36888,6 @@ export function ChargesBreakdownSheet({ open, onClose, amount, rate, charges }: 
   font: var(--l3-text-description-12);
 }
 
-
-
-.sep {
-  margin: 0 var(--l3-spacing-06);
-  color: var(--l3-content-secondary);
-}
-
 /* Add money's button: the ₹ it costs after "Add $X", in a smaller label (the user's 3 Nov ask). */
 .ctaInr {
   margin-left: var(--l3-spacing-04);
@@ -36862,119 +36897,6 @@ export function ChargesBreakdownSheet({ open, onClose, amount, rate, charges }: 
 /* "Pay from": a linked bank US Stocks money can't go from — greyed out, can't be picked. */
 .unsupportedBank {
   opacity: var(--l3-opacity-60);
-}
-```
-
-### `src/flows/us-stocks/screens/money/MoneyDock.module.css`
-
-```css
-/* FLAG: hand-made bank "strip" button and timing note; layout is raw display:flex + gap/padding, not L3 Stack / Inset. */
-
-.dock {
-  background: var(--l3-surface-default);
-  flex-direction: column;
-  display: flex;
-}
-
-.strip {
-  align-items: center;
-  gap: var(--l3-spacing-08);
-  width: 100%;
-  padding: var(--l3-spacing-12) var(--l3-spacing-16);
-  border: 0;
-  border-top: 1px solid var(--l3-border-light);
-  background: var(--l3-surface-primary);
-  text-align: left;
-  cursor: pointer;
-  display: flex;
-}
-
-.from {
-  min-width: 0;
-  font: var(--l3-text-description-12);
-  color: var(--l3-content-secondary);
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  flex: 1;
-  overflow: hidden;
-}
-
-.from b {
-  font: var(--l3-text-label-12);
-  color: var(--l3-content-primary);
-}
-
-.change {
-  font: var(--l3-text-label-12);
-  color: var(--l3-content-accent-discover-default);
-}
-
-.main {
-  padding: var(--l3-spacing-16);
-  flex-direction: column;
-  display: flex;
-}
-
-.timing {
-  justify-content: center;
-  align-items: center;
-  gap: var(--l3-spacing-04);
-  padding: 0 var(--l3-spacing-16) var(--l3-spacing-12);
-  font: var(--l3-text-description-12);
-  color: var(--l3-content-secondary);
-  margin: 0;
-  display: flex;
-}
-```
-
-### `src/flows/us-stocks/screens/money/MoneyDock.tsx`
-
-```tsx
-// The bottom dock of add money / withdraw: timing note, the bank to pay from / to, and the main button.
-// FLAG: the "bank strip" is a hand-made button (not an L3 ListCell / Select).
-import { Avatar } from '@l3/components/Avatar'
-import { Button } from '@l3/components/Button'
-import { Icon } from '@l3/components/Icon'
-import { asset } from '../../asset'
-import { formatInr } from '../../../../shared/money'
-import { clockIcon } from './icons'
-import styles from './MoneyDock.module.css'
-
-export function MoneyDock({
-  amount,
-  blocked,
-  onAdd,
-  note = 'Pay before 2 PM, arrives in your wallet by Thu 8 PM (or Fri)',
-  bankLead = 'Pay from',
-  cta,
-}: {
-  amount: number
-  blocked: boolean
-  onAdd: () => void
-  note?: string
-  bankLead?: string
-  cta?: string
-}) {
-  return (
-    <div className={styles.dock}>
-      <p className={styles.timing}>
-        <Icon icon={clockIcon} size={14} />
-        {note}
-      </p>
-      <button type="button" className={styles.strip} aria-label={`${bankLead} HDFC Bank, savings XX4321. Change bank`}>
-        <Avatar src={asset('assets/money/hdfc.png')} shape="rounded" size={24} label="HDFC Bank" />
-        <span className={styles.from}>
-          {bankLead} <b>HDFC Bank</b> · XX4321
-        </span>
-        <span className={styles.change}>Change</span>
-      </button>
-      <div className={styles.main}>
-        <Button variant="brand" size="lg" fullWidth disabled={blocked} onClick={onAdd}>
-          {cta ?? (amount > 0 ? `Add ${formatInr(amount, { decimals: 0 })} to US wallet` : 'Add to US wallet')}
-        </Button>
-      </div>
-    </div>
-  )
 }
 ```
 
@@ -36989,7 +36911,7 @@ import { KeyValueList, KeyValueRow } from '@l3/components/KeyValueList'
 import { useSheetLayer } from '../../components/Phone'
 import { Usd, formatInr } from '../../../../shared/money'
 
-export function WithdrawBreakdownSheet({ open, onClose, amount, rate }: { open: boolean; onClose: () => void; amount: number; rate: number }) {
+export function WithdrawBreakdownSheet({ open, onClose, amount, rate, to = 'HDFC Bank ••4321' }: { open: boolean; onClose: () => void; amount: number; rate: number; /** The bank it goes to, as on the bank row. */ to?: string }) {
   const layer = useSheetLayer()
   return (
     <BottomSheet
@@ -37013,7 +36935,7 @@ export function WithdrawBreakdownSheet({ open, onClose, amount, rate }: { open: 
       <KeyValueList aria-label="Withdrawal breakdown" total={{ label: 'Lands in your bank', value: `≈ ${formatInr(amount * rate, { decimals: 0 })}` }}>
         <KeyValueRow label="You withdraw" value={<Usd value={amount} layout="inline" />} />
         <KeyValueRow label="Indicative rate" value={`${formatInr(rate)} / $`} />
-        <KeyValueRow label="To" value="HDFC Bank XX4321" />
+        <KeyValueRow label="To" value={to} />
       </KeyValueList>
     </BottomSheet>
   )
@@ -37023,7 +36945,8 @@ export function WithdrawBreakdownSheet({ open, onClose, amount, rate }: { open: 
 ### `src/flows/us-stocks/screens/money/WithdrawPlacedScreen.tsx`
 
 ```tsx
-// H10 · Withdraw request placed.
+// H10 · Withdraw request placed. `wallet="inr"`: the INR wallet's (us-stocks-113, not in Figma): ₹, no rate, same day if
+// placed before 1 PM, Continue → the wallet's INR tab.
 // FLAG: the success tick is a hand-made green circle with an SVG (Money.module.css .successArt), not an L3 / app result pattern.
 // FLAG: layout is raw display:flex + gap/padding (Money.module.css), not L3 Stack / Section / Inset.
 import { useState } from 'react'
@@ -37037,11 +36960,13 @@ import { withdrawRate } from './amounts'
 import { MaskImage } from './components/MaskImage'
 import { takeHandoff } from './handoff'
 import { moneyIds } from './ids'
+import { FIGMA } from '../wallet/data'
 import styles from './Money.module.css'
 
-export function WithdrawPlacedScreen({ initial }: { initial: number }) {
+export function WithdrawPlacedScreen({ initial, wallet = 'usd' }: { initial: number; wallet?: 'usd' | 'inr' }) {
   const { go } = useUsNav()
-  const [amount] = useState(() => takeHandoff(moneyIds.h10, initial))
+  const inr = wallet === 'inr'
+  const [amount] = useState(() => takeHandoff(inr ? moneyIds.inrPlaced : moneyIds.h10, initial))
   const usd = useUsd()
   const rate = withdrawRate(useUsdInrRate())
   return (
@@ -37050,7 +36975,7 @@ export function WithdrawPlacedScreen({ initial }: { initial: number }) {
       gesture="none"
       footer={
         <ButtonGroup aria-label="Withdraw request">
-          <Button variant="primary" size="lg" fullWidth onClick={() => go(moneyIds.walletActive)}>Continue</Button>
+          <Button variant="primary" size="lg" fullWidth onClick={() => go(inr ? FIGMA.walletInr : moneyIds.walletActive)}>Continue</Button>
         </ButtonGroup>
       }
     >
@@ -37060,15 +36985,15 @@ export function WithdrawPlacedScreen({ initial }: { initial: number }) {
         </span>
         <div className={styles.resultTitle}>
           <h1 className={styles.resultHeading}>Withdraw Request Placed</h1>
-          <p className={styles.resultSub}>{usd(amount)} is on its way to HDFC Bank XXXX4321</p>
+          <p className={styles.resultSub}>{inr ? formatInr(amount, { decimals: amount % 1 ? 2 : 0 }) : usd(amount)} is on its way to HDFC Bank XXXX4321</p>
         </div>
         <KeyValueList variant="card" className={styles.balanceCard} aria-label="Withdraw details">
-          <KeyValueRow label="Amount" value={<Usd value={amount} align="end" />} />
-          <KeyValueRow label="You'll get (approx.)" value={`≈ ${formatInr(amount * rate, { decimals: 0 })}`} />
+          <KeyValueRow label="Amount" value={inr ? formatInr(amount) : <Usd value={amount} align="end" />} />
+          {!inr && <KeyValueRow label="You'll get (approx.)" value={`≈ ${formatInr(amount * rate, { decimals: 0 })}`} />}
           <KeyValueRow label="To" value="HDFC Bank XX4321" />
-          <KeyValueRow label="Credited" value="Usually 1–2 working days" />
+          <KeyValueRow label="Credited" value={inr ? 'Today, by 6 PM' : 'Usually 1–2 working days'} />
         </KeyValueList>
-        <p className={styles.resultFoot}>Requests before 1 PM IST are reviewed the same day. Your bank sets the final rupee amount.</p>
+        <p className={styles.resultFoot}>{inr ? 'Requests before 1 PM IST are credited the same day.' : 'Requests before 1 PM IST are reviewed the same day. Your bank sets the final rupee amount.'}</p>
       </div>
     </Phone>
   )
@@ -37078,117 +37003,200 @@ export function WithdrawPlacedScreen({ initial }: { initial: number }) {
 ### `src/flows/us-stocks/screens/money/WithdrawScreen.tsx`
 
 ```tsx
-// Withdraw (H08, H09): enter a $ amount to send from the US wallet to the bank.
-// FLAG: amount entry is a plain TextField on the device's own keyboard, not the app's shared Keyboard (src/shared/ui/Keyboard).
-// FLAG: layout is raw display:flex + gap/padding (Money.module.css), not L3 Stack / Section / Inset.
+// Withdraw (H08, H09): the $ to send from the US wallet to the bank. Laid out as Add money (26 Nov, user: "match the
+// deposit"): Actionbar with the withdrawable balance under the title, the big $ amount with the ₹ that lands in the bank
+// on the line under it (tap → Withdrawal breakdown) with "Min · Max" under that, percent chips, and the keypad dock with the bank row ("Send to")
+// over one brand button. An ⓘ in the Actionbar explains the withdrawable balance (WithdrawableSheet). Replaces the TextField-on-the-phone-keyboard screen from Figma H08 / H09.
+// FLAG: the big amount and the number keypad are the shared AmountEntry / AmountKeypad (src/shared/ui/AmountEntry) — L3 has neither.
+// This screen types and shows plain $ (formatUsd), as Add money: the amount is in $ by construction and the ₹ line is
+// always shown, because what lands in the bank is ₹.
 import { useState } from 'react'
-import { Actionbar } from '@l3/components/Actionbar'
+import { Actionbar, ActionbarAction } from '@l3/components/Actionbar'
+import { Button } from '@l3/components/Button'
+import { ButtonGroup } from '@l3/components/ButtonGroup'
 import { Icon } from '@l3/components/Icon'
-import { KeyValueList, KeyValueRow } from '@l3/components/KeyValueList'
+import { Stack } from '@l3/components/Stack'
 import { Tab } from '@l3/components/Tabs'
-import { TextField } from '@l3/components/TextField'
+import { msInfo } from '@l3/icons/material'
 import { Phone } from '../../components/Phone'
 import { useUsNav } from '../../nav'
-import { Usd, formatInr, useUsd, useUsdInrRate } from '../../../../shared/money'
-import { MIN_WITHDRAW_USD, WITHDRAWABLE_USD, WITHDRAW_QUICK_PERCENT, cleanUsdText, withdrawRate } from './amounts'
+import { BankRow, bankLine, type BankPickerCopy } from '../../../../shared/ui/BankPicker'
+import { usePreview } from '../../../../shared/prototype'
+import { startAddBank, useLinkedBanks } from '../../../../shared/userStatus'
+import { isUsSupported } from '../../../../shared/data/usBanks'
+import { AmountDock, AmountEntry, amountValue, typeAmount } from '../../../../shared/ui/AmountEntry'
+import { formatInr, formatUsd, useUsdInrRate } from '../../../../shared/money'
+import { MIN_WITHDRAW_USD, WALLET_BALANCE_INR, WALLET_BALANCE_USD, WITHDRAWABLE_INR, WITHDRAWABLE_USD, WITHDRAW_QUICK_PERCENT, withdrawRate } from './amounts'
+import { BankPickSheet } from './BankPickSheet'
+import { t } from './copy'
 import { setHandoff, takeHandoff } from './handoff'
 import { infoIcon } from './icons'
 import { FIGMA } from '../wallet/data'
 import { moneyIds } from './ids'
-import { MoneyDock } from './MoneyDock'
 import { WithdrawBreakdownSheet } from './WithdrawBreakdownSheet'
+import { WithdrawableSheet } from './WithdrawableSheet'
 import styles from './Money.module.css'
 
-export function WithdrawScreen({ id, initial, backdrop }: { id: string; initial: number; backdrop?: boolean }) {
+/** Add bank account (the deposit flow's screen; it goes back here when done). */
+const ADD_BANK = 'deposit-12'
+
+/** Dollars as the keypad edits them: "100", "100.5" (no trailing zeros). */
+const toTyped = (usd: number) => (usd > 0 ? String(Math.round(usd * 100) / 100) : '')
+const usdText = (usd: number) => formatUsd(usd, { decimals: usd % 1 ? 2 : 0 })
+const inrText = (inr: number) => formatInr(inr, { decimals: inr % 1 ? 2 : 0 })
+
+/**
+ * `withdrawable` / `balance`: the funded wallet's by default; the retry after a failed withdrawal (us-stocks-111) passes
+ * what is left after the trades.
+ * `wallet="inr"`: the INR wallet's Withdraw (us-stocks-112; 26 Nov, user: the INR wallet's Withdraw went nowhere). The
+ * same screen in ₹: ₹ amount and chips, no "You get ≈ ₹" (it is ₹ already) and no breakdown, any linked bank, the INR
+ * wallet's numbers (₹1,100.00, ₹10.00 withdrawable), back to the INR tab, Withdraw → the INR request placed (us-stocks-113).
+ */
+export function WithdrawScreen({ id, initial, backdrop, wallet = 'usd', withdrawable: withdrawableProp, balance: balanceProp }: { id: string; initial: number; backdrop?: boolean; wallet?: 'usd' | 'inr'; withdrawable?: number; balance?: number }) {
+  const inr = wallet === 'inr'
+  const withdrawable = withdrawableProp ?? (inr ? WITHDRAWABLE_INR : WITHDRAWABLE_USD)
+  const balance = balanceProp ?? (inr ? WALLET_BALANCE_INR : WALLET_BALANCE_USD)
+  const money = inr ? formatInr : formatUsd
+  const amountText = inr ? inrText : usdText
   const { go, back } = useUsNav()
-  // The field's text, in dollars ("100.00").
-  const [text, setText] = useState(() => takeHandoff(id, initial).toFixed(2))
+  const { screenId } = usePreview()
+  const addBank = () => { startAddBank(screenId, { usStocks: !inr }); go(ADD_BANK) }
+  const [typed, setTyped] = useState(() => toTyped(takeHandoff(id, initial)))
   const [showBreakdown, setShowBreakdown] = useState(false)
-  const amount = Number(text || 0)
-  const tooMuch = amount > WITHDRAWABLE_USD
-  const blocked = amount <= 0 || tooMuch
-  const usd = useUsd()
-  // What lands in the bank is genuinely ₹; the rate follows the live rate, plus the bank's spread.
+  const [showWithdrawable, setShowWithdrawable] = useState(false)
+  // US: money goes back to a linked bank US Stocks can use (the ones add money can pay from). INR: any linked bank.
+  const banks = useLinkedBanks()
+  const usable = inr ? banks : banks.filter(isUsSupported)
+  const unsupported = inr ? [] : banks.filter((b) => !isUsSupported(b))
+  const [bankId, setBankId] = useState(usable[0]?.id)
+  const [showBanks, setShowBanks] = useState(false)
+  const bank = usable.find((b) => b.id === bankId) ?? usable[0]
+  const bankCopy: BankPickerCopy = { method: t('withdraw.methodLabel'), addTitle: t('addMoney.addTitle'), addDescription: t('addMoney.addDescription'), sheetTitle: t('withdraw.sheetTitle'), addAnother: t('addMoney.addAnother') }
+  // What lands in the bank is ₹; the rate follows the live rate, plus the bank's spread.
   const rate = withdrawRate(useUsdInrRate())
-  const lands = formatInr(amount * rate, { decimals: 0 })
+  const usd = amountValue(typed)
+  const lands = formatInr(usd * rate, { decimals: 0 })
+  const belowMin = usd > 0 && usd < MIN_WITHDRAW_USD
+  const tooMuch = usd > withdrawable
+  const invalid = usd === 0 || belowMin || tooMuch
+  const limits = { min: money(MIN_WITHDRAW_USD, { decimals: 0 }), max: money(withdrawable) }
+
+  const type = (key: string) => setTyped((v) => typeAmount(v, key, { decimals: 2, maxDigits: 7 }))
+  const withdraw = () => {
+    const placed = inr ? moneyIds.inrPlaced : moneyIds.h10
+    setHandoff(placed, usd)
+    go(placed)
+  }
+
+  const below = tooMuch ? (
+    t('withdraw.errorMax', limits)
+  ) : belowMin ? (
+    t('withdraw.errorMin', limits)
+  ) : usd > 0 && !inr ? (
+    // The ₹ that lands. The limits are the Min / Max chips (26 Nov, user: no limits line, the amounts are on the chips).
+    <Button variant="tertiary" size="sm" iconRight={<Icon icon={infoIcon} size={16} />} aria-label={t('withdraw.getLabel', { inr: lands })} onClick={() => setShowBreakdown(true)} tabIndex={backdrop ? -1 : undefined}>
+      {t('withdraw.get', { inr: lands })}
+    </Button>
+  ) : undefined
 
   return (
     <Phone
-      label="Withdraw USD"
-      header={<Actionbar title="Withdraw USD" onBack={() => back(FIGMA.walletUsActivate)} />}
+      label={t('withdraw.title')}
+      header={
+        <Actionbar title={t('withdraw.title')} description={t('withdraw.available', { amount: money(withdrawable) })} onBack={() => back(inr ? FIGMA.walletInr : FIGMA.walletUsActivate)}
+          // ⓘ: why the withdrawable is less than the wallet (26 Nov, user; the live screen has it on the balance card).
+          actions={<ActionbarAction variant="ghost" icon={msInfo} label={t('withdraw.infoLabel')} onClick={() => setShowWithdrawable(true)} />}
+        />
+      }
       footer={
-        <MoneyDock
-          amount={amount}
-          blocked={blocked}
-          onAdd={() => {
-            setHandoff(moneyIds.h10, amount)
-            go(moneyIds.h10)
-          }}
-          note="Requests before 1 PM IST are reviewed the same day"
-          bankLead="To"
-          cta={amount > 0 ? `Withdraw ${usd(amount)}` : 'Withdraw'}
+        <AmountDock
+          decimal
+          onKey={type}
+          method={<BankRow bank={bank} copy={bankCopy} note={inr ? t('withdraw.landsByInr') : t('withdraw.landsBy')} onChange={() => setShowBanks(true)} onAdd={addBank} />}
+          action={
+            <ButtonGroup aria-label={t('withdraw.title')}>
+              {bank ? (
+                <Button variant="brand" size="lg" fullWidth disabled={invalid} onClick={withdraw}>
+                  {usd > 0 ? t('withdraw.cta', { amount: amountText(usd) }) : t('withdraw.ctaEmpty')}
+                  {/* The ₹ that lands, small, after the $ (as Add money). */}
+                  {!invalid && !inr && <span className={styles.ctaInr}>{t('withdraw.ctaInr', { inr: lands })}</span>}
+                </Button>
+              ) : (
+                <Button variant="primary" size="lg" fullWidth onClick={addBank}>{t('addMoney.addBankCta')}</Button>
+              )}
+            </ButtonGroup>
+          }
         />
       }
     >
-      <div className={styles.content}>
-        <KeyValueList variant="card" className={styles.balanceCard} aria-label="US wallet">
-          <KeyValueRow
-            label="Withdrawable Balance"
-            value={<Usd value={WITHDRAWABLE_USD} align="end" />}
-            valueEnd={<span className={styles.valueIcon} aria-hidden="true"><Icon icon={infoIcon} size={16} /></span>}
-          />
-        </KeyValueList>
-        <div className={styles.amount}>
-          <div className={styles.fieldWrap}>
-            <TextField
-              label="Enter Amount"
-              inputMode="decimal"
-              autoComplete="off"
-              placeholder="$0.00"
-              value={text ? `$${text}` : ''}
-              onChange={(e) => setText(cleanUsdText(e.target.value))}
-              helperText={
-                tooMuch ? (
-                  <span className={styles.error}>Amt. should be less than withdrawable balance</span>
-                ) : (
-                  <>
-                    Min: <Usd value={MIN_WITHDRAW_USD} layout="inline" />
-                    <span className={styles.sep}>|</span>
-                    Max: <Usd value={WITHDRAWABLE_USD} layout="inline" />
-                  </>
-                )
-              }
-              helperIcon={false}
-              aria-invalid={tooMuch || undefined}
-              tabIndex={backdrop ? -1 : undefined}
-            />
-            {amount > 0 && (
-              <button type="button" className={styles.conversion} onClick={() => setShowBreakdown(true)} aria-label={`About ${lands}: see the breakdown`}>
-                ≈ {lands}
-                <Icon icon={infoIcon} size={16} />
-              </button>
-            )}
-          </div>
-          <div className={styles.chips}>
-            {/* FLAG: percent chips are L3 Tab (appearance="pill", action) used as buttons — no L3 chip for this. */}
-            {WITHDRAW_QUICK_PERCENT.map((percent) => (
-              <Tab
-                key={percent}
-                action
-                appearance="pill"
-                emphasis="tertiary"
-                className={styles.chip}
-                onClick={() => setText((WITHDRAWABLE_USD * percent / 100).toFixed(2))}
-                aria-label={`${percent}% of withdrawable balance`}
-              >
+      <AmountEntry
+        amount={typed}
+        currency={inr ? '₹' : '$'}
+        error={belowMin || tooMuch}
+        below={below}
+        chips={
+          // FLAG: percent chips are L3 Tab (appearance="pill", action) used as buttons — no L3 chip for this.
+          <Stack direction="horizontal" gap="08" justify="center">
+            {/* Min $1, the percents, Max $X: the chips carry the limits (26 Nov, user). */}
+            <Tab action appearance="pill" emphasis="tertiary" onClick={() => setTyped(toTyped(MIN_WITHDRAW_USD))} aria-label={t('withdraw.chipMinLabel', limits)} tabIndex={backdrop ? -1 : undefined}>
+              {t('withdraw.chipMin', limits)}
+            </Tab>
+            {WITHDRAW_QUICK_PERCENT.filter((percent) => percent < 100).map((percent) => (
+              <Tab key={percent} action appearance="pill" emphasis="tertiary" onClick={() => setTyped(toTyped(withdrawable * percent / 100))} aria-label={t('withdraw.chipLabel', { percent })} tabIndex={backdrop ? -1 : undefined}>
                 {`${percent}%`}
               </Tab>
             ))}
-          </div>
-        </div>
-      </div>
-      <WithdrawBreakdownSheet open={showBreakdown} onClose={() => setShowBreakdown(false)} amount={amount} rate={rate} />
+            <Tab action appearance="pill" emphasis="tertiary" onClick={() => setTyped(toTyped(withdrawable))} aria-label={t('withdraw.chipMaxLabel', limits)} tabIndex={backdrop ? -1 : undefined}>
+              {t('withdraw.chipMax', limits)}
+            </Tab>
+          </Stack>
+        }
+      />
+      {bank && <BankPickSheet open={showBanks} banks={usable} unsupported={unsupported} selected={bank.id} copy={bankCopy} onSelect={setBankId} onAdd={() => { setShowBanks(false); addBank() }} onClose={() => setShowBanks(false)} />}
+      <WithdrawableSheet open={showWithdrawable} onClose={() => setShowWithdrawable(false)} balance={balance} withdrawable={withdrawable} format={money} />
+      {!inr && <WithdrawBreakdownSheet open={showBreakdown} onClose={() => setShowBreakdown(false)} amount={usd} rate={rate} to={bank ? bankLine(bank) : undefined} />}
     </Phone>
+  )
+}
+```
+
+### `src/flows/us-stocks/screens/money/WithdrawableSheet.tsx`
+
+```tsx
+// "Withdrawable balance" sheet, opened from the ⓘ in Withdraw's Actionbar (26 Nov, user: the live Withdraw screen has an ⓘ
+// on its withdrawable balance). Why the withdrawable is less than the wallet: money from shares sold settles first.
+// Numbers default to the funded USD wallet (total $520.40, withdrawable $417.03); the retry after a failed withdrawal
+// passes its own. No settling row when nothing is settling.
+import { BottomSheet, BottomSheetHeader } from '@l3/components/BottomSheet'
+import { Button } from '@l3/components/Button'
+import { ButtonGroup } from '@l3/components/ButtonGroup'
+import { KeyValueList, KeyValueRow } from '@l3/components/KeyValueList'
+import { useSheetLayer } from '../../components/Phone'
+import { formatUsd } from '../../../../shared/money'
+import { WALLET_BALANCE_USD, WITHDRAWABLE_USD } from './amounts'
+import { t } from './copy'
+
+export function WithdrawableSheet({ open, onClose, balance = WALLET_BALANCE_USD, withdrawable = WITHDRAWABLE_USD, format = formatUsd }: { open: boolean; onClose: () => void; balance?: number; withdrawable?: number; /** formatInr for the INR wallet */ format?: (n: number) => string }) {
+  const settling = balance - withdrawable
+  const layer = useSheetLayer()
+  return (
+    <BottomSheet
+      open={open}
+      onClose={onClose}
+      container={layer}
+      aria-labelledby="withdrawable-title"
+      header={<BottomSheetHeader heading={t('withdraw.withdrawableTitle')} headingId="withdrawable-title" description={t('withdraw.withdrawableBody')} />}
+      footer={
+        <ButtonGroup aria-label={t('withdraw.withdrawableTitle')}>
+          <Button variant="primary" size="lg" fullWidth onClick={onClose}>{t('withdraw.gotIt')}</Button>
+        </ButtonGroup>
+      }
+    >
+      <KeyValueList aria-label={t('withdraw.withdrawableTitle')} total={{ label: t('withdraw.withdrawableTotal'), value: format(withdrawable) }}>
+        <KeyValueRow label={t('withdraw.walletBalance')} value={format(balance)} />
+        {settling > 0.004 && <KeyValueRow label={t('withdraw.settling')} value={`−${format(settling)}`} />}
+      </KeyValueList>
+    </BottomSheet>
   )
 }
 ```
@@ -37267,6 +37275,8 @@ export function inrForUsd(usd: number, rate: number): number {
 export const WITHDRAW_RATE_SPREAD = 0.93
 /** Withdraw rate, ₹ per $: the live rate + the bank's spread. */
 export const withdrawRate = (liveRate: number) => Math.round((liveRate + WITHDRAW_RATE_SPREAD) * 100) / 100
+/** US wallet balance, $ (the funded wallet: $520.40, of which $417.03 is withdrawable). */
+export const WALLET_BALANCE_USD = 520.4
 /** Withdrawable US wallet balance, $. */
 export const WITHDRAWABLE_USD = 417.03
 /** Smallest withdrawal, $. */
@@ -37274,11 +37284,17 @@ export const MIN_WITHDRAW_USD = 1
 /** The "% of balance" chips. */
 export const WITHDRAW_QUICK_PERCENT = [25, 50, 75, 100]
 
-/** Text typed in the $ field → digits with at most 2 decimals. */
-export function cleanUsdText(text: string): string {
-  const [whole, ...rest] = text.replace(/[^0-9.]/g, '').split('.')
-  return rest.length ? `${whole}.${rest.join('').slice(0, 2)}` : whole
-}
+/**
+ * Withdrawal failed (26 Nov, user): a $100 withdrawal placed, then $480 of shares bought with the wallet before it was
+ * processed (11 AM next day). The wallet ($520.40) is down to $40.40, less than the $100 asked for, so the withdrawal
+ * fails and nothing leaves the wallet. Retry withdraws what is there now.
+ */
+export const FAILED_WITHDRAWAL_USD = 100
+export const AFTER_TRADES_USD = 40.4
+
+/** INR wallet (as its wallet page and Balance Details): ₹1,100.00, of which ₹10.00 withdrawable; the rest is settling. */
+export const WALLET_BALANCE_INR = 1100
+export const WITHDRAWABLE_INR = 10
 ```
 
 ### `src/flows/us-stocks/screens/money/components/MaskImage.tsx`
@@ -37410,6 +37426,12 @@ export const moneyIds = {
   h08: '5852:100550',
   /** H09 · Withdraw · more than withdrawable */
   h09: '5852:100492',
+  /** Withdraw again after a withdrawal failed (used for trades): what is withdrawable now, prefilled (not in Figma) */
+  retry: '9001:75',
+  /** Withdraw from the INR wallet (not in Figma) */
+  inr: '9001:76',
+  /** INR withdraw request placed (not in Figma) */
+  inrPlaced: '9001:77',
   /** H10 · Withdraw request placed */
   h10: '5852:100472',
   /** Wallet · US tab · active (screen of the wallet part) */
@@ -37431,6 +37453,7 @@ import { BankAppScreen } from './BankAppScreen'
 import { moneyIds } from './ids'
 import { WithdrawPlacedScreen } from './WithdrawPlacedScreen'
 import { WithdrawScreen } from './WithdrawScreen'
+import { AFTER_TRADES_USD } from './amounts'
 
 // M01 · enter $ ($1,000) — Groww-style $ entry; the ₹ cost is the line under the amount
 const AddMoneyEnter = ({ backdrop }: { backdrop?: boolean }) => <AddMoneyScreen id={moneyIds.m01} initial={50} backdrop={backdrop} />
@@ -37448,6 +37471,11 @@ const AddMoneyBanks = ({ backdrop }: { backdrop?: boolean }) => <AddMoneyScreen 
 // H08 · withdraw $100 · H09 · withdraw $500 (more than the withdrawable balance: error state)
 const WithdrawEnter = ({ backdrop }: { backdrop?: boolean }) => <WithdrawScreen id={moneyIds.h08} initial={100} backdrop={backdrop} />
 const WithdrawTooMuch = ({ backdrop }: { backdrop?: boolean }) => <WithdrawScreen id={moneyIds.h09} initial={500} backdrop={backdrop} />
+// Retry after a withdrawal failed because the money went into trades: the $40.40 left, prefilled, and the most there is
+const WithdrawRetry = ({ backdrop }: { backdrop?: boolean }) => <WithdrawScreen id={moneyIds.retry} initial={AFTER_TRADES_USD} withdrawable={AFTER_TRADES_USD} balance={AFTER_TRADES_USD} backdrop={backdrop} />
+// INR wallet: withdraw ₹10 (all that is withdrawable) and its request placed (not in Figma)
+const WithdrawInr = ({ backdrop }: { backdrop?: boolean }) => <WithdrawScreen id={moneyIds.inr} wallet="inr" initial={10} backdrop={backdrop} />
+const WithdrawInrPlaced = () => <WithdrawPlacedScreen wallet="inr" initial={10} />
 // H10 · request placed
 const WithdrawPlaced = () => <WithdrawPlacedScreen initial={100} />
 
@@ -37463,6 +37491,9 @@ export const screens: UsScreenMap = {
   [moneyIds.h08]: WithdrawEnter,
   [moneyIds.h09]: WithdrawTooMuch,
   [moneyIds.h10]: WithdrawPlaced,
+  [moneyIds.retry]: WithdrawRetry,
+  [moneyIds.inr]: WithdrawInr,
+  [moneyIds.inrPlaced]: WithdrawInrPlaced,
 }
 ```
 
@@ -47144,7 +47175,8 @@ export const INR_VIEW = {
   inr: true,
   total: '₹1,100.00',
   withdrawable: '₹10.00',
-  dock: { primary: 'Deposit', primaryTo: 'deposit-09' } as WalletDock,
+  // Withdraw → the INR Withdraw (26 Nov, user: it went nowhere).
+  dock: { primary: 'Deposit', primaryTo: 'deposit-09', withdrawTo: moneyIds.inr } as WalletDock,
   children: undefined,
 } as const
 
@@ -47337,13 +47369,16 @@ export function WalletScreen(props: WalletScreenProps) {
 // The wallet's Figma frames. Each one is the shared WalletScreen with different data.
 import { useState } from 'react'
 import { useUsNav } from '../../nav'
-import { Usd } from '../../../../shared/money'
+import { Usd, formatUsd } from '../../../../shared/money'
 import { FIGMA, WITHDRAWAL_REQUESTS } from './data'
 import { WalletScreen, type WalletDock, type WalletScreenProps, type WalletTab } from './WalletScreen'
 import { DepositProgressSheet } from './sheets/DepositProgressSheet'
 import { depositOnTheWay, depositsTotal, REFUND_DAYS, useDepositsOnTheWay } from '../../../../shared/data/usDeposit'
 import { CancelWithdrawalSheet } from './sheets/CancelWithdrawalSheet'
 import { WithdrawalRequestsSheet } from './sheets/WithdrawalRequestsSheet'
+import { WithdrawFailedSheet } from './sheets/WithdrawFailedSheet'
+import { AFTER_TRADES_USD, FAILED_WITHDRAWAL_USD } from '../money/amounts'
+import { t } from '../money/copy'
 
 /** `openOn`: the tab the wallet opens on (INR for W0 · Indian tab); the other tab flips in place. */
 type ScreenProps = { backdrop?: boolean; openOn?: WalletTab }
@@ -47563,6 +47598,36 @@ export function WalletWithdrawalDelayedScreen({ backdrop, openOn }: ScreenProps)
     />
   )
 }
+
+/**
+ * W3e · Withdrawal failed (26 Nov, user; not in Figma): a $100 withdrawal placed, then shares bought with the money before
+ * it was processed. The wallet is down to $40.40, the withdrawal didn't go through and nothing left the wallet. A red bar
+ * says so; tapping it opens the sheet (why, what's withdrawable now, Withdraw $40.40 → Withdraw prefilled with it).
+ * `open`: the sheet is up on arrival (us-stocks-110).
+ */
+export function WalletWithdrawalFailedScreen({ backdrop, openOn, open }: ScreenProps & { open?: boolean }) {
+  const { go } = useUsNav()
+  const [showing, setShowing] = useState(!!open && !backdrop)
+  const balance = formatUsd(AFTER_TRADES_USD)
+  return (
+    <WalletScreen
+      label="Wallet, USD, withdrawal failed"
+      backdrop={backdrop}
+      tab={openOn}
+      total={balance}
+      withdrawable={balance}
+      details
+      dock={{ primary: 'Deposit', primaryTo: FIGMA.addMoney, withdrawTo: FIGMA.withdrawRetry }}
+      pending={{
+        title: <><Usd value={FAILED_WITHDRAWAL_USD} layout="inline" /> withdrawal didn&apos;t go through</>,
+        sub: t('withdrawFailed.bar'),
+        onOpen: () => !backdrop && setShowing(true),
+        failed: true,
+      }}
+      sheet={showing && <WithdrawFailedSheet requested={FAILED_WITHDRAWAL_USD} withdrawable={AFTER_TRADES_USD} onClose={() => setShowing(false)} onRetry={() => go(FIGMA.withdrawRetry)} />}
+    />
+  )
+}
 ```
 
 ### `src/flows/us-stocks/screens/wallet/data.ts`
@@ -47603,6 +47668,12 @@ export const FIGMA = {
   twoWithdrawals: '5852:98614',
   /** W3c · Withdrawal requests sheet. */
   withdrawalRequests: '5852:98522',
+  /** W3e · Withdrawal failed: used for trades before it was processed (not in Figma, 26 Nov). */
+  withdrawalFailed: '9001:73',
+  /** The same with its sheet open. */
+  withdrawalFailedSheet: '9001:74',
+  /** Withdraw again after it failed: what is withdrawable now, prefilled. */
+  withdrawRetry: '9001:75',
   /** All transactions, opened on the INR tab (no Figma frame of ours; design: Kuber Spot → V2, 5219:109907). */
   transactionsInr: '9001:64',
   /** All transactions, opened on the USD tab. */
@@ -47761,6 +47832,7 @@ import {
   WalletUsActivateScreen,
   WalletWithdrawalCreditedScreen,
   WalletWithdrawalDelayedScreen,
+  WalletWithdrawalFailedScreen,
   WalletWithdrawalInProgressScreen,
   WalletWithdrawalRequestsScreen,
   WalletWithdrawalSentScreen,
@@ -47810,6 +47882,8 @@ export const screens: UsScreenMap = {
   '5852:98614': WalletTwoWithdrawalsScreen,
   '5852:98522': WalletWithdrawalRequestsScreen,
   '5852:98459': WalletWithdrawalDelayedScreen,
+  [FIGMA.withdrawalFailed]: WalletWithdrawalFailedScreen,
+  [FIGMA.withdrawalFailedSheet]: (props) => <WalletWithdrawalFailedScreen {...props} open />,
   [FIGMA.transactionsInr]: (props) => <AllTransactionsScreen {...props} tab="inr" />,
   [FIGMA.transactionsUsd]: (props) => <AllTransactionsScreen {...props} tab="usd" />,
 }
@@ -48356,6 +48430,59 @@ export function TransactionSheet({ transaction: tx, onClose }: { transaction: Tr
         </KeyValueList>
         {message && <Aerobar floating placement="inline" type={message.type} paragraph={message.text} />}
       </Section>
+    </BottomSheet>
+  )
+}
+```
+
+### `src/flows/us-stocks/screens/wallet/sheets/WithdrawFailedSheet.tsx`
+
+```tsx
+// Withdrawal failed (26 Nov, user): the user placed a withdrawal, then bought shares with the same money before it was
+// processed, so the wallet held less than the amount asked for and the withdrawal didn't go through. Opened from the red
+// bar on the wallet. Says why, that nothing left the wallet, and offers to withdraw what is there now (a money button:
+// brand). Under the $1 minimum there's nothing to retry: one Got it.
+import { BottomSheet, BottomSheetHeader } from '@l3/components/BottomSheet'
+import { Button } from '@l3/components/Button'
+import { ButtonGroup } from '@l3/components/ButtonGroup'
+import { KeyValueList, KeyValueRow } from '@l3/components/KeyValueList'
+import { msErrorFill } from '@l3/icons/material'
+import { useSheetLayer } from '../../../components/Phone'
+import { formatUsd } from '../../../../../shared/money'
+import { Spot } from '../../../../../shared/ui/Spot'
+import { MIN_WITHDRAW_USD } from '../../money/amounts'
+import { t } from '../../money/copy'
+
+const HEADING_ID = 'withdraw-failed-title'
+
+export function WithdrawFailedSheet({ requested, withdrawable, onRetry, onClose }: { requested: number; withdrawable: number; onRetry: () => void; onClose: () => void }) {
+  const layer = useSheetLayer()
+  const title = t('withdrawFailed.title', { amount: formatUsd(requested) })
+  const canRetry = withdrawable >= MIN_WITHDRAW_USD
+  return (
+    <BottomSheet
+      open
+      onClose={onClose}
+      container={layer}
+      aria-labelledby={HEADING_ID}
+      header={<BottomSheetHeader size="lg" headingId={HEADING_ID} icon={<Spot icon={msErrorFill} tone="error" size="md" />} heading={title} description={t('withdrawFailed.body')} />}
+      footer={
+        <ButtonGroup aria-label={title}>
+          {canRetry ? (
+            <>
+              <Button variant="brand" size="lg" fullWidth onClick={onRetry}>{t('withdrawFailed.retry', { amount: formatUsd(withdrawable) })}</Button>
+              <Button variant="secondary" size="lg" fullWidth onClick={onClose}>{t('withdrawFailed.notNow')}</Button>
+            </>
+          ) : (
+            <Button variant="primary" size="lg" fullWidth onClick={onClose}>{t('withdrawFailed.gotIt')}</Button>
+          )}
+        </ButtonGroup>
+      }
+    >
+      <KeyValueList variant="card" aria-label={title}>
+        <KeyValueRow label={t('withdrawFailed.requested')} value={formatUsd(requested)} />
+        <KeyValueRow label={t('withdrawFailed.now')} value={formatUsd(withdrawable)} />
+      </KeyValueList>
     </BottomSheet>
   )
 }
@@ -75297,6 +75424,84 @@ export function SheetHost({ container, children }: { container: HTMLElement | nu
         </BottomSheet>
       )}
     </SheetHostContext.Provider>
+  )
+}
+```
+
+### `src/shared/ui/Spot.module.css`
+
+```css
+/*
+ * Illustration slot: a large icon on a soft accent disc with a faint outer ring. Stands in for artwork L3 doesn't have
+ * yet (lemon mascot, PAN card, bank, coin …) — swap the whole <Spot> for the illustration when it exists.
+ */
+.spot {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--l3-radius-full);
+  background: var(--spot-surface);
+  color: var(--spot-content);
+}
+
+.spot[data-size='md'] {
+  width: var(--l3-size-64);
+  height: var(--l3-size-64);
+}
+
+.spot[data-size='lg'] {
+  width: var(--l3-size-96);
+  height: var(--l3-size-96);
+}
+
+/* The halo: one hairline ring 12 outside the disc, in the same accent (lg only — the hero moments). */
+.spot[data-size='lg']::after {
+  content: '';
+  position: absolute;
+  inset: calc(-1 * var(--l3-spacing-12));
+  border: 1px solid var(--spot-surface);
+  border-radius: var(--l3-radius-full);
+}
+
+.glyph {
+  width: var(--l3-size-32);
+  height: var(--l3-size-32);
+}
+
+.spot[data-size='lg'] .glyph {
+  width: var(--l3-size-48);
+  height: var(--l3-size-48);
+}
+
+.spot[data-tone='brand'] { --spot-surface: var(--l3-surface-accent-brand-light); --spot-content: var(--l3-content-primary); }
+.spot[data-tone='discover'] { --spot-surface: var(--l3-surface-accent-discover-light); --spot-content: var(--l3-content-accent-discover-default); }
+.spot[data-tone='success'] { --spot-surface: var(--l3-surface-accent-success-light); --spot-content: var(--l3-content-accent-success-default); }
+.spot[data-tone='warning'] { --spot-surface: var(--l3-surface-accent-warning-light); --spot-content: var(--l3-content-accent-warning-default); }
+.spot[data-tone='error'] { --spot-surface: var(--l3-surface-accent-error-light); --spot-content: var(--l3-content-accent-error-default); }
+.spot[data-tone='plain'] { --spot-surface: var(--l3-surface-default); --spot-content: var(--l3-content-primary); }
+.spot[data-tone='neutral'] { --spot-surface: var(--l3-surface-secondary); --spot-content: var(--l3-content-primary); }
+```
+
+### `src/shared/ui/Spot.tsx`
+
+```tsx
+import { Icon } from '@l3/components/Icon'
+import styles from './Spot.module.css'
+
+export type SpotTone = 'brand' | 'discover' | 'success' | 'warning' | 'error' | 'neutral' | 'plain'
+
+/**
+ * ILLUSTRATION SLOT — a large icon on a soft accent disc (md 64 / lg 96 with a halo). Used where the app has artwork
+ * (mascot, PAN card, bank, coin) until L3 has an illustration set; replace the <Spot> with the artwork 1:1.
+ * Tone by meaning: brand = welcome moments, plain = on a brand panel, discover = info / in progress, success / warning / error = outcomes.
+ */
+export function Spot({ icon, tone = 'brand', size = 'lg' }: { icon: string; tone?: SpotTone; size?: 'md' | 'lg' }) {
+  return (
+    <span className={styles.spot} data-tone={tone} data-size={size} aria-hidden="true" data-illustration-slot="">
+      <Icon icon={icon} className={styles.glyph} />
+    </span>
   )
 }
 ```

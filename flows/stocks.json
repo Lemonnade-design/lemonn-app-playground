@@ -292,6 +292,26 @@
       "figmaUrl": ""
     },
     {
+      "id": "stocks-50",
+      "name": "Stock · F&O",
+      "figma": "",
+      "note": "Only for stocks traded in F&O (most large caps; the API says per stock): a third tab after Overview and Events, redone in L3 from the live app. Open Interest (OI): total put and call OI, a put | call split bar (L3 gap: no split ProgressBar), the put : call ratio. Top options by trade volume (or price, via the Volume ⇅ select), All / Call / Put; a row opens the option chain. Other {symbol} Futures: the three monthly futures as cards that swipe sideways, near month first. On this tab the dock is Option Chain (fno-17) · ScalpPro (fno-05). Shown on Reliance.",
+      "goesTo": [
+        "stocks-01"
+      ],
+      "figmaUrl": ""
+    },
+    {
+      "id": "stocks-51",
+      "name": "Stock · no F&O",
+      "figma": "",
+      "note": "A stock not traded in F&O (South Indian Bank): Overview and Events only, the usual SIP · Buy · Sell dock.",
+      "goesTo": [
+        "stocks-01"
+      ],
+      "figmaUrl": ""
+    },
+    {
       "id": "stocks-38",
       "name": "Performance (ⓘ)",
       "figma": "",
@@ -357,6 +377,7 @@
     "src/flows/stocks/assets/shortcuts/referral.svg",
     "src/flows/stocks/assets/shortcuts/watchlist.svg",
     "src/flows/stocks/assets/shortcuts/zing.svg",
+    "src/flows/stocks/assets/sip-icon.svg",
     "src/flows/stocks/assets/us/benefit-bolt.svg",
     "src/flows/stocks/assets/us/card/etfs.svg",
     "src/flows/stocks/assets/us/card/picks.svg",
@@ -420,6 +441,7 @@
     "src/flows/stocks/components/ProductRowF1.tsx",
     "src/flows/stocks/components/ShortcutArt.tsx",
     "src/flows/stocks/components/StockEvents.tsx",
+    "src/flows/stocks/components/StockFno.tsx",
     "src/flows/stocks/components/StockOverview.tsx",
     "src/flows/stocks/components/TopBar.module.css",
     "src/flows/stocks/components/TopBar.tsx",
