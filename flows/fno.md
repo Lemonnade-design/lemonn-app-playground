@@ -553,6 +553,7 @@ The source uses old D2 controls alongside L3; their code equivalents are L3 comp
 - Section header size: L3 SectionHeader's title is heading-14 with no size option; fno-38's month titles are set to heading-20 locally (`.calendarMonthHead h2`).
 
 ### Changelog
+- 2026-11-26 — V5 View all: the note's bulb sits 1 higher so it lines up with its text.
 - 2026-11-26 — **Final: Expiring This Week is V5 · Timeline only.** V1–V4, V6 and the settings Expiring This Week, Timeline and Event phase archived (`archive/AllEventsVersions.tsx`, `archive/ExpiringDayPicker.tsx`, `archive/ExpiryTimeline.tsx`). Dev link `#/fno-08`.
 - 2026-11-26 — V5 home timeline shows only the first 3 cards (both options); View all has them all.
 - 2026-11-26 — V5 View all: no Live / In 2 hours tags (the blinking node shows live); home keeps them.
@@ -4010,7 +4011,8 @@ h�Ҝÿ}�`l��&0:s9Ї�Guw�,�H&��Z�qؒ~�y�Jot��
 .footer { display: flex; flex-direction: column; gap: var(--l3-spacing-06); }
 .rule { height: 1px; margin-inline: var(--l3-spacing-16); background: var(--l3-border-light); } /* 1px hairline */
 .note { display: flex; align-items: center; gap: var(--l3-spacing-08); min-height: var(--l3-size-24); padding-inline: var(--l3-spacing-12); }
-.bulb { flex: none; transform: scaleY(-1); color: var(--l3-content-secondary); }
+/* The bulb (flipped upright) sits 1 higher: its screw base hangs below the text baseline, so centred it reads low. */
+.bulb { flex: none; transform: translateY(calc(-0.5 * var(--l3-spacing-02))) scaleY(-1); color: var(--l3-content-secondary); }
 .noteLine { display: inline-flex; align-items: center; min-width: 0; font: var(--l3-text-label-10); color: var(--l3-content-primary); white-space: nowrap; }
 .move { display: inline-flex; align-items: center; font: var(--l3-text-heading-10); color: var(--l3-content-accent-error-default); }
 .move[data-up='true'] { color: var(--l3-content-accent-success-default); }
