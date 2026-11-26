@@ -201,7 +201,9 @@ Every tap he wired is kept. The main path: FTUX sheet → Activate → Declarati
 → Pay on bank → Money ready → Stock → Buy → Executed → Wallet → Withdraw.
 
 ### Changelog
-- 2026-11-26 · Portfolio → Holdings: new option "Holdings market switch". V2 (default) · an L3 pill group (IN Stocks / US Stocks, flags) where the "Your holdings" heading was, Sort (Tertiary Small) on its right, no underline tabs above, 24 below the cards; V1 · the underline tabs over the heading, as before. The page dots under the P&L cards are gone (both versions).
+- 2026-11-26 · Portfolio → Holdings (V2): the IN / US pill tabs show each market's holdings count in the label, "IN Stocks (2)" (none when the market is empty); a hairline separates the P&L cards from the switch, as on Positions (24 above it, 24 below), and the sheet is one level (the padded sheet holds the switch row and the list; no SheetContent wrapper).
+- 2026-11-26 · Portfolio → Orders: the two control rows (IND / US switch + Open · SIP · History, and All orders + Filters) are in the Actionbar's bottom slot under the section tabs, so they stay put while the orders scroll (12 above, between and below; the list starts 16 under the bar). OrdersTab is now `useOrdersTab()` → `{ controls, list }`.
+- 2026-11-26 · Portfolio → Holdings: new option "Holdings market switch". V2 (default) · an L3 pill group (IN Stocks / US Stocks, flags) where the "Your holdings" heading was, Sort (Ghost Small) on its right, no underline tabs above, 24 below the cards; V1 · the underline tabs over the heading, as before. The page dots under the P&L cards are gone (both versions).
 - 2026-11-26 · Portfolio → Positions: one level less (the indices are one Section 24 / 12; the positions sheet is the content block itself, 16 sides, 24 top and bottom). A hairline separates the two; "Your positions" has a settings button (Tertiary Small, icon only) right of Refresh. Orders by date: 16 between an open day's last card and the next day's line.
 - 2026-11-26 · Portfolio empty states: new app setting "User status → Indian stocks" (Holdings & orders · Empty). Empty: Holdings IN shows "Build Wealth with Stocks" (Explore Stocks → Stocks home) and ₹0.00 on the IN P&L card (no MTF switch); Orders IND Open / SIP / History show their empty states with (0) counts. US empties follow User account state as before; Positions is always empty.
 - 2026-11-26 · Portfolio → Orders: the cards are grouped by the day they were placed (OrderDateGroups), IND and US, Open and History. Each day is a plain L3 List cell (date + chevron, no side inset, 44 tall) with a hairline between days; the newest day starts open. L3 gap: no disclosure row (aria-expanded).
@@ -22466,6 +22468,7 @@ export function UsMainNav({ value }: { value: Section }) {
   "portfolio.tab.orders": "Orders",
   "portfolio.indices": "Market Indices",
   "portfolio.expiresToday": "Expires today",
+  "portfolio.marketWithCount": "{market} ({count})",
   "portfolio.positionSettings": "Positions settings",
   "portfolio.positions": "Your positions",
   "portfolio.refresh": "Refresh",
@@ -28820,16 +28823,17 @@ export function MutualFundHomeScreen() {
 // NOTE: the US-market banner the Figma frames show ("opens tonight" / "LIVE till 2:30 AM IST") is no longer drawn, so
 // the two Figma variants (before / after 8 PM IST) render the same.
 // FLAG: redraws the app's Portfolio tab (no portfolio flow in src/flows yet) for this prototype.
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import { Actionbar } from '@l3/components/Actionbar'
 import { Section } from '@l3/components/Section'
+import { Stack } from '@l3/components/Stack'
 import { Phone } from '../../components/Phone'
 import { UsMainNav } from '../../components/UsMainNav'
 import { useUsNav } from '../../nav'
 import { useUsMarketSnapshot } from '../../../../shared/data/usStocks'
 import { useUsJourney } from '../../../../shared/userStatus'
 import type { HoldingsMarket } from './components/HoldingsCards'
-import { OrdersTab } from './components/OrdersTab'
+import { useOrdersTab } from './components/OrdersTab'
 import { SlidingTabs } from './components/SlidingTabs'
 import { neighbour, useSwipePages } from './components/swipePages'
 import { t } from './copy'
@@ -28852,6 +28856,8 @@ export function PortfolioScreen({ tab: initialTab = 'holdings', market: initialM
   const [market, setMarket] = useState<HoldingsMarket>(initialMarket)
   const [sort, setSort] = useState<SortValue>({ key: 'current', dir: 'desc' })
   const [sortOpen, setSortOpen] = useState(false)
+  // Orders' two control rows stay put on scroll (26 Nov, user): they go in the Actionbar's bottom slot, under the tabs.
+  const orders = useOrdersTab(initialMarket === 'us' ? 'us' : 'in')
 
   const swipe = useSwipePages({
     canGo: (direction) => !!neighbour(portfolioTabs, tab, direction),
@@ -28874,14 +28880,17 @@ export function PortfolioScreen({ tab: initialTab = 'holdings', market: initialM
           title={t('portfolio.title')}
           actions={<SearchWalletActions searchLabel={t('portfolio.search')} walletLabel={t('portfolio.wallet')} onSearch={() => go(SEARCH)} onWallet={() => go(usActive ? WALLET_US : WALLET)} />}
           bottom={
-            <SlidingTabs
-              appearance="underline"
-              aria-label={t('portfolio.sections')}
-              width="auto"
-              value={tab}
-              onChange={(value) => pickTab(value as PortfolioTab)}
-              items={portfolioTabs.map((value) => ({ value, label: t(`portfolio.tab.${value}`) }))}
-            />
+            <Stack gap="00">
+              <SlidingTabs
+                appearance="underline"
+                aria-label={t('portfolio.sections')}
+                width="auto"
+                value={tab}
+                onChange={(value) => pickTab(value as PortfolioTab)}
+                items={portfolioTabs.map((value) => ({ value, label: t(`portfolio.tab.${value}`) }))}
+              />
+              {tab === 'orders' && orders.controls}
+            </Stack>
           }
         />
       }
@@ -28905,18 +28914,18 @@ export function PortfolioScreen({ tab: initialTab = 'holdings', market: initialM
       {tab === 'holdings' && <HoldingsTab key={tab} market={market} onMarket={setMarket} sort={sort} onSort={() => setSortOpen(true)} sheetRef={swipe.contentRef} />}
       {tab === 'orders' && (
         <PortfolioPage key={tab} flat sheetRef={swipe.contentRef}>
-          <OrdersPage market={market} />
+          <OrdersPage>{orders.list}</OrdersPage>
         </PortfolioPage>
       )}
     </Phone>
   )
 }
 
-/** Orders sits 16 from the top of its square sheet and from its sides. */
-function OrdersPage({ market }: { market: HoldingsMarket }) {
+/** Orders' list (its control rows are in the Actionbar): 16 from the bar (the sheet's 8 + 8) and from the sides. */
+function OrdersPage({ children }: { children: ReactNode }) {
   return (
     <Section paddingInline="16" paddingBlock="08" className={styles.grow}>
-      <OrdersTab initialMarket={market === 'us' ? 'us' : undefined} />
+      {children}
     </Section>
   )
 }
@@ -30144,6 +30153,13 @@ export function MaskImg({ src, w, h = w, className }: { src: string; w: number; 
   margin: 0;
   padding: 0 0 var(--l3-spacing-16);
 }
+
+/* The two control rows in Portfolio's Actionbar (sticky, 26 Nov): the Section brings the spacing, so the rows drop their
+   own bottom margins. */
+.bar > .tabRow,
+.bar > .pickerRow {
+  margin: 0;
+}
 ```
 
 ### `src/flows/us-stocks/screens/entry/components/OrdersTab.tsx`
@@ -30169,6 +30185,7 @@ import { Button } from '@l3/components/Button'
 import { EmptyState } from '@l3/components/EmptyState'
 import { Icon } from '@l3/components/Icon'
 import { lmSwitchArrowVertical } from '@l3/components/icons/glyphs'
+import { Section } from '@l3/components/Section'
 import { Select } from '@l3/components/Select'
 import { Stack } from '@l3/components/Stack'
 import { Tab, Tabs } from '@l3/components/Tabs'
@@ -30218,10 +30235,11 @@ let lastFilters: OrderFilters = NO_FILTERS
 const EMPTY_KIND: Record<OrderKind, string> = { all: '', stock: ' of stocks', etf: ' of ETFs' }
 
 /**
- * `banner` is a slot between the tabs and the empty state (the US-market banner, which the current build no longer passes).
- * `initialMarket` opens the tab on the US side (e.g. from a US screen); the switcher still flips it.
+ * The Orders tab in two parts (26 Nov, the user: "the top two tab rows will be fixed on scroll"): `controls` — the
+ * IND / US switch with Open · SIP · History, and the All orders + Filters row — which Portfolio puts in its Actionbar's
+ * bottom slot so they stay put; `list` — the orders by date (or the empty state), which scrolls.
  */
-export function OrdersTab({ banner, initialMarket = 'in' }: { banner?: ReactNode; initialMarket?: OrderMarket }) {
+export function useOrdersTab(initialMarket: OrderMarket = 'in'): { controls: ReactNode; list: ReactNode } {
   // Back from Indian Order Details: the IND side and the list the order was in (read once, then cleared).
   const [fromIn] = useState(() => inOrdersReturn.pending)
   useEffect(() => { inOrdersReturn.pending = false }, [])
@@ -30249,8 +30267,18 @@ export function OrdersTab({ banner, initialMarket = 'in' }: { banner?: ReactNode
   // US has no SIP tab: coming over from SIP lands on Open.
   const usList: UsList = tab === 'history' ? 'history' : 'open'
 
-  return (
-    <div className={styles.orders}>
+  const usProps = { list: usList, orders: lists[usList], kind, onKind: setKind, filters, onFilters: setFilters }
+  const inProps = {
+    list: tab === 'history' ? ('history' as const) : ('open' as const),
+    orders: tab === 'history' ? inHistory : inOpen,
+    product: inProduct,
+    onProduct: setInProduct,
+    filters: inFilters,
+    onFilters: setInFilters,
+  }
+  // In the Actionbar's bottom slot: 16 at the sides, 12 above and below, 12 between the two rows (L3 chip row in a bar).
+  const controls = (
+    <Section paddingInline="16" paddingBlock="12" gap="12" className={styles.bar}>
       <div className={styles.tabRow}>
         <Select
           size="md"
@@ -30296,18 +30324,14 @@ export function OrdersTab({ banner, initialMarket = 'in' }: { banner?: ReactNode
           />
         )}
       </div>
-      {banner}
-      {market === 'us' ? (
-        <UsOrders list={usList} orders={lists[usList]} kind={kind} onKind={setKind} filters={filters} onFilters={setFilters} />
+      {market === 'us' ? <UsOrders part="controls" {...usProps} /> : tab !== 'sip' ? <InOrders part="controls" {...inProps} /> : null}
+    </Section>
+  )
+  const list =
+    market === 'us' ? (
+        <UsOrders part="list" {...usProps} />
       ) : tab !== 'sip' ? (
-        <InOrders
-          list={tab}
-          orders={tab === 'open' ? inOpen : inHistory}
-          product={inProduct}
-          onProduct={setInProduct}
-          filters={inFilters}
-          onFilters={setInFilters}
-        />
+        <InOrders part="list" {...inProps} />
       ) : sips.length ? (
         <Stack as="ul" gap="16" className={styles.list} aria-label="Indian SIPs">
           {sips.map((sip) => <li key={sip.id}><InSipCard sip={sip} /></li>)}
@@ -30315,9 +30339,9 @@ export function OrdersTab({ banner, initialMarket = 'in' }: { banner?: ReactNode
       ) : (
         /* L3 Empty state with its default illustration, centred in the space under the tabs. */
         <EmptyState key={`${tab}${market}`} className={styles.empty} title="You do not have any Indian SIPs" />
-      )}
-    </div>
-  )
+      )
+
+  return { controls, list }
 }
 
 /** The US sample orders the user has (none until their US account is active). */
@@ -30336,6 +30360,7 @@ const countOf = (orders: UsOrder[], kind: OrderKind) => ofKind(orders, kind).len
 
 /** A US list: the picker + Filters row, then the cards (or the empty state that fits). */
 function UsOrders({
+  part,
   list,
   orders,
   kind,
@@ -30343,6 +30368,8 @@ function UsOrders({
   filters,
   onFilters,
 }: {
+  /** `controls`: the picker + Filters row (and its sheet), in the sticky bar; `list`: the cards or the empty state. */
+  part: 'controls' | 'list'
   list: UsList
   orders: UsOrder[]
   kind: OrderKind
@@ -30386,6 +30413,7 @@ function UsOrders({
     )
   }
 
+  if (part === 'list') return content
   return (
     <>
       <Stack direction="horizontal" align="center" justify="between" gap="12" className={styles.pickerRow}>
@@ -30416,7 +30444,6 @@ function UsOrders({
           Filters
         </Tab>
       </Stack>
-      {content}
       <OrderFilterSheet
         key={filterRun}
         open={sheet === 'filters'}
@@ -30434,6 +30461,7 @@ function UsOrders({
 
 /** An Indian Open / History list: the same picker + Filters row as the US side, then the cards (or the empty state). */
 function InOrders({
+  part,
   list,
   orders,
   product,
@@ -30441,6 +30469,7 @@ function InOrders({
   filters,
   onFilters,
 }: {
+  part: 'controls' | 'list'
   list: UsList
   orders: InOrder[]
   product: InProductPick
@@ -30484,6 +30513,7 @@ function InOrders({
     )
   }
 
+  if (part === 'list') return content
   return (
     <>
       <Stack direction="horizontal" align="center" justify="between" gap="12" className={styles.pickerRow}>
@@ -30512,7 +30542,6 @@ function InOrders({
           Filters
         </Tab>
       </Stack>
-      {content}
       <OrderFilterSheet<InFilters>
         key={filterRun}
         open={open}
@@ -31226,78 +31255,98 @@ export function HoldingsTab({ market, onMarket, sort, onSort, sheetRef }: { mark
   const inSummary = inEmpty ? IN_EMPTY_SUMMARY : holdingsSummary.in
   // Portfolio → "Holdings market switch" (26 Nov, user): V2 · the IN / US pill group takes the heading's place.
   const pillSwitch = useFlowOption('us-stocks', 'holdingsSwitch', 'v2') === 'v2'
+  // V2 tabs carry each market's holdings count in the label, "IN Stocks (2)" (26 Nov, user); none when it's empty.
+  const counts = { in: inEmpty ? 0 : sortedHoldings(sort).length, us: holdsUs ? 1 : 0 }
+  const marketLabel = (market: HoldingsMarket) => {
+    const label = t(`portfolio.market.${market}`)
+    return pillSwitch && counts[market] > 0 ? t('portfolio.marketWithCount', { market: label, count: counts[market] }) : label
+  }
   const marketItems = [
-    { value: 'in', label: t('portfolio.market.in'), iconLeft: <Flag code="in" /> },
-    { value: 'us', label: t('portfolio.market.us'), iconLeft: <Flag code="us" /> },
+    { value: 'in', label: marketLabel('in'), iconLeft: <Flag code="in" /> },
+    { value: 'us', label: marketLabel('us'), iconLeft: <Flag code="us" /> },
   ]
-  const sortButton = <Button variant="tertiary" size="sm" iconLeft={<Icon icon={sortIcon} />} onClick={onSort}>{t('portfolio.sort')}</Button>
+  const sortButton = <Button variant="ghost" size="sm" iconLeft={<Icon icon={sortIcon} />} onClick={onSort}>{t('portfolio.sort')}</Button>
+
+  // The sheet's content: the header row (switch + Sort, or the V1 heading) and that market's holdings or empty state.
+  const body = (
+    <>
+    {pillSwitch ? (
+      <Stack direction="horizontal" align="center" justify="between">
+        <Tabs
+          appearance="pill-group"
+          behavior="tabs"
+          width="hug"
+          aria-label={t('portfolio.markets')}
+          items={marketItems}
+          value={market}
+          onChange={(value) => onMarket(value as HoldingsMarket)}
+        />
+        {sortButton}
+      </Stack>
+    ) : (
+      <SheetHeader title={t('portfolio.holdings')} action={sortButton} />
+    )}
+    {market === 'us' && !holdsUs ? (
+      <EmptyState
+          className={styles.grow}
+        title={t(`portfolio.usEmpty.${empty.copy}.title`)}
+        description={t(`portfolio.usEmpty.${empty.copy}.text`)}
+        action={<Button variant="primary" size="sm" onClick={() => go(empty.to)}>{t(`portfolio.usEmpty.${empty.copy}.button`)}</Button>}
+      />
+    ) : market === 'in' && inEmpty ? (
+      <EmptyState
+          className={styles.grow}
+        title={t('portfolio.inEmpty.title')}
+        description={t('portfolio.inEmpty.text')}
+        action={<Button variant="primary" size="sm" onClick={() => go(STOCKS_HOME_ENTRY)}>{t('portfolio.inEmpty.button')}</Button>}
+      />
+    ) : (
+      <Stack as="ul" gap="16" className={styles.list}>
+        {market === 'us' ? (
+          <li>
+            <HoldingCard holding={us.holding} onOpen={() => openStock(go, stockFor(us.holding.name))} />
+          </li>
+        ) : (
+          sortedHoldings(sort).map((holding) => (
+            <li key={holding.key}>
+              {/* An Indian holding opens the Indian stock page (stocks-32) on that stock (24 Nov, user). */}
+              <HoldingCard holding={holding} onOpen={() => { openInStock(holding.name); go('stocks-32') }} />
+            </li>
+          ))
+        )}
+      </Stack>
+    )}
+    </>
+  )
 
   return (
     <PortfolioPage
       sheetRef={sheetRef}
+      padded={pillSwitch}
       top={
         <Inset paddingInline="16" paddingBlock="24" className={styles.cardsInset} data-pill-switch={pillSwitch || undefined}>
           <HoldingsCards market={market} onMarket={onMarket} data={{ in: inSummary, us: holdsUs ? us.summary : holdingsSummary.us }} />
         </Inset>
       }
     >
-      {/* V1 · the home's market tabs (V18): L3 underline tabs, round flags, "IN Stocks / US Stocks" (18 Nov). */}
-      {!pillSwitch && (
-        <Tabs
-          appearance="underline"
-          width="fill"
-          aria-label={t('portfolio.markets')}
-          items={marketItems}
-          value={market}
-          onChange={(value) => onMarket(value as HoldingsMarket)}
-        />
+      {/* V2 (26 Nov, user): one level, as Positions — the padded sheet holds the header and the list directly.
+          V1 · the home's market tabs (V18): L3 underline tabs, round flags, "IN Stocks / US Stocks" (18 Nov), then the
+          content block under them. */}
+      {pillSwitch ? (
+        body
+      ) : (
+        <>
+          <Tabs
+            appearance="underline"
+            width="fill"
+            aria-label={t('portfolio.markets')}
+            items={marketItems}
+            value={market}
+            onChange={(value) => onMarket(value as HoldingsMarket)}
+          />
+          <SheetContent>{body}</SheetContent>
+        </>
       )}
-      <SheetContent>
-        {pillSwitch ? (
-          <Stack direction="horizontal" align="center" justify="between">
-            <Tabs
-              appearance="pill-group"
-              behavior="tabs"
-              width="hug"
-              aria-label={t('portfolio.markets')}
-              items={marketItems}
-              value={market}
-              onChange={(value) => onMarket(value as HoldingsMarket)}
-            />
-            {sortButton}
-          </Stack>
-        ) : (
-          <SheetHeader title={t('portfolio.holdings')} action={sortButton} />
-        )}
-        {market === 'us' && !holdsUs ? (
-          <EmptyState
-            title={t(`portfolio.usEmpty.${empty.copy}.title`)}
-            description={t(`portfolio.usEmpty.${empty.copy}.text`)}
-            action={<Button variant="primary" size="sm" onClick={() => go(empty.to)}>{t(`portfolio.usEmpty.${empty.copy}.button`)}</Button>}
-          />
-        ) : market === 'in' && inEmpty ? (
-          <EmptyState
-            title={t('portfolio.inEmpty.title')}
-            description={t('portfolio.inEmpty.text')}
-            action={<Button variant="primary" size="sm" onClick={() => go(STOCKS_HOME_ENTRY)}>{t('portfolio.inEmpty.button')}</Button>}
-          />
-        ) : (
-          <Stack as="ul" gap="16" className={styles.list}>
-            {market === 'us' ? (
-              <li>
-                <HoldingCard holding={us.holding} onOpen={() => openStock(go, stockFor(us.holding.name))} />
-              </li>
-            ) : (
-              sortedHoldings(sort).map((holding) => (
-                <li key={holding.key}>
-                  {/* An Indian holding opens the Indian stock page (stocks-32) on that stock (24 Nov, user). */}
-                  <HoldingCard holding={holding} onOpen={() => { openInStock(holding.name); go('stocks-32') }} />
-                </li>
-              ))
-            )}
-          </Stack>
-        )}
-      </SheetContent>
     </PortfolioPage>
   )
 }
@@ -31421,8 +31470,9 @@ export function HoldingsTab({ market, onMarket, sort, onSort, sheetRef }: { mark
 
 /* Holdings: 12 (not 24) under the P&L cards, above the market tabs (24 Nov, user). Inset has one block padding. */
 .cardsInset.cardsInset { padding-bottom: var(--l3-spacing-12); }
-/* V2 (pill group by Sort): the cards end 24 above the switch — the sheet's 8 + its content's 16 (26 Nov, no dots). */
-.cardsInset.cardsInset[data-pill-switch] { padding-bottom: 0; }
+/* V2 (pill group by Sort): a hairline under the cards, as on Positions — cards 24 above it, the switch 24 below
+   (the padded sheet's own 24) (26 Nov, user). */
+.cardsInset.cardsInset[data-pill-switch] { padding-bottom: var(--l3-spacing-24); }
 ```
 
 ### `src/flows/us-stocks/screens/entry/portfolio/PortfolioPage.tsx`
@@ -31437,7 +31487,7 @@ import styles from './Portfolio.module.css'
  * One Portfolio tab's page: an optional grey top (summary cards, market indices) and the white sheet under it, which
  * runs down to the navbar. The sheet is 8 from its top edge and its bottom; what's inside brings its own 16 sides.
  * `sheetRef` is the part that slides when the tab changes. `flat`: no grey top, a square sheet (Orders).
- * `padded` (Positions): the sheet is the content block itself — 16 sides, 24 top and bottom, 16 apart, no SheetContent
+ * `padded` (Positions, Holdings V2): the sheet is the content block itself — 16 sides, 24 top and bottom, 16 apart, no SheetContent
  * inside — and a hairline separates it from the top (26 Nov, the user: "a clear separator line between the first
  * section and the second").
  */
