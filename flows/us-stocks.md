@@ -201,6 +201,7 @@ Every tap he wired is kept. The main path: FTUX sheet → Activate → Declarati
 → Pay on bank → Money ready → Stock → Buy → Executed → Wallet → Withdraw.
 
 ### Changelog
+- 2026-11-26 · Portfolio → Holdings: Sort is a ghost button with the tertiary Small box (32 high, 6 / 8 padding, no border) so its hover / press grey has room; negative margins keep the label where it was. Orders: the All orders picker hugs its label again (the 12px ⇅ override no longer squashes the text). L3 gap: a ghost button hugs its content outside a button row.
 - 2026-11-26 · Portfolio → Orders: every empty state has a way out — Open / History "Find stocks", SIP "Create stock SIP" — to Market on the side the user is on (Indian → Indian stocks, US → US stocks). A list empty only because of what's picked (filters or the All orders picker) shows one generic state, "Nothing found with these filters" + Clear filters (resets both). The list has no top padding; the All orders picker's ⇅ is 12. Filters: selected option cards are grey with a black edge (not discover).
 - 2026-11-26 · Portfolio → Orders: the IN / US picker is Market's primary pill (flag, IN / US, ↕; one tap flips it) and Open · SIP · History are secondary pills, as on Market's top bar. Filters: option cards' right padding 12 (the checkbox's touch area pads the rest), the sheet hugs its side nav (no fixed 576). P&L card V2 archived (V1 · Total ⇄ 1D switch kept). L3 gap: ListCell has no selected tone.
 - 2026-11-26 · Portfolio → Orders → Filters redesigned with the F&O chart tools sheet layout: the sheet's L3 header "Filters · Clear all" over both columns, an L3 SideNav on the left (Segment (Indian only), Company, Date, Buy/Sell, Order type, Status on History) and the group's panel on the right; Cancel / Apply dock. Selected tile = grey fill + black edge, not blue; tile labels Label/12. Options are plain L3 ListCell cards (flat, `raised={false}`, L3's own selected look), the checkbox on the right (`trailing`). Company is a search (3+ letters, one company; the hint is the field's helper text). Date is From / To fields that open the phone's own date picker (no future days; To not before From). One sheet and one filter model (`OrderFilterSheet.tsx`) for both the Indian and the US lists; the Filters badge counts picks. L3 gaps: SideNav has no count badge (the corner flag carries it) and no outline on the selected tile; no L3 date field opens the OS picker (an L3 TextField fronts a hidden native date input).
@@ -30178,7 +30179,7 @@ export function MaskImg({ src, w, h = w, className }: { src: string; w: number; 
 
 /* The All orders / product picker's ⇅ at 12, not the sm pill's 16 (26 Nov, user: "reduce icon size by 4px").
    L3 gap: a Tab's icon size follows the tab size only. */
-.kindPicker > span > span:last-child {
+.kindPicker > span:last-child {
   width: var(--l3-icon-size-12);
   height: var(--l3-icon-size-12);
 }
@@ -31306,7 +31307,7 @@ export function HoldingsTab({ market, onMarket, sort, onSort, sheetRef }: { mark
     { value: 'in', label: marketLabel('in'), iconLeft: <Flag code="in" /> },
     { value: 'us', label: marketLabel('us'), iconLeft: <Flag code="us" /> },
   ]
-  const sortButton = <Button variant="ghost" size="sm" iconLeft={<Icon icon={sortIcon} />} onClick={onSort}>{t('portfolio.sort')}</Button>
+  const sortButton = <Button variant="ghost" size="sm" className={styles.sortButton} iconLeft={<Icon icon={sortIcon} />} onClick={onSort}>{t('portfolio.sort')}</Button>
 
   // The sheet's content: the header row (switch + Sort, or the V1 heading) and that market's holdings or empty state.
   const body = (
@@ -31514,6 +31515,17 @@ export function HoldingsTab({ market, onMarket, sort, onSort, sheetRef }: { mark
 /* V2 (pill group by Sort): a hairline under the cards, as on Positions — cards 24 above it, the switch 24 below
    (the padded sheet's own 24) (26 Nov, user). */
 .cardsInset.cardsInset[data-pill-switch] { padding-bottom: var(--l3-spacing-24); }
+
+
+/* Sort (26 Nov, user): a ghost with the tertiary Small box — L3 sm height and padding, no border — so its hover / press
+   grey has room around the icon and label. The negative margins keep the label where the hugging ghost had it.
+   L3 gap: a ghost button hugs its content outside a button row. */
+.sortButton.sortButton {
+  height: var(--btn-height);
+  min-width: var(--btn-height);
+  padding: var(--btn-padding-block) var(--btn-padding-inline);
+  margin: calc(-1 * var(--btn-padding-block)) calc(-1 * var(--btn-padding-inline));
+}
 ```
 
 ### `src/flows/us-stocks/screens/entry/portfolio/PortfolioPage.tsx`
