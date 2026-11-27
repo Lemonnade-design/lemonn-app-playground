@@ -98,7 +98,7 @@
     },
     {
       "id": "market-08",
-      "name": "Market · filters applied",
+      "name": "Filters · applied",
       "figma": "",
       "note": "The title reads \"Filtered stocks (n)\"; the filter button gets a red dot.",
       "goesTo": [
@@ -158,7 +158,7 @@
     },
     {
       "id": "market-14",
-      "name": "Create watchlist",
+      "name": "Watchlist · create",
       "figma": "",
       "note": "From \"+ New\": the name field (typing, keyboard up) and Create, off until something is typed. Create adds the list as the last tab and opens it.",
       "goesTo": [],
@@ -166,7 +166,7 @@
     },
     {
       "id": "market-15",
-      "name": "Sort by",
+      "name": "Watchlist · sort by",
       "figma": "",
       "note": "From the header\\",
       "goesTo": [],
@@ -174,7 +174,7 @@
     },
     {
       "id": "market-16",
-      "name": "Edit watchlist",
+      "name": "Watchlist · edit",
       "figma": "",
       "note": "From the header\\",
       "goesTo": [
@@ -184,7 +184,7 @@
     },
     {
       "id": "market-17",
-      "name": "Edit · delete watchlist",
+      "name": "Watchlist · edit · delete watchlist",
       "figma": "",
       "note": "Delete watchlist asks first: a sheet with the large header (a bin icon, \"Delete Momentum Plays?\" and what happens), then Cancel · Delete.",
       "goesTo": [

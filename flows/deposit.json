@@ -103,7 +103,7 @@
     },
     {
       "id": "deposit-13",
-      "name": "Verifying bank account",
+      "name": "Add bank account · verifying",
       "figma": "",
       "note": "Not in Figma: ₹1 goes to the account and the bank returns the name on it. Moves on by itself to Bank account added.",
       "goesTo": [],
@@ -111,7 +111,7 @@
     },
     {
       "id": "deposit-14",
-      "name": "Bank account added",
+      "name": "Add bank account · added",
       "figma": "",
       "note": "Not in Figma: the name matched PAN. The account joins the linked banks; Continue goes back to the add money (₹ or US) that opened Add bank account, with the new bank picked.",
       "goesTo": [],
@@ -119,7 +119,7 @@
     },
     {
       "id": "deposit-15",
-      "name": "Bank account not added",
+      "name": "Add bank account · not added",
       "figma": "",
       "note": "Not in Figma: the name on the account isn’t the user’s (₹1 check). Try another account → Add bank account; Back to Add money → the add money that opened it.",
       "goesTo": [
@@ -129,7 +129,7 @@
     },
     {
       "id": "deposit-02",
-      "name": "Approve in UPI app (external)",
+      "name": "Payment · approve in UPI app (external)",
       "figma": "5436:7954",
       "note": "Handoff placeholder: the UPI app’s own payment sheet is not built by Lemonn.",
       "goesTo": [
@@ -139,7 +139,7 @@
     },
     {
       "id": "deposit-03",
-      "name": "Confirming payment",
+      "name": "Payment · confirming",
       "figma": "5436:7953",
       "note": "",
       "goesTo": [],
@@ -147,7 +147,7 @@
     },
     {
       "id": "deposit-04",
-      "name": "Money added",
+      "name": "Payment · money added",
       "figma": "5436:7955",
       "note": "First deposit: Start investing → the Stocks home. Opened from the wallet: Done → the wallet. (The prototype remembers the entry; a screen opened straight from the list assumes the first deposit.)",
       "goesTo": [],
@@ -155,12 +155,20 @@
     },
     {
       "id": "deposit-05",
-      "name": "Payment failed",
+      "name": "Payment · failed",
       "figma": "",
       "note": "Not in the live screenshots — the failure state the flow needs. Change payment method returns to the Add money screen it came from.",
       "goesTo": [
         "deposit-02"
       ],
+      "figmaUrl": ""
+    },
+    {
+      "id": "deposit-18",
+      "name": "Payment · pending",
+      "figma": "",
+      "note": "Not in Figma: approved in the UPI app, but the bank hasn’t confirmed yet. Up to 30 minutes; if money left the bank and never arrives it comes back in 3–5 working days. Done → from the wallet: the INR wallet with its \"payment pending\" bar (us-stocks-118); first deposit: the Stocks home.",
+      "goesTo": [],
       "figmaUrl": ""
     }
   ],

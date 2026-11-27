@@ -313,7 +313,7 @@
     },
     {
       "id": "stocks-38",
-      "name": "Performance (ⓘ)",
+      "name": "Stock · Performance (ⓘ)",
       "figma": "",
       "note": "Daily Performance ⓘ: what each number means.",
       "goesTo": [
@@ -323,7 +323,7 @@
     },
     {
       "id": "stocks-39",
-      "name": "Glossary · Fundamentals (ⓘ)",
+      "name": "Stock · Glossary · Fundamentals (ⓘ)",
       "figma": "",
       "note": "Fundamentals ⓘ: what each ratio means.",
       "goesTo": [

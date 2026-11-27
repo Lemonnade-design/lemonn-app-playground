@@ -32,7 +32,7 @@
     },
     {
       "id": "fno-02",
-      "name": "Home · watchlists & Smart Options",
+      "name": "Equity home · watchlists & Smart Options",
       "figma": "11569:41100",
       "note": "The same long screen, scrolled to watchlists.",
       "goesTo": [],
@@ -40,7 +40,7 @@
     },
     {
       "id": "fno-03",
-      "name": "Home · Futures Heatmap",
+      "name": "Equity home · Futures Heatmap",
       "figma": "11569:41100",
       "note": "",
       "goesTo": [],
@@ -48,7 +48,7 @@
     },
     {
       "id": "fno-04",
-      "name": "Home · Smart Futures",
+      "name": "Equity home · Smart Futures",
       "figma": "11569:41100",
       "note": "",
       "goesTo": [],
@@ -214,7 +214,7 @@
     },
     {
       "id": "fno-09",
-      "name": "Commodities · heatmap & Smart Futures",
+      "name": "Commodities home · heatmap & Smart Futures",
       "figma": "6754:63637",
       "note": "The same long screen, scrolled to the Futures Heatmap.",
       "goesTo": [],

@@ -189,6 +189,8 @@
     "src/flows/us-stocks/screens/entry/portfolio/PortfolioPage.tsx",
     "src/flows/us-stocks/screens/entry/portfolio/PositionsTab.tsx",
     "src/flows/us-stocks/screens/entry/portfolioData.ts",
+    "src/flows/us-stocks/screens/entry/sheets/MtfBreakupSheet.module.css",
+    "src/flows/us-stocks/screens/entry/sheets/MtfBreakupSheet.tsx",
     "src/flows/us-stocks/screens/entry/sheets/SortSheet.module.css",
     "src/flows/us-stocks/screens/entry/sheets/SortSheet.tsx",
     "src/flows/us-stocks/screens/entry/spxData.ts",
@@ -325,6 +327,7 @@
     "src/flows/us-stocks/screens/wallet/sheets/Sheets.module.css",
     "src/flows/us-stocks/screens/wallet/sheets/TransactionSheet.tsx",
     "src/flows/us-stocks/screens/wallet/sheets/WithdrawFailedSheet.tsx",
+    "src/flows/us-stocks/screens/wallet/sheets/WithdrawReturnedSheet.tsx",
     "src/flows/us-stocks/screens/wallet/sheets/WithdrawalRequestsSheet.tsx",
     "src/flows/us-stocks/screens/wallet/transactions.ts"
   ],

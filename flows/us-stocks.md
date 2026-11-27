@@ -160,6 +160,37 @@ than asked, so the withdrawal fails and nothing leaves the wallet (`FAILED_WITHD
   sheet drops its settling row. Withdraw → request placed (`64`).
 - Copy: `withdrawFailed.*`.
 
+#### Withdrawal sent back by the bank (`us-stocks-114`–`117`; not in Figma, 27 Nov)
+
+The money left the wallet, but the bank didn't accept it (account closed, name mismatch…) and it came back. Both
+wallets have it; one sheet (`wallet/sheets/WithdrawReturnedSheet.tsx`) serves both.
+
+- USD (`114`, `WalletWithdrawalReturnedScreen`): the funded wallet; the bottom bar turns danger: "$100 withdrawal didn't
+  go through · Your bank sent it back · it's in your wallet". Tap → the sheet (`115`).
+- INR (`116`, `WalletInrWithdrawalFailedScreen`): the wallet on its INR tab with the same bar for ₹10.00 (the INR tab
+  takes its own bar and sheet through WalletScreen's `inrPending` / `inrSheet`). Tap → the sheet (`117`).
+- Sheet: L3 BottomSheet lg with an error spot, "<amount> withdrawal didn't go through", why and what to check, a card
+  "Amount · Sent to (the first linked bank) · Status Back in your <USD / INR> wallet", brand "Withdraw again" (USD →
+  Withdraw, INR → the INR Withdraw `112`) and secondary "Contact support" (`emailSupport()`).
+- A failed US deposit already exists: User status → Deposit status "Failed".
+- Copy: `withdrawReturned.*`.
+
+#### INR wallet: pending and failed money (`us-stocks-118`–`121`, `deposit-18`; not in Figma, 27 Nov)
+
+Every money state the INR tab can be in, beside the sent-back withdrawal above (`116`, `117`). The INR tab takes its own
+bar and sheet through WalletScreen's `inrPending` / `inrSheet`.
+
+- Payment pending (`deposit-18` in the deposit flow, `Pending` in `deposit/screens/Payment.tsx`): approved in the UPI app,
+  the bank hasn't confirmed. Warning spot, "Waiting for your bank", up to 30 minutes, the payment card (Paid with,
+  Reference, Status Waiting for bank) and the refund line (3–5 working days). Done → the wallet (`118`,
+  `WalletInrPaymentPendingScreen`) with the bar "₹1,000.00 payment pending · Waiting for your bank · usually up to 30 min";
+  a first deposit goes to the Stocks home.
+- Withdrawal cut short by trades (`119`, `120`, `WalletInrWithdrawalUsedScreen`): the INR version of `109`, ₹500 asked
+  for, ₹10 left. WithdrawFailedSheet with `inr` (₹ amounts, "INR wallet"); Withdraw ₹10.00 → the INR Withdraw (`112`).
+- Withdrawal in progress (`121`, `WalletInrWithdrawalPendingScreen`): the INR request placed (`113`) → Continue lands
+  here. Bar "₹10.00 withdrawal pending · Reaches your bank today by 6 PM" with Cancel → CancelWithdrawalSheet with `inr`.
+- Copy: `inrWallet.*` (us-stocks), `pending.*` (deposit).
+
 ### Portfolio (`us-stocks-05`, `06`, `77`, `screens/entry/PortfolioScreen.tsx`)
 
 - `PortfolioScreen` is the frame only: Actionbar (search, wallet) with the Positions · Holdings · Orders tabs in its
@@ -254,6 +285,12 @@ Every tap he wired is kept. The main path: FTUX sheet → Activate → Declarati
 → Pay on bank → Money ready → Stock → Buy → Executed → Wallet → Withdraw.
 
 ### Changelog
+
+- 27 Nov 2026 · Screen list: the INR wallet screens have their own section, "Indian wallet (INR)" (the other is now "US wallet (USD)"); every withdrawal state folds under Wallet → US tab / Indian tab → Withdrawal; search results show the section beside the flow and search matches it. Across the app, 37 screens renamed so they fold with their page (deposit's bank check and payment steps, Stock ⓘ sheets, Market filters and watchlist, F&O Equity / Commodities home, DASH Ready, Bank app, ETF Top holdings).
+- 27 Nov 2026 · INR wallet: pending and failed money (`us-stocks-116`–`121`, `deposit-18`): withdrawal sent back by the bank (bar + sheet), withdrawal cut short by trades (bar + sheet), withdrawal in progress with Cancel, add money payment pending (bar, and the deposit flow's Payment · pending). The US wallet gets the sent-back withdrawal too (`us-stocks-114`, `115`).
+- 27 Nov 2026 · Order details: the reason bar is the flat rounded card (Aerobar floating inline), no shadow.
+- 27 Nov 2026 · Order pad V2: short of money splits the dock into "Buy N qty" and "Add money".
+- 27 Nov 2026 · Portfolio → MTF card: View details opens the Boost (MTF) breakup sheet (current, invested, borrowed, P&L, interest, net gain).
 
 - 27 Nov 2026 · Portfolio → Holdings card: with MTF, the whole top row (label, holdings and Invested Value, full width) is the IN Holdings / Stocks / MTF switch, not the label alone; the values switch instantly (a digit roll was tried and dropped); the three card labels are Label/10, all caps.
 - 26 Nov 2026 · INR wallet: Withdraw now opens Withdraw in ₹ (us-stocks-112) and its request placed (113); it went nowhere before.
@@ -22565,12 +22602,29 @@ export function UsMainNav({ value }: { value: Section }) {
   "withdraw.gotIt": "Got it",
   "withdrawFailed.bar": "You used it for trades · nothing left your wallet",
   "withdrawFailed.title": "{amount} withdrawal didn't go through",
-  "withdrawFailed.body": "You bought shares with this money before we could send it to your bank. Nothing left your USD wallet.",
+  "withdrawFailed.body": "You bought shares with this money before we could send it to your bank. Nothing left your {wallet}.",
   "withdrawFailed.requested": "You asked to withdraw",
   "withdrawFailed.now": "Withdrawable now",
   "withdrawFailed.retry": "Withdraw {amount}",
   "withdrawFailed.notNow": "Not now",
   "withdrawFailed.gotIt": "Got it",
+  "withdrawReturned.bar": "Your bank sent it back · it's in your wallet",
+  "withdrawReturned.title": "{amount} withdrawal didn't go through",
+  "withdrawReturned.body": "Your bank couldn't accept the transfer, so the money came back to your {wallet}. Check the bank account is open and in your name, then try again.",
+  "withdrawReturned.amount": "Amount",
+  "withdrawReturned.to": "Sent to",
+  "withdrawReturned.status": "Status",
+  "withdrawReturned.back": "Back in your {wallet}",
+  "withdrawReturned.retry": "Withdraw again",
+  "withdrawReturned.support": "Contact support",
+  "withdrawReturned.supportSubject": "{amount} withdrawal sent back by my bank",
+  "withdrawReturned.usdWallet": "USD wallet",
+  "withdrawReturned.inrWallet": "INR wallet",
+  "inrWallet.paymentPending": "{amount} payment pending",
+  "inrWallet.paymentPendingSub": "Waiting for your bank · usually up to 30 min",
+  "inrWallet.withdrawPending": "{amount} withdrawal pending",
+  "inrWallet.withdrawPendingSub": "Reaches your bank today by 6 PM",
+  "inrWallet.cancel": "Cancel",
   "portfolio.title": "Portfolio",
   "portfolio.search": "Search",
   "portfolio.wallet": "Wallet",
@@ -22817,7 +22871,18 @@ export function UsMainNav({ value }: { value: Section }) {
   "filters.buy": "Buy",
   "filters.sell": "Sell",
   "filters.type": "Order type",
-  "filters.status": "Status"
+  "filters.status": "Status",
+  "portfolio.mtf.details": "View details",
+  "portfolio.mtf.breakup.title": "Boost (MTF) breakup",
+  "portfolio.mtf.breakup.current": "Current value",
+  "portfolio.mtf.breakup.totalInvested": "Total invested",
+  "portfolio.mtf.breakup.invested": "Invested",
+  "portfolio.mtf.breakup.leverage": "Leverage · {x}",
+  "portfolio.mtf.breakup.pnl": "P&L",
+  "portfolio.mtf.breakup.interest": "Interest ({rate})",
+  "portfolio.mtf.breakup.netGain": "Net gain",
+  "portfolio.mtf.breakup.netGainCaption": "P&L − interest",
+  "portfolio.mtf.breakup.netGainValue": "{amount} ({pct})"
 }
 ```
 
@@ -22956,7 +23021,8 @@ export const usStocks: Flow = {
     { id: 'entry', title: 'Entry points' },
     { id: 'ftux', title: 'FTUX' },
     { id: 'activated', title: 'Activated user' },
-    { id: 'wallet', title: 'USD wallet' },
+    { id: 'wallet', title: 'US wallet (USD)' },
+    { id: 'inr-wallet', title: 'Indian wallet (INR)' },
   ],
   options: [
     // "P&L card" archived 26 Nov (the user's call): V1 · Total ⇄ 1D switch kept; V2 · both returns shown archived.
@@ -23257,7 +23323,7 @@ export type UsScreenEntry = {
   figma: string
   /** Main-navbar tab the screen belongs to (it shows the bottom navbar): moving between tabs is a tab switch. */
   tab?: 'stocks' | 'market' | 'portfolio' | 'mutualFund'
-  id: string; section: 'entry' | 'ftux' | 'activated' | 'wallet'; name: string; note: string; badge?: 'new' | 'changed'; badgeNote?: string
+  id: string; section: 'entry' | 'ftux' | 'activated' | 'wallet' | 'inr-wallet'; name: string; note: string; badge?: 'new' | 'changed'; badgeNote?: string
   /** A state the user-status settings already show on another screen (the stock page, the wallet's US tab): not listed in the preview, still a screen taps go to. */
   hidden?: boolean
   /** Screens of one group are one page in different states: moving between them doesn't push (the wallet's INR / USD tabs). */
@@ -23288,7 +23354,7 @@ export const registry: UsScreenEntry[] = [
   { figma: '5796:86009', id: 'us-stocks-25', badge: 'changed', badgeNote: "Timing is now in the bank row: “lands by Thu 8 PM”", section: 'ftux', name: "M05 · Add money · bank name mismatch", note: "Edge case: bank account name doesn't match KYC. Prompts a bank update." },
   { figma: '9001:20', id: 'us-stocks-75', badge: 'new', badgeNote: "Not in Figma: no bank account linked", section: 'ftux', name: "Add money · no bank account", note: "No bank linked (User status → Bank accounts: None): the bank row reads “Add a bank account” and the button is “Add bank account” → Add bank account (deposit-12), which comes back here." },
   { figma: '9001:21', id: 'us-stocks-76', badge: 'new', badgeNote: "Not in Figma: change the bank", section: 'ftux', name: "Add money · change bank", note: "The bank row (chevron) opens “Pay from”: linked banks as radio rows, picking one closes it; “Add another bank account” → Add bank account (deposit-12)." },
-  { figma: '5796:86336', id: 'us-stocks-27', section: 'ftux', name: "Bank app (placeholder)", note: "Placeholder for the bank's payment page. After 1 s (or a tap) it hands back to Lemonn: us-stocks-93." },
+  { figma: '5796:86336', id: 'us-stocks-27', section: 'ftux', name: 'Add money · bank app (placeholder)', note: "Placeholder for the bank's payment page. After 1 s (or a tap) it hands back to Lemonn: us-stocks-93." },
   { figma: '9001:22', id: 'us-stocks-93', badge: 'new', badgeNote: "Back from the bank: “$50.00 is on its way” sheet", section: 'ftux', name: "Wallet · back from the bank · money sent", note: "Not in Figma. The bank's page (us-stocks-27) hands back after 1 s: the USD wallet opens with a sheet saying the payment went through, the money is on its way and lands in 1–2 working days (Paid → Sent to US → Ready to trade). Got it leaves the wallet with its pending banner (us-stocks-28)." },
   { figma: '5776:84195', id: 'us-stocks-28', badge: 'changed', badgeNote: "Pending card: “Arrives in your wallet by Thu 8 PM”", section: 'ftux', name: "Wallet · US tab · Add money transfer in progress", note: "Back from the bank. USD Wallet shows the transfer status." },
   { figma: '5826:94125', id: 'us-stocks-31', hidden: true, badge: 'changed', badgeNote: "Overview / News & Events tabs; Related ETFs and Key Holders sections", section: 'activated', name: "S03b · Stock page · activated · no holdings", note: "Stock page, activated with no holdings. Buy only." },
@@ -23315,39 +23381,47 @@ export const registry: UsScreenEntry[] = [
   { figma: '9001:71', id: 'us-stocks-107', badge: 'new', badgeNote: "Not in Figma: the sell pad's SL tab", section: 'activated', name: "H13 · Sell · SL", note: "Sell pad, SL tab: trigger price and limit under the last price; places a sell limit once the price falls to the trigger." },
   { figma: '5837:95371', id: 'us-stocks-51', section: 'activated', name: "H06 · Sell result · executed", note: "Sell order executed. Proceeds withdrawable after 1 working day." },
   { figma: '5837:95352', id: 'us-stocks-52', section: 'activated', name: "H07 · Sell result · rejected", note: "Sell order rejected." },
-  { figma: '5852:99084', id: 'us-stocks-53', group: 'wallet', section: 'wallet', name: "W0 · Wallet · Indian tab", note: "Wallet opens on the INR tab; tapping USD Wallet flips the body in place (same page) to the US state the user status picks. USD Wallet is tagged NEW." },
   { figma: '5852:99057', id: 'us-stocks-54', group: 'wallet', badge: 'changed', badgeNote: "Follows the user status in the prototype settings", section: 'wallet', name: "W0 · Wallet · US tab", note: "The USD wallet in the user status picked in the prototype settings (User status): not activated → Activate US Stocks card; under review, contact support, failed (us-stocks-55–57); activated → $0 (us-stocks-58), money on the way (us-stocks-28) or funded (us-stocks-59). The Indian tab's USD tab opens it." },
   { figma: '5852:99028', id: 'us-stocks-55', hidden: true, badge: 'changed', badgeNote: "Nudge copy: the dollar has historically gained against the rupee", section: 'wallet', name: "W0 · Wallet · US tab · Activation under review", note: "Activation under review, up to 1 working day." },
   { figma: '5852:98999', id: 'us-stocks-56', hidden: true, badge: 'changed', badgeNote: "Nudge copy: the dollar has historically gained against the rupee", section: 'wallet', name: "W0 · Wallet · US tab · Activation failed", note: "Activation failed: PAN couldn't be verified. Retry Activation." },
   { figma: '5852:98970', id: 'us-stocks-57', hidden: true, badge: 'changed', badgeNote: "Nudge copy: the dollar has historically gained against the rupee", section: 'wallet', name: "W0 · Wallet · US tab · Under review · Contact Support", note: "Review taking longer than 1 day. Contact Support." },
   { figma: '5852:98939', id: 'us-stocks-58', hidden: true, badge: 'changed', badgeNote: "Nudge copy: the dollar has historically gained against the rupee", section: 'wallet', name: "W1 · Wallet · US tab · $0 balance", note: "Activation approved. USD wallet at $0." },
   { figma: '5852:98908', id: 'us-stocks-59', hidden: true, section: 'wallet', name: "W2 · Wallet · US tab · Funded", note: "Wallet after adding money: total and withdrawable balance." },
-  { figma: '5852:98888', id: 'us-stocks-60', badge: 'changed', badgeNote: "As the live app's Balance details: two cards, groups open in place", section: 'wallet', name: "W2d · Balance Details · USD wallet", note: "The USD wallet's View details. Two cards: Available balance (opening balance, Credits, Debits) and Withdrawable balance (Settlement pending). Credits, Debits and Settlement pending each open in place to their rows. Help emails support." },
-  { figma: '5852:98862', id: 'us-stocks-61', badge: 'changed', badgeNote: "As the live app's Balance details: two cards, groups open in place", section: 'wallet', name: "W2d-x · Balance Details · USD · expanded", note: "The same page with every group open: deposits, stock sells, dividends; withdrawals, stocks, charges; the deposit and the sale still settling." },
-  { figma: '9001:66', id: 'us-stocks-102', badge: 'new', badgeNote: "From the live app's Balance details", section: 'wallet', name: "Balance Details · INR wallet", note: "The INR wallet's View details: Available balance (opening balance, Credits, Debits) and Withdrawable balance (Settlement pending), as in the live app. Groups open in place." },
-  { figma: '9001:67', id: 'us-stocks-103', badge: 'new', badgeNote: "From the live app's Balance details", section: 'wallet', name: "Balance Details · INR · expanded", note: "Every group open: Deposits, Stocks Sell, Stocks Pledge, Equity / Commodity Options Cfs; Withdrawals, Stocks, F&O, MTF, Stocks & MTF PnL, MTM PnL; Deposit and Net Credit." },
+  { figma: '5852:98888', id: 'us-stocks-60', badge: 'changed', badgeNote: "As the live app's Balance details: two cards, groups open in place", section: 'wallet', name: 'W2d · Balance Details · US wallet (USD)', note: "The USD wallet's View details. Two cards: Available balance (opening balance, Credits, Debits) and Withdrawable balance (Settlement pending). Credits, Debits and Settlement pending each open in place to their rows. Help emails support." },
+  { figma: '5852:98862', id: 'us-stocks-61', badge: 'changed', badgeNote: "As the live app's Balance details: two cards, groups open in place", section: 'wallet', name: 'W2d-x · Balance Details · US wallet (USD) · expanded', note: "The same page with every group open: deposits, stock sells, dividends; withdrawals, stocks, charges; the deposit and the sale still settling." },
   { figma: '9001:68', id: 'us-stocks-104', badge: 'new', badgeNote: "From the live app's help page", section: 'wallet', name: "Help", note: "Balance Details' Help. Help topics (icon, title, description) then Contact Lemonn Support, whose Contact Support card emails support. Title Help (live: Lemonn); US Stocks topic added; Logout left out. Topic article pages aren't built." },
   { figma: '9001:72', id: 'us-stocks-108', badge: 'new', badgeNote: "Not in Figma: the global search's look over the help topics", section: 'wallet', name: "Help · Search", note: "Help's search icon. The top bar is the search field (back · field · ✕ once typed), keyboard up. Live app's content: \"Search articles\" field and empty state before typing; typing filters the help topics by title and description; no match: No help topics found + Clear search." },
   { figma: '5852:100550', id: 'us-stocks-62', section: 'wallet', name: "H08 · Withdraw · enter amount", note: "Withdraw, laid out as Add money (26 Nov, user): withdrawable balance in the Actionbar with an ⓘ (→ Withdrawable balance sheet), big $ amount ($100) with \"You get ≈ ₹\" (tap → breakdown) under it, Min $1 / 25% / 50% / 75% / Max $417.03 chips (the limits are on the chips), keypad dock with the \"Withdraw to\" bank row and a brand Withdraw button. Figma's TextField, balance card and bank strip are replaced." },
   { figma: '5852:100492', id: 'us-stocks-63', section: 'wallet', name: "H09 · Withdraw · more than withdrawable", note: "$500, more than the withdrawable $417.03: red \"Only $417.03 is withdrawable\" under the amount, the button off." },
   { figma: '5852:100472', id: 'us-stocks-64', section: 'wallet', name: "H10 · Withdraw · request placed", note: "Withdraw request placed. Usually 1–2 working days." },
-  { figma: '5852:98799', id: 'us-stocks-65', section: 'wallet', name: "W3 · Withdrawing · in progress", note: "Withdrawal in progress, tracked on the wallet." },
-  { figma: '5852:98736', id: 'us-stocks-66', section: 'wallet', name: "W3 · Withdrawing · sent to bank", note: "Withdrawal sent to the bank." },
-  { figma: '5852:98677', id: 'us-stocks-67', section: 'wallet', name: "W3 · Withdrawal credited", note: "Withdrawal credited to the bank." },
-  { figma: '5852:98614', id: 'us-stocks-68', section: 'wallet', name: "W3b · 2 withdrawals pending", note: "Two or more withdrawals pending, grouped in one tracker." },
-  { figma: '5852:98522', id: 'us-stocks-69', section: 'wallet', name: "W3c · Withdrawal requests sheet", note: "Sheet listing each pending withdrawal request." },
-  { figma: '5852:98459', id: 'us-stocks-70', section: 'wallet', name: "W3d · Withdrawal taking longer", note: "Transfer delayed: taking longer than usual." },
-  { figma: '9001:73', id: 'us-stocks-109', badge: 'new', badgeNote: "Not in Figma: a withdrawal that failed because the money went into trades", section: 'wallet', name: "W3e · Withdrawal failed · used for trades", note: "$100 withdrawal placed, then $480 of shares bought before it was processed: the wallet is down to $40.40 and the withdrawal didn't go through. Red bar \"$100 withdrawal didn't go through · You used it for trades · nothing left your wallet\"; tap → the sheet (us-stocks-110). Withdraw opens the retry (us-stocks-111)." },
-  { figma: '9001:74', id: 'us-stocks-110', badge: 'new', badgeNote: "Not in Figma", section: 'wallet', name: "W3e · Withdrawal failed · sheet", note: "Why it failed (shares bought with the money before it was sent; nothing left the wallet), You asked to withdraw $100.00 · Withdrawable now $40.40, brand \"Withdraw $40.40\" (→ us-stocks-111) and Not now. Under $1 withdrawable: Got it only." },
-  { figma: '9001:75', id: 'us-stocks-111', badge: 'new', badgeNote: "Not in Figma", section: 'wallet', name: "H08 · Withdraw · retry after failed", note: "Withdraw with what is left after the trades: $40.40 withdrawable in the Actionbar, $40.40 prefilled, Max chip \"Max $40.40\"; the ⓘ sheet shows no settling row. Withdraw → request placed (us-stocks-64)." },
-  { figma: '9001:76', id: 'us-stocks-112', badge: 'new', badgeNote: "Not in Figma: the INR wallet's Withdraw", section: 'wallet', name: "Withdraw · INR wallet", note: "The INR wallet's Withdraw: the US Withdraw in ₹. \"₹10.00 withdrawable\" with the ⓘ (₹1,100.00 − ₹1,090.00 settling), ₹10 typed, Min ₹1 / 25% / 50% / 75% / Max ₹10.00 chips, no ≈ ₹ line, any linked bank (\"same day if before 1 PM\"), brand Withdraw ₹10 → us-stocks-113." },
-  { figma: '9001:77', id: 'us-stocks-113', badge: 'new', badgeNote: "Not in Figma", section: 'wallet', name: "Withdraw · INR · request placed", note: "₹10 on its way to the bank: Amount, To, Credited today by 6 PM. Continue → the wallet's INR tab." },
-  { figma: '9001:64', id: 'us-stocks-100', badge: 'new', badgeNote: "Design from Kuber Spot → V2 (5219:109907), rows as the Market list", section: 'wallet', name: "All transactions · INR wallet", note: "The wallet's All Transactions link, from the INR tab. Deposits and withdrawals newest first under month headings, in every state (completed, in progress, failed, refunded); rows drawn as the Market page's stock rows. A row opens its details sheet (amount, bank, date, transaction ID, a note for anything not done, Got it + Contact support). The INR / USD switch stays under the top bar." },
-  { figma: '9001:65', id: 'us-stocks-101', badge: 'new', badgeNote: "Design from Kuber Spot → V2 (5219:109907), rows as the Market list", section: 'wallet', name: "All transactions · USD wallet", note: "From the USD tab. Follows the user status: empty before US Stocks is active, empty with Add money once active, the deposits on the way (in progress, taking longer, failed: a row opens the deposit progress sheet), the first deposit once it landed, the full history once trading (withdrawals in progress, completed, failed; deposits completed, refunded). Amounts in $ through the app's ₹ setting; details show the ₹ paid or received." },
+  { figma: '9001:75', id: 'us-stocks-111', badge: 'new', badgeNote: "Not in Figma", section: 'wallet', name: "H08 · Withdraw · retry after a failed withdrawal", note: "Withdraw with what is left after the trades: $40.40 withdrawable in the Actionbar, $40.40 prefilled, Max chip \"Max $40.40\"; the ⓘ sheet shows no settling row. Withdraw → request placed (us-stocks-64)." },
+  { figma: '5852:98799', id: 'us-stocks-65', section: 'wallet', name: 'W3 · Wallet · US tab · Withdrawal · in progress', note: "Withdrawal in progress, tracked on the wallet." },
+  { figma: '5852:98736', id: 'us-stocks-66', section: 'wallet', name: 'W3 · Wallet · US tab · Withdrawal · sent to bank', note: "Withdrawal sent to the bank." },
+  { figma: '5852:98677', id: 'us-stocks-67', section: 'wallet', name: 'W3 · Wallet · US tab · Withdrawal · credited', note: "Withdrawal credited to the bank." },
+  { figma: '5852:98614', id: 'us-stocks-68', section: 'wallet', name: 'W3b · Wallet · US tab · Withdrawal · 2 pending', note: "Two or more withdrawals pending, grouped in one tracker." },
+  { figma: '5852:98522', id: 'us-stocks-69', section: 'wallet', name: 'W3c · Wallet · US tab · Withdrawal · requests sheet', note: "Sheet listing each pending withdrawal request." },
+  { figma: '5852:98459', id: 'us-stocks-70', section: 'wallet', name: 'W3d · Wallet · US tab · Withdrawal · taking longer', note: "Transfer delayed: taking longer than usual." },
+  { figma: '9001:73', id: 'us-stocks-109', badge: 'new', badgeNote: "Not in Figma: a withdrawal that failed because the money went into trades", section: 'wallet', name: 'Wallet · US tab · Withdrawal · failed · used for trades', note: "$100 withdrawal placed, then $480 of shares bought before it was processed: the wallet is down to $40.40 and the withdrawal didn't go through. Red bar \"$100 withdrawal didn't go through · You used it for trades · nothing left your wallet\"; tap → the sheet (us-stocks-110). Withdraw opens the retry (us-stocks-111)." },
+  { figma: '9001:74', id: 'us-stocks-110', badge: 'new', badgeNote: "Not in Figma", section: 'wallet', name: 'Wallet · US tab · Withdrawal · failed · used for trades · sheet', note: "Why it failed (shares bought with the money before it was sent; nothing left the wallet), You asked to withdraw $100.00 · Withdrawable now $40.40, brand \"Withdraw $40.40\" (→ us-stocks-111) and Not now. Under $1 withdrawable: Got it only." },
+  { figma: '9001:78', id: 'us-stocks-114', badge: 'new', badgeNote: "Not in Figma: a withdrawal the bank sent back", section: 'wallet', name: 'Wallet · US tab · Withdrawal · failed · sent back by bank', note: "The $100 left the wallet but the bank didn't accept it and it came back. Red bar \"$100 withdrawal didn't go through · Your bank sent it back · it's in your wallet\"; tap → the sheet (us-stocks-115). Withdraw → Withdraw." },
+  { figma: '9001:79', id: 'us-stocks-115', badge: 'new', badgeNote: "Not in Figma", section: 'wallet', name: 'Wallet · US tab · Withdrawal · failed · sent back by bank · sheet', note: "Why (the bank couldn't accept it; the money is back in the USD wallet; check the account is open and in your name), Amount · Sent to · Status Back in your USD wallet, brand Withdraw again (→ Withdraw) and Contact support (email)." },
+  { figma: '9001:65', id: 'us-stocks-101', badge: 'new', badgeNote: "Design from Kuber Spot → V2 (5219:109907), rows as the Market list", section: 'wallet', name: "All transactions · US wallet (USD)", note: "From the USD tab. Follows the user status: empty before US Stocks is active, empty with Add money once active, the deposits on the way (in progress, taking longer, failed: a row opens the deposit progress sheet), the first deposit once it landed, the full history once trading (withdrawals in progress, completed, failed; deposits completed, refunded). Amounts in $ through the app's ₹ setting; details show the ₹ paid or received." },
+  { figma: '5852:99084', id: 'us-stocks-53', group: 'wallet', section: 'inr-wallet', name: "W0 · Wallet · Indian tab (INR)", note: "Wallet opens on the INR tab; tapping USD Wallet flips the body in place (same page) to the US state the user status picks. USD Wallet is tagged NEW." },
+  { figma: '9001:82', id: 'us-stocks-118', badge: 'new', badgeNote: "Not in Figma: an INR add money the bank hasn't confirmed", section: 'inr-wallet', name: "Wallet · Indian tab (INR) · Add money · payment pending", note: "The wallet on its INR tab after deposit-18 (approved in the UPI app, bank not confirmed yet): warning bar \"₹1,000.00 payment pending · Waiting for your bank · usually up to 30 min\"." },
+  { figma: '9001:85', id: 'us-stocks-121', badge: 'new', badgeNote: "Not in Figma: an INR withdrawal on its way", section: 'inr-wallet', name: 'Wallet · Indian tab (INR) · Withdrawal · in progress', note: "After the INR request (us-stocks-113 → Continue): warning bar \"₹10.00 withdrawal pending · Reaches your bank today by 6 PM\" with Cancel → the confirm sheet in ₹; Yes, Cancel removes the bar." },
+  { figma: '9001:80', id: 'us-stocks-116', badge: 'new', badgeNote: "Not in Figma: an INR withdrawal that failed", section: 'inr-wallet', name: 'Wallet · Indian tab (INR) · Withdrawal · failed · sent back by bank', note: "The wallet on its INR tab: the ₹10 withdrawal came back from the bank. Red bar \"₹10.00 withdrawal didn't go through · Your bank sent it back · it's in your wallet\"; tap → the sheet (us-stocks-117). The USD tab is the plain funded wallet." },
+  { figma: '9001:81', id: 'us-stocks-117', badge: 'new', badgeNote: "Not in Figma", section: 'inr-wallet', name: 'Wallet · Indian tab (INR) · Withdrawal · failed · sent back by bank · sheet', note: "The same sheet in ₹: Amount ₹10.00 · Sent to · Back in your INR wallet, brand Withdraw again (→ the INR Withdraw, us-stocks-112) and Contact support (email)." },
+  { figma: '9001:83', id: 'us-stocks-119', badge: 'new', badgeNote: "Not in Figma: an INR withdrawal the trades cut short", section: 'inr-wallet', name: 'Wallet · Indian tab (INR) · Withdrawal · failed · used for trades', note: "The INR version of us-stocks-109: ₹500 asked for, shares bought before it was processed, ₹10 left. Red bar \"₹500.00 withdrawal didn't go through · You used it for trades · nothing left your wallet\"; tap → the sheet (us-stocks-120)." },
+  { figma: '9001:84', id: 'us-stocks-120', badge: 'new', badgeNote: "Not in Figma", section: 'inr-wallet', name: 'Wallet · Indian tab (INR) · Withdrawal · failed · used for trades · sheet', note: "The same sheet as us-stocks-110 in ₹: You asked to withdraw ₹500.00 · Withdrawable now ₹10.00, brand \"Withdraw ₹10.00\" (→ the INR Withdraw, us-stocks-112) and Not now." },
+  { figma: '9001:76', id: 'us-stocks-112', badge: 'new', badgeNote: "Not in Figma: the INR wallet's Withdraw", section: 'inr-wallet', name: 'Withdraw · Indian wallet (INR) · enter amount', note: "The INR wallet's Withdraw: the US Withdraw in ₹. \"₹10.00 withdrawable\" with the ⓘ (₹1,100.00 − ₹1,090.00 settling), ₹10 typed, Min ₹1 / 25% / 50% / 75% / Max ₹10.00 chips, no ≈ ₹ line, any linked bank (\"same day if before 1 PM\"), brand Withdraw ₹10 → us-stocks-113." },
+  { figma: '9001:77', id: 'us-stocks-113', badge: 'new', badgeNote: "Not in Figma", section: 'inr-wallet', name: "Withdraw · Indian wallet (INR) · request placed", note: "₹10 on its way to the bank: Amount, To, Credited today by 6 PM. Continue → the wallet's INR tab." },
+  { figma: '9001:66', id: 'us-stocks-102', badge: 'new', badgeNote: "From the live app's Balance details", section: 'inr-wallet', name: "Balance Details · Indian wallet (INR)", note: "The INR wallet's View details: Available balance (opening balance, Credits, Debits) and Withdrawable balance (Settlement pending), as in the live app. Groups open in place." },
+  { figma: '9001:67', id: 'us-stocks-103', badge: 'new', badgeNote: "From the live app's Balance details", section: 'inr-wallet', name: "Balance Details · Indian wallet (INR) · expanded", note: "Every group open: Deposits, Stocks Sell, Stocks Pledge, Equity / Commodity Options Cfs; Withdrawals, Stocks, F&O, MTF, Stocks & MTF PnL, MTM PnL; Deposit and Net Credit." },
+  { figma: '9001:64', id: 'us-stocks-100', badge: 'new', badgeNote: "Design from Kuber Spot → V2 (5219:109907), rows as the Market list", section: 'inr-wallet', name: "All transactions · Indian wallet (INR)", note: "The wallet's All Transactions link, from the INR tab. Deposits and withdrawals newest first under month headings, in every state (completed, in progress, failed, refunded); rows drawn as the Market page's stock rows. A row opens its details sheet (amount, bank, date, transaction ID, a note for anything not done, Got it + Contact support). The INR / USD switch stays under the top bar." },
   { figma: '9001:1', id: 'us-stocks-71', badge: 'new', badgeNote: "ETF list: Regular / Boosted tabs", section: 'activated', name: "ETFs · Regular & Boosted", note: "The ETF list from the ETFs quick action. Regular: the Country / Sector filter under the tabs and fund cards named in plain words. Boosted (leveraged): a line on what 3x means that opens How Boosted ETFs work, then the long and short funds with their leverage (eight looks in the prototype settings)." },
   { figma: '9001:2', id: 'us-stocks-72', badge: 'new', badgeNote: "ETF page: price, chart, Overview / Events, Buy / Sell", section: 'activated', name: "ETF page", note: "An ETF in the stock page layout: price and chart, Overview (1D and 52W range, fund details) and Events. Leveraged ETFs trade long or short." },
   { figma: '9001:6', id: 'us-stocks-73', badge: 'new', badgeNote: "Jojo's first ETF page, kept to compare", section: 'activated', name: "ETF page · previous", note: "The first ETF page (31 Oct): price line, about, opposite side and holdings, kept to compare." },
-  { figma: '9001:12', id: 'us-stocks-78', badge: 'new', badgeNote: "Top holdings: the full list behind the ETF page's Others row", section: 'activated', name: "ETF · Top holdings", note: "Tap Others in the ETF page's Top holdings: a full page of the fund's top 50 holdings (as many as the sample has), biggest first — logo, name, ticker, a weight bar and the share. A row opens its stock page; back returns to the ETF page." },
+  { figma: '9001:12', id: 'us-stocks-78', badge: 'new', badgeNote: "Top holdings: the full list behind the ETF page's Others row", section: 'activated', name: 'ETF page · Top holdings', note: "Tap Others in the ETF page's Top holdings: a full page of the fund's top 50 holdings (as many as the sample has), biggest first — logo, name, ticker, a weight bar and the share. A row opens its stock page; back returns to the ETF page." },
   { figma: '9001:13', id: 'us-stocks-98', badge: 'new', badgeNote: "ETFs with the stock: the full list behind the stock page's Others row", section: 'activated', name: "Stock · ETFs with the stock", note: "The stock page lists the first 5 ETFs that hold the stock, then an Others row (the next funds' logos, +N). Tapping it opens this page: every fund that holds it, in the same table (Weight / Today / Expense, or Returns). A row opens that ETF's page; back returns to the stock page." },
   { figma: '9001:14', id: 'us-stocks-99', badge: 'new', badgeNote: "Not in Figma: the page behind Home's Fractional product card", section: 'activated', name: "Fractional shares", note: "Behind the Stocks home's Fractional card (US tab, “$1 to start”). Intro (buy any US stock or ETF from $1), a worked example from today's price ($10 in NVDA = 0.05 shares), the high-priced stocks you can buy a slice of (a row opens its stock page) and a short FAQ. Back returns to the Stocks home." },
   { figma: '9001:40', id: 'us-stocks-79', badge: 'new', badgeNote: "Order Details, from the F&O Positions & orders design", section: 'activated', name: "Order Details", note: "Tap an order in Portfolio → Orders (US): the order's page in its status — open, queued, partly filled, executed, partly executed, failed, cancelled or expired — with its details, the Order Status timeline and the actions that status allows." },
@@ -29838,6 +29912,16 @@ function BracketPct({ pct }: { pct: number }) {
   display: inline-flex;
 }
 
+/* "View details" on the MTF view (27 Nov, user): tucked into the card's bottom-right corner, no margin — it rises out of
+   the corner (only its top-left corner rounded, the card's own 16 at the bottom right). Absolute, so the card keeps
+   its size in every view. FLAG: L3 Button with local corner radii + positioning — L3 has no corner tab. */
+.details {
+  position: absolute;
+  right: -1px;
+  bottom: -1px;
+  border-radius: var(--l3-radius-12) 0 var(--l3-radius-16) 0;
+}
+
 .factsSwitch { /* the top row as one full-width button: no button look of its own */
   width: 100%;
   padding: 0;
@@ -30008,6 +30092,7 @@ function BracketPct({ pct }: { pct: number }) {
 // is the picked market; tapping a card or a dot picks it, scrolling the rail picks it too.
 // FLAG: hand-made carousel cards (fixed 296px wide), pager dots and returns pill — L3 has Card and PriceChange.
 import { useEffect, useRef, useState } from 'react'
+import { Button } from '@l3/components/Button'
 import { Icon } from '@l3/components/Icon'
 import { lmSwitchArrowVertical } from '@l3/icons/lemonnade'
 import { parseUsd, useUsd } from '../../../../../shared/money'
@@ -30015,6 +30100,9 @@ import { useFlowOption } from '../../../../../shared/prototype'
 import { inHoldingsSplit } from '../portfolioData'
 import { useInPortfolioEmpty } from '../../../../../shared/userStatus'
 import { HoldingsCardV2 } from './HoldingsCardV2'
+import { t } from '../copy'
+import { chevronRight } from '../icons'
+import { MtfBreakupSheet } from '../sheets/MtfBreakupSheet'
 import styles from './HoldingsCards.module.css'
 
 export type HoldingsMarket = 'in' | 'us'
@@ -30050,6 +30138,7 @@ export function HoldingsCards({
   // Portfolio → "MTF holdings" (24 Nov, user); a user with no Indian stocks (User status → Indian stocks: Empty) has none.
   const hasMtf = useFlowOption('us-stocks', 'inMtf', 'yes') === 'yes' && !useInPortfolioEmpty()
   const [inView, setInView] = useState<InView>('all')
+  const [showBreakup, setShowBreakup] = useState(false)
   // A $ amount in the currency showing ($, or ₹ with the switch on ₹); a ₹ amount as it is. Inline: no "≈ ₹" line.
   const usd = useUsd()
   const money = (text: string) => {
@@ -30157,10 +30246,19 @@ export function HoldingsCards({
                   <span className={styles.amount}>{money(returns.pnl)}</span>
                 </span>
               </span>
+              {split && inView === 'mtf' && (
+                // MTF view: "View details" in the card's bottom-right corner opens the Boost (MTF) breakup (27 Nov,
+                // user: the card keeps its size — no full-width strip as in the live app).
+                <Button variant="tertiary" size="sm" iconRight={<Icon icon={chevronRight} size={16} />} className={styles.details}
+                  onClick={(e) => { e.stopPropagation(); setShowBreakup(true) }}>
+                  {t('portfolio.mtf.details')}
+                </Button>
+              )}
             </section>
           )
         })}
       </div>
+      <MtfBreakupSheet open={showBreakup} onClose={() => setShowBreakup(false)} />
       {/* The page dots under the cards are gone (26 Nov, user: "hide"): the IN / US switch below already picks the card. */}
     </div>
   )
@@ -31896,6 +31994,27 @@ export const inHoldingsSplit: { stocks: HoldingsSummary; mtf: HoldingsSummary } 
   mtf: { pnl: '+₹68.00', pct: '17.80%', up: true, invested: '₹382.00', current: '₹450.00' },
 }
 
+/**
+ * The MTF part's breakup ("View investment details" on the card's MTF view → Boost (MTF) breakup), as the live app's
+ * sheet. Your money ₹382.00 at 4.00X: ₹1,528.00 bought, ₹1,146.00 of it borrowed. The position is worth ₹1,596.00, so the
+ * card's MTF current value is ₹1,596.00 − ₹1,146.00 = ₹450.00 and P&L ₹68.00. Interest on the borrowed part comes off
+ * the P&L: net gain ₹64.86, 16.98% of your money.
+ */
+export const mtfBreakup = {
+  current: '₹1,596.00',
+  totalInvested: '₹1,528.00',
+  invested: '₹382.00',
+  leverage: '4.00X',
+  borrowed: '₹1,146.00',
+  pnl: '+₹68.00',
+  pnlUp: true,
+  interestRate: '12.50%',
+  interest: '₹3.14',
+  netGain: '+₹64.86',
+  netGainPct: '16.98%',
+  netGainUp: true,
+}
+
 /** The one US holding in the "holding" status: NVDA_HOLDING (data.ts) at today's price — the same numbers as the stock
  * page's Your Holdings. Call it on render so it follows the price refresh. */
 export function usHoldingNow(): { holding: Holding; summary: HoldingsSummary } {
@@ -31920,6 +32039,65 @@ export function usHoldingNow(): { holding: Holding; summary: HoldingsSummary } {
     },
     summary: { pnl: formatUsd(returns, { sign: true }), pct: `${Math.abs(pct).toFixed(2)}%`, up, invested: formatUsd(invested), current: formatUsd(current) },
   }
+}
+```
+
+### `src/flows/us-stocks/screens/entry/sheets/MtfBreakupSheet.module.css`
+
+```css
+/* The Net gain total (27 Nov, user): label and value in heading text, "P&L − interest" under the label. */
+.totalLabel { display: flex; flex-direction: column; gap: var(--l3-spacing-02); }
+.heading { font: var(--l3-text-heading-16); }
+.caption { font: var(--l3-text-description-12); color: var(--l3-content-secondary); }
+```
+
+### `src/flows/us-stocks/screens/entry/sheets/MtfBreakupSheet.tsx`
+
+```tsx
+// "Boost (MTF) breakup" (27 Nov, user; the live app's sheet behind "View investment details" on the MTF card): what the
+// MTF holdings are worth, your money vs the borrowed part, P&L, the interest on the borrowed part and what's left.
+// L3 KeyValueList (card) with the net gain as its total (FLAG: heading text + caption under the label is local CSS — L3 gap); live's ✕ is the sheet's scrim / swipe (L3 sheets have no ✕).
+import { BottomSheet, BottomSheetHeader } from '@l3/components/BottomSheet'
+import { KeyValueList, KeyValueRow } from '@l3/components/KeyValueList'
+import { useSheetLayer } from '../../../components/Phone'
+import { t } from '../copy'
+import { mtfBreakup as b } from '../portfolioData'
+import styles from './MtfBreakupSheet.module.css'
+
+export function MtfBreakupSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const layer = useSheetLayer()
+  return (
+    <BottomSheet
+      open={open}
+      onClose={onClose}
+      container={layer}
+      aria-labelledby="mtf-breakup-title"
+      header={<BottomSheetHeader heading={t('portfolio.mtf.breakup.title')} headingId="mtf-breakup-title" />}
+    >
+      <KeyValueList
+        variant="card"
+        aria-label={t('portfolio.mtf.breakup.title')}
+        total={{
+          // The caption sits under the label (27 Nov, user), not under the value; both in heading text.
+          label: (
+            <span className={styles.totalLabel}>
+              <span className={styles.heading}>{t('portfolio.mtf.breakup.netGain')}</span>
+              <span className={styles.caption}>{t('portfolio.mtf.breakup.netGainCaption')}</span>
+            </span>
+          ),
+          value: <span className={styles.heading}>{t('portfolio.mtf.breakup.netGainValue', { amount: b.netGain, pct: b.netGainPct })}</span>,
+          tone: b.netGainUp ? 'up' : 'down',
+        }}
+      >
+        <KeyValueRow label={t('portfolio.mtf.breakup.current')} value={b.current} />
+        <KeyValueRow label={t('portfolio.mtf.breakup.totalInvested')} value={b.totalInvested} />
+        <KeyValueRow label={t('portfolio.mtf.breakup.invested')} value={b.invested} />
+        <KeyValueRow label={t('portfolio.mtf.breakup.leverage', { x: b.leverage })} value={b.borrowed} />
+        <KeyValueRow label={t('portfolio.mtf.breakup.pnl')} value={b.pnl} tone={b.pnlUp ? 'up' : 'down'} />
+        <KeyValueRow label={t('portfolio.mtf.breakup.interest', { rate: b.interestRate })} value={b.interest} />
+      </KeyValueList>
+    </BottomSheet>
+  )
 }
 ```
 
@@ -37008,7 +37186,7 @@ export function WithdrawPlacedScreen({ initial, wallet = 'usd' }: { initial: num
       gesture="none"
       footer={
         <ButtonGroup aria-label="Withdraw request">
-          <Button variant="primary" size="lg" fullWidth onClick={() => go(inr ? FIGMA.walletInr : moneyIds.walletActive)}>Continue</Button>
+          <Button variant="primary" size="lg" fullWidth onClick={() => go(inr ? FIGMA.inrWithdrawalPending : moneyIds.walletActive)}>Continue</Button>
         </ButtonGroup>
       }
     >
@@ -38444,7 +38622,7 @@ export function OrderDetailsScreen({ backdrop, order: given }: { backdrop?: bool
               </span>
               <span className={styles.filled}>{shares(order.filled)}/{shares(order.qty)} shares</span>
             </Stack>
-            {order.reason && <Aerobar type={REASON_BAR[order.status] ?? 'primary'} placement="inline" heading={order.reason} />}
+            {order.reason && <Aerobar type={REASON_BAR[order.status] ?? 'primary'} floating placement="inline" heading={order.reason} />}
           </Section>
         </Section>
 
@@ -41410,6 +41588,7 @@ import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type 
 import { Actionbar, ActionbarAction } from '@l3/components/Actionbar'
 import { Avatar } from '@l3/components/Avatar'
 import { Button } from '@l3/components/Button'
+import { Grid } from '@l3/components/Grid'
 import { PriceChange } from '@l3/components/PriceChange'
 import { Select } from '@l3/components/Select'
 import { Stack } from '@l3/components/Stack'
@@ -41433,6 +41612,7 @@ import { al, forCurrentStock } from './format'
 import type { Derived, OrderPadConfig, OrderType, PadChip, PadMode } from './types'
 import { usePadVersion, usePriceCards, useTpslCard, useAmountBox, useAmountCard, useAmountCardStacked, useAmountGlow, useAmountSize, useOrderTypesLeft, useValidityPlace, useIntradayPosition, useShareIcon } from './version'
 import { LeverageCard } from './LeverageCard'
+import { tradeIds } from './ids'
 import { TPSL_INDIA, TPSL_US, TpslControl } from './Tpsl'
 import { FeeBreakdownSheet } from './FeeBreakdown'
 import { CHARGE_FACTOR } from './orderPads'
@@ -41634,6 +41814,18 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
     : (placesOrder && !(value > 0)) || (typeof config.cta.disabled === 'function' ? config.cta.disabled(derived) : config.cta.disabled)
   const goTo = (key: keyof NonNullable<OrderPadConfig['to']>) => (config.to?.[key] ? () => go(config.to![key]!) : undefined)
   const onCta = short ? () => go(ADD_MONEY) : goTo('cta')
+  // Buying more than the balance covers, with some balance (27 Nov, user; the live Indian pad): the dock splits into
+  // "Buy <what the balance buys>" (secondary, places that smaller order) and Add money (brand). Shares on the Indian pad
+  // and in the shares mode ("Buy 356 qty"); the amount in the amount mode ("Buy $412.30"). Nothing affordable → Add money alone.
+  const affordableShares = unitPrice > 0 ? (india ? Math.floor(balance / required(unitPrice)) : Math.floor((balance / required(unitPrice)) * 10000) / 10000) : 0
+  const affordableAmount = Math.floor((balance / required(1)) * 100) / 100
+  const partial = short && balance > 0 && (mode === 'shares' ? affordableShares > 0 : affordableAmount > 0)
+  const partialLabel = mode === 'shares' ? `Buy ${affordableShares} qty` : `Buy ${money(affordableAmount)}`
+  const onPartial = () => {
+    setValue(config.mode === 'amount' ? (mode === 'shares' ? affordableShares * unitPrice : affordableAmount) : mode === 'shares' ? affordableShares : affordableAmount / unitPrice)
+    // The pad's own order target; a pad whose button is always Add money (T04 Short of money) places it via Order processing.
+    go(config.cta.label === 'Buy' && config.to?.cta ? config.to.cta : tradeIds.T12)
+  }
   // "Req." is always a link (19 Nov, the user's call): a pad with its own target goes there (SL → the Fee Breakdown
   // screen); every other pad opens the same Fee Breakdown sheet over itself, with the fees on this order.
   const [feesOpen, setFeesOpen] = useState(false)
@@ -41842,11 +42034,19 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
           <span><span className={styles.muted}>{config.availLabel === 'Avail.' ? 'Balance:' : config.availLabel}</span> <strong><PadAmount text={config.avail} /></strong></span>
           <Stack direction="horizontal" gap="04" align="center">{reqLabel}{derived.req && <strong>{derived.req}</strong>}</Stack>
         </Stack>
-        <Button variant={config.side === 'buy' ? 'brand' : 'sell'} size="lg" fullWidth disabled={ctaDisabled} onClick={onCta}>
-          {ctaLabel}
-          {/* The order's value in ₹ after the label ("Buy · ₹9,345"), same weight as the label, 2 smaller. */}
-          {ctaInr && <span className={styles.ctaInr}> · {ctaInr}</span>}
-        </Button>
+        {partial ? (
+          // FLAG: an even 2-up row of Large buttons in the pad's own dock (L3 ButtonGroup would add a second bar).
+          <Grid columns={2} gap="12">
+            <Button variant="secondary" size="lg" fullWidth onClick={onPartial}>{partialLabel}</Button>
+            <Button variant="brand" size="lg" fullWidth onClick={onCta}>{ctaLabel}</Button>
+          </Grid>
+        ) : (
+          <Button variant={config.side === 'buy' ? 'brand' : 'sell'} size="lg" fullWidth disabled={ctaDisabled} onClick={onCta}>
+            {ctaLabel}
+            {/* The order's value in ₹ after the label ("Buy · ₹9,345"), same weight as the label, 2 smaller. */}
+            {ctaInr && <span className={styles.ctaInr}> · {ctaInr}</span>}
+          </Button>
+        )}
       </Stack>
       <KeypadSlide open={keypad}>
         <Keyboard onKey={onKey} decimal={decimals > 0} />
@@ -44675,7 +44875,9 @@ function indianPad(id: string, us: OrderPadConfig): OrderPadConfig {
       }
 
       const required = requiredFor(order, product)
-      const error = !usDerived.error ? undefined : balance <= 0 ? 'Your wallet is empty. Add money to buy.' : required > balance ? 'Available amount is not enough' : undefined
+      // Whole shares the balance buys at this price (the split dock's "Buy 356 qty").
+      const enoughFor = unit > 0 ? Math.floor(balance / requiredFor(unit, product)) : 0
+      const error = !usDerived.error ? undefined : balance <= 0 ? 'Your wallet is empty. Add money to buy.' : required > balance ? (enoughFor > 0 ? `Available amount is enough only for ${enoughFor} share${enoughFor === 1 ? '' : 's'}` : 'Available amount is not enough') : undefined
       const note =
         us.type === 'market'
           ? (CLOSED_NOTES[id] ?? (product === 'intraday'
@@ -47201,6 +47403,9 @@ export type WalletScreenProps = {
   /** Show the "Grow Wealth in Dollars" nudge. */
   nudge?: boolean
   pending?: PendingBannerProps
+  /** The INR tab's own status bar and sheet (an INR withdrawal that failed); otherwise the INR tab has none. */
+  inrPending?: PendingBannerProps
+  inrSheet?: ReactNode
 }
 
 /** The INR view's data: what every wallet screen shows on its INR tab. */
@@ -47218,7 +47423,7 @@ export function WalletScreen(props: WalletScreenProps) {
   const { tab = 'usd', backdrop } = props
   const [active, setActive] = useState<WalletTab>(tab)
   const { label, total, withdrawable, children, dock, backTo, sheet, noteFlow, inr, nudge, pending } =
-    active === 'usd' ? props : { ...props, ...INR_VIEW, nudge: false, sheet: undefined, noteFlow: false, pending: undefined }
+    active === 'usd' ? props : { ...props, ...INR_VIEW, nudge: false, sheet: props.inrSheet, noteFlow: false, pending: props.inrPending }
 
   const bigAmounts = useBigAmounts()
   const rawTotal = bigAmounts ? bigAmount(total, 'total') : total
@@ -47402,7 +47607,7 @@ export function WalletScreen(props: WalletScreenProps) {
 // The wallet's Figma frames. Each one is the shared WalletScreen with different data.
 import { useState } from 'react'
 import { useUsNav } from '../../nav'
-import { Usd, formatUsd } from '../../../../shared/money'
+import { Usd, formatInr, formatUsd } from '../../../../shared/money'
 import { FIGMA, WITHDRAWAL_REQUESTS } from './data'
 import { WalletScreen, type WalletDock, type WalletScreenProps, type WalletTab } from './WalletScreen'
 import { DepositProgressSheet } from './sheets/DepositProgressSheet'
@@ -47410,7 +47615,12 @@ import { depositOnTheWay, depositsTotal, REFUND_DAYS, useDepositsOnTheWay } from
 import { CancelWithdrawalSheet } from './sheets/CancelWithdrawalSheet'
 import { WithdrawalRequestsSheet } from './sheets/WithdrawalRequestsSheet'
 import { WithdrawFailedSheet } from './sheets/WithdrawFailedSheet'
-import { AFTER_TRADES_USD, FAILED_WITHDRAWAL_USD } from '../money/amounts'
+import { WithdrawReturnedSheet } from './sheets/WithdrawReturnedSheet'
+import { useLinkedBanks } from '../../../../shared/userStatus'
+import { bankLine } from '../../../../shared/ui/BankPicker'
+import { isUsSupported } from '../../../../shared/data/usBanks'
+import { moneyIds } from '../money/ids'
+import { AFTER_TRADES_USD, FAILED_WITHDRAWAL_USD, WITHDRAWABLE_INR } from '../money/amounts'
 import { t } from '../money/copy'
 
 /** `openOn`: the tab the wallet opens on (INR for W0 · Indian tab); the other tab flips in place. */
@@ -47538,7 +47748,7 @@ export function WalletMoneySentScreen(props: ScreenProps) {
   return <WalletTransferInProgressScreen {...props} sent />
 }
 
-/** W3 · Withdrawing · in progress (Cancel asks to confirm, then the banner goes). */
+/** W3 · Wallet · US tab · Withdrawal · in progress (Cancel asks to confirm, then the banner goes). */
 export function WalletWithdrawalInProgressScreen({ backdrop, openOn }: ScreenProps) {
   const [asking, setAsking] = useState(false)
   const [cancelled, setCancelled] = useState(false)
@@ -47633,7 +47843,7 @@ export function WalletWithdrawalDelayedScreen({ backdrop, openOn }: ScreenProps)
 }
 
 /**
- * W3e · Withdrawal failed (26 Nov, user; not in Figma): a $100 withdrawal placed, then shares bought with the money before
+ * Withdrawal failed (26 Nov, user; not in Figma): a $100 withdrawal placed, then shares bought with the money before
  * it was processed. The wallet is down to $40.40, the withdrawal didn't go through and nothing left the wallet. A red bar
  * says so; tapping it opens the sheet (why, what's withdrawable now, Withdraw $40.40 → Withdraw prefilled with it).
  * `open`: the sheet is up on arrival (us-stocks-110).
@@ -47658,6 +47868,139 @@ export function WalletWithdrawalFailedScreen({ backdrop, openOn, open }: ScreenP
         failed: true,
       }}
       sheet={showing && <WithdrawFailedSheet requested={FAILED_WITHDRAWAL_USD} withdrawable={AFTER_TRADES_USD} onClose={() => setShowing(false)} onRetry={() => go(FIGMA.withdrawRetry)} />}
+    />
+  )
+}
+
+/** The withdrawal the bank sent back: $100 (USD wallet) / ₹10 (INR wallet). */
+const RETURNED_USD = 100
+const RETURNED_INR = 10
+/** Where it went: the first linked bank the wallet can send to, as the Withdraw screen picks it. */
+function useReturnedTo(inr: boolean) {
+  const banks = useLinkedBanks()
+  const bank = (inr ? banks : banks.filter(isUsSupported))[0] ?? banks[0]
+  return bank ? bankLine(bank) : 'HDFC Bank ••4321'
+}
+
+/**
+ * Withdrawal sent back by the bank (not in Figma, 27 Nov, user): the $100 left the wallet, the bank didn't accept
+ * it and it came back. Red bar → the sheet; Withdraw again → Withdraw. `open`: the sheet shows on arrival.
+ */
+export function WalletWithdrawalReturnedScreen({ backdrop, openOn, open }: ScreenProps & { open?: boolean }) {
+  const { go } = useUsNav()
+  const [showing, setShowing] = useState(!!open && !backdrop)
+  const to = useReturnedTo(false)
+  return (
+    <WalletScreen
+      label="Wallet, USD, withdrawal sent back"
+      backdrop={backdrop}
+      tab={openOn}
+      {...WITH_BALANCE}
+      dock={{ primary: 'Deposit', primaryTo: FIGMA.addMoney, withdrawTo: FIGMA.withdraw }}
+      pending={{
+        title: <><Usd value={RETURNED_USD} layout="inline" /> withdrawal didn&apos;t go through</>,
+        sub: t('withdrawReturned.bar'),
+        onOpen: () => !backdrop && setShowing(true),
+        failed: true,
+      }}
+      sheet={showing && <WithdrawReturnedSheet amount={formatUsd(RETURNED_USD)} to={to} wallet={t('withdrawReturned.usdWallet')} onClose={() => setShowing(false)} onRetry={() => go(FIGMA.withdraw)} />}
+    />
+  )
+}
+
+/**
+ * INR withdrawal failed (not in Figma, 27 Nov, user): the INR wallet's ₹10 withdrawal came back from the bank.
+ * Opens on the INR tab with the red bar (the USD tab is the plain funded wallet); bar → the sheet; Withdraw again →
+ * the INR Withdraw (us-stocks-112).
+ */
+export function WalletInrWithdrawalFailedScreen({ backdrop, open }: ScreenProps & { open?: boolean }) {
+  const { go } = useUsNav()
+  const [showing, setShowing] = useState(!!open && !backdrop)
+  const to = useReturnedTo(true)
+  const amount = formatInr(RETURNED_INR, { decimals: 2 })
+  return (
+    <WalletScreen
+      label="Wallet, INR, withdrawal failed"
+      backdrop={backdrop}
+      tab="inr"
+      {...WITH_BALANCE}
+      dock={{ primary: 'Deposit', primaryTo: FIGMA.addMoney, withdrawTo: FIGMA.withdraw }}
+      inrPending={{
+        title: t('withdrawReturned.title', { amount }),
+        sub: t('withdrawReturned.bar'),
+        onOpen: () => !backdrop && setShowing(true),
+        failed: true,
+      }}
+      inrSheet={showing && <WithdrawReturnedSheet amount={amount} to={to} wallet={t('withdrawReturned.inrWallet')} onClose={() => setShowing(false)} onRetry={() => go(moneyIds.inr)} />}
+    />
+  )
+}
+
+/**
+ * INR wallet: payment pending (not in Figma, 27 Nov, user): an add money approved in the UPI app that the bank
+ * hasn't confirmed yet (deposit-18 → Done). The INR tab's bar says so until the bank answers; nothing to tap.
+ */
+export function WalletInrPaymentPendingScreen({ backdrop }: ScreenProps) {
+  return (
+    <WalletScreen
+      label="Wallet, INR, payment pending"
+      backdrop={backdrop}
+      tab="inr"
+      {...WITH_BALANCE}
+      inrPending={{ title: t('inrWallet.paymentPending', { amount: formatInr(1000, { decimals: 2 }) }), sub: t('inrWallet.paymentPendingSub') }}
+    />
+  )
+}
+
+/** The INR withdrawal that the trades cut short: ₹500 asked for, ₹10 withdrawable once the shares were bought. */
+const INR_FAILED_REQUESTED = 500
+const INR_AFTER_TRADES = 10
+
+/**
+ * INR wallet: withdrawal failed, the money went into trades (not in Figma, 27 Nov, user). The INR version of
+ * us-stocks-109: ₹500 asked for, shares bought before it was processed, ₹10 left. Red bar → the sheet (₹); Withdraw ₹10
+ * → the INR Withdraw. `open`: the sheet shows on arrival.
+ */
+export function WalletInrWithdrawalUsedScreen({ backdrop, open }: ScreenProps & { open?: boolean }) {
+  const { go } = useUsNav()
+  const [showing, setShowing] = useState(!!open && !backdrop)
+  return (
+    <WalletScreen
+      label="Wallet, INR, withdrawal failed, used for trades"
+      backdrop={backdrop}
+      tab="inr"
+      {...WITH_BALANCE}
+      inrPending={{
+        title: t('withdrawFailed.title', { amount: formatInr(INR_FAILED_REQUESTED, { decimals: 2 }) }),
+        sub: t('withdrawFailed.bar'),
+        onOpen: () => !backdrop && setShowing(true),
+        failed: true,
+      }}
+      inrSheet={showing && <WithdrawFailedSheet inr requested={INR_FAILED_REQUESTED} withdrawable={INR_AFTER_TRADES} onClose={() => setShowing(false)} onRetry={() => go(moneyIds.inr)} />}
+    />
+  )
+}
+
+/**
+ * INR wallet: withdrawal in progress (not in Figma, 27 Nov, user): after the INR request is placed (us-stocks-113 →
+ * Continue). The INR tab's bar shows it until the money reaches the bank, with Cancel (the confirm sheet, in ₹).
+ */
+export function WalletInrWithdrawalPendingScreen({ backdrop }: ScreenProps) {
+  const [asking, setAsking] = useState(false)
+  const [cancelled, setCancelled] = useState(false)
+  const amount = WITHDRAWABLE_INR
+  return (
+    <WalletScreen
+      label="Wallet, INR, withdrawal in progress"
+      backdrop={backdrop}
+      tab="inr"
+      {...WITH_BALANCE}
+      inrPending={cancelled ? undefined : {
+        title: t('inrWallet.withdrawPending', { amount: formatInr(amount, { decimals: 2 }) }),
+        sub: t('inrWallet.withdrawPendingSub'),
+        action: { label: t('inrWallet.cancel'), onClick: () => !backdrop && setAsking(true) },
+      }}
+      inrSheet={asking ? <CancelWithdrawalSheet inr amount={amount} onNo={() => setAsking(false)} onYes={() => { setAsking(false); setCancelled(true) }} /> : undefined}
     />
   )
 }
@@ -47701,12 +48044,28 @@ export const FIGMA = {
   twoWithdrawals: '5852:98614',
   /** W3c · Withdrawal requests sheet. */
   withdrawalRequests: '5852:98522',
-  /** W3e · Withdrawal failed: used for trades before it was processed (not in Figma, 26 Nov). */
+  /** Withdrawal failed: used for trades before it was processed (not in Figma, 26 Nov). */
   withdrawalFailed: '9001:73',
   /** The same with its sheet open. */
   withdrawalFailedSheet: '9001:74',
   /** Withdraw again after it failed: what is withdrawable now, prefilled. */
   withdrawRetry: '9001:75',
+  /** Withdrawal sent back by the bank (not in Figma, 27 Nov). */
+  withdrawalReturned: '9001:78',
+  /** The same with its sheet open. */
+  withdrawalReturnedSheet: '9001:79',
+  /** INR wallet: withdrawal failed, sent back by the bank (not in Figma, 27 Nov). */
+  inrWithdrawalFailed: '9001:80',
+  /** The same with its sheet open. */
+  inrWithdrawalFailedSheet: '9001:81',
+  /** INR wallet: an add money the bank hasn't confirmed yet (not in Figma, 27 Nov). */
+  inrPaymentPending: '9001:82',
+  /** INR wallet: withdrawal failed, the money went into trades (not in Figma, 27 Nov). */
+  inrWithdrawalUsed: '9001:83',
+  /** The same with its sheet open. */
+  inrWithdrawalUsedSheet: '9001:84',
+  /** INR wallet: withdrawal in progress, after the request is placed (not in Figma, 27 Nov). */
+  inrWithdrawalPending: '9001:85',
   /** All transactions, opened on the INR tab (no Figma frame of ours; design: Kuber Spot → V2, 5219:109907). */
   transactionsInr: '9001:64',
   /** All transactions, opened on the USD tab. */
@@ -47866,6 +48225,11 @@ import {
   WalletWithdrawalCreditedScreen,
   WalletWithdrawalDelayedScreen,
   WalletWithdrawalFailedScreen,
+  WalletWithdrawalReturnedScreen,
+  WalletInrWithdrawalFailedScreen,
+  WalletInrPaymentPendingScreen,
+  WalletInrWithdrawalUsedScreen,
+  WalletInrWithdrawalPendingScreen,
   WalletWithdrawalInProgressScreen,
   WalletWithdrawalRequestsScreen,
   WalletWithdrawalSentScreen,
@@ -47917,6 +48281,14 @@ export const screens: UsScreenMap = {
   '5852:98459': WalletWithdrawalDelayedScreen,
   [FIGMA.withdrawalFailed]: WalletWithdrawalFailedScreen,
   [FIGMA.withdrawalFailedSheet]: (props) => <WalletWithdrawalFailedScreen {...props} open />,
+  [FIGMA.withdrawalReturned]: WalletWithdrawalReturnedScreen,
+  [FIGMA.withdrawalReturnedSheet]: (props) => <WalletWithdrawalReturnedScreen {...props} open />,
+  [FIGMA.inrWithdrawalFailed]: WalletInrWithdrawalFailedScreen,
+  [FIGMA.inrWithdrawalFailedSheet]: (props) => <WalletInrWithdrawalFailedScreen {...props} open />,
+  [FIGMA.inrPaymentPending]: WalletInrPaymentPendingScreen,
+  [FIGMA.inrWithdrawalUsed]: WalletInrWithdrawalUsedScreen,
+  [FIGMA.inrWithdrawalUsedSheet]: (props) => <WalletInrWithdrawalUsedScreen {...props} open />,
+  [FIGMA.inrWithdrawalPending]: WalletInrWithdrawalPendingScreen,
   [FIGMA.transactionsInr]: (props) => <AllTransactionsScreen {...props} tab="inr" />,
   [FIGMA.transactionsUsd]: (props) => <AllTransactionsScreen {...props} tab="usd" />,
 }
@@ -48212,10 +48584,10 @@ import { BottomSheet, BottomSheetHeader } from '@l3/components/BottomSheet'
 import { Button } from '@l3/components/Button'
 import { ButtonGroup } from '@l3/components/ButtonGroup'
 import { useSheetLayer } from '../../../components/Phone'
-import { Usd } from '../../../../../shared/money'
+import { Usd, formatInr } from '../../../../../shared/money'
 import styles from './Sheets.module.css'
 
-export function CancelWithdrawalSheet({ amount, all, onNo, onYes }: { amount: number; all?: boolean; onNo: () => void; onYes: () => void }) {
+export function CancelWithdrawalSheet({ amount, all, inr, onNo, onYes }: { amount: number; all?: boolean; /** ₹ (the INR wallet) instead of $. */ inr?: boolean; onNo: () => void; onYes: () => void }) {
   const layer = useSheetLayer()
   return (
     <BottomSheet
@@ -48242,7 +48614,7 @@ export function CancelWithdrawalSheet({ amount, all, onNo, onYes }: { amount: nu
     >
       <div className={styles.cancelAmount}>
         <span>Total amount</span>
-        <b><Usd value={amount} align="end" /></b>
+        <b>{inr ? formatInr(amount, { decimals: 2 }) : <Usd value={amount} align="end" />}</b>
       </div>
     </BottomSheet>
   )
@@ -48471,7 +48843,7 @@ export function TransactionSheet({ transaction: tx, onClose }: { transaction: Tr
 ### `src/flows/us-stocks/screens/wallet/sheets/WithdrawFailedSheet.tsx`
 
 ```tsx
-// Withdrawal failed (26 Nov, user): the user placed a withdrawal, then bought shares with the same money before it was
+// Withdrawal failed (26 Nov, user; the INR wallet's too since 27 Nov, `inr`): the user placed a withdrawal, then bought shares with the same money before it was
 // processed, so the wallet held less than the amount asked for and the withdrawal didn't go through. Opened from the red
 // bar on the wallet. Says why, that nothing left the wallet, and offers to withdraw what is there now (a money button:
 // brand). Under the $1 minimum there's nothing to retry: one Got it.
@@ -48481,16 +48853,18 @@ import { ButtonGroup } from '@l3/components/ButtonGroup'
 import { KeyValueList, KeyValueRow } from '@l3/components/KeyValueList'
 import { msErrorFill } from '@l3/icons/material'
 import { useSheetLayer } from '../../../components/Phone'
-import { formatUsd } from '../../../../../shared/money'
+import { formatInr, formatUsd } from '../../../../../shared/money'
 import { Spot } from '../../../../../shared/ui/Spot'
 import { MIN_WITHDRAW_USD } from '../../money/amounts'
 import { t } from '../../money/copy'
 
 const HEADING_ID = 'withdraw-failed-title'
 
-export function WithdrawFailedSheet({ requested, withdrawable, onRetry, onClose }: { requested: number; withdrawable: number; onRetry: () => void; onClose: () => void }) {
+/** `inr`: the INR wallet's withdrawal (₹ amounts, "INR wallet"); otherwise the USD wallet's. */
+export function WithdrawFailedSheet({ requested, withdrawable, inr, onRetry, onClose }: { requested: number; withdrawable: number; inr?: boolean; onRetry: () => void; onClose: () => void }) {
   const layer = useSheetLayer()
-  const title = t('withdrawFailed.title', { amount: formatUsd(requested) })
+  const money = (value: number) => (inr ? formatInr(value, { decimals: 2 }) : formatUsd(value))
+  const title = t('withdrawFailed.title', { amount: money(requested) })
   const canRetry = withdrawable >= MIN_WITHDRAW_USD
   return (
     <BottomSheet
@@ -48498,12 +48872,12 @@ export function WithdrawFailedSheet({ requested, withdrawable, onRetry, onClose 
       onClose={onClose}
       container={layer}
       aria-labelledby={HEADING_ID}
-      header={<BottomSheetHeader size="lg" headingId={HEADING_ID} icon={<Spot icon={msErrorFill} tone="error" size="md" />} heading={title} description={t('withdrawFailed.body')} />}
+      header={<BottomSheetHeader size="lg" headingId={HEADING_ID} icon={<Spot icon={msErrorFill} tone="error" size="md" />} heading={title} description={t('withdrawFailed.body', { wallet: t(inr ? 'withdrawReturned.inrWallet' : 'withdrawReturned.usdWallet') })} />}
       footer={
         <ButtonGroup aria-label={title}>
           {canRetry ? (
             <>
-              <Button variant="brand" size="lg" fullWidth onClick={onRetry}>{t('withdrawFailed.retry', { amount: formatUsd(withdrawable) })}</Button>
+              <Button variant="brand" size="lg" fullWidth onClick={onRetry}>{t('withdrawFailed.retry', { amount: money(withdrawable) })}</Button>
               <Button variant="secondary" size="lg" fullWidth onClick={onClose}>{t('withdrawFailed.notNow')}</Button>
             </>
           ) : (
@@ -48513,8 +48887,65 @@ export function WithdrawFailedSheet({ requested, withdrawable, onRetry, onClose 
       }
     >
       <KeyValueList variant="card" aria-label={title}>
-        <KeyValueRow label={t('withdrawFailed.requested')} value={formatUsd(requested)} />
-        <KeyValueRow label={t('withdrawFailed.now')} value={formatUsd(withdrawable)} />
+        <KeyValueRow label={t('withdrawFailed.requested')} value={money(requested)} />
+        <KeyValueRow label={t('withdrawFailed.now')} value={money(withdrawable)} />
+      </KeyValueList>
+    </BottomSheet>
+  )
+}
+```
+
+### `src/flows/us-stocks/screens/wallet/sheets/WithdrawReturnedSheet.tsx`
+
+```tsx
+// Withdrawal sent back by the bank (27 Nov, user: "failed state of deposit/withdraw"). The money left the wallet, the
+// bank didn't accept it (closed account, name mismatch…) and it came back. Opened from the red bar on the wallet, on
+// either tab: the USD wallet ($, the US transfer) or the INR wallet (₹). Says what happened, that the money is back,
+// and offers to withdraw again (a money button: brand) or to email support.
+import { BottomSheet, BottomSheetHeader } from '@l3/components/BottomSheet'
+import { Button } from '@l3/components/Button'
+import { ButtonGroup } from '@l3/components/ButtonGroup'
+import { KeyValueList, KeyValueRow } from '@l3/components/KeyValueList'
+import { msErrorFill } from '@l3/icons/material'
+import { useSheetLayer } from '../../../components/Phone'
+import { emailSupport } from '../../../../../shared/support'
+import { Spot } from '../../../../../shared/ui/Spot'
+import { t } from '../../money/copy'
+
+const HEADING_ID = 'withdraw-returned-title'
+
+export type WithdrawReturnedProps = {
+  /** The amount as written: "$100.00" or "₹10.00". */
+  amount: string
+  /** The bank it was sent to: "HDFC Bank ••4321". */
+  to: string
+  /** "USD wallet" / "INR wallet". */
+  wallet: string
+  onRetry: () => void
+  onClose: () => void
+}
+
+export function WithdrawReturnedSheet({ amount, to, wallet, onRetry, onClose }: WithdrawReturnedProps) {
+  const layer = useSheetLayer()
+  const title = t('withdrawReturned.title', { amount })
+  return (
+    <BottomSheet
+      open
+      onClose={onClose}
+      container={layer}
+      aria-labelledby={HEADING_ID}
+      header={<BottomSheetHeader size="lg" headingId={HEADING_ID} icon={<Spot icon={msErrorFill} tone="error" size="md" />} heading={title} description={t('withdrawReturned.body', { wallet })} />}
+      footer={
+        <ButtonGroup aria-label={title}>
+          <Button variant="brand" size="lg" fullWidth onClick={onRetry}>{t('withdrawReturned.retry')}</Button>
+          <Button variant="secondary" size="lg" fullWidth onClick={() => emailSupport(t('withdrawReturned.supportSubject', { amount }))}>{t('withdrawReturned.support')}</Button>
+        </ButtonGroup>
+      }
+    >
+      <KeyValueList variant="card" aria-label={title}>
+        <KeyValueRow label={t('withdrawReturned.amount')} value={amount} />
+        <KeyValueRow label={t('withdrawReturned.to')} value={to} />
+        <KeyValueRow label={t('withdrawReturned.status')} value={t('withdrawReturned.back', { wallet })} />
       </KeyValueList>
     </BottomSheet>
   )

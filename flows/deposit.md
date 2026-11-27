@@ -20,13 +20,14 @@ Prototype: https://lemonnade-design.github.io/lemonn-app-prototype/#/deposit · 
 | `deposit-12` | Add bank account | — | `deposit-09`, `deposit-13` | From the bank row or "Pay from" — the ₹ and the US add money both come here. Verify account → the ₹1 name check. Opened from US Stocks (US add money, activation, the USD wallet) it is deposit-16; from the ₹ side any bank can be added, no check. |
 | `deposit-16` | Add bank account · for US Stocks | — | `us-stocks-21`, `deposit-13` | Not in Figma: opened from US Stocks (US add money\ |
 | `deposit-17` | Add bank account · US · bank not supported | — | `us-stocks-21`, `deposit-13` | Not in Figma: from US Stocks, an IFSC of a bank that can\ |
-| `deposit-13` | Verifying bank account | — | — | Not in Figma: ₹1 goes to the account and the bank returns the name on it. Moves on by itself to Bank account added. |
-| `deposit-14` | Bank account added | — | — | Not in Figma: the name matched PAN. The account joins the linked banks; Continue goes back to the add money (₹ or US) that opened Add bank account, with the new bank picked. |
-| `deposit-15` | Bank account not added | — | `deposit-12` | Not in Figma: the name on the account isn’t the user’s (₹1 check). Try another account → Add bank account; Back to Add money → the add money that opened it. |
-| `deposit-02` | Approve in UPI app (external) | [5436:7954](https://www.figma.com/design/sG24GPizTdwbMBxLm0IpTA/?node-id=5436-7954) | `deposit-05` | Handoff placeholder: the UPI app’s own payment sheet is not built by Lemonn. |
-| `deposit-03` | Confirming payment | [5436:7953](https://www.figma.com/design/sG24GPizTdwbMBxLm0IpTA/?node-id=5436-7953) | — |  |
-| `deposit-04` | Money added | [5436:7955](https://www.figma.com/design/sG24GPizTdwbMBxLm0IpTA/?node-id=5436-7955) | — | First deposit: Start investing → the Stocks home. Opened from the wallet: Done → the wallet. (The prototype remembers the entry; a screen opened straight from the list assumes the first deposit.) |
-| `deposit-05` | Payment failed | — | `deposit-02` | Not in the live screenshots — the failure state the flow needs. Change payment method returns to the Add money screen it came from. |
+| `deposit-13` | Add bank account · verifying | — | — | Not in Figma: ₹1 goes to the account and the bank returns the name on it. Moves on by itself to Bank account added. |
+| `deposit-14` | Add bank account · added | — | — | Not in Figma: the name matched PAN. The account joins the linked banks; Continue goes back to the add money (₹ or US) that opened Add bank account, with the new bank picked. |
+| `deposit-15` | Add bank account · not added | — | `deposit-12` | Not in Figma: the name on the account isn’t the user’s (₹1 check). Try another account → Add bank account; Back to Add money → the add money that opened it. |
+| `deposit-02` | Payment · approve in UPI app (external) | [5436:7954](https://www.figma.com/design/sG24GPizTdwbMBxLm0IpTA/?node-id=5436-7954) | `deposit-05` | Handoff placeholder: the UPI app’s own payment sheet is not built by Lemonn. |
+| `deposit-03` | Payment · confirming | [5436:7953](https://www.figma.com/design/sG24GPizTdwbMBxLm0IpTA/?node-id=5436-7953) | — |  |
+| `deposit-04` | Payment · money added | [5436:7955](https://www.figma.com/design/sG24GPizTdwbMBxLm0IpTA/?node-id=5436-7955) | — | First deposit: Start investing → the Stocks home. Opened from the wallet: Done → the wallet. (The prototype remembers the entry; a screen opened straight from the list assumes the first deposit.) |
+| `deposit-05` | Payment · failed | — | `deposit-02` | Not in the live screenshots — the failure state the flow needs. Change payment method returns to the Add money screen it came from. |
+| `deposit-18` | Payment · pending | — | — | Not in Figma: approved in the UPI app, but the bank hasn’t confirmed yet. Up to 30 minutes; if money left the bank and never arrives it comes back in 3–5 working days. Done → from the wallet: the INR wallet with its "payment pending" bar (us-stocks-118); first deposit: the Stocks home. |
 
 ## Spec (README.md)
 
@@ -197,6 +198,14 @@ From `src/shared/data/user.ts` (fictional sample user) and `data.ts`:
   "failed.change": "Change payment method",
   "failed.title": "Payment didn’t go through",
   "failed.description": "If money left your bank, it comes back in 3–5 working days. Nothing was added to Lemonn.",
+  "pending.title": "Waiting for your bank",
+  "pending.description": "Your bank hasn’t confirmed the {amount} payment yet. This usually takes up to 30 minutes. We’ll add it to your wallet as soon as it does.",
+  "pending.refund": "If money left your bank and doesn’t reach Lemonn, it comes back in 3–5 working days.",
+  "pending.receiptLabel": "Payment details",
+  "pending.status": "Status",
+  "pending.statusValue": "Waiting for bank",
+  "pending.groupLabel": "Payment pending",
+  "pending.done": "Done",
   "addMoney.available": "{amount} available",
   "addMoney.change": "Change",
   "success.done": "Done",
@@ -339,7 +348,7 @@ import { AddMoney } from './screens/AddMoney'
 import { BankAdded, BankFailed, VerifyingBank } from './screens/BankVerify'
 import { usePreview } from '../../shared/prototype'
 import { addBankForUs, addBankReturnScreen, startAddBank } from '../../shared/userStatus'
-import { Failed, Processing, Success, UpiHandoff } from './screens/Payment'
+import { Failed, Pending, Processing, Success, UpiHandoff } from './screens/Payment'
 import { defaultAmount, firstBalance, newBank, setBankBeingAdded, walletBalance } from './data'
 import { t } from './copy'
 
@@ -380,15 +389,16 @@ export const deposit: Flow = {
     { id: 'deposit-12', name: 'Add bank account', figma: '', note: 'From the bank row or "Pay from" — the ₹ and the US add money both come here. Verify account → the ₹1 name check. Opened from US Stocks (US add money, activation, the USD wallet) it is deposit-16; from the ₹ side any bank can be added, no check.', render: (go) => <AddBankBack usStocks={addBankForUs()} fallback={() => go('deposit-09')} onVerify={() => go('deposit-13')} /> },
     { id: 'deposit-16', name: 'Add bank account · for US Stocks', figma: '', note: 'Not in Figma: opened from US Stocks (US add money\'s "Add another bank account", activation\'s Add bank). A card on top shows the five banks that can send money abroad (ICICI, HDFC, Kotak, IDFC FIRST, Axis); only their IFSCs are taken (e.g. KKBK0000958). Verify account → the ₹1 name check, then back to where it was opened.', render: (go) => <AddBankBack usStocks fallback={() => go('us-stocks-21')} onVerify={() => go('deposit-13')} /> },
     { id: 'deposit-17', name: 'Add bank account · US · bank not supported', figma: '', note: 'Not in Figma: from US Stocks, an IFSC of a bank that can\'t send money abroad (State Bank of India here). The IFSC is found but the field turns red: "State Bank of India can\'t send money abroad for US Stocks. Use an account at ICICI, HDFC, Kotak, IDFC FIRST or Axis Bank." Verify account stays off.', render: (go) => <AddBankBack usStocks initial={{ account: newBank.accountNumber, ifsc: newBank.ifsc }} fallback={() => go('us-stocks-21')} onVerify={() => go('deposit-13')} /> },
-    { id: 'deposit-13', name: 'Verifying bank account', figma: '', note: 'Not in Figma: ₹1 goes to the account and the bank returns the name on it. Moves on by itself to Bank account added.', render: () => <VerifyingBank next="deposit-14" /> },
-    { id: 'deposit-14', name: 'Bank account added', figma: '', note: 'Not in Figma: the name matched PAN. The account joins the linked banks; Continue goes back to the add money (₹ or US) that opened Add bank account, with the new bank picked.', render: (go) => <BankAdded onContinue={() => finishAddBank(go)} /> },
-    { id: 'deposit-15', name: 'Bank account not added', figma: '', note: 'Not in Figma: the name on the account isn’t the user’s (₹1 check). Try another account → Add bank account; Back to Add money → the add money that opened it.', render: (go) => <BankFailed onRetry={() => go('deposit-12')} onBack={() => finishAddBank(go)} /> },
-    { id: 'deposit-02', name: 'Approve in UPI app (external)', figma: '5436:7954', note: 'Handoff placeholder: the UPI app’s own payment sheet is not built by Lemonn.', render: (go) => <UpiHandoff amount={paying} next="deposit-03" onCancel={() => go('deposit-05')} /> },
-    { id: 'deposit-03', name: 'Confirming payment', figma: '5436:7953', render: () => <Processing next="deposit-04" /> },
-    { id: 'deposit-04', name: 'Money added', figma: '5436:7955', note: 'First deposit: Start investing → the Stocks home. Opened from the wallet: Done → the wallet. (The prototype remembers the entry; a screen opened straight from the list assumes the first deposit.)', render: (go) => (
+    { id: 'deposit-13', name: 'Add bank account · verifying', figma: '', note: 'Not in Figma: ₹1 goes to the account and the bank returns the name on it. Moves on by itself to Bank account added.', render: () => <VerifyingBank next="deposit-14" /> },
+    { id: 'deposit-14', name: 'Add bank account · added', figma: '', note: 'Not in Figma: the name matched PAN. The account joins the linked banks; Continue goes back to the add money (₹ or US) that opened Add bank account, with the new bank picked.', render: (go) => <BankAdded onContinue={() => finishAddBank(go)} /> },
+    { id: 'deposit-15', name: 'Add bank account · not added', figma: '', note: 'Not in Figma: the name on the account isn’t the user’s (₹1 check). Try another account → Add bank account; Back to Add money → the add money that opened it.', render: (go) => <BankFailed onRetry={() => go('deposit-12')} onBack={() => finishAddBank(go)} /> },
+    { id: 'deposit-02', name: 'Payment · approve in UPI app (external)', figma: '5436:7954', note: 'Handoff placeholder: the UPI app’s own payment sheet is not built by Lemonn.', render: (go) => <UpiHandoff amount={paying} next="deposit-03" onCancel={() => go('deposit-05')} /> },
+    { id: 'deposit-03', name: 'Payment · confirming', figma: '5436:7953', render: () => <Processing next="deposit-04" /> },
+    { id: 'deposit-04', name: 'Payment · money added', figma: '5436:7955', note: 'First deposit: Start investing → the Stocks home. Opened from the wallet: Done → the wallet. (The prototype remembers the entry; a screen opened straight from the list assumes the first deposit.)', render: (go) => (
       <Success amount={paying} cta={origin === 'wallet' ? t('success.done') : undefined} onStart={() => go(origin === 'wallet' ? WALLET : 'stocks-01')} />
     ) },
-    { id: 'deposit-05', name: 'Payment failed', figma: '', note: 'Not in the live screenshots — the failure state the flow needs. Change payment method returns to the Add money screen it came from.', render: (go) => <Failed onRetry={() => go('deposit-02')} onChange={() => go(origin === 'wallet' ? 'deposit-09' : 'deposit-01')} /> },
+    { id: 'deposit-05', name: 'Payment · failed', figma: '', note: 'Not in the live screenshots — the failure state the flow needs. Change payment method returns to the Add money screen it came from.', render: (go) => <Failed onRetry={() => go('deposit-02')} onChange={() => go(origin === 'wallet' ? 'deposit-09' : 'deposit-01')} /> },
+    { id: 'deposit-18', name: 'Payment · pending', figma: '', note: 'Not in Figma: approved in the UPI app, but the bank hasn’t confirmed yet. Up to 30 minutes; if money left the bank and never arrives it comes back in 3–5 working days. Done → from the wallet: the INR wallet with its "payment pending" bar (us-stocks-118); first deposit: the Stocks home.', render: (go) => <Pending amount={paying} onDone={() => go(origin === 'wallet' ? 'us-stocks-118' : 'stocks-01')} /> },
   ],
 }
 
@@ -771,7 +781,7 @@ import { KeyValueList, KeyValueRow } from '@l3/components/KeyValueList'
 import { Loader } from '@l3/components/Loader'
 import { Section } from '@l3/components/Section'
 import { Stack } from '@l3/components/Stack'
-import { msCheckCircle, msError } from '@l3/icons/material'
+import { msCheckCircle, msError, msSchedule } from '@l3/icons/material'
 import { useAutoAdvance } from '../../../shared/prototype'
 import { inr } from '../../../shared/data/format'
 import { External } from '../../../shared/ui/External'
@@ -846,6 +856,29 @@ export function Failed({ onRetry, onChange }: { onRetry?: () => void; onChange?:
       <Stack justify="center" className={styles.fill}>
         <Section style={{ width: '100%' }} paddingBlock="24" paddingInline="16" gap="24">
           <Intro align="center" art={<Spot icon={msError} tone="error" />} title={t('failed.title')} description={t('failed.description')} />
+        </Section>
+      </Stack>
+    </Screen>
+  )
+}
+
+/**
+ * deposit-18 · Payment pending (not in Figma, 27 Nov): the user approved it in the UPI app but the bank hasn't confirmed
+ * yet. Says how long it usually takes and what happens to the money if it never arrives; Done → where the add money
+ * was opened from (the INR wallet shows a "payment pending" bar until the bank answers).
+ */
+export function Pending({ amount = defaultAmount, onDone }: { amount?: number; onDone?: () => void }) {
+  return (
+    <Screen bottom={<ButtonGroup aria-label={t('pending.groupLabel')}><Button variant="primary" onClick={onDone}>{t('pending.done')}</Button></ButtonGroup>}>
+      <Stack justify="center" className={styles.fill}>
+        <Section style={{ width: '100%' }} paddingBlock="24" paddingInline="16" gap="24">
+          <Intro align="center" art={<Spot icon={msSchedule} tone="warning" />} title={t('pending.title')} description={t('pending.description', { amount: inr(amount, 0) })} />
+          <KeyValueList variant="card" aria-label={t('pending.receiptLabel')}>
+            <KeyValueRow label={t('success.paidWith')} value={`${upiApp.name} · ${upiApp.detail}`} />
+            <KeyValueRow label={t('success.reference')} value={receipt.reference} copy />
+            <KeyValueRow label={t('pending.status')} value={t('pending.statusValue')} />
+          </KeyValueList>
+          <p className={styles.fine}>{t('pending.refund')}</p>
         </Section>
       </Stack>
     </Screen>
