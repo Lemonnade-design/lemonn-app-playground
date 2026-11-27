@@ -367,6 +367,8 @@
     "src/shared/ui/MainNav.tsx",
     "src/shared/ui/Rail.module.css",
     "src/shared/ui/Rail.tsx",
+    "src/shared/ui/RollingNumber.module.css",
+    "src/shared/ui/RollingNumber.tsx",
     "src/shared/ui/Sheet.module.css",
     "src/shared/ui/Sheet.tsx",
     "src/shared/ui/Spot.module.css",
