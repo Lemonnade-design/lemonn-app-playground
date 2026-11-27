@@ -255,7 +255,7 @@ Every tap he wired is kept. The main path: FTUX sheet → Activate → Declarati
 
 ### Changelog
 
-- 27 Nov 2026 · Portfolio → Holdings card: switching IN Holdings / Stocks / MTF or Total / 1D Returns rolls each digit to its new value (shared `RollingNumber`, L3 gap: no animated number), instead of fading the whole number; the three card labels are Label/10, all caps.
+- 27 Nov 2026 · Portfolio → Holdings card: with MTF, the whole top row (label, holdings and Invested Value, full width) is the IN Holdings / Stocks / MTF switch, not the label alone; the values switch instantly (a digit roll was tried and dropped); the three card labels are Label/10, all caps.
 - 26 Nov 2026 · INR wallet: Withdraw now opens Withdraw in ₹ (us-stocks-112) and its request placed (113); it went nowhere before.
 - 26 Nov 2026 · Withdraw: the "Min $1 · Max $417.03" line is gone; the limits are on the chips, Min $1 · 25% · 50% · 75% · Max $417.03.
 - 26 Nov 2026 · Withdrawal failed because the money went into trades (us-stocks-109, 110, 111, not in Figma): a red bar on the wallet, a sheet saying why with "Withdrawable now $40.40" and a brand "Withdraw $40.40", and Withdraw prefilled with what is left. Withdraw takes its withdrawable balance as a prop.
@@ -29838,6 +29838,17 @@ function BracketPct({ pct }: { pct: number }) {
   display: inline-flex;
 }
 
+.factsSwitch { /* the top row as one full-width button: no button look of its own */
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
 .factSwitch {
   cursor: pointer;
   background: 0 0;
@@ -30000,7 +30011,6 @@ import { useEffect, useRef, useState } from 'react'
 import { Icon } from '@l3/components/Icon'
 import { lmSwitchArrowVertical } from '@l3/icons/lemonnade'
 import { parseUsd, useUsd } from '../../../../../shared/money'
-import { RollingNumber } from '../../../../../shared/ui/RollingNumber'
 import { useFlowOption } from '../../../../../shared/prototype'
 import { inHoldingsSplit } from '../portfolioData'
 import { useInPortfolioEmpty } from '../../../../../shared/userStatus'
@@ -30089,33 +30099,45 @@ export function HoldingsCards({
             : { pct: summary.pct, pnl: summary.pnl }
           return (
             <section key={id} className={styles.card} data-market={id} aria-label={labels[id].title} onClick={() => onMarket(id)}>
-              <span className={styles.facts}>
-                <span className={styles.fact}>
-                  {split ? (
-                    // The same switch as Total Returns: a tap moves to the next view (IN Holdings → Stocks → MTF → …).
-                    <button
-                      type="button"
-                      className={`${styles.factLabel} ${styles.factSwitch}`}
-                      aria-label={`Showing ${inViewLabel[inView]}. Switch to ${inViewLabel[inViews[(inViews.indexOf(inView) + 1) % inViews.length]]}`}
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        setInView((v) => inViews[(inViews.indexOf(v) + 1) % inViews.length])
-                      }}
-                    >
-                      <span className={styles.swap} key={inView}>{inViewLabel[inView]}</span>
-                      <Icon icon={lmSwitchArrowVertical} size={14} />
-                    </button>
-                  ) : (
-                    <span className={styles.factLabel}>{labels[id].code} Holdings</span>
-                  )}
-                  {/* The values roll digit by digit to the new view's (27 Nov, user), no fade. */}
-                  <RollingNumber className={styles.factValue} text={money(summary.current)} />
-                </span>
-                <span className={styles.fact} data-end="">
-                  <span className={styles.factLabel}>Invested Value</span>
-                  <RollingNumber className={styles.factValue} text={money(summary.invested)} />
-                </span>
-              </span>
+              {(() => {
+                const row = (
+                  <>
+                    <span className={styles.fact}>
+                      {split ? (
+                        <span className={styles.factLabel}>
+                          <span className={styles.swap} key={inView}>{inViewLabel[inView]}</span>
+                          <Icon icon={lmSwitchArrowVertical} size={14} />
+                        </span>
+                      ) : (
+                        <span className={styles.factLabel}>{labels[id].code} Holdings</span>
+                      )}
+                      {/* The values switch instantly, no animation (27 Nov, user; the digit roll was tried and dropped). */}
+                      <span className={styles.factValue}>{money(summary.current)}</span>
+                    </span>
+                    <span className={styles.fact} data-end="">
+                      <span className={styles.factLabel}>Invested Value</span>
+                      <span className={styles.factValue}>{money(summary.invested)}</span>
+                    </span>
+                  </>
+                )
+                // With MTF the whole top row, full width, is the switch (27 Nov, user): a tap anywhere on it moves to the
+                // next view (IN Holdings → Stocks → MTF → …). Was the label alone.
+                return split ? (
+                  <button
+                    type="button"
+                    className={`${styles.facts} ${styles.factsSwitch}`}
+                    aria-label={`Showing ${inViewLabel[inView]}. Switch to ${inViewLabel[inViews[(inViews.indexOf(inView) + 1) % inViews.length]]}`}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setInView((v) => inViews[(inViews.indexOf(v) + 1) % inViews.length])
+                    }}
+                  >
+                    {row}
+                  </button>
+                ) : (
+                  <span className={styles.facts}>{row}</span>
+                )
+              })()}
               <span className={styles.fact}>
                 <button
                   type="button"
@@ -30130,9 +30152,9 @@ export function HoldingsCards({
                 </button>
                 <span className={styles.returns}>
                   <span className={styles.pill} data-up={summary.up || undefined}>
-                    <RollingNumber text={/^[+\-−]/.test(returns.pct) ? returns.pct : `${summary.up ? '+' : '−'}${returns.pct}`} />
+                    {/^[+\-−]/.test(returns.pct) ? returns.pct : `${summary.up ? '+' : '−'}${returns.pct}`}
                   </span>
-                  <RollingNumber className={styles.amount} text={money(returns.pnl)} />
+                  <span className={styles.amount}>{money(returns.pnl)}</span>
                 </span>
               </span>
             </section>
@@ -75310,117 +75332,6 @@ export function Rail({ children, label, visible, rows = 1, snap = 'start', class
     <div ref={railRef} className={[styles.rail, className].filter(Boolean).join(' ')} role="region" aria-label={label} data-rows={rows} data-snap={snap} style={{ '--rail-visible': visible } as CSSProperties} onScroll={onScroll}>
       {children}
     </div>
-  )
-}
-```
-
-### `src/shared/ui/RollingNumber.module.css`
-
-```css
-/* RollingNumber: one line of characters; each digit a 1-line window onto a 0–9 reel. */
-.number {
-  display: inline-flex;
-  white-space: pre;
-  font-variant-numeric: tabular-nums; /* every digit the same width, so the number doesn't wobble while it rolls */
-}
-
-.digit,
-.char {
-  display: inline-block;
-  height: 1lh;
-}
-
-.digit {
-  overflow: hidden;
-}
-
-/* The reel: 10 rows, moved up by the digit (each row is 10% of it). Left to right, a short stagger. */
-.reel {
-  display: flex;
-  flex-direction: column;
-  transform: translateY(calc(var(--digit) * -10%));
-  transition: transform var(--l3-motion-duration-long) var(--l3-motion-easing-standard);
-  transition-delay: calc(var(--column) * 15ms); /* FLAG: raw ms — the stagger has no L3 token */
-}
-
-/* A character that wasn't there before slides up into place. */
-.char[data-enter],
-.digit[data-enter] .reel {
-  animation: enter var(--l3-motion-duration-long) var(--l3-motion-easing-standard) backwards;
-}
-
-.char[data-enter] {
-  animation-name: char-enter;
-}
-
-@keyframes enter {
-  from {
-    transform: translateY(10%); /* one row below 0, rolling up to its digit */
-  }
-}
-
-@keyframes char-enter {
-  from {
-    opacity: 0;
-    transform: translateY(50%);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .reel,
-  .char[data-enter],
-  .digit[data-enter] .reel {
-    transition: none;
-    animation: none;
-  }
-}
-```
-
-### `src/shared/ui/RollingNumber.tsx`
-
-```tsx
-// A number that rolls digit by digit when it changes (27 Nov, user: "each number transiting to the next state", not the
-// whole value fading out and in). Every digit is a reel of 0–9 that slides to its new digit; the characters line up
-// from the right, so units, decimals and paise stay in their columns. A character that appears (the number got longer,
-// a "," or a sign moved) slides in; one that goes away just leaves. Text in, text out: format the value first
-// (formatInr, useUsd) and pass the string. Screen readers get the plain text.
-// FLAG: L3 has no animated number; this lives in shared/ui until it does (L3 gap).
-import { useEffect, useRef } from 'react'
-import styles from './RollingNumber.module.css'
-
-const DIGITS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
-
-export function RollingNumber({ text, className }: { text: string; className?: string }) {
-  const chars = [...text]
-  // Keys count from the right, so "₹950.20" → "₹1,050.25" keeps the reels of "5", "0", ".", "2", "0" in place.
-  const keys = chars.map((c, i) => (/\d/.test(c) ? `d${chars.length - i}` : `c${chars.length - i}${c}`))
-  // Characters that weren't there last time slide in; nothing animates on the first paint.
-  const seen = useRef<Set<string> | null>(null)
-  const previous = seen.current
-  useEffect(() => {
-    seen.current = new Set(keys)
-  })
-
-  return (
-    <span className={[styles.number, className].filter(Boolean).join(' ')} role="img" aria-label={text}>
-      {chars.map((c, i) => {
-        const key = keys[i]
-        const enter = previous !== null && !previous.has(key) ? '' : undefined
-        return /\d/.test(c) ? (
-          <span key={key} className={styles.digit} data-enter={enter} aria-hidden>
-            <span className={styles.reel} style={{ '--digit': Number(c), '--column': i } as React.CSSProperties}>
-              {DIGITS.map((d) => (
-                <span key={d}>{d}</span>
-              ))}
-            </span>
-          </span>
-        ) : (
-          <span key={key} className={styles.char} data-enter={enter} aria-hidden>
-            {c}
-          </span>
-        )
-      })}
-    </span>
   )
 }
 ```
