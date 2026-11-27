@@ -435,6 +435,7 @@ lower on the page is scrolled into view first). `components/MarketSwitchGuide.ts
   16 / 24 icon or an Avatar only — event rows are plain buttons laid out with Stack.
 
 ### Changelog
+- 2026-11-27 · Stock page: the advanced-chart button beside NSE shows the TV terminal mark (`assets/tv-terminal.svg`, drawn as an L3 Icon mask so it takes the button colour) instead of the candlestick.
 - 2026-11-26 · Stock page tabs (Overview / Events / F&O, or the two without F&O) are equal widths. L3 gap: Tabs' fill sizes each tab from its label.
 - 2026-11-26 · SIP button as the Figma "spi butotn" (4018:39843): white, intense grey border, radius 8, the green calendar icon (Figma asset `assets/sip-icon.svg`) over bold 12 "SIP", 48 square (Figma 6 + 20 + 16 + 8 = 50). L3 gap: Button has no stacked icon-over-label layout or this border / radius.
 - 2026-11-26 · F&O tab: "Other {SYMBOL} Futures" after Top options, as in the live app: the stock's three monthly futures as cards that swipe sideways (name "BEL Fut" + expiry "29 Dec 2026", a hairline, price · change), near month first; a tap opens the option chain for now (no stock futures page yet). SIP label pinned absolute, the icon back in its centred place.
@@ -1738,6 +1739,14 @@ D�W�k��&�� �?��DQ�y�� !i� ���n]�G��FS�
 <stop offset="1" stop-color="#BBF198" style="stop-color:#BBF198;stop-color:color(display-p3 0.7333 0.9451 0.5961);stop-opacity:1;"/>
 </linearGradient>
 </defs>
+</svg>
+```
+
+### `src/flows/stocks/assets/tv-terminal.svg`
+
+```tsx
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M9.67606 17.5768H5.33803V10.7599H1V6.42188H9.67606V17.5768ZM23 6.42188L18.3521 17.5768H13.3944L18.0423 6.42188H23ZM13.3944 11.3796C14.0518 11.3796 14.6823 11.1185 15.1472 10.6536C15.6121 10.1887 15.8732 9.55819 15.8732 8.90075C15.8732 8.24331 15.6121 7.6128 15.1472 7.14792C14.6823 6.68304 14.0518 6.42188 13.3944 6.42188C12.7369 6.42188 12.1064 6.68304 11.6415 7.14792C11.1767 7.6128 10.9155 8.24331 10.9155 8.90075C10.9155 9.55819 11.1767 10.1887 11.6415 10.6536C12.1064 11.1185 12.7369 11.3796 13.3944 11.3796Z" fill-rule="evenodd" clip-rule="evenodd" fill="black"/>
 </svg>
 ```
 
@@ -33253,7 +33262,7 @@ import { Select } from '@l3/components/Select'
 import { Stack } from '@l3/components/Stack'
 import { Tabs } from '@l3/components/Tabs'
 import { Tag } from '@l3/components/Tag'
-import { msCandlestickChart, msEventRepeat, msStar, msStarFill } from '@l3/icons/material'
+import { msEventRepeat, msStar, msStarFill } from '@l3/icons/material'
 import { useMarketSnapshot } from '../../../shared/data/companies'
 import { inr } from '../../../shared/data/format'
 import { useOpenStock } from '../../../shared/data/openStock'
@@ -33265,6 +33274,7 @@ import { t } from '../copy'
 import { CHART_RANGES, EVENT_TYPES, priceSeries, stockFno, stockPage, type ChartRange, type CorporateEvent, type EventType, type Exchange } from '../data'
 import { EventFilterSheet, EventSheet } from '../sheets/EventSheets'
 import sipIcon from '../assets/sip-icon.svg'
+import tvTerminalIcon from '../assets/tv-terminal.svg' // TradingView terminal mark (27 Nov, user)
 import styles from './StockPage.module.css'
 
 export type StockTab = 'overview' | 'events' | 'fno'
@@ -33415,7 +33425,7 @@ export function StockPage({ tab: initialTab = 'overview', scrollTo = 'top', rang
               <Stack direction="horizontal" gap="08" wrap>{page.tags.map((tag) => <Tag key={tag} variant="tertiary" color="neutral" size="sm">{tag}</Tag>)}</Stack>
               <Stack direction="horizontal" gap="04" align="center">
                 {/* The advanced (TradingView) chart isn't in the prototype: the button doesn't go anywhere. */}
-                <Button variant="tertiary" size="sm" aria-label={t('stock.tradingView')} iconLeft={<Icon icon={msCandlestickChart} size={20} />} onClick={() => {}} />
+                <Button variant="tertiary" size="sm" aria-label={t('stock.tradingView')} iconLeft={<Icon icon={tvTerminalIcon} size={20} />} onClick={() => {}} />
                 <Select size="sm" subtle aria-label={t('stock.exchange', { exchange })} onClick={() => setExchange(exchange === 'NSE' ? 'BSE' : 'NSE')}>{exchange}</Select>
               </Stack>
             </Stack>

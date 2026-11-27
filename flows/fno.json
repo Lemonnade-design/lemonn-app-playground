@@ -253,6 +253,110 @@
       "figmaUrl": ""
     },
     {
+      "id": "fno-54",
+      "name": "Avg position · Option 1 · 3 Positions + TPSL nudge",
+      "figma": "6980:11985",
+      "note": "",
+      "goesTo": [],
+      "figmaUrl": "https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=6980-11985"
+    },
+    {
+      "id": "fno-55",
+      "name": "Avg position · Option 1 · TPSL set (green strip)",
+      "figma": "6980:12730",
+      "note": "",
+      "goesTo": [],
+      "figmaUrl": "https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=6980-12730"
+    },
+    {
+      "id": "fno-56",
+      "name": "Avg position · Option 1 · orders sheet (list)",
+      "figma": "6980:12777",
+      "note": "",
+      "goesTo": [],
+      "figmaUrl": "https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=6980-12777"
+    },
+    {
+      "id": "fno-57",
+      "name": "Avg position · Option 1 · orders sheet (timeline)",
+      "figma": "6980:16681",
+      "note": "",
+      "goesTo": [],
+      "figmaUrl": "https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=6980-16681"
+    },
+    {
+      "id": "fno-58",
+      "name": "Avg position · Option 1 · TPSL inside card (+ Add)",
+      "figma": "6994:20194",
+      "note": "",
+      "goesTo": [],
+      "figmaUrl": "https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=6994-20194"
+    },
+    {
+      "id": "fno-59",
+      "name": "Avg position · Option 1 · TPSL inside card (set)",
+      "figma": "7012:20238",
+      "note": "",
+      "goesTo": [],
+      "figmaUrl": "https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=7012-20238"
+    },
+    {
+      "id": "fno-60",
+      "name": "Avg position · Option 2 · 3 suborders (closed)",
+      "figma": "6980:14707",
+      "note": "",
+      "goesTo": [],
+      "figmaUrl": "https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=6980-14707"
+    },
+    {
+      "id": "fno-61",
+      "name": "Avg position · Option 2 · 3 suborders (open)",
+      "figma": "6980:16096",
+      "note": "",
+      "goesTo": [],
+      "figmaUrl": "https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=6980-16096"
+    },
+    {
+      "id": "fno-62",
+      "name": "Avg position · Option 3 · orders bar (closed)",
+      "figma": "7012:22662",
+      "note": "",
+      "goesTo": [],
+      "figmaUrl": "https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=7012-22662"
+    },
+    {
+      "id": "fno-63",
+      "name": "Avg position · Option 3 · orders bar (open)",
+      "figma": "6994:18730",
+      "note": "",
+      "goesTo": [],
+      "figmaUrl": "https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=6994-18730"
+    },
+    {
+      "id": "fno-64",
+      "name": "Avg position · Option 3 · orders bar (open, timeline)",
+      "figma": "6994:19335",
+      "note": "",
+      "goesTo": [],
+      "figmaUrl": "https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=6994-19335"
+    },
+    {
+      "id": "fno-65",
+      "name": "Avg position · Option 4 · orders bar (closed)",
+      "figma": "6994:18235",
+      "note": "",
+      "goesTo": [],
+      "figmaUrl": "https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=6994-18235"
+    },
+    {
+      "id": "fno-66",
+      "name": "Avg position · Option 4 · orders open (timeline)",
+      "figma": "7012:22060",
+      "note": "",
+      "goesTo": [],
+      "figmaUrl": "https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=7012-22060"
+    },
+    {
       "id": "fno-08",
       "name": "Commodities home",
       "figma": "6754:63637",
@@ -611,10 +715,23 @@
     "src/flows/fno/order-pad/screens/TpslSheet.module.css",
     "src/flows/fno/order-pad/screens/TpslSheet.tsx",
     "src/flows/fno/positions/Positions.module.css",
+    "src/flows/fno/positions/assets/avg-add.svg",
+    "src/flows/fno/positions/assets/avg-arrow-fwd.svg",
+    "src/flows/fno/positions/assets/avg-chevron-down.svg",
+    "src/flows/fno/positions/assets/avg-chevron-up.svg",
+    "src/flows/fno/positions/assets/avg-edit-02.svg",
+    "src/flows/fno/positions/assets/avg-exit.svg",
+    "src/flows/fno/positions/assets/avg-layers.svg",
+    "src/flows/fno/positions/assets/avg-shield-plus.svg",
+    "src/flows/fno/positions/assets/avg-tick.svg",
+    "src/flows/fno/positions/components/AvgPositionCard.module.css",
+    "src/flows/fno/positions/components/AvgPositionCard.tsx",
     "src/flows/fno/positions/components/Cards.tsx",
     "src/flows/fno/positions/components/TotalReturns.tsx",
     "src/flows/fno/positions/data.ts",
     "src/flows/fno/positions/screens/Positions.tsx",
+    "src/flows/fno/positions/sheets/OrdersSheet.module.css",
+    "src/flows/fno/positions/sheets/OrdersSheet.tsx",
     "src/flows/fno/screens/Home.tsx",
     "src/flows/fno/screens/Scalper.module.css",
     "src/flows/fno/screens/Scalper.tsx",

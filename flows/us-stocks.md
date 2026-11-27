@@ -286,6 +286,8 @@ Every tap he wired is kept. The main path: FTUX sheet → Activate → Declarati
 
 ### Changelog
 
+- 27 Nov 2026 · Indian sell pad: Advance options (and the applied Disclosed quantity card) moved to the far bottom of the pad, under the prices, 12 below the card above.
+- 27 Nov 2026 · Indian order pad: the Intraday tab gets the Day ⇄ Instant switch too; Buy / Sell read "Sell 25 QTY" (same size), the short-balance row reads "Buy 22 QTY" and animates from one full button into Buy + Add money (columns 1fr 0fr → 1fr 1fr, colour cross-fade). Sell pad: "Advance options" pill under Boost opens the Disclosed quantity sheet (one stepper row typed from the keypad, at least 10% of the order, error animated in with Reveal); once applied a one-row card "3 of 25 QTY" with neutral icon-only Edit / Remove (a button row: 40 × 40, tap areas don't overlap). Shared Reveal (src/shared/ui/Reveal) animates things appearing and leaving. TP/SL order card radius 14 (local token, L3 gap).
 - 27 Nov 2026 · Market setting (prototype, app-level, src/shared/marketStatus.ts): Indian market (NSE) Open · Pre-open · Closed (after market) · Holiday and US market Live · Closed · Holiday · Coming soon, floating beside the phone on the pads and stock pages. The order pads' notes follow it (trade/marketNotes.ts): a Market buy says when the order goes in, Limit / SL / sell notes get "Pre-open order · " / "After-market order · "; placing an order while the market isn't open ends on Order created (T13) with that market's note, otherwise Order executed (T14). Indian Order Details for a failed order: us-stocks-122 (LT, Cancelled limit sell) and us-stocks-123 (ETERNAL, Rejected intraday buy). Reason bars and the Add money mismatch warning are the rounded, shadowless Aerobar (floating, inline).
 - 27 Nov 2026 · Asset pages (stock and ETF): scroll reveal as on the Stocks Home (each section's header, chips and cards fade and rise 16 in as they scroll into view, 80 apart; what's on screen at open shows at once), and every chart draws in once on screen: price line wipes left to right (again per period), day range wipes, analyst ring and donuts sweep clockwise, rating / holding bars grow from the left, Financials columns rise (60 apart). 900 over 120 wait, L3 decelerate; off with reduced motion. Shared hook src/shared/ui/scrollReveal (useScrollReveal, useChartDraw); timings are local tokens (--app-scroll-reveal, --app-chart-draw*, L3 gap: longest L3 duration is 400).
 - 27 Nov 2026 · Screen list: the INR wallet screens have their own section, "Indian wallet (INR)" (the other is now "US wallet (USD)"); every withdrawal state folds under Wallet → US tab / Indian tab → Withdrawal; search results show the section beside the flow and search matches it. Across the app, 37 screens renamed so they fold with their page (deposit's bank check and payment steps, Stock ⓘ sheets, Market filters and watchlist, F&O Equity / Commodities home, DASH Ready, Bank app, ETF Top holdings).
@@ -40198,6 +40200,165 @@ export function openInOrder(go: (figma: string) => void, order: InOrder) {
 export const inOrderById = (id: string) => [...inOpenOrders, ...inHistoryOrders].find((o) => o.id === id)
 ```
 
+### `src/flows/us-stocks/screens/trade/DisclosedQty.module.css`
+
+```css
+/* Disclosed quantity (DisclosedQty.tsx). */
+
+/* "Advance options": the TP/SL V2 action pill (Tpsl.module.css .addPill), transparent, grey only on hover / press (L3's
+   state layer). An action pill has a border and fill of its own (L3 gap). */
+.pill[data-action] { --tab-surface: transparent; --tab-border: transparent; }
+
+/* 12 above the pill or the card (27 Nov, user: "keep 12px"). The TP/SL control above is a 0-high row on this pad (its collapsed US-only fractional line) that still takes a 16 gap, so pull up 16 + 4. */
+.tight.tight[data-open] { margin-top: calc(-1 * (var(--l3-spacing-16) + var(--l3-spacing-04))); }
+
+/* The applied card: one PriceField-style row (12 padded), label over the value, Edit · Remove at the right. */
+.row { padding: var(--l3-spacing-12); }
+.text { min-width: 0; }
+.label { font: var(--l3-text-description-12); color: var(--l3-content-secondary); }
+.value { font: var(--l3-text-heading-16); color: var(--l3-content-primary); }
+.of { font: var(--l3-text-label-14); color: var(--l3-content-secondary); }
+
+
+.help { margin: 0; padding-left: var(--l3-spacing-04); font: var(--l3-text-description-12); color: var(--l3-content-secondary); }
+.error { margin: 0; padding: var(--l3-spacing-04) 0 0 var(--l3-spacing-04); font: var(--l3-text-label-12); color: var(--l3-content-accent-error-default); }
+.help + .error, .help.error { padding-top: 0; }
+```
+
+### `src/flows/us-stocks/screens/trade/DisclosedQty.tsx`
+
+```tsx
+// Disclosed quantity — the Indian sell pad's "Advance options" (27 Nov, user; the live app's Advanced Options → Disclose
+// Quantity sheet → an "Applied" card, redesigned simpler). Only part of the order shows in the market depth at a time;
+// the rest is shown as each part fills (NSE / BSE: at least 10% of the order).
+//
+// Before: the "Advance options" text pill (the TP/SL V2 pill's look). Tap → the sheet: one PriceField row ("Shares shown
+// to the market", a Stepper typed from the sheet's keypad) and Apply. Applied: the pill gives way to one card row,
+// "Disclosed quantity · 3 of 25 QTY" with an edit icon (opens the sheet) and a delete icon (back to the pill). Both swap with Reveal.
+// FLAG: copy hard-coded like the rest of the pad (no copy.ts in this flow yet).
+import { useEffect, useState } from 'react'
+import { BottomSheet, BottomSheetHeader } from '@l3/components/BottomSheet'
+import { Button } from '@l3/components/Button'
+import { ButtonGroup } from '@l3/components/ButtonGroup'
+import { Icon } from '@l3/components/Icon'
+import { Stack } from '@l3/components/Stack'
+import { Tab } from '@l3/components/Tabs'
+import { msDelete, msEdit, msTune } from '@l3/icons/material'
+import { Reveal } from '../../../../shared/ui/Reveal'
+import { Keyboard } from '../../../../shared/ui/Keyboard'
+import { useSheetLayer } from '../../components/Phone'
+import { PriceField, PriceFieldBox } from './PriceField'
+import styles from './DisclosedQty.module.css'
+
+const qtyText = (n: number) => n.toLocaleString('en-IN')
+/** NSE / BSE: the disclosed part is at least 10% of the order. */
+const minFor = (orderQty: number) => Math.max(1, Math.ceil(orderQty * 0.1))
+
+/** The pill, or the applied card, plus the sheet. `orderQty`: the shares on the pad now. */
+export function DisclosedQtyControl({ orderQty }: { orderQty: number }) {
+  const [disclosed, setDisclosed] = useState<number | null>(null)
+  const [sheetOpen, setSheetOpen] = useState(false)
+  // The order shrank under the disclosed part (or under its 10%): the card says so, and Sell would be refused.
+  const error = disclosed === null ? null
+    : disclosed > orderQty ? `More than your order of ${qtyText(orderQty)}`
+      : disclosed < minFor(orderQty) ? `At least ${qtyText(minFor(orderQty))} (10% of your order)`
+        : null
+  return (
+    <>
+      <Reveal show={disclosed === null} space="16" align="center" className={styles.tight}>
+        <Tab appearance="pill" size="md" emphasis="tertiary" action raised="none" className={styles.pill} iconLeft={<Icon icon={msTune} size={16} />} onClick={() => setSheetOpen(true)}>
+          Advance options
+        </Tab>
+      </Reveal>
+      <Reveal show={disclosed !== null} space="16" className={styles.tight}>
+        <Stack gap="04">
+          <PriceFieldBox error={Boolean(error)}>
+            <Stack direction="horizontal" justify="between" align="center" gap="08" className={styles.row}>
+              <Stack gap="04" className={styles.text}>
+                <span className={styles.label}>Disclosed quantity</span>
+                <span className={styles.value}>
+                  {qtyText(disclosed ?? 0)} <span className={styles.of}>of {qtyText(orderQty)} QTY</span>
+                </span>
+              </Stack>
+              <Stack direction="horizontal" gap="08" align="center" data-button-row>
+                {/* Icons only, neutral primary (27 Nov, user). A button row (data-button-row), so L3 draws each ghost as a full 40 × 40 Medium button and their 48 tap areas no longer overlap. */}
+                <Button variant="ghost" size="md" iconLeft={<Icon icon={msEdit} size={20} />} aria-label="Edit disclosed quantity" onClick={() => setSheetOpen(true)} />
+                <Button variant="ghost" size="md" iconLeft={<Icon icon={msDelete} size={20} />} aria-label="Remove disclosed quantity" onClick={() => setDisclosed(null)} />
+              </Stack>
+            </Stack>
+          </PriceFieldBox>
+          <Reveal show={Boolean(error)}><p className={styles.error}>{error}</p></Reveal>
+        </Stack>
+      </Reveal>
+      {/* Always mounted: L3 BottomSheet animates open from closed. */}
+      <DisclosedQtySheet
+          open={sheetOpen}
+          orderQty={orderQty}
+          start={disclosed ?? minFor(orderQty)}
+          onClose={() => setSheetOpen(false)}
+          onApply={(n) => { setDisclosed(n); setSheetOpen(false) }}
+        />
+    </>
+  )
+}
+
+/** The sheet: what it is in one line, the shares shown (typed or stepped), Apply. */
+function DisclosedQtySheet({ open, orderQty, start, onClose, onApply }: { open: boolean; orderQty: number; start: number; onClose: () => void; onApply: (n: number) => void }) {
+  const layer = useSheetLayer()
+  const [text, setText] = useState(String(start))
+  const [fresh, setFresh] = useState(true) // the first key replaces the prefilled value, as on the pad
+  // Each opening starts from the applied value (or 10% of the order).
+  useEffect(() => { if (open) { setText(String(start)); setFresh(true) } }, [open]) // eslint-disable-line react-hooks/exhaustive-deps
+  const value = Number(text) || 0
+  const min = minFor(orderQty)
+  const error = value > orderQty ? `Can't be more than your order (${qtyText(orderQty)})`
+    : value > 0 && value < min ? `At least ${qtyText(min)}, 10% of your order`
+      : null
+  const type = (key: string) => {
+    const base = fresh ? '' : text
+    setFresh(false)
+    if (key === 'Backspace') return setText(base.slice(0, -1))
+    if (/^\d$/.test(key) && base.length < 7) setText(base + key)
+  }
+  return (
+    <BottomSheet
+      open={open}
+      onClose={onClose}
+      container={layer}
+      aria-labelledby="disclosed-title"
+      header={<BottomSheetHeader size="sm" heading="Disclosed quantity" headingId="disclosed-title" description="Show only part of your order in the market at a time. The rest is shown as each part fills." />}
+      footer={
+        <ButtonGroup aria-label="Disclosed quantity">
+          <Button size="lg" fullWidth disabled={value <= 0 || Boolean(error)} onClick={() => onApply(value)}>Apply</Button>
+        </ButtonGroup>
+      }
+      utility={<Keyboard onKey={type} />}
+    >
+      <Stack gap="08">
+        <PriceFieldBox error={Boolean(error)}>
+          <PriceField
+            label={`Shares shown, of ${qtyText(orderQty)}`}
+            primaryLabel
+            stepper={{
+              label: 'Shares shown to the market',
+              value,
+              onChange: (v) => { setText(String(v)); setFresh(true) },
+              step: 1,
+              min: 1,
+              max: Math.max(1, orderQty),
+              format: qtyText,
+            }}
+          />
+        </PriceFieldBox>
+        {/* The hint gives way to the error, both through Reveal (27 Nov, user: "error should appear animated"). */}
+        <Reveal show={!error} space="08"><p className={styles.help}>At least {qtyText(min)} (10% of your order)</p></Reveal>
+        <Reveal show={Boolean(error)} space="08"><p className={`${styles.help} ${styles.error}`}>{error}</p></Reveal>
+      </Stack>
+    </BottomSheet>
+  )
+}
+```
+
 ### `src/flows/us-stocks/screens/trade/FeeBreakdown.module.css`
 
 ```css
@@ -41585,6 +41746,35 @@ function OrderPadV1({ config, backdrop, sheet }: OrderPadProps) {
 .cardChips.cardChips { gap: calc(var(--l3-spacing-08) - 2px); }
 /* V8 chips at least 40 wide, not L3's 48 pill minimum (24 Nov, user). L3 gap: no smaller pill minimum. */
 .cardChips.cardChips [role='tab'][data-appearance='pill']:not([data-icon-only]) { min-width: var(--l3-size-40); }
+/* Indian pad: "Quantity" above the big share count (27 Nov, user: the number had no label). */
+/* "QTY" in front of the Indian pad's share count (27 Nov, user), 8 off the number. */
+/* Out of the flow, so the number stays centred (27 Nov, user: "keep the number center aligned"). */
+.amountRow:has(.qtyPrefix) { position: relative; }
+.qtyPrefix { position: absolute; right: calc(100% + var(--l3-spacing-08)); top: 50%; transform: translateY(-50%); white-space: nowrap; font: var(--l3-text-label-14); color: var(--l3-content-secondary); }
+
+/* The dock's button row: one button, or Buy (secondary) + Add money side by side when the balance is short. The second
+   column grows from 0 so the Buy button shrinks into its half rather than jumping; colours cross over meanwhile. */
+.ctaRow {
+  display: grid;
+  grid-template-columns: 1fr 0fr;
+  column-gap: 0;
+  transition:
+    grid-template-columns var(--l3-motion-duration-medium) var(--l3-motion-easing-standard),
+    column-gap var(--l3-motion-duration-medium) var(--l3-motion-easing-standard);
+}
+.ctaRow[data-split] { grid-template-columns: 1fr 1fr; column-gap: var(--l3-spacing-12); }
+.ctaMain { min-width: 0; white-space: nowrap; transition: background-color var(--l3-motion-duration-medium) var(--l3-motion-easing-standard), color var(--l3-motion-duration-medium) var(--l3-motion-easing-standard), box-shadow var(--l3-motion-duration-medium) var(--l3-motion-easing-standard), border-color var(--l3-motion-duration-medium) var(--l3-motion-easing-standard); }
+.ctaSecond {
+  min-width: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity var(--l3-motion-duration-short) var(--l3-motion-easing-standard);
+}
+.ctaRow[data-split] .ctaSecond { opacity: 1; transition-delay: 60ms; }
+.ctaSecond > * { min-width: max-content; }
+@media (prefers-reduced-motion: reduce) {
+  .ctaRow, .ctaMain { transition: none; }
+}
 ```
 
 ### `src/flows/us-stocks/screens/trade/OrderPadV2.tsx`
@@ -41605,7 +41795,7 @@ function OrderPadV1({ config, backdrop, sheet }: OrderPadProps) {
 // FLAG: duplicates the app's Indian order pad (src/flows/stocks) for US stocks.
 // Flow option "Order pad" = india (20 Nov, the user's call): the same screens as an Indian stock's pad — RELIANCE, in ₹
 // (indianPad.ts) — with the production Indian pad's controls in this layout: NSE / BSE in the header, Delivery / Intraday
-// / MTF tabs under it (no MTF on BSE), a validity at the right of Market / Limit / SL (Market: Day / Instant; Limit: Day → Instant → Year, cycled; SL: Day / Year; not on Intraday), SL's second
+// / MTF tabs under it (no MTF on BSE), a validity at the right of Market / Limit / SL (Market: Day / Instant; Limit: Day → Instant → Year, cycled; SL: Day / Year; Intraday: Day / Instant on all three), SL's second
 // price Limit ⇄ Market ("At market"), Intraday's "Margin (5x)" in place of Req.
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode, type SyntheticEvent } from 'react'
 import { Actionbar, ActionbarAction } from '@l3/components/Actionbar'
@@ -41637,6 +41827,8 @@ import { usePadVersion, usePriceCards, useTpslCard, useAmountBox, useAmountCard,
 import { LeverageCard } from './LeverageCard'
 import { tradeIds } from './ids'
 import { TPSL_INDIA, TPSL_US, TpslControl } from './Tpsl'
+import { DisclosedQtyControl } from './DisclosedQty'
+import { SELL_TPSL, useSellTpsl } from './SellTpsl'
 import { FeeBreakdownSheet } from './FeeBreakdown'
 import { CHARGE_FACTOR } from './orderPads'
 import { PriceField, PriceFieldBox } from './PriceField'
@@ -41644,6 +41836,10 @@ import { PadAmount, PadCurrencyProvider, usePadMoney, usePadSymbol } from './pad
 import { marketPadNote, usePadMarket } from './marketNotes'
 import { LIMIT_VALIDITY_LABELS, NEXT_LIMIT_VALIDITY, PRODUCT_LABELS, indianPadFor, productsOn, requiredFor, setIndianPad, useIndianPad, validityPrefix, type Product } from './indianPad'
 import styles from './OrderPadV2.module.css'
+import { Reveal } from '../../../../shared/ui/Reveal'
+
+/** The "QTY" in front of the Indian pad's share count — hidden for now (27 Nov, user). */
+const QTY_PREFIX = false
 
 /** Buy, shares mode: +1 / +5 / +10 / +20 shares (the amount's +$10 … row, in shares). */
 const SHARE_CHIPS: PadChip[] = [1, 5, 10, 20].map((n) => ({ label: `+${n}`, apply: (value: number) => value + n }))
@@ -41725,22 +41921,33 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
     : usShortName(config.stock.symbol, usStock.sym === config.stock.symbol ? usStock.name : config.stock.symbol)
   // Indian pad: SL's second price at market (no limit price).
   const slAtMarket = india && config.type === 'sl' && indian.slAtMarket
-  // Indian pad: the validity (Delivery and MTF; Intraday orders end with the day). Market: Day ⇄ Instant (Day by
+  // Indian pad: the validity (Intraday: Day ⇄ Instant on every type, below). Market: Day ⇄ Instant (Day by
   // default); SL: Day ⇄ Year (Year by default); Limit: Day / Instant / Year, picked in a sheet (Year by default).
-  const validity = india && indian.product !== 'intraday'
+  // Indian sell pad (27 Nov, user; the live app): its SL tab is TP/SL — a take profit / stop loss on the shares held
+  // (SellTpsl.tsx) in place of the amount, chips, validity and prices. Its top bar has no TP/SL switch.
+  const sellTpslPad = india && config.side === 'sell'
+  const sellTpslTab = sellTpslPad && config.type === 'sl'
+  const [tpslAvg] = useState(() => Math.round(config.stock.price * 0.95 * 20) / 20) // prototype: the average buy price, 5% under the LTP
+  const sellTpsl = useSellTpsl({ ltp: config.stock.price, avg: tpslAvg, held: sellTpslPad ? Number(config.avail) || 0 : 0 })
+  // Intraday (27 Nov, user): Day ⇄ Instant on every order type (the order ends with the day either way, no Year).
+  const intraday = indian.product === 'intraday'
+  const validity = india && !sellTpslTab
   const validityPlace = useValidityPlace()
   const validityLabel =
-    config.type === 'market' ? (indian.marketValidity === 'instant' ? 'Instant' : 'Day')
-      : config.type === 'limit' ? LIMIT_VALIDITY_LABELS[indian.limitValidity]
-        : indian.validity === 'day' ? 'Day' : 'Year'
+    intraday ? (indian.intradayValidity === 'instant' ? 'Instant' : 'Day')
+      : config.type === 'market' ? (indian.marketValidity === 'instant' ? 'Instant' : 'Day')
+        : config.type === 'limit' ? LIMIT_VALIDITY_LABELS[indian.limitValidity]
+          : indian.validity === 'day' ? 'Day' : 'Year'
   const validityNext =
-    config.type === 'market' ? (indian.marketValidity === 'instant' ? 'Day' : 'Instant')
-      : config.type === 'limit' ? LIMIT_VALIDITY_LABELS[NEXT_LIMIT_VALIDITY[indian.limitValidity]]
-        : indian.validity === 'day' ? 'Year' : 'Day'
+    intraday ? (indian.intradayValidity === 'instant' ? 'Day' : 'Instant')
+      : config.type === 'market' ? (indian.marketValidity === 'instant' ? 'Day' : 'Instant')
+        : config.type === 'limit' ? LIMIT_VALIDITY_LABELS[NEXT_LIMIT_VALIDITY[indian.limitValidity]]
+          : indian.validity === 'day' ? 'Year' : 'Day'
   const onValidity = () =>
-    setIndianPad(config.type === 'market' ? { marketValidity: indian.marketValidity === 'day' ? 'instant' : 'day' }
-      : config.type === 'limit' ? { limitValidity: NEXT_LIMIT_VALIDITY[indian.limitValidity] }
-        : { validity: indian.validity === 'day' ? 'year' : 'day' })
+    setIndianPad(intraday ? { intradayValidity: indian.intradayValidity === 'day' ? 'instant' : 'day' }
+      : config.type === 'market' ? { marketValidity: indian.marketValidity === 'day' ? 'instant' : 'day' }
+        : config.type === 'limit' ? { limitValidity: NEXT_LIMIT_VALIDITY[indian.limitValidity] }
+          : { validity: indian.validity === 'day' ? 'year' : 'day' })
   const priceCards = usePriceCards()
   // TP/SL card V3 (flow option "TP/SL card", 23 Nov, the user's call): Market / Limit / SL centred, with a settings
   // button at the row's right edge that opens the TP/SL sheet (TpslControl, through tpslOpen).
@@ -41832,6 +42039,8 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
           : [...(india ? [1000, 5000, 10000] : [10, 50, 100]).map(addAmountChip), { label: 'Max', apply: () => balance / required(1) }]
   const ctaInr = !india && orderValue > 0 && !short ? formatInr(orderValue * rate, { decimals: 0 }) : undefined
   const ctaLabel = short ? 'Add money' : config.cta.label
+  // Indian pad: the button says how many shares it places, "Buy 22 QTY" (27 Nov, user: the number typed had no label).
+  const ctaQty = india && !short && mode === 'shares' && Number(amountText) > 0 ? Number(amountText).toLocaleString('en-IN') : undefined
   // Nothing entered (amount or shares at 0): Buy / Sell is disabled until there is (20 Nov, the user's call). Only the
   // button that places the order: Add money (an empty wallet) stays live.
   const placesOrder = config.cta.label === 'Buy' || config.cta.label === 'Sell'
@@ -41846,7 +42055,7 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
   const affordableShares = unitPrice > 0 ? (india ? Math.floor(balance / required(unitPrice)) : Math.floor((balance / required(unitPrice)) * 10000) / 10000) : 0
   const affordableAmount = Math.floor((balance / required(1)) * 100) / 100
   const partial = short && balance > 0 && (mode === 'shares' ? affordableShares > 0 : affordableAmount > 0)
-  const partialLabel = mode === 'shares' ? `Buy ${affordableShares} qty` : `Buy ${money(affordableAmount)}`
+  const partialLabel = mode === 'shares' ? `Buy ${affordableShares.toLocaleString('en-IN')} QTY` : `Buy ${money(affordableAmount)}`
   const onPartial = () => {
     setValue(config.mode === 'amount' ? (mode === 'shares' ? affordableShares * unitPrice : affordableAmount) : mode === 'shares' ? affordableShares : affordableAmount / unitPrice)
     // The pad's own order target; a pad whose button is always Add money (T04 Short of money) places it via Order processing.
@@ -42003,11 +42212,14 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
                 <span className={styles.barDivider} aria-hidden="true" />
               </>
             )}
-            {/* The whole pill (text, switch and the room round them) is the tap target (24 Nov, user). */}
-            <label className={styles.slToggle}>
-              <span>{(padVersion === 'india' ? TPSL_INDIA : TPSL_US).title}</span>
-              <Switch size="sm" checked={slOn} onChange={(e) => turnSl(e.target.checked)} />
-            </label>
+            {/* The whole pill (text, switch and the room round them) is the tap target (24 Nov, user). Not on the
+                Indian sell pad: its TP/SL is a tab (27 Nov, user). */}
+            {!sellTpslPad && (
+              <label className={styles.slToggle}>
+                <span>{(padVersion === 'india' ? TPSL_INDIA : TPSL_US).title}</span>
+                <Switch size="sm" checked={slOn} onChange={(e) => turnSl(e.target.checked)} />
+              </label>
+            )}
           </>
         ) : tpslCard === 'v4' ? (
           // First-time hint (23 Nov, user): a blue L3 Tooltip with ✕ under the settings button, until it's closed or the
@@ -42053,27 +42265,52 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
   const notePrefix = india ? validityPrefix(indian, config.type) : config.type === 'market' ? '' : 'Day order · '
   const marketNote = marketPadNote(padMarket, config.type, config.side, derived.note)
   const note = marketNote ? `${notePrefix}${forCurrentStock(marketNote)}` : undefined
-  const footer = (
+  // Indian sell pad, TP/SL tab: TP/SL Qty · Est. P/L, and Apply (not a money button: it places no trade now). Apply goes
+  // back to the stock page (prototype; the live app confirms there).
+  const footer = sellTpslTab ? (
     <div className={styles.dock}>
-      {note && <p className={styles.note}>{note}</p>}
+      <Stack gap="12" className={styles.dockBody}>
+        {sellTpsl.funds}
+        <Button size="lg" fullWidth disabled={!sellTpsl.valid} onClick={() => back(config.back)}>{SELL_TPSL.apply}</Button>
+      </Stack>
+      <KeypadSlide open={sellTpsl.typing}>
+        <Keyboard onKey={sellTpsl.onKey} decimal />
+      </KeypadSlide>
+    </div>
+  ) : (
+    <div className={styles.dock}>
+      <Reveal show={Boolean(note)}><p className={styles.note}>{note}</p></Reveal>
       <Stack gap="12" className={styles.dockBody}>
         <Stack direction="horizontal" justify="between" align="center" className={styles.funds}>
           <span><span className={styles.muted}>{config.availLabel === 'Avail.' ? 'Balance:' : config.availLabel}</span> <strong><PadAmount text={config.avail} /></strong></span>
           <Stack direction="horizontal" gap="04" align="center">{reqLabel}{derived.req && <strong>{derived.req}</strong>}</Stack>
         </Stack>
-        {partial ? (
-          // FLAG: an even 2-up row of Large buttons in the pad's own dock (L3 ButtonGroup would add a second bar).
-          <Grid columns={2} gap="12">
-            <Button variant="secondary" size="lg" fullWidth onClick={onPartial}>{partialLabel}</Button>
-            <Button variant="brand" size="lg" fullWidth onClick={onCta}>{ctaLabel}</Button>
-          </Grid>
-        ) : (
-          <Button variant={config.side === 'buy' ? 'brand' : 'sell'} size="lg" fullWidth disabled={ctaDisabled} onClick={onCta}>
-            {ctaLabel}
-            {/* The order's value in ₹ after the label ("Buy · ₹9,345"), same weight as the label, 2 smaller. */}
-            {ctaInr && <span className={styles.ctaInr}> · {ctaInr}</span>}
+        {/* One row for both states (27 Nov, user: animate it): not enough balance for the shares → the Buy button shrinks to
+            the left half and turns secondary ("Buy 42 QTY", what the balance covers) while Add money grows in on the
+            right; back again when there's enough. FLAG: an even 2-up row of Large buttons in the pad's own dock (L3
+            ButtonGroup would add a second bar); the widths move with L3's motion tokens (no L3 split-button motion: L3 gap). */}
+        <div className={styles.ctaRow} data-split={partial || undefined}>
+          <Button
+            variant={partial ? 'secondary' : config.side === 'buy' ? 'brand' : 'sell'}
+            size="lg"
+            fullWidth
+            disabled={!partial && ctaDisabled}
+            onClick={partial ? onPartial : onCta}
+            className={styles.ctaMain}
+          >
+            {partial ? partialLabel : (
+              <>
+                {ctaLabel}
+                {ctaQty && ` ${ctaQty} QTY`}
+                {/* The order's value in ₹ after the label ("Buy · ₹9,345"), same weight as the label, 2 smaller. */}
+                {ctaInr && <span className={styles.ctaInr}> · {ctaInr}</span>}
+              </>
+            )}
           </Button>
-        )}
+          <div className={styles.ctaSecond} aria-hidden={!partial || undefined} inert={!partial || undefined}>
+            <Button variant="brand" size="lg" fullWidth onClick={onCta}>Add money</Button>
+          </div>
+        </div>
       </Stack>
       <KeypadSlide open={keypad}>
         <Keyboard onKey={onKey} decimal={decimals > 0} />
@@ -42225,7 +42462,7 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
       width={validityPlace === 'v3' ? 'hug' : 'fill'}
       className={styles.orderTypes}
       aria-label="Order type"
-      items={ORDER_TYPES}
+      items={sellTpslPad ? ORDER_TYPES.map((type) => (type.value === 'sl' ? { ...type, label: SELL_TPSL.tab } : type)) : ORDER_TYPES}
       value={tabValue}
       onChange={(type) => {
         const target = config.to?.[type]
@@ -42245,6 +42482,9 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
       style={amountSize === '36' ? undefined : ({ '--pad-amount': `var(--app-orderpad-amount-${amountSize})` } as CSSProperties)}
     >
       {mode === 'amount' && <span className={styles.prefix}>{symbol}</span>}
+      {/* Indian pad (27 Nov, user): the big number is a share count — "QTY" in front of it, like the ₹ of an amount. */}
+      {/* Hidden for now (27 Nov, user: "keep it hidden for now"): set QTY_PREFIX to true to bring it back. */}
+      {QTY_PREFIX && india && mode !== 'amount' && <span className={styles.qtyPrefix} aria-hidden="true">QTY</span>}
       <input
         className={styles.amount}
         {...keypadFieldProps()}
@@ -42267,7 +42507,8 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
     <Stack gap="08" align="center">
       {/* V3: Amount / Shares and the validity sit together above the amount, each hugging its label (20 Nov, the user's
           call); when a label changes size the row re-centres with a slide (switchRowRef). */}
-      {validityPlace === 'v3' && ((config.toggle && !india) || validity) && (
+      {/* Appears / leaves with the order (the sell pad's TP/SL tab has no validity): it makes room for itself (Reveal, 27 Nov, user). */}
+      <Reveal show={validityPlace === 'v3' && ((config.toggle && !india) || validity)} space="08" align="center">
         <Stack direction="horizontal" align="center" gap="12" className={styles.switchRow} ref={switchRowRef}>
           {config.toggle && !india && ( /* Indian stocks: shares only, no switch (24 Nov, user) */
             <Select size="sm" subtle icon="swap" onClick={switchMode} aria-label={switchLabel}>
@@ -42281,9 +42522,11 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
             </Select>
           )}
         </Stack>
-      )}
+      </Reveal>
       {amountField}
-      {netPositions !== null && <p className={styles.netPositions}>Net Positions: {netPositions > 0 ? '+' : ''}{netPositions}</p>}
+      <Reveal show={netPositions !== null} space="08" align="center">
+        <p className={styles.netPositions}>Net Positions: {netPositions !== null && netPositions > 0 ? '+' : ''}{netPositions}</p>
+      </Reveal>
       {config.toggle && !india && validityPlace !== 'v3' && (
         <Select size="sm" subtle icon="swap" onClick={switchMode} aria-label={switchLabel}>
           {unitLabel}
@@ -42371,6 +42614,9 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
             </>
           )}
         </Stack>
+        {sellTpslTab ? (
+          <Stack gap="16" align="stretch" className={styles.fields} ref={fields}>{sellTpsl.body}</Stack>
+        ) : (
         <Stack gap="16" align="center" className={styles.fields}>
           {/* The amount is the same on every order type: it stays put while the part under it dissolves. V5 (23 Nov,
               user): the amount and its chips sit in one bounding box (the pad's price-card box). */}
@@ -42448,10 +42694,15 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
           <Stack gap="16" align="center" className={styles.fields} ref={fields}>
           {!amountBox && !amountCard && chipTabs}
           {/* No helper line under the amount: the order's ₹ value is in the Buy / Sell button. Only an error shows here. */}
-          {derived.error && !noSharesError && <p className={styles.error}>{forCurrentStock(derived.error)}</p>}
+          {/* Errors and cards that come and go with a value or a toggle make room for themselves (Reveal, 27 Nov, user). */}
+          <Reveal show={Boolean(derived.error) && !noSharesError} space="16" align="center">
+            <p className={styles.error}>{derived.error ? forCurrentStock(derived.error) : null}</p>
+          </Reveal>
           {/* Indian pad, Delivery Market on NSE only (production: "Boost returns by 4X"; leverage is MTF, which BSE doesn't
               have): Minted's leverage card (Enable leverage upto 2x / 3x / 4x). */}
-          {india && indian.product === 'delivery' && indian.exchange === 'NSE' && config.type === 'market' && <LeverageCard />}
+          <Reveal show={india && indian.product === 'delivery' && indian.exchange === 'NSE' && config.type === 'market'} space="16" align="center">
+            <LeverageCard />
+          </Reveal>
           {/* Price cards (flow option "Price cards"): one card holding every price, a line between (merged, the default),
               or a card per price (separate, the earlier design, kept for A/B). */}
           {priceCards === 'merged' ? (
@@ -42472,8 +42723,12 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
             blockRef={tpslBlock}
             onSetChange={setTpslSet}
           />
+          {/* Indian sell pad: "Advance options" at the far bottom, under the prices and TP/SL (27 Nov, user) → Disclosed
+              quantity (DisclosedQty.tsx): the sheet, then an applied card in the pill's place. */}
+          {sellTpslPad && <DisclosedQtyControl orderQty={Number(amountText) || 0} />}
         </Stack>
           </Stack>
+        )}
       </Stack>
       {sheet}
       {feesOpen && <FeeBreakdownSheet orderUsd={orderValue} onClose={() => setFeesOpen(false)} />}
@@ -43099,6 +43354,7 @@ export const padCard = { head: styles.head, title: styles.title }
 .text { flex: 1; min-width: 0; align-self: stretch; margin: calc(-1 * var(--pf-pad)) 0 calc(-1 * var(--pf-pad)) calc(-1 * var(--pf-pad)); padding: var(--pf-pad) 0 var(--pf-pad) var(--pf-pad); cursor: text; }
 .label { font: var(--l3-text-description-12); color: var(--l3-content-secondary); }
 .hint { font: var(--l3-text-description-14); color: var(--l3-content-secondary); }
+.hintPrimary { color: var(--l3-content-primary); }
 .value { display: flex; align-items: center; font: var(--l3-text-heading-16); color: var(--l3-content-primary); }
 /* A raw input sized to its text; the native caret is hidden and drawn instead (it only paints while the page has
    focus and hides in captures), as L3 TextField's Typing state. */
@@ -43112,6 +43368,8 @@ export const padCard = { head: styles.head, title: styles.title }
 /* On the Stepper's grey pill, L3's light-blue Small buttons blur into it: the enabled ± are white with the blue icon.
    L3 gap: Stepper has no on-grey button option. */
 .stepper.stepper[data-size] button:not(:disabled) { background: var(--l3-surface-primary); color: var(--l3-content-accent-discover-default); }
+/* A row that comes and goes in a Reveal (Tpsl LMT): its hairline sits on the row, inside the collapse. */
+.row + .revealRow .row { border-top: 1px solid var(--l3-border-light); } /* 1px hairline */
 ```
 
 ### `src/flows/us-stocks/screens/trade/PriceField.tsx`
@@ -43180,9 +43438,11 @@ export type PriceFieldProps = {
   stepper?: Omit<StepperProps, 'size'>
   /** A value that can't be typed ("At market", use 4): shown in place of the price; no Stepper. */
   fixed?: string
+  /** A label-only row's label in primary instead of secondary (sell pad TP/SL's Quantity, 27 Nov, user). */
+  primaryLabel?: boolean
 }
 
-export function PriceField({ label, unit, price, stepper, fixed }: PriceFieldProps) {
+export function PriceField({ label, unit, price, stepper, fixed, primaryLabel = false }: PriceFieldProps) {
   // $ on the US pad, ₹ on the Indian pad (padMoney.tsx).
   const symbol = usePadSymbol()
   const stepperEl = stepper && <Stepper {...stepper} size="sm" className={[styles.stepper, stepper.className].filter(Boolean).join(' ')} />
@@ -43204,7 +43464,7 @@ export function PriceField({ label, unit, price, stepper, fixed }: PriceFieldPro
     return (
       <Stack direction="horizontal" justify="between" align="center" gap="12" className={styles.row}>
         <Stack gap="04">
-          <span className={styles.hint}>{label}</span>
+          <span className={primaryLabel ? `${styles.hint} ${styles.hintPrimary}` : styles.hint}>{label}</span>
           {unit && <Select size="md" icon="swap" onClick={unit.onSwitch} aria-label={unit['aria-label']}>{unit.label}</Select>}
         </Stack>
         {stepperEl}
@@ -43247,6 +43507,300 @@ export function PriceField({ label, unit, price, stepper, fixed }: PriceFieldPro
       {stepperEl}
     </Stack>
   )
+}
+```
+
+### `src/flows/us-stocks/screens/trade/SellTpsl.module.css`
+
+```css
+/* Sell pad · TP/SL tab — the F&O TPSL sheet's look (fno/order-pad/screens/TpslSheet.module.css), copied. */
+
+.orderTitle { font: var(--l3-text-heading-16); color: var(--l3-content-primary); }
+.muted { font: var(--l3-text-label-12); color: var(--l3-content-secondary); }
+
+/* The card's 1px edge is border/intense, as on the F&O sheet. An error's red still wins (PriceField's .boxError). */
+.card { --card-border: inset 0 0 0 1px var(--l3-border-intense); }
+
+/* Under the card: Est. profit / loss or the error, and Clear. */
+.estRow { min-height: var(--l3-size-24); padding: var(--l3-spacing-08) 0 0 var(--l3-spacing-04); }
+.est { margin: 0; font: var(--l3-text-description-12); color: var(--l3-content-secondary); }
+.error { margin: 0; font: var(--l3-text-label-12); color: var(--l3-content-accent-error-default); }
+.up { color: var(--l3-content-accent-success-default); }
+.down { color: var(--l3-content-accent-error-default); }
+.est .up, .est .down { font: var(--l3-text-label-12); }
+/* Clear: a ghost Button in the discover blue. L3 gap: no link-style Button. */
+.link.link { flex-shrink: 0; color: var(--l3-content-accent-discover-default); } /* never truncates to "Cle…" */
+
+.trailing { display: flex; align-items: center; gap: var(--l3-spacing-08); font: var(--l3-text-label-14); color: var(--l3-content-primary); cursor: pointer; }
+
+/* The dock's top row, as the pad's Balance · Req. row. */
+.funds { font: var(--l3-text-label-12); }
+.funds strong { font: var(--l3-text-heading-12); color: var(--l3-content-primary); }
+.funds .muted { color: var(--l3-content-secondary); }
+
+/* The order card: radius 14 (local token, L3 gap). Doubled class beats the Card module. */
+.order.order { border-radius: var(--app-sell-tpsl-order-radius); }
+```
+
+### `src/flows/us-stocks/screens/trade/SellTpsl.tsx`
+
+```tsx
+// Sell pad · TP/SL tab (Indian pad, 27 Nov, the user's call: "the SL tab will become TP/SL same as screenshot" — the
+// live app's sell pad). Selling shares you hold: a take profit and / or a stop loss on them, set per quantity. The
+// editor is the F&O TPSL sheet's (fno/order-pad/screens/TpslSheet.tsx, copied — a flow never imports another flow's
+// code), in whole shares instead of lots, laid out in the pad's body rather than a sheet:
+//  - "Order 1 (Avg. Buy: ₹…)" in a bordered panel (L3 Card static): Quantity (a stepper), Take profit, Stop loss — each leg
+//    one price card (name · Market ⇄ Limit, the typed ₹ price, a % Stepper from the average price), then Est. profit /
+//    loss and Clear under it, or the error (TP must be above the LTP, SL below it).
+//  - "Add new TP/SL" splits the holding into another order; together they can't cover more than is held.
+//  - Trailing stop loss (checkbox + ⓘ).
+//  - The dock: "TP/SL Qty: 0/25" (shares with a TP or SL set / held) · "Est. P/L: +₹… / −₹…", and Apply (disabled until
+//    every order has a valid TP or SL and the quantity fits). Prices are typed from the app keypad, which slides up in the dock.
+// The pad hides its own amount, chips, validity, trigger / limit prices and the top bar's TP/SL switch on this tab.
+import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { Button } from '@l3/components/Button'
+import { Card } from '@l3/components/Card'
+import { Checkbox } from '@l3/components/Checkbox'
+import { Icon } from '@l3/components/Icon'
+import { Stack } from '@l3/components/Stack'
+import { Tooltip } from '@l3/components/Tooltip'
+import { msAdd, msDelete, msInfo } from '@l3/icons/material'
+import { formatInr } from '../../../../shared/money'
+import { typeKey } from '../../../../shared/ui/Keyboard'
+import { PriceField, PriceFieldBox } from './PriceField'
+import styles from './SellTpsl.module.css'
+import { Reveal } from '../../../../shared/ui/Reveal'
+
+type Leg = 'tp' | 'sl'
+const LEGS: Leg[] = ['tp', 'sl']
+type TpslLeg = { at: 'mkt' | 'lmt'; price: number | null }
+type TpslOrder = { id: number; qty: number; tp: TpslLeg; sl: TpslLeg }
+type Typing = { orderId: number; leg: Leg; text: string | null; fresh: boolean }
+
+/** Every string on the tab (the flow keeps its trade copy in the screens, as Tpsl.tsx does). */
+export const SELL_TPSL = {
+  tab: 'TP/SL',
+  orderN: (n: number) => `Order ${n}`,
+  avg: (price: string) => `(Avg. Buy: ${price})`,
+  quantity: 'Quantity',
+  leg: { tp: 'Take profit', sl: 'Stop loss' },
+  at: { mkt: 'Market', lmt: 'Limit' },
+  atSwitch: (leg: string, at: string) => `${leg} at ${at}. Switch to ${at === 'Market' ? 'a limit price' : 'market'}`,
+  enterPrice: 'Enter price',
+  none: '--',
+  estProfit: 'Est. profit',
+  estLoss: 'Est. loss',
+  tpLow: (ltp: string) => `Take profit must be above the last price (${ltp})`,
+  slHigh: (ltp: string) => `Stop loss must be below the last price (${ltp})`,
+  over: (total: number, held: number) => `Total quantity ${total} is more than the ${held} shares you hold`,
+  clear: 'Clear',
+  remove: 'Remove',
+  removeLabel: (n: number) => `Remove order ${n}`,
+  add: 'Add new TP/SL',
+  trailing: 'Trailing stop loss',
+  trailingInfo: 'About trailing stop loss',
+  trailingHint: 'The stop loss moves up as the price rises, by the same amount, and never moves down.',
+  qty: 'TP/SL Qty:',
+  estPl: 'Est. P/L:',
+  apply: 'Apply',
+}
+
+const TICK = 0.05
+/** NSE equity prices move in ₹0.05 ticks. */
+const toTick = (n: number) => Math.max(TICK, Math.round(n / TICK) * TICK)
+
+export type SellTpsl = {
+  /** The editor, for the pad's body. */
+  body: ReactNode
+  /** The dock's top row: TP/SL Qty · Est. P/L. */
+  funds: ReactNode
+  valid: boolean
+  /** A price is being typed: the pad's keypad is up and types here. */
+  typing: boolean
+  onKey: (key: string) => void
+}
+
+/** The TP/SL tab's state and parts. `ltp`: the last price; `avg`: the average buy price; `held`: shares held. */
+export function useSellTpsl({ ltp, avg, held }: { ltp: number; avg: number; held: number }): SellTpsl {
+  const [orders, setOrders] = useState<TpslOrder[]>([{ id: 1, qty: Math.max(held, 1), tp: { at: 'mkt', price: null }, sl: { at: 'mkt', price: null } }])
+  const [trailing, setTrailing] = useState(false)
+  const [typing, setTyping] = useState<Typing | null>(null)
+  const rootRef = useRef<HTMLDivElement>(null)
+
+  const update = (orderId: number, change: Partial<TpslOrder>) => setOrders((all) => all.map((o) => (o.id === orderId ? { ...o, ...change } : o)))
+  const setLeg = (o: TpslOrder, leg: Leg, change: Partial<TpslLeg>) => update(o.id, { [leg]: { ...o[leg], ...change } })
+  // Remove: the card closes first (Reveal, ~300ms), then the order leaves the list.
+  const [removing, setRemoving] = useState<number[]>([])
+  const remove = (id: number) => {
+    setRemoving((r) => [...r, id])
+    if (typing?.orderId === id) setTyping(null)
+    window.setTimeout(() => { setOrders((all) => all.filter((x) => x.id !== id)); setRemoving((r) => r.filter((x) => x !== id)) }, 300)
+  }
+  const add = () => setOrders([...orders, { id: Math.max(...orders.map((o) => o.id)) + 1, qty: 1, tp: { at: 'mkt', price: null }, sl: { at: 'mkt', price: null } }])
+
+  const total = orders.reduce((sum, o) => sum + o.qty, 0)
+  const over = total > held
+  const legError = (leg: Leg, l: TpslLeg) =>
+    l.price === null ? undefined
+      : leg === 'tp' ? (l.price <= ltp ? SELL_TPSL.tpLow(formatInr(ltp)) : undefined)
+        : l.price >= ltp ? SELL_TPSL.slHigh(formatInr(ltp)) : undefined
+  const isSet = (o: TpslOrder) => LEGS.some((leg) => o[leg].price !== null)
+  const valid = held > 0 && !over && orders.every((o) => isSet(o) && LEGS.every((leg) => !legError(leg, o[leg])))
+  // The dock counts only the shares that have a TP or SL on them (the live app: "TP/SL Qty: 0/2" before any price).
+  const covered = orders.filter(isSet).reduce((sum, o) => sum + o.qty, 0)
+  const estOf = (leg: Leg) => {
+    const set = orders.filter((o) => o[leg].price !== null)
+    return set.length ? set.reduce((sum, o) => sum + (o[leg].price! - avg) * o.qty, 0) : null
+  }
+  const profit = estOf('tp')
+  const loss = estOf('sl')
+
+  // A tap on the page outside a price, the keypad and the dock closes the keypad (as the F&O sheet).
+  const typingOn = typing !== null
+  useEffect(() => {
+    if (!typingOn) return
+    const onDown = (e: PointerEvent) => {
+      const target = e.target as HTMLElement
+      const screen = rootRef.current?.closest('section')
+      if (!screen?.contains(target) || target.closest('[data-price-field], footer')) return
+      setTyping(null)
+      ;(document.activeElement as HTMLElement | null)?.blur()
+    }
+    document.addEventListener('pointerdown', onDown)
+    return () => document.removeEventListener('pointerdown', onDown)
+  }, [typingOn])
+
+  // One key into the typed price: up to 2 decimals.
+  const onKey = (key: string) => {
+    if (!typing) return
+    const o = orders.find((x) => x.id === typing.orderId)
+    if (!o) return
+    const base = typing.fresh ? '' : (typing.text ?? '')
+    let text: string | undefined
+    if (key === '.') text = base.includes('.') ? undefined : (base || '0') + '.'
+    else if (/^\d$/.test(key) && base.includes('.') && (base.split('.')[1]?.length ?? 0) >= 2) text = undefined
+    else text = typeKey(base, key, 8).replace(/^0+(?=\d)/, '')
+    if (text === undefined) return
+    setTyping({ ...typing, text, fresh: false })
+    const price = Number(text) || 0
+    setLeg(o, typing.leg, { price: price > 0 ? price : null })
+  }
+
+  const legCard = (o: TpslOrder, leg: Leg) => {
+    const l = o[leg]
+    const name = SELL_TPSL.leg[leg]
+    const error = legError(leg, l)
+    const est = l.price === null ? undefined : (l.price - avg) * o.qty
+    // TP counts up from the average price, SL down from it.
+    const pct = l.price === null ? null : Math.round(((leg === 'tp' ? l.price - avg : avg - l.price) / avg) * 1000) / 10
+    const active = typing?.orderId === o.id && typing.leg === leg ? typing : null
+    return (
+      <Stack key={leg}>
+        <PriceFieldBox error={Boolean(error)} surface="primary" className={styles.card}>
+          <PriceField
+            label={name}
+            unit={{ label: SELL_TPSL.at[l.at], onSwitch: () => setLeg(o, leg, { at: l.at === 'mkt' ? 'lmt' : 'mkt' }), 'aria-label': SELL_TPSL.atSwitch(name, SELL_TPSL.at[l.at]) }}
+            price={{
+              text: active && active.text !== null ? active.text : l.price === null ? '' : l.price.toFixed(2),
+              placeholder: SELL_TPSL.enterPrice,
+              typing: active !== null,
+              'aria-label': `${name} price`,
+              onPick: () => { if (!active) setTyping({ orderId: o.id, leg, text: null, fresh: true }) },
+            }}
+            stepper={{
+              label: `${name} % from the average price`,
+              value: pct ?? 0,
+              min: 0, max: leg === 'sl' ? 99.5 : 500, step: 0.5,
+              format: (n) => (pct === null ? SELL_TPSL.none : `${n.toFixed(1)}%`),
+              onChange: (n) => {
+                setLeg(o, leg, { price: toTick(avg * (leg === 'tp' ? 1 + n / 100 : 1 - n / 100)) })
+                if (active) setTyping({ ...active, text: null, fresh: true })
+              },
+            }}
+          />
+        </PriceFieldBox>
+        {/* Est. P/L or the error, and Clear: appear once there's a price, making room for themselves (Reveal, 27 Nov, user). */}
+        <Reveal show={l.price !== null || Boolean(error)}>
+          <Stack direction="horizontal" justify="between" align="center" gap="08" className={styles.estRow}>
+            {error ? (
+              <p className={styles.error} role="alert">{error}</p>
+            ) : (
+              <p className={styles.est}>
+                {leg === 'tp' ? SELL_TPSL.estProfit : SELL_TPSL.estLoss}{' '}
+                <span className={(est ?? 0) >= 0 ? styles.up : styles.down}>{est === undefined ? SELL_TPSL.none : formatInr(est, { sign: true })}</span>
+              </p>
+            )}
+            <Button variant="ghost" size="sm" className={styles.link} onClick={() => { setLeg(o, leg, { price: null }); if (active) setTyping(null) }}>{SELL_TPSL.clear}</Button>
+          </Stack>
+        </Reveal>
+      </Stack>
+    )
+  }
+
+  const body = (
+    <Stack gap="16" ref={rootRef}>
+      {orders.map((o, i) => (
+        // Each order is one bordered panel (L3 Card static: 1px border/light, 27 Nov, user: "use border instead of gray bg").
+        // Added and removed orders slide in and out (Reveal, 27 Nov, user): Remove closes the card, then drops it.
+        <Reveal key={o.id} show={!removing.includes(o.id)} appear={i > 0} space="16">
+        <Card className={styles.order}>
+          <Stack gap="16">
+            <Stack direction="horizontal" align="center" justify="between" gap="08">
+              <Stack direction="horizontal" align="center" gap="08">
+                <span className={styles.orderTitle}>{SELL_TPSL.orderN(i + 1)}</span>
+                <span className={styles.muted}>{SELL_TPSL.avg(formatInr(avg))}</span>
+              </Stack>
+              {i > 0 && (
+                <Button variant="ghost" size="sm" aria-label={SELL_TPSL.removeLabel(i + 1)} iconLeft={<Icon icon={msDelete} size={16} />} onClick={() => remove(o.id)}>
+                  {SELL_TPSL.remove}
+                </Button>
+              )}
+            </Stack>
+            <Stack>
+              <PriceFieldBox error={over && i === orders.length - 1} surface="primary" className={styles.card}>
+                <PriceField
+                  label={SELL_TPSL.quantity}
+                  primaryLabel
+                  stepper={{ label: SELL_TPSL.quantity, value: o.qty, min: 1, max: Math.max(held, 1), step: 1, onChange: (n) => update(o.id, { qty: n }) }}
+                />
+              </PriceFieldBox>
+              <Reveal show={over && i === orders.length - 1}>
+                <p className={`${styles.error} ${styles.estRow}`} role="alert">{SELL_TPSL.over(total, held)}</p>
+              </Reveal>
+            </Stack>
+            {LEGS.map((leg) => legCard(o, leg))}
+          </Stack>
+        </Card>
+        </Reveal>
+      ))}
+      <Button variant="secondary" size="lg" fullWidth iconLeft={<Icon icon={msAdd} />} onClick={add}>{SELL_TPSL.add}</Button>
+      <Stack direction="horizontal" align="center" gap="04">
+        <label className={styles.trailing}>
+          <Checkbox checked={trailing} onChange={(e) => setTrailing(e.target.checked)} />
+          {SELL_TPSL.trailing}
+        </label>
+        <Tooltip content={SELL_TPSL.trailingHint} placement="top">
+          <Button variant="ghost" size="sm" aria-label={SELL_TPSL.trailingInfo} iconLeft={<Icon icon={msInfo} size={16} />} />
+        </Tooltip>
+      </Stack>
+    </Stack>
+  )
+
+  const funds = (
+    <Stack direction="horizontal" justify="between" align="center" className={styles.funds}>
+      <span><span className={styles.muted}>{SELL_TPSL.qty}</span> <strong>{covered}/{held}</strong></span>
+      <span>
+        <span className={styles.muted}>{SELL_TPSL.estPl}</span>{' '}
+        <strong>
+          {profit === null ? SELL_TPSL.none : <span className={profit >= 0 ? styles.up : styles.down}>{formatInr(profit, { sign: true })}</span>}
+          /
+          {loss === null ? SELL_TPSL.none : <span className={loss >= 0 ? styles.up : styles.down}>{formatInr(loss, { sign: true })}</span>}
+        </strong>
+      </span>
+    </Stack>
+  )
+
+  return { body, funds, valid, typing: typingOn, onKey }
 }
 ```
 
@@ -43564,6 +44118,8 @@ import { PriceField, PriceFieldBox } from './PriceField'
 import styles from './Tpsl.module.css'
 import { TpslSheetB } from './TpslSheetB'
 import { useTpslCard, useTpslSheet } from './version'
+import { Reveal } from '../../../../shared/ui/Reveal'
+import priceField from './PriceField.module.css'
 
 export type Side = 'tp' | 'sl'
 export type Unit = 'points' | 'percent'
@@ -43988,7 +44544,7 @@ function TpslSheet({ open, order, features, start, blocked, onClose, onSave }: {
         utility={<KeypadSlide open={typing !== null}><Keyboard decimal onKey={onKey} /></KeypadSlide>}
       >
         <Stack gap="08">
-          {blocked && <p className={styles.error} role="alert">{blocked}</p>}
+          <Reveal show={Boolean(blocked)} space="08"><p className={styles.error} role="alert">{blocked}</p></Reveal>
           <Stack gap="16" className={styles.legs} inert={blocked ? true : undefined} data-disabled={blocked ? '' : undefined}>
             {features.legs.map((side) => (
               <LegCard
@@ -44097,9 +44653,10 @@ function LegCard({ side, leg, ltp, entry, qty, error, typing, trailing, onPick, 
               <Stack gap="04">
                 <PriceFieldBox error={Boolean(error)}>
                   {row('trigger')}
-                  {leg.limit && row('limitAt')}
+                  {/* LMT adds the limit row: it makes room for itself (Reveal, 27 Nov, user); the hairline rides inside. */}
+                  <Reveal show={leg.limit} className={priceField.revealRow}>{row('limitAt')}</Reveal>
                 </PriceFieldBox>
-                {error && <p className={styles.error} role={leg.on ? 'alert' : undefined}>{error}</p>}
+                <Reveal show={Boolean(error)} space="04"><p className={styles.error} role={leg.on ? 'alert' : undefined}>{error}</p></Reveal>
               </Stack>
               {trailing && <div className={styles.trailRow}>
                 <label className={styles.check}>
@@ -44793,11 +45350,13 @@ export type IndianPadState = {
   limitValidity: LimitValidity
   /** Delivery and MTF Market orders: Day (production's default) or Instant. */
   marketValidity: MarketValidity
+  /** Intraday orders, every type: Day (the default) or Instant (27 Nov, user: Intraday has the Day / Instant switch too). */
+  intradayValidity: MarketValidity
   /** SL's second price: false = a Limit price, true = at market (SL-M). */
   slAtMarket: boolean
 }
 
-let state: IndianPadState = { product: 'delivery', exchange: 'NSE', validity: 'year', limitValidity: 'year', marketValidity: 'day', slAtMarket: false }
+let state: IndianPadState = { product: 'delivery', exchange: 'NSE', validity: 'year', limitValidity: 'year', marketValidity: 'day', intradayValidity: 'day', slAtMarket: false }
 const listeners = new Set<() => void>()
 
 export function setIndianPad(patch: Partial<IndianPadState>) {
@@ -44833,9 +45392,9 @@ export const NEXT_LIMIT_VALIDITY: Record<LimitValidity, LimitValidity> = { day: 
 const PREFIX: Record<LimitValidity, string> = { year: 'Valid for 1 year · ', day: 'Day order · ', instant: 'Instant order · ' }
 
 /** The text before a note: the order's validity (a Market Day order says nothing). */
-export const validityPrefix = ({ product, validity, limitValidity, marketValidity }: IndianPadState, type: 'market' | 'limit' | 'sl') =>
+export const validityPrefix = ({ product, validity, limitValidity, marketValidity, intradayValidity }: IndianPadState, type: 'market' | 'limit' | 'sl') =>
   product === 'intraday'
-    ? (type === 'market' ? '' : 'Intraday · ')
+    ? (intradayValidity === 'instant' ? PREFIX.instant : type === 'market' ? '' : 'Intraday · ')
     : type === 'market'
       ? (marketValidity === 'instant' ? PREFIX.instant : '')
       : PREFIX[type === 'limit' ? limitValidity : validity]
@@ -75917,6 +76476,134 @@ export function Rail({ children, label, visible, rows = 1, snap = 'start', class
   return (
     <div ref={railRef} className={[styles.rail, className].filter(Boolean).join(' ')} role="region" aria-label={label} data-rows={rows} data-snap={snap} style={{ '--rail-visible': visible } as CSSProperties} onScroll={onScroll}>
       {children}
+    </div>
+  )
+}
+```
+
+### `src/shared/ui/Reveal.module.css`
+
+```css
+/* Reveal (Reveal.tsx): the space grows with --l3-motion-duration-medium; the content fades and drops 8 into place. */
+.reveal {
+  display: grid;
+  grid-template-rows: 0fr;
+  align-self: stretch;
+  min-width: 0;
+  margin-top: calc(-1 * var(--reveal-space));
+  opacity: 0;
+  transform: translateY(calc(-1 * var(--l3-spacing-08)));
+  transition:
+    grid-template-rows var(--l3-motion-duration-medium) var(--l3-motion-easing-standard),
+    margin-top var(--l3-motion-duration-medium) var(--l3-motion-easing-standard),
+    opacity var(--l3-motion-duration-short) var(--l3-motion-easing-standard),
+    transform var(--l3-motion-duration-medium) var(--l3-motion-easing-standard);
+}
+.reveal[data-open] {
+  grid-template-rows: 1fr;
+  margin-top: 0;
+  opacity: 1;
+  transform: none;
+}
+/* Content first, then the space: on the way in the fade trails the growth a little, on the way out it leads. */
+.reveal[data-open] { transition-delay: 0s, 0s, 60ms, 0s; }
+
+.inner {
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+.reveal[data-align="center"] .inner { align-items: center; }
+.reveal[data-settled] .inner { overflow: visible; }
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal { transition: opacity var(--l3-motion-duration-short) linear; transform: none; }
+}
+```
+
+### `src/shared/ui/Reveal.tsx`
+
+```tsx
+// Reveal: something that appears or leaves because of a tap or a value (an error, a note, a card, a field) makes room
+// for itself instead of popping in (27 Nov, user: "it should be animated, like maybe it's sliding down or making space
+// for itself, so that it don't feel random. Same for appearance and disappearance").
+//
+// Opening: the space grows (height 0 → its own height) while the content fades in and drops 8 into place. Closing: the
+// reverse, then it unmounts. What's on screen when the page first draws doesn't animate.
+//
+// Inside a Stack, pass the Stack's gap as `space`: a closed Reveal also takes back the gap in front of it, so the
+// layout moves as one smooth step rather than a jump of the gap and then a slide. L3 has no reveal / collapse
+// component (L3 gap); the motion uses L3's motion tokens.
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
+import styles from './Reveal.module.css'
+
+type Space = '00' | '04' | '08' | '12' | '16' | '20' | '24'
+
+const CLOSE_MS = 300 // --l3-motion-duration-medium (250) + a frame or two, then unmount
+
+export function Reveal({ show, appear = false, space = '00', align = 'stretch', className, children }: {
+  /** Shown or not. Changing it animates; the first render doesn't. */
+  show: boolean
+  /** Animate in on mount too (something added to a list, e.g. a new order card). */
+  appear?: boolean
+  /** The gap of the Stack it sits in, taken back while closed. */
+  space?: Space
+  /** How the content sits across: like the Stack around it (centred or full width). */
+  align?: 'center' | 'stretch'
+  className?: string
+  children: ReactNode
+}) {
+  const [mounted, setMounted] = useState(show)
+  const [open, setOpen] = useState(show && !appear)
+  const [settled, setSettled] = useState(show) // open and done: no clipping (focus rings, raised shadows)
+  // While closing, keep drawing what was there (the condition is already false, so `children` may be empty).
+  const last = useRef(children)
+  if (show) last.current = children
+
+  const ref = useRef<HTMLDivElement>(null)
+  useLayoutEffect(() => {
+    setSettled(false)
+    if (show) setMounted(true)
+    else setOpen(false)
+  }, [show])
+  // Opening: the closed state is drawn first (reading the height makes the browser compute it), then it opens, so
+  // the open state transitions from it. No requestAnimationFrame: it doesn't run in a background tab.
+  useLayoutEffect(() => {
+    if (show && mounted && !open && ref.current) {
+      void ref.current.offsetHeight
+      setOpen(true)
+    }
+  }, [show, mounted, open])
+
+  useEffect(() => {
+    if (!mounted) return undefined
+    if (show && open) {
+      const t = window.setTimeout(() => setSettled(true), CLOSE_MS)
+      return () => window.clearTimeout(t)
+    }
+    if (!show) {
+      const t = window.setTimeout(() => setMounted(false), CLOSE_MS)
+      return () => window.clearTimeout(t)
+    }
+    return undefined
+  }, [show, open, mounted])
+
+  if (!mounted) return null
+  return (
+    <div
+      ref={ref}
+      className={[styles.reveal, className].filter(Boolean).join(' ')}
+      data-open={open || undefined}
+      data-settled={settled || undefined}
+      data-align={align}
+      aria-hidden={!show || undefined}
+      inert={!show || undefined}
+      style={{ '--reveal-space': `var(--l3-spacing-${space})` } as CSSProperties}
+    >
+      <div className={styles.inner}>{show ? children : last.current}</div>
     </div>
   )
 }

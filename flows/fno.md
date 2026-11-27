@@ -36,6 +36,19 @@ Prototype: https://lemonnade-design.github.io/lemonn-app-prototype/#/fno · mach
 | `fno-52` | Order pad · TPSL sheet (Set) | — | — | Set TPSL on an open position (GOLDM FEB FUT) lands on the F&O order pad — the position’s contract, Sell to exit it — with the TPSL sheet open (live app, 27 Nov; no Figma frame). F&O TP/SL is set per quantity, in whole lots: Order (Avg. Buy) with Quantity ⇕ (lot hint, stepper of one lot), Take Profit at Mkt ⇄ Lmt and Stop Loss (price typed or a % from the average buy, Est. Profit / Est. Loss), + Add new TP/SL for another order on part of the position (Remove from Order 2), “Combined qty exceeds total qty” when the orders cover more than is held, TP above / SL below the LTP, Trailing stop loss. Laid out like the stocks TP/SL sheet (header, one price card per leg with its Switch, prices typed from the keypad). Footer: Apply (needs a valid qty and a TP or SL on every order). Closing the sheet leaves the pad; Set TPSL reopens it. |
 | `fno-53` | Order pad · TPSL sheet (Manage) | — | — | Manage TPSL (or the green strip’s Qty ›) on NIFTY 25600 Put, 2 lots: the sheet prefilled with what’s set — TP ₹138.50, SL ₹124.00, trailing on. Add a second order to split the 2 lots between two TP/SL pairs. |
 | `fno-51` | Orders · Open | — | — | Orders waiting to go through, with their limit price; none → the L3 empty state. |
+| `fno-54` | Avg position · Option 1 · 3 Positions + TPSL nudge | [6980:11985](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=6980-11985) | — |  |
+| `fno-55` | Avg position · Option 1 · TPSL set (green strip) | [6980:12730](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=6980-12730) | — |  |
+| `fno-56` | Avg position · Option 1 · orders sheet (list) | [6980:12777](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=6980-12777) | — |  |
+| `fno-57` | Avg position · Option 1 · orders sheet (timeline) | [6980:16681](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=6980-16681) | — |  |
+| `fno-58` | Avg position · Option 1 · TPSL inside card (+ Add) | [6994:20194](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=6994-20194) | — |  |
+| `fno-59` | Avg position · Option 1 · TPSL inside card (set) | [7012:20238](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=7012-20238) | — |  |
+| `fno-60` | Avg position · Option 2 · 3 suborders (closed) | [6980:14707](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=6980-14707) | — |  |
+| `fno-61` | Avg position · Option 2 · 3 suborders (open) | [6980:16096](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=6980-16096) | — |  |
+| `fno-62` | Avg position · Option 3 · orders bar (closed) | [7012:22662](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=7012-22662) | — |  |
+| `fno-63` | Avg position · Option 3 · orders bar (open) | [6994:18730](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=6994-18730) | — |  |
+| `fno-64` | Avg position · Option 3 · orders bar (open, timeline) | [6994:19335](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=6994-19335) | — |  |
+| `fno-65` | Avg position · Option 4 · orders bar (closed) | [6994:18235](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=6994-18235) | — |  |
+| `fno-66` | Avg position · Option 4 · orders open (timeline) | [7012:22060](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=7012-22060) | — |  |
 | `fno-08` | Commodities home | [6754:63637](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=6754-63637) | — | The Commodities product tab. Gold / Silver / Crude Oil / Natural Gas shortcuts open the Lot summary (Gold Summary). The chart’s instrument selector (“Gold”) opens the contract picker. Popular commodities: Options ⇕ Futures switch; Futures Heatmap: Bullion / Energy / Metals. |
 | `fno-09` | Commodities home · heatmap & Smart Futures | [6754:63637](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=6754-63637) | — | The same long screen, scrolled to the Futures Heatmap. |
 | `fno-10` | Contract picker · Commodities | [6754:65111](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=6754-65111) | — | From the chart’s “Gold ⇕”. Equity / Commodities tabs in the sheet header’s bottom slot, commodity chips (All, Gold, Silver …) under them; contracts grouped by commodity as radio rows (Gold Mini tagged “Lowest Margin”). Picking one updates the chart and closes the sheet. |
@@ -426,6 +439,40 @@ Positions / Orders patterns (copied, not imported: a flow can't import another's
 - **L3 gaps:** square period pills (L3's 48 min-width overridden); round icon button (`--btn-radius` full); equal-width
   plain pills with `width="fill"`; dashed divider; card button inline padding 8; Actionbar hairline only on scroll.
 
+#### Avg position — 4 options (fno-54 … 66)
+
+Figma 8HEY699cTPiWiQeAVX3122 6980:7204 "Avg position". **Only the averaged position's card changes; the rest of the
+Positions page is fno-48.** NIFTY 25600 Put was bought three times (`orders` on the position in data.ts: 50 each at
+₹133.10, ₹127.20, ₹121.30), averaged to ₹127.20, Qty 150. Each buy is an order and can be exited on its own; TP / TSL
+always cover the whole position. Code: `positions/components/AvgPositionCard.tsx` (one card, `option` prop),
+`positions/sheets/OrdersSheet.tsx` (Option 1); `Positions` takes `avg`, `avgTpsl`, `avgExpanded`, `avgSheet`. Today's
+`PositionCard` ignores `orders`.
+
+- **Option 1** (fno-54 … 59): "3 Positions" (layers) replaces Set TPSL and opens the orders sheet — a list with Exit All
+  in the dock (fno-56), or a timeline with Exit All beside the P&L and Okay in the dock (fno-57). No TP / TSL: a
+  light-blue "Protect this position with TPSL · Add ›" strip; set: the page's green strip. "TP/SL inside card" (fno-58,
+  59): P&L and % top right; the figures end in a TPSL column (+ Add, or TP • TSL as % from the average, ✎).
+- **Option 2** (fno-60, 61): Avg. price · Qty · Returns; a grey "3 suborders ⌄" box opens in place (rows, exit icon).
+  Set TPSL / "TPSL: 150/150 ✎" · Exit Now (Exit All while open).
+- **Option 3** (fno-62 … 64): no logo; a grey "3 orders in this position" bar along the card's foot opens white order
+  cards under it (optionally on a timeline). Set TPSL / "TPSL: 150/150 ✎" · Exit All ⇥.
+- **Option 4** (fno-65, 66): the bar is light blue; open, the orders sit between the buttons and the bar on a timeline
+  with P&L and % and an outlined Exit. Set TPSL / Edit TPSL ✎ · Exit Now.
+- **Exiting one order** (`exitOrder()` in data.ts): the order goes, Qty and Avg are worked out again from what's left (one
+  left → today's card), toast "Exit order placed for Order 1 · 50 qty". Exit Now / Exit All and Set / Manage TPSL go
+  where they go on fno-48 (the explanatory sheet; the order pad's TPSL sheet).
+- **Drawn to the Figma cards** (6980:12272, 6994:20195, 6980:16383, 6994:19017, 7012:22347, sheet 6980:17155): sizes,
+  spacing, radii and colours as Figma, in L3 tokens. Figma's older D2 text (Bold / SemiBold / Medium) maps to L3 Heading
+  (750) / Label (650) / Description (500) — L3 has no 600 / 700 weights. #393939 / #868686 are L3 charcoal 700 / 500
+  (`--app-fno-avg-text` / `--app-fno-avg-muted`), the timeline line green 200, the card shadow Figma's 0 0 12 (local
+  tokens). Icons are Figma's own SVGs (`positions/assets/avg-*.svg`) through L3 MaskIcon. Order rows in Option 2 and the
+  sheet are L3 ListCell; buttons are L3 Button Small (32), the outlined / black "Pills" with Bold 12 labels.
+- **L3 gaps (Avg position):** a text step for #393939 and #868686; an all-round card shadow; a button in ListCell's right
+  slot (it is an icon box — the slot is widened here); BottomSheetHeader with a value beside the heading and a second
+  justified line (the sheet lays its header out itself).
+- **Open question for the backend:** an order's P&L here is (LTP − its buy price) × qty. Brokers book a partial exit
+  against the average price, so the booked P&L can differ from the row.
+
 #### Strategies (fno-15, 16)
 
 - Shortcuts (as Equity), then a full-width **pill group Equity / Commodities** (fno-15 / fno-16).
@@ -619,6 +666,8 @@ The source uses old D2 controls alongside L3; their code equivalents are L3 comp
 - Shared `Sheet` gained a `utility` slot (the keypad under the footer).
 
 ### Changelog
+- 2026-11-27 — Avg position cards matched to the Figma cards: type, colours, spacing and Figma's icons (L3 tokens).
+- 2026-11-27 — **Avg position**: Figma's 4 options for a position bought more than once, on the Positions page (fno-54 … 66) — only the card changes.
 - 2026-11-27 — US Markets banner follows the prototype's Market setting (US market): Live (green pulsing dot, as before) · Closed / Holiday (CLOSED, when it opens) · Coming soon (light-blue COMING SOON tag, "US Stocks, coming soon").
 - 2026-11-27 — F&O order pad laid out like the live app (types left · validity right, quantity card with Stepper, price cards, Set TPSL right; the centred amount and +lot chips removed). New TPSL sheet from Positions (fno-52, 53): TP/SL per lot quantity as several orders, each a grey panel; one compact card per leg, no on/off switch (empty = not set); typed prices from the keypad; trailing stop loss with a tooltip.
 - 2026-11-27 — New Positions page (fno-48 … 51): Total Returns card (₹/% switch, square D/W/M/Y, week days with an eye that greys them), Market Indices and Your Positions in a white body with rounded top corners, position cards with Set / Manage TPSL + Exit Now and a green TP/SL strip, a collapsed total under the tabs on scroll, Orders by day (Open · History, All Orders + filter). Top bar hairline only once scrolled. F&O navbar Positions tab and the home P&L arrow open it.
@@ -8822,6 +8871,28 @@ function addMinutes(start: string, add: number) {
   "positions.tpslQty": "Qty {qty}/{qty}",
   "positions.tpslOn": "TP and TSL set",
   "positions.exit": "Exit Now",
+  "avg.positions": "{count} Positions",
+  "avg.suborders": "{count} suborders",
+  "avg.ordersIn": "{count} orders in this position",
+  "avg.tpsl": "TP/SL",
+  "avg.add": "Add",
+  "avg.qty": "Qty",
+  "avg.tpslQty": "TPSL: {qty}/{qty}",
+  "avg.editTpsl": "Edit TP/SL",
+  "avg.exitAll": "Exit All",
+  "avg.exit": "Exit",
+  "avg.exitOrder": "Exit {order}",
+  "avg.orderQty": "{qty} Qty @ {price}",
+  "avg.nudge": "Protect this position with TP/SL",
+  "avg.sheetQty": "Qty {qty}",
+  "avg.sheetLtp": "LTP: {ltp}",
+  "avg.sheetDock": "Orders actions",
+  "avg.okay": "Okay",
+  "avg.orderQtyLower": "{qty} qty @ {price}",
+  "avg.tpslColon": "TP/SL: ",
+  "avg.tpslSpacedColon": "TP/SL : ",
+  "avg.tpslLegs": "TP {tp} • TSL {tsl}",
+  "avg.exitOrderDone": "Exit order placed for {order} · {qty} qty",
   "positions.state.open": "open",
   "positions.state.exited": "exited",
   "positions.empty.title": "No positions yet",
@@ -9176,6 +9247,7 @@ import type { Segment } from './strategies/data'
 import { noSignalFilter, sampleSignalFilter, scalperPosition } from './data'
 import { Scalper } from './screens/Scalper'
 import { Positions, type OrdersView, type PositionsTab } from './positions/screens/Positions'
+import type { AvgOption } from './positions/components/AvgPositionCard'
 import { SplashScreen } from '../../shared/ui/Splash'
 import { markMove } from '../../shared/prototype'
 
@@ -9198,7 +9270,7 @@ type HomeOptions = { scrollTo?: HomePart; product?: Product; segment?: Segment; 
 const home = (go: Go, scrollTo?: HomePart, options: HomeOptions = {}) => <Home scrollTo={scrollTo} product={options.product} segment={options.segment} picker={options.picker} onProduct={(product, segment) => go(tabScreen(product, segment))} onCommodity={() => go('fno-12')} onAsset={() => go('fno-21')} onExpiries={() => go('fno-38')} onHome={() => go('stocks-01')} onSearch={() => go('search-25')} onProfile={() => go('profile-01')} onWallet={() => go('deposit-01')} onDash={() => go('dash-02')} onUsStocks={() => go('stocks-09')} onOptions={() => go('search-26')} onFutures={() => go('search-27')} onChain={() => go('fno-17')} onScalper={() => openScalper(go)} onPositions={() => go('fno-48')} />
 
 /** F&O Positions: the navbar's Positions tab — Positions or Orders, one page. */
-const positionsPage = (go: Go, tab: PositionsTab = 'positions', options: { ordersView?: OrdersView; scrolled?: boolean } = {}) => <Positions tab={tab} ordersView={options.ordersView} scrolled={options.scrolled} onHome={() => go('stocks-01')} onFno={() => go('fno-01')} onChain={() => go('fno-17')} onScalper={() => openScalper(go)} onSearch={() => go('search-25')} onWallet={() => go('deposit-01')} onWatchlist={() => { markMove('market-11', 'forward'); go('market-11') }} onTpsl={(p) => go(p.tp === undefined ? 'fno-52' : 'fno-53')} />
+const positionsPage = (go: Go, tab: PositionsTab = 'positions', options: { ordersView?: OrdersView; scrolled?: boolean; avg?: AvgOption; avgTpsl?: boolean; avgExpanded?: boolean; avgSheet?: boolean } = {}) => <Positions tab={tab} ordersView={options.ordersView} scrolled={options.scrolled} avg={options.avg} avgTpsl={options.avgTpsl} avgExpanded={options.avgExpanded} avgSheet={options.avgSheet} onHome={() => go('stocks-01')} onFno={() => go('fno-01')} onChain={() => go('fno-17')} onScalper={() => openScalper(go)} onSearch={() => go('search-25')} onWallet={() => go('deposit-01')} onWatchlist={() => { markMove('market-11', 'forward'); go('market-11') }} onTpsl={(p) => go(p.tp === undefined ? 'fno-52' : 'fno-53')} />
 
 export const fno: Flow = {
   id: 'fno', title: 'F&O',
@@ -9217,6 +9289,7 @@ export const fno: Flow = {
     { id: 'chain', title: 'Option chain' },
     { id: 'scalper', title: 'Scalper' },
     { id: 'positions', title: 'Positions' },
+    { id: 'avg', title: 'Avg position (4 options)' },
     { id: 'asset', title: 'Contracts & asset page' },
     { id: 'order', title: 'Order pad' },
   ],
@@ -9247,6 +9320,19 @@ export const fno: Flow = {
     { id: 'fno-52', section: 'positions', group: 'tpsl', name: 'Order pad · TPSL sheet (Set)', figma: '', badge: 'new', note: 'Set TPSL on an open position (GOLDM FEB FUT) lands on the F&O order pad — the position’s contract, Sell to exit it — with the TPSL sheet open (live app, 27 Nov; no Figma frame). F&O TP/SL is set per quantity, in whole lots: Order (Avg. Buy) with Quantity ⇕ (lot hint, stepper of one lot), Take Profit at Mkt ⇄ Lmt and Stop Loss (price typed or a % from the average buy, Est. Profit / Est. Loss), + Add new TP/SL for another order on part of the position (Remove from Order 2), “Combined qty exceeds total qty” when the orders cover more than is held, TP above / SL below the LTP, Trailing stop loss. Laid out like the stocks TP/SL sheet (header, one price card per leg with its Switch, prices typed from the keypad). Footer: Apply (needs a valid qty and a TP or SL on every order). Closing the sheet leaves the pad; Set TPSL reopens it.', render: (go) => <OrderPad side="sell" position={tpslGoldm} tpslOpen onBack={() => backOr(go, 'fno-48')} /> },
     { id: 'fno-53', section: 'positions', group: 'tpsl', name: 'Order pad · TPSL sheet (Manage)', figma: '', badge: 'new', note: 'Manage TPSL (or the green strip’s Qty ›) on NIFTY 25600 Put, 2 lots: the sheet prefilled with what’s set — TP ₹138.50, SL ₹124.00, trailing on. Add a second order to split the 2 lots between two TP/SL pairs.', render: (go) => <OrderPad side="sell" product="intraday" position={tpslPositionSet} tpslOpen onBack={() => backOr(go, 'fno-48')} /> },
     { id: 'fno-51', section: 'positions', group: 'positions', name: 'Orders · Open', figma: '', badge: 'new', tab: true, note: 'Orders waiting to go through, with their limit price; none → the L3 empty state.', render: (go) => positionsPage(go, 'orders', { ordersView: 'open' }) },
+    { id: 'fno-54', section: 'avg', group: 'avg', badge: 'new', tab: true, name: 'Avg position · Option 1 · 3 Positions + TPSL nudge', figma: '6980:11985', note: "Option 1: “3 Positions” (layers) replaces Set TPSL and opens the orders sheet; with no TP / TSL a light-blue strip “Protect this position with TPSL · Add ›”. Only the averaged position’s card changes; the rest of the page is fno-48. NIFTY 25600 Put was bought three times (50 each at ₹133.10, ₹127.20, ₹121.30), averaged to ₹127.20, Qty 150. TP / TSL always cover the whole position. Exiting one order drops it, works Qty and Avg out again from what’s left (one left → today’s card) and shows a toast. Exit Now / Exit All and Set / Manage TPSL go where they go on fno-48.", render: (go) => positionsPage(go, 'positions', { avg: '1', avgTpsl: false }) },
+    { id: 'fno-55', section: 'avg', group: 'avg', badge: 'new', tab: true, name: 'Avg position · Option 1 · TPSL set (green strip)', figma: '6980:12730', note: "Option 1 with TP / TSL set: the page’s green strip. Only the averaged position’s card changes; the rest of the page is fno-48. NIFTY 25600 Put was bought three times (50 each at ₹133.10, ₹127.20, ₹121.30), averaged to ₹127.20, Qty 150. TP / TSL always cover the whole position. Exiting one order drops it, works Qty and Avg out again from what’s left (one left → today’s card) and shows a toast. Exit Now / Exit All and Set / Manage TPSL go where they go on fno-48.", render: (go) => positionsPage(go, 'positions', { avg: '1' }) },
+    { id: 'fno-56', section: 'avg', group: 'avg', badge: 'new', tab: true, name: 'Avg position · Option 1 · orders sheet (list)', figma: '6980:12777', note: "“3 Positions” → sheet: the position and Qty, its P&L over LTP; a card per order (Order 1 · time · P&L · 50 Qty @ ₹133.10 · Exit); Exit All in the dock. Only the averaged position’s card changes; the rest of the page is fno-48. NIFTY 25600 Put was bought three times (50 each at ₹133.10, ₹127.20, ₹121.30), averaged to ₹127.20, Qty 150. TP / TSL always cover the whole position. Exiting one order drops it, works Qty and Avg out again from what’s left (one left → today’s card) and shows a toast. Exit Now / Exit All and Set / Manage TPSL go where they go on fno-48.", render: (go) => positionsPage(go, 'positions', { avg: '1', avgSheet: true }) },
+    { id: 'fno-57', section: 'avg', group: 'avg', badge: 'new', tab: true, name: 'Avg position · Option 1 · orders sheet (timeline)', figma: '6980:16681', note: "The sheet with the orders on a green timeline; Exit All beside the P&L, Okay in the dock. Only the averaged position’s card changes; the rest of the page is fno-48. NIFTY 25600 Put was bought three times (50 each at ₹133.10, ₹127.20, ₹121.30), averaged to ₹127.20, Qty 150. TP / TSL always cover the whole position. Exiting one order drops it, works Qty and Avg out again from what’s left (one left → today’s card) and shows a toast. Exit Now / Exit All and Set / Manage TPSL go where they go on fno-48.", render: (go) => positionsPage(go, 'positions', { avg: '1-timeline', avgSheet: true }) },
+    { id: 'fno-58', section: 'avg', group: 'avg', badge: 'new', tab: true, name: 'Avg position · Option 1 · TPSL inside card (+ Add)', figma: '6994:20194', note: "“TP/SL inside card”: no strip; P&L and % top right; figures Avg. price · LTP · TPSL with “+ Add”. Only the averaged position’s card changes; the rest of the page is fno-48. NIFTY 25600 Put was bought three times (50 each at ₹133.10, ₹127.20, ₹121.30), averaged to ₹127.20, Qty 150. TP / TSL always cover the whole position. Exiting one order drops it, works Qty and Avg out again from what’s left (one left → today’s card) and shows a toast. Exit Now / Exit All and Set / Manage TPSL go where they go on fno-48.", render: (go) => positionsPage(go, 'positions', { avg: '1-inside', avgTpsl: false }) },
+    { id: 'fno-59', section: 'avg', group: 'avg', badge: 'new', tab: true, name: 'Avg position · Option 1 · TPSL inside card (set)', figma: '7012:20238', note: "TP / TSL set: the column shows how far each sits from the average (8.9% • 2.5%) with ✎. Only the averaged position’s card changes; the rest of the page is fno-48. NIFTY 25600 Put was bought three times (50 each at ₹133.10, ₹127.20, ₹121.30), averaged to ₹127.20, Qty 150. TP / TSL always cover the whole position. Exiting one order drops it, works Qty and Avg out again from what’s left (one left → today’s card) and shows a toast. Exit Now / Exit All and Set / Manage TPSL go where they go on fno-48.", render: (go) => positionsPage(go, 'positions', { avg: '1-inside' }) },
+    { id: 'fno-60', section: 'avg', group: 'avg', badge: 'new', tab: true, name: 'Avg position · Option 2 · 3 suborders (closed)', figma: '6980:14707', note: "Option 2: Avg. price · Qty · Returns; a grey “3 suborders ⌄” box in the card; Set TPSL (TPSL: 150/150 ✎ once set) · Exit Now. Drawn like Figma’s open frame (NSE / Intraday, Returns) so the card keeps its shape when it opens. Only the averaged position’s card changes; the rest of the page is fno-48. NIFTY 25600 Put was bought three times (50 each at ₹133.10, ₹127.20, ₹121.30), averaged to ₹127.20, Qty 150. TP / TSL always cover the whole position. Exiting one order drops it, works Qty and Avg out again from what’s left (one left → today’s card) and shows a toast. Exit Now / Exit All and Set / Manage TPSL go where they go on fno-48.", render: (go) => positionsPage(go, 'positions', { avg: '2', avgTpsl: false }) },
+    { id: 'fno-61', section: 'avg', group: 'avg', badge: 'new', tab: true, name: 'Avg position · Option 2 · 3 suborders (open)', figma: '6980:16096', note: "Open: the box lists the orders split by hairlines, each with an exit icon; Exit Now reads Exit All. Only the averaged position’s card changes; the rest of the page is fno-48. NIFTY 25600 Put was bought three times (50 each at ₹133.10, ₹127.20, ₹121.30), averaged to ₹127.20, Qty 150. TP / TSL always cover the whole position. Exiting one order drops it, works Qty and Avg out again from what’s left (one left → today’s card) and shows a toast. Exit Now / Exit All and Set / Manage TPSL go where they go on fno-48.", render: (go) => positionsPage(go, 'positions', { avg: '2', avgExpanded: true }) },
+    { id: 'fno-62', section: 'avg', group: 'avg', badge: 'new', tab: true, name: 'Avg position · Option 3 · orders bar (closed)', figma: '7012:22662', note: "Option 3: no logo; a grey “3 orders in this position ⌄” bar along the card’s foot; Set TPSL / TPSL: 150/150 ✎ · Exit All ⇥. Only the averaged position’s card changes; the rest of the page is fno-48. NIFTY 25600 Put was bought three times (50 each at ₹133.10, ₹127.20, ₹121.30), averaged to ₹127.20, Qty 150. TP / TSL always cover the whole position. Exiting one order drops it, works Qty and Avg out again from what’s left (one left → today’s card) and shows a toast. Exit Now / Exit All and Set / Manage TPSL go where they go on fno-48.", render: (go) => positionsPage(go, 'positions', { avg: '3', avgTpsl: false }) },
+    { id: 'fno-63', section: 'avg', group: 'avg', badge: 'new', tab: true, name: 'Avg position · Option 3 · orders bar (open)', figma: '6994:18730', note: "Open: white order cards under the bar, each with an exit icon. Only the averaged position’s card changes; the rest of the page is fno-48. NIFTY 25600 Put was bought three times (50 each at ₹133.10, ₹127.20, ₹121.30), averaged to ₹127.20, Qty 150. TP / TSL always cover the whole position. Exiting one order drops it, works Qty and Avg out again from what’s left (one left → today’s card) and shows a toast. Exit Now / Exit All and Set / Manage TPSL go where they go on fno-48.", render: (go) => positionsPage(go, 'positions', { avg: '3', avgExpanded: true }) },
+    { id: 'fno-64', section: 'avg', group: 'avg', badge: 'new', tab: true, name: 'Avg position · Option 3 · orders bar (open, timeline)', figma: '6994:19335', note: "The same on a green timeline. Only the averaged position’s card changes; the rest of the page is fno-48. NIFTY 25600 Put was bought three times (50 each at ₹133.10, ₹127.20, ₹121.30), averaged to ₹127.20, Qty 150. TP / TSL always cover the whole position. Exiting one order drops it, works Qty and Avg out again from what’s left (one left → today’s card) and shows a toast. Exit Now / Exit All and Set / Manage TPSL go where they go on fno-48.", render: (go) => positionsPage(go, 'positions', { avg: '3-timeline', avgExpanded: true }) },
+    { id: 'fno-65', section: 'avg', group: 'avg', badge: 'new', tab: true, name: 'Avg position · Option 4 · orders bar (closed)', figma: '6994:18235', note: "Option 4: the bar is light blue; Set TPSL (Edit TPSL once set) · Exit Now. Only the averaged position’s card changes; the rest of the page is fno-48. NIFTY 25600 Put was bought three times (50 each at ₹133.10, ₹127.20, ₹121.30), averaged to ₹127.20, Qty 150. TP / TSL always cover the whole position. Exiting one order drops it, works Qty and Avg out again from what’s left (one left → today’s card) and shows a toast. Exit Now / Exit All and Set / Manage TPSL go where they go on fno-48.", render: (go) => positionsPage(go, 'positions', { avg: '4', avgTpsl: false }) },
+    { id: 'fno-66', section: 'avg', group: 'avg', badge: 'new', tab: true, name: 'Avg position · Option 4 · orders open (timeline)', figma: '7012:22060', note: "Open: the orders sit between the buttons and the bar on a timeline, each with P&L and %, Qty @ price and an outlined Exit. Only the averaged position’s card changes; the rest of the page is fno-48. NIFTY 25600 Put was bought three times (50 each at ₹133.10, ₹127.20, ₹121.30), averaged to ₹127.20, Qty 150. TP / TSL always cover the whole position. Exiting one order drops it, works Qty and Avg out again from what’s left (one left → today’s card) and shows a toast. Exit Now / Exit All and Set / Manage TPSL go where they go on fno-48.", render: (go) => positionsPage(go, 'positions', { avg: '4', avgExpanded: true }) },
     { id: 'fno-08', section: 'home', group: 'home', name: 'Commodities home', figma: '6754:63637', tab: true, note: 'The Commodities product tab. Gold / Silver / Crude Oil / Natural Gas shortcuts open the Lot summary (Gold Summary). The chart’s instrument selector (“Gold”) opens the contract picker. Popular commodities: Options ⇕ Futures switch; Futures Heatmap: Bullion / Energy / Metals.', render: (go) => home(go, undefined, { product: 'commodities' }) },
     { id: 'fno-09', section: 'home', group: 'home', name: 'Commodities home · heatmap & Smart Futures', figma: '6754:63637', tab: true, note: 'The same long screen, scrolled to the Futures Heatmap.', render: (go) => home(go, 'heatmap', { product: 'commodities' }) },
     { id: 'fno-10', section: 'home', group: 'home', name: 'Contract picker · Commodities', figma: '6754:65111', tab: true, note: 'From the chart’s “Gold ⇕”. Equity / Commodities tabs in the sheet header’s bottom slot, commodity chips (All, Gold, Silver …) under them; contracts grouped by commodity as radio rows (Gold Mini tagged “Lowest Margin”). Picking one updates the chart and closes the sheet.', render: (go) => home(go, undefined, { product: 'commodities', picker: 'commodities' }) },
@@ -10851,6 +10937,1037 @@ export function TpslSheet({ position: p, onApply, onClose }: { position: TpslPos
 }
 ```
 
+### `src/flows/fno/positions/assets/avg-add.svg`
+
+```tsx
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="D2 &#226;&#134;&#146; add">
+<path id="Vector" d="M9 6.5H6.5V9C6.5 9.275 6.275 9.5 6 9.5C5.725 9.5 5.5 9.275 5.5 9V6.5H3C2.725 6.5 2.5 6.275 2.5 6C2.5 5.725 2.725 5.5 3 5.5H5.5V3C5.5 2.725 5.725 2.5 6 2.5C6.275 2.5 6.5 2.725 6.5 3V5.5H9C9.275 5.5 9.5 5.725 9.5 6C9.5 6.275 9.275 6.5 9 6.5Z" fill="#161616" style="fill:#161616;fill:color(display-p3 0.0863 0.0863 0.0863);fill-opacity:1;"/>
+</g>
+</svg>
+```
+
+### `src/flows/fno/positions/assets/avg-arrow-fwd.svg`
+
+```tsx
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="arrow_forward_ios_24dp_E3E3E3_FILL1_wght400_GRAD0_opsz24 1">
+<path id="Vector" d="M7.23731 6L3.56231 2.325C3.43731 2.2 3.37689 2.05209 3.38106 1.88125C3.38523 1.71042 3.44981 1.5625 3.57481 1.4375C3.69981 1.3125 3.84773 1.25 4.01856 1.25C4.18939 1.25 4.33731 1.3125 4.46231 1.4375L8.29981 5.2875C8.39981 5.3875 8.47481 5.5 8.52481 5.625C8.57481 5.75 8.59981 5.875 8.59981 6C8.59981 6.125 8.57481 6.25 8.52481 6.375C8.47481 6.5 8.39981 6.6125 8.29981 6.7125L4.44981 10.5625C4.32481 10.6875 4.17898 10.7479 4.01231 10.7438C3.84564 10.7396 3.69981 10.675 3.57481 10.55C3.44981 10.425 3.38731 10.2771 3.38731 10.1063C3.38731 9.93542 3.44981 9.7875 3.57481 9.6625L7.23731 6Z" fill="#161616" style="fill:#161616;fill:color(display-p3 0.0863 0.0863 0.0863);fill-opacity:1;"/>
+</g>
+</svg>
+```
+
+### `src/flows/fno/positions/assets/avg-chevron-down.svg`
+
+```tsx
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="icon/chevron-down">
+<path id="Vector" d="M4 6L8 10L12 6" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" stroke="#393939" style="stroke:#393939;stroke:color(display-p3 0.2235 0.2235 0.2235);stroke-opacity:1;"/>
+</g>
+</svg>
+```
+
+### `src/flows/fno/positions/assets/avg-chevron-up.svg`
+
+```tsx
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="icon/chevron-up">
+<path id="Vector" d="M4 10L8 6L12 10" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" stroke="#393939" style="stroke:#393939;stroke:color(display-p3 0.2235 0.2235 0.2235);stroke-opacity:1;"/>
+</g>
+</svg>
+```
+
+### `src/flows/fno/positions/assets/avg-edit-02.svg`
+
+```tsx
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="edit-02">
+<path id="Icon" d="M8.96575 4.6344L11.3657 7.0344M2.96579 13.0344L5.87645 12.4479C6.03096 12.4168 6.17284 12.3407 6.28427 12.2292L12.8001 5.70985C13.1124 5.39728 13.1122 4.89062 12.7996 4.57832L11.4193 3.1996C11.1068 2.88742 10.6004 2.88763 10.2881 3.20007L3.77163 9.72011C3.66042 9.83138 3.58449 9.97297 3.55332 10.1272L2.96579 13.0344Z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" stroke="black" style="stroke:black;stroke-opacity:1;"/>
+</g>
+</svg>
+```
+
+### `src/flows/fno/positions/assets/avg-exit.svg`
+
+```tsx
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="icon-r">
+<path id="Vector" d="M7.19333 10.86C7.45333 11.12 7.87333 11.12 8.13333 10.86L10.5267 8.46667C10.7867 8.20667 10.7867 7.78667 10.5267 7.52667L8.13333 5.13333C7.87333 4.87333 7.45333 4.87333 7.19333 5.13333C6.93333 5.39333 6.93333 5.81333 7.19333 6.07333L8.44667 7.33333H2.66667C2.3 7.33333 2 7.63333 2 8C2 8.36667 2.3 8.66667 2.66667 8.66667H8.44667L7.19333 9.92C6.93333 10.18 6.94 10.6067 7.19333 10.86ZM12.6667 2H3.33333C2.59333 2 2 2.6 2 3.33333V5.33333C2 5.7 2.3 6 2.66667 6C3.03333 6 3.33333 5.7 3.33333 5.33333V4C3.33333 3.63333 3.63333 3.33333 4 3.33333H12C12.3667 3.33333 12.6667 3.63333 12.6667 4V12C12.6667 12.3667 12.3667 12.6667 12 12.6667H4C3.63333 12.6667 3.33333 12.3667 3.33333 12V10.6667C3.33333 10.3 3.03333 10 2.66667 10C2.3 10 2 10.3 2 10.6667V12.6667C2 13.4 2.6 14 3.33333 14H12.6667C13.4 14 14 13.4 14 12.6667V3.33333C14 2.6 13.4 2 12.6667 2Z" fill="#161616" style="fill:#161616;fill:color(display-p3 0.0863 0.0863 0.0863);fill-opacity:1;"/>
+</g>
+</svg>
+```
+
+### `src/flows/fno/positions/assets/avg-layers.svg`
+
+```tsx
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="icon/layers">
+<path id="Vector" d="M8 1.8L14.5 5L8 8.2L1.5 5L8 1.8Z" stroke-width="1.3" stroke-linejoin="round" stroke="black" style="stroke:black;stroke-opacity:1;"/>
+<path id="Vector_2" d="M1.5 8L8 11.2L14.5 8" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" stroke="black" style="stroke:black;stroke-opacity:1;"/>
+<path id="Vector_3" d="M1.5 11L8 14.2L14.5 11" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" stroke="black" style="stroke:black;stroke-opacity:1;"/>
+</g>
+</svg>
+```
+
+### `src/flows/fno/positions/assets/avg-shield-plus.svg`
+
+```tsx
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="icon/shield-plus">
+<path id="Vector" d="M8 1.6L13.2 3.5V7.6C13.2 10.7 11 13.2 8 14.4C5 13.2 2.8 10.7 2.8 7.6V3.5L8 1.6Z" stroke-width="1.3" stroke-linejoin="round" stroke="#393939" style="stroke:#393939;stroke:color(display-p3 0.2235 0.2235 0.2235);stroke-opacity:1;"/>
+<path id="Vector_2" d="M8 5.6V10M5.8 7.8H10.2" stroke-width="1.3" stroke-linecap="round" stroke="#393939" style="stroke:#393939;stroke:color(display-p3 0.2235 0.2235 0.2235);stroke-opacity:1;"/>
+</g>
+</svg>
+```
+
+### `src/flows/fno/positions/assets/avg-tick.svg`
+
+```tsx
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="tick-circle-svgrepo-com 1">
+<path id="Vector" d="M7.99968 1.33398C6.68114 1.33398 5.3922 1.72498 4.29588 2.45752C3.19955 3.19006 2.34506 4.23125 1.84048 5.44943C1.3359 6.6676 1.20387 8.00805 1.46111 9.30125C1.71834 10.5945 2.35328 11.7823 3.28563 12.7147C4.21798 13.647 5.40587 14.282 6.69908 14.5392C7.99228 14.7965 9.33273 14.6644 10.5509 14.1598C11.7691 13.6553 12.8103 12.8008 13.5428 11.7045C14.2753 10.6081 14.6663 9.31919 14.6663 8.00065C14.6663 7.12517 14.4939 6.25827 14.1589 5.44943C13.8238 4.64059 13.3328 3.90566 12.7137 3.28661C12.0947 2.66755 11.3597 2.17649 10.5509 1.84145C9.74206 1.50642 8.87516 1.33398 7.99968 1.33398ZM11.7837 6.82532L7.78368 10.492C7.65703 10.6081 7.49044 10.6709 7.31866 10.6671C7.14688 10.6634 6.98317 10.5935 6.86168 10.472L4.86168 8.47198C4.798 8.41049 4.74722 8.33692 4.71228 8.25559C4.67734 8.17425 4.65895 8.08677 4.65818 7.99825C4.65741 7.90973 4.67428 7.82195 4.7078 7.74001C4.74132 7.65808 4.79082 7.58365 4.85341 7.52105C4.91601 7.45846 4.99044 7.40896 5.07237 7.37544C5.15431 7.34192 5.24209 7.32505 5.33061 7.32582C5.41913 7.32659 5.50661 7.34498 5.58795 7.37992C5.66928 7.41486 5.74285 7.46564 5.80434 7.52932L7.35301 9.07798L10.8823 5.84265C11.0127 5.72313 11.1851 5.66026 11.3618 5.66789C11.5384 5.67552 11.7048 5.75301 11.8243 5.88332C11.9439 6.01363 12.0067 6.18608 11.9991 6.36274C11.9915 6.5394 11.914 6.70579 11.7837 6.82532Z" fill="#0C7A46" style="fill:#0C7A46;fill:color(display-p3 0.0471 0.4784 0.2745);fill-opacity:1;"/>
+</g>
+</svg>
+```
+
+### `src/flows/fno/positions/components/AvgPositionCard.module.css`
+
+```css
+/* Avg position cards (AvgPositionCard.tsx), Figma 8HEY699cTPiWiQeAVX3122 6980:7204 — sizes, spacing and type as the
+   Figma cards. Figma's D2 Bold / SemiBold / Medium text → L3 Heading (750) / Label (650) / Description (500). */
+
+/* ── The card: border/light, radius 16, Figma's all-round shadow; 12 at the top and sides, 12 under the buttons (16 between
+   blocks). With a strip or orders bar at its foot (Options 1 and 4) the body ends 16 above it. ── */
+.card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--l3-surface-primary);
+  border: 1px solid var(--l3-border-light);
+  border-radius: var(--l3-radius-16);
+  box-shadow: var(--app-fno-avg-card-shadow);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--l3-spacing-16);
+  padding: var(--l3-spacing-12);
+}
+
+.card[data-foot] > .body {
+  padding-bottom: var(--l3-spacing-16);
+}
+
+/* ── Header: [avatar 8] name over the line · venue (2 apart) ── */
+.header {
+  display: flex;
+  align-items: center;
+  gap: var(--l3-spacing-08);
+}
+
+.name,
+.venue {
+  display: flex;
+  flex-direction: column;
+  gap: var(--l3-spacing-02);
+  white-space: nowrap;
+}
+
+.name {
+  flex: 1;
+  min-width: 0;
+}
+
+.venue {
+  align-items: flex-end;
+  text-align: right;
+}
+
+/* Option 1 (6980:12277): a 32 circle, "N" in Label/16 content secondary. */
+.avatar32.avatar32 {
+  flex: none;
+  background: var(--l3-surface-primary);
+  box-shadow: inset 0 0 0 1px var(--l3-border-light);
+  color: var(--l3-content-secondary);
+}
+
+.avatar32.avatar32 * {
+  font: var(--l3-text-label-16);
+}
+
+/* Option 2 / inside (6980:16387): a 40 circle, "N" SemiBold 20 in #393939. */
+.avatar40.avatar40 {
+  flex: none;
+  background: var(--l3-surface-primary);
+  box-shadow: inset 0 0 0 1px var(--l3-border-light);
+  color: var(--app-fno-avg-text);
+}
+
+.avatar40.avatar40 * {
+  font: var(--l3-text-heading-20);
+  font-weight: var(--l3-font-weight-650);
+}
+
+/* Older card (Options 1, 3, 4): name Label/14 content primary; line Description/12 #868686; NSE Description/12 content
+   secondary over Intraday SemiBold 12 #393939. */
+.title {
+  overflow: hidden;
+  font: var(--l3-text-label-14);
+  color: var(--l3-content-primary);
+  text-overflow: ellipsis;
+}
+
+.sub {
+  font: var(--l3-text-description-12);
+  color: var(--app-fno-avg-muted);
+}
+
+.exchange {
+  font: var(--l3-text-description-12);
+  color: var(--l3-content-secondary);
+}
+
+.product {
+  font: var(--l3-text-label-12);
+  color: var(--app-fno-avg-text);
+}
+
+/* Newer card (Option 2, inside): name Bold 14 #393939; line and product SemiBold 12 #868686; NSE Bold 14 content primary. */
+.titleBold {
+  overflow: hidden;
+  font: var(--l3-text-heading-14);
+  color: var(--app-fno-avg-text);
+  text-overflow: ellipsis;
+}
+
+.subLabel {
+  font: var(--l3-text-label-12);
+  color: var(--app-fno-avg-muted);
+}
+
+.exchangeBold {
+  font: var(--l3-text-heading-14);
+  color: var(--l3-content-primary);
+}
+
+/* P&L top right (inside): Label/14, its % SemiBold 12 under it, both in the gain / loss colour. */
+.pnl14 {
+  font: var(--l3-text-label-14);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.pnlPct {
+  font: var(--l3-text-label-12);
+}
+
+.pnl12 {
+  font: var(--l3-text-label-12);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+:is(.pnl14, .pnlPct, .pnl12, .figValue, .figValueSmall)[data-tone='up'] {
+  color: var(--l3-content-accent-success-default);
+}
+
+:is(.pnl14, .pnlPct, .pnl12, .figValue, .figValueSmall)[data-tone='down'] {
+  color: var(--l3-content-accent-error-default);
+}
+
+/* Figma Line 419: a solid hairline in border/light. */
+.rule {
+  width: 100%;
+  margin: 0;
+  border: 0;
+  border-top: 1px solid var(--l3-border-light);
+}
+
+/* ── Figures: three columns, label 4 over value ── */
+.figures {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--l3-spacing-08);
+}
+
+.figure {
+  display: flex;
+  flex-direction: column;
+  gap: var(--l3-spacing-04);
+  white-space: nowrap;
+}
+
+.figure[data-align='center'] {
+  align-items: center;
+}
+
+.figure[data-align='end'] {
+  align-items: flex-end;
+}
+
+.figLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--l3-spacing-04);
+  font: var(--l3-text-description-12);
+  color: var(--app-fno-avg-muted);
+}
+
+/* Older card: Bold 14 #393939. Newer card: L3 Label/12 #393939. */
+.figValue {
+  font: var(--l3-text-heading-14);
+  color: var(--app-fno-avg-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.figValueSmall {
+  font: var(--l3-text-label-12);
+  color: var(--app-fno-avg-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.inlineEdit,
+.tagButton {
+  display: inline-flex;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--l3-content-primary);
+  cursor: pointer;
+}
+
+/* ── Buttons: two 32-tall, radius 8, 12 apart ── */
+.actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--l3-spacing-12);
+}
+
+/* Figma "Pills" (outlined / black): Bold 12, 16 at the sides, 4 to the icon. */
+.pill.pill[data-size] {
+  --btn-height: var(--l3-size-32);
+  --btn-padding-inline: var(--l3-spacing-16);
+  border-radius: var(--l3-radius-08);
+}
+
+.pill.pill,
+.pill.pill * {
+  font: var(--l3-text-heading-12);
+}
+
+/* Option 1's Exit Now is the L3 Small primary (Label/12, raised). */
+.l3Exit.l3Exit[data-size] {
+  --btn-height: var(--l3-size-32);
+}
+
+.qtyTotal {
+  color: var(--l3-content-tertiary);
+}
+
+/* ── Icons: Figma's SVGs at 16 / 12 ── */
+.glyph {
+  display: inline-flex;
+  flex: none;
+  width: var(--l3-icon-size-16);
+  height: var(--l3-icon-size-16);
+}
+
+.glyph[data-size='12'] {
+  width: var(--l3-icon-size-12);
+  height: var(--l3-icon-size-12);
+}
+
+.tick {
+  color: var(--l3-content-accent-success-default);
+}
+
+/* ── Strips at the card's foot (Option 1 TP/SL row and nudge, Option 4 orders bar): 32 tall, 12 at the sides ── */
+.strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--l3-spacing-08);
+  width: 100%;
+  min-height: var(--l3-size-32);
+  padding: var(--l3-spacing-08) var(--l3-spacing-12);
+  border: 0;
+  color: var(--app-fno-avg-text);
+  cursor: pointer;
+}
+
+.strip[data-tone='success'] {
+  background: var(--l3-surface-accent-success-light);
+}
+
+.strip[data-tone='discover'] {
+  background: var(--l3-surface-accent-discover-light);
+}
+
+/* Icon 4 to its text, SemiBold 12 #393939. */
+.toggleLead {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--l3-spacing-04);
+  font: var(--l3-text-label-12);
+  color: var(--app-fno-avg-text);
+  white-space: nowrap;
+}
+
+/* "Qty 150/150 ›" SemiBold 12 content primary; "Add ›" Bold 12; the arrow 12, 3 after (Figma gap 3 → 4). */
+.stripEnd,
+.stripEndBold {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--l3-spacing-04);
+  color: var(--l3-content-primary);
+  white-space: nowrap;
+}
+
+.stripEnd {
+  font: var(--l3-text-label-12);
+}
+
+.stripEndBold {
+  font: var(--l3-text-heading-12);
+}
+
+/* ── Option 2: the suborders box (6980:16411) — border/light, radius 12; head on surface/secondary, 8 × 12 ── */
+.subBox {
+  overflow: hidden;
+  border-radius: var(--l3-radius-12);
+  background: var(--l3-surface-secondary);
+}
+
+.subBox[data-open] {
+  border: 1px solid var(--l3-border-light);
+  background: var(--l3-surface-primary);
+}
+
+.subHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: var(--l3-spacing-08) var(--l3-spacing-12);
+  border: 0;
+  background: var(--l3-surface-secondary);
+  color: var(--l3-content-primary);
+  cursor: pointer;
+}
+
+.subBox[data-open] .subHead {
+  border-bottom: 1px solid var(--l3-border-light);
+}
+
+.subLead {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--l3-spacing-08);
+  font: var(--l3-text-label-12);
+  color: var(--l3-content-primary);
+}
+
+.subRows {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.subRows li + li {
+  border-top: 1px solid var(--l3-border-light);
+}
+
+/* L3 list cell (Figma 6980:17743): 12 all round, 12 between parts; Label/12 label, Description/12 description and caption. */
+.subRow.subRow {
+  min-height: var(--l3-size-32);
+  padding: var(--l3-spacing-12);
+  gap: var(--l3-spacing-12);
+}
+
+.subRow.subRow [class*='label'] {
+  font: var(--l3-text-label-12);
+}
+
+.subRow.subRow [class*='description'],
+.subRow.subRow [class*='caption'] {
+  font: var(--l3-text-description-12);
+}
+
+/* Exit icon button: L3 Tertiary Small, a 32 square (Figma 6980:17740). */
+.exitSquare.exitSquare[data-size] {
+  --btn-height: var(--l3-size-32);
+  --btn-padding-inline: 0;
+  width: var(--l3-size-32);
+  border-radius: var(--l3-radius-08);
+}
+
+/* ── Options 3 and 4: an order's two columns ── */
+.lineName {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--l3-spacing-04);
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.lineTitle {
+  font: var(--l3-text-heading-12);
+  color: var(--app-fno-avg-text);
+}
+
+.lineTime {
+  font: var(--l3-text-description-10);
+  color: var(--app-fno-avg-muted);
+}
+
+.lineFigures {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--l3-spacing-04);
+  white-space: nowrap;
+}
+
+.lineQty {
+  font: var(--l3-text-label-10);
+  color: var(--app-fno-avg-muted);
+}
+
+/* ── Option 3 (6994:19017): the white card overlaps a grey footer by 12; outer border/light, radius 12, elevation low ── */
+.o3 {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--l3-border-light);
+  border-radius: var(--l3-radius-12);
+  box-shadow: var(--l3-shadow-elevation-low);
+}
+
+.o3Top {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--l3-spacing-16);
+  margin-bottom: calc(-1 * var(--l3-spacing-12));
+  padding: var(--l3-spacing-12);
+  background: var(--l3-surface-primary);
+  border-radius: var(--l3-radius-12) var(--l3-radius-12) 0 0;
+}
+
+/* 20 above (12 under the card + 8), 12 below and at the sides; the toggle row and the orders 8 apart. */
+.o3Foot {
+  display: flex;
+  flex-direction: column;
+  gap: var(--l3-spacing-08);
+  padding: var(--l3-spacing-20) var(--l3-spacing-12) var(--l3-spacing-12);
+  background: var(--l3-surface-secondary);
+}
+
+.o3Toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--app-fno-avg-text);
+  cursor: pointer;
+}
+
+.o3Orders {
+  display: flex;
+  flex-direction: column;
+  gap: var(--l3-spacing-08);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.o3Item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--l3-spacing-08);
+}
+
+/* An order: white, border/light, radius 8, 10 × 12, 12 between parts. */
+.o3Order {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: var(--l3-spacing-12);
+  min-width: 0;
+  padding: var(--l3-spacing-10) var(--l3-spacing-12);
+  background: var(--l3-surface-primary);
+  border: 1px solid var(--l3-border-light);
+  border-radius: var(--l3-radius-08);
+}
+
+/* Figma's small exit button: 28 square, border/dark, radius 4.67 → 4, 16 icon. */
+.exitSmall {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: var(--l3-size-28);
+  height: var(--l3-size-28);
+  padding: 0;
+  border: 1px solid var(--l3-border-dark);
+  border-radius: var(--l3-radius-04);
+  background: var(--l3-surface-primary);
+  color: var(--l3-content-primary);
+  cursor: pointer;
+}
+
+/* ── Option 4 (7012:22376): a white footer with a hairline on top; orders on a timeline, then the blue bar ── */
+.o4Foot {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--l3-border-light);
+}
+
+.o4Orders {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0 var(--l3-spacing-12) var(--l3-spacing-04);
+  list-style: none;
+}
+
+.o4Item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--l3-spacing-16);
+  padding-left: var(--l3-spacing-04);
+}
+
+/* Rows 10 above and below, a hairline between them. */
+.o4Order {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: var(--l3-spacing-12);
+  min-width: 0;
+  padding-block: var(--l3-spacing-10);
+}
+
+.o4Item + .o4Item .o4Order {
+  border-top: 1px solid var(--l3-border-light);
+}
+
+/* Figma's "Exit": white, 1 border in near-black, radius 6, 6 × 12, Bold 12 #393939. */
+.exitText {
+  flex: none;
+  padding: var(--l3-spacing-06) var(--l3-spacing-12);
+  border: 1px solid var(--l3-border-dark);
+  border-radius: var(--l3-radius-06);
+  background: var(--l3-surface-primary);
+  font: var(--l3-text-heading-12);
+  color: var(--app-fno-avg-text);
+  cursor: pointer;
+}
+
+/* ── Timelines ── */
+/* Card timeline (Options 3, 4): a 9.6 green dot (≈ 10), the green 200 line joining them. */
+.cardDot {
+  position: relative;
+  z-index: 1;
+  flex: none;
+  width: var(--l3-spacing-10);
+  height: var(--l3-spacing-10);
+  border-radius: var(--l3-radius-full);
+  background: var(--l3-content-accent-success-default);
+}
+
+.o4Item + .o4Item::before,
+.o3Orders[data-timeline] .o3Item + .o3Item::before {
+  content: '';
+  position: absolute;
+  bottom: 50%;
+  left: calc(var(--l3-spacing-04) + var(--l3-spacing-10) / 2);
+  height: 100%;
+  border-left: 1px solid var(--app-fno-avg-timeline);
+}
+
+.o3Orders[data-timeline] .o3Item + .o3Item::before {
+  left: calc(var(--l3-spacing-10) / 2);
+  height: calc(100% + var(--l3-spacing-08));
+}
+
+/* ── Orders sheet (OrdersSheet, 6980:17181): L3 list cell cards 16 apart; the timeline 20 wide, 16 to the cards ── */
+.sheetOrders {
+  display: flex;
+  flex-direction: column;
+  gap: var(--l3-spacing-16);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sheetItem {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--l3-spacing-16);
+}
+
+.sheetItem > :last-child {
+  flex: 1;
+  min-width: 0;
+}
+
+/* A 12 green dot in a 20 success-light halo (Figma Ellipse 6 / 8). */
+.sheetDot {
+  position: relative;
+  z-index: 1;
+  flex: none;
+  width: var(--l3-size-20);
+  height: var(--l3-size-20);
+  border-radius: var(--l3-radius-full);
+  background: radial-gradient(circle, var(--l3-content-accent-success-default) 0 var(--l3-spacing-06), var(--l3-surface-accent-success-light) calc(var(--l3-spacing-06) + 0.5px));
+}
+
+.sheetOrders[data-timeline] .sheetItem + .sheetItem::before {
+  content: '';
+  position: absolute;
+  bottom: 50%;
+  left: calc(var(--l3-size-20) / 2);
+  height: calc(100% + var(--l3-spacing-16));
+  border-left: 1px solid var(--app-fno-avg-timeline);
+}
+
+.sheetRow.sheetRow {
+  gap: var(--l3-spacing-12);
+}
+
+/* L3 ListCell's right slot is an icon box (16 / 24); Figma puts a 32 L3 Button there (the exit), so the slot hugs it.
+   L3 gap: a "button" right slot on list cells. */
+.subRow.subRow > :last-child,
+.sheetRow.sheetRow > :last-child {
+  width: auto;
+  height: auto;
+}
+```
+
+### `src/flows/fno/positions/components/AvgPositionCard.tsx`
+
+```tsx
+// Averaged positions on F&O → Positions — Figma 8HEY699cTPiWiQeAVX3122 6980:7204 "Avg position", Options 1–4, drawn to
+// the Figma cards node for node. A position bought more than once (Order 1, 2, 3) is one card with the averaged figures;
+// each order can be exited on its own, and TP / TSL always cover the whole position.
+//   Option 1        6980:12272 — "3 Positions" → the orders sheet (OrdersSheet). No TPSL: the blue "Protect…" strip;
+//                   set: the green TP/SL row (6980:16464).
+//   Option 1 inside 6994:20195 — P&L and % top right; Avg · LTP · TP/SL (an L3 Tag "+ Add", or TP • SL %).
+//   Option 2        6980:16383 — a "3 suborders" box inside the card; L3 list cells with an exit icon button.
+//   Option 3        6994:19017 — a grey footer "3 orders in this position" under the card; order cards inside it.
+//   Option 4        7012:22347 — a light-blue "3 orders in this position" bar; orders above it on a timeline.
+// Type: Figma's L3 styles as they are; its Bold / SemiBold / Medium text in the older D2 styles maps to the L3 Heading
+// (750) / Label (650) / Description (500) roles — L3 has no 600 / 700. Colours: L3 tokens; Figma's #393939 / #868686
+// (D2 text secondary / quaternary) are L3 charcoal 700 / 500 (local tokens --app-fno-avg-*). Icons: Figma's own SVGs
+// (positions/assets/avg-*.svg) through L3 MaskIcon, so they take the text colour.
+import type { ReactElement, ReactNode } from 'react'
+import { Avatar } from '@l3/components/Avatar'
+import { Button } from '@l3/components/Button'
+import { ListCell } from '@l3/components/ListCell'
+import { MaskIcon } from '@l3/components/MaskIcon'
+import { Stack } from '@l3/components/Stack'
+import { Tag } from '@l3/components/Tag'
+import { formatInr } from '../../../../shared/money'
+import { t } from '../../copy'
+import { orderReturns, orderReturnsPct, positionReturns, positionReturnsPct, type FnoPosition, type PositionOrder } from '../data'
+import { signedInr } from './Cards'
+import addIcon from '../assets/avg-add.svg'
+import arrowIcon from '../assets/avg-arrow-fwd.svg'
+import chevronDownIcon from '../assets/avg-chevron-down.svg'
+import chevronUpIcon from '../assets/avg-chevron-up.svg'
+import editIcon from '../assets/avg-edit-02.svg'
+import exitIcon from '../assets/avg-exit.svg'
+import layersIcon from '../assets/avg-layers.svg'
+import shieldIcon from '../assets/avg-shield-plus.svg'
+import tickIcon from '../assets/avg-tick.svg'
+import styles from './AvgPositionCard.module.css'
+
+export type AvgOption = '1' | '1-timeline' | '1-inside' | '2' | '3' | '3-timeline' | '4'
+
+const tone = (n: number) => (n > 0 ? 'up' : n < 0 ? 'down' : undefined)
+const pct = (n: number) => `${n < 0 ? '−' : '+'}${Math.abs(n).toFixed(2)}%`
+/** "8.9%" — how far a TP or TSL sits from the average price. */
+const legPct = (price: number, avg: number) => `${(Math.abs((price - avg) / avg) * 100).toFixed(1)}%`
+
+/** A Figma icon at its size (16 / 12), in the text colour. */
+export const Glyph = ({ src, size = 16, className }: { src: string; size?: 12 | 16; className?: string }) => (
+  <span className={[styles.glyph, className].filter(Boolean).join(' ')} data-size={size}><MaskIcon src={src} /></span>
+)
+
+/** Figma's exit icon button (L3 Button Tertiary, 32 square, 16 icon). */
+const ExitIconButton = ({ label, onClick }: { label: string; onClick: () => void }) => (
+  <Button variant="tertiary" size="sm" raised="none" className={styles.exitSquare} iconLeft={<Glyph src={exitIcon} />} aria-label={label} onClick={onClick} />
+)
+
+/** "TP/SL: 150/150 ✎" — the total in a lighter colour (Figma 6980:16427). */
+const TpslQty = ({ qty, colon }: { qty: number; colon: string }) => (
+  <span>{`${colon}${qty}`}<span className={styles.qtyTotal}>{`/${qty}`}</span></span>
+)
+
+/** Option 2 (6980:17743): L3 list cell — Order 1 over its time · P&L over "50 Qty @ ₹133.10" · exit icon button. */
+function SuborderRows({ position, onExitOrder }: { position: FnoPosition; onExitOrder: (o: PositionOrder) => void }) {
+  return (
+    <ul className={styles.subRows}>
+      {(position.orders ?? []).map((o) => {
+        const r = orderReturns(position, o)
+        return (
+          <li key={o.id}>
+            <ListCell
+              size="sm"
+              className={styles.subRow}
+              label={o.label}
+              description={o.time}
+              trailing={<span className={styles.pnl12} data-tone={tone(r)}>{signedInr(r)}</span>}
+              caption={t('avg.orderQty', { qty: o.qty, price: formatInr(o.price) })}
+              iconRight={<ExitIconButton label={t('avg.exitOrder', { order: o.label })} onClick={() => onExitOrder(o)} />}
+            />
+          </li>
+        )
+      })}
+    </ul>
+  )
+}
+
+/** Options 3 and 4: Order 1 (Heading/12) over its time (Description/10) · P&L (Label/12) over "50 qty @ …" (Label/10). */
+function OrderLine({ position, order, withPct }: { position: FnoPosition; order: PositionOrder; withPct?: boolean }) {
+  const r = orderReturns(position, order)
+  return (
+    <>
+      <span className={styles.lineName}>
+        <span className={styles.lineTitle}>{order.label}</span>
+        <span className={styles.lineTime}>{order.time}</span>
+      </span>
+      <span className={styles.lineFigures}>
+        <span className={styles.pnl12} data-tone={tone(r)}>{signedInr(r)}{withPct ? ` (${pct(orderReturnsPct(position, order))})` : ''}</span>
+        <span className={styles.lineQty}>{t('avg.orderQtyLower', { qty: order.qty, price: formatInr(order.price) })}</span>
+      </span>
+    </>
+  )
+}
+
+type Props = {
+  position: FnoPosition
+  option: AvgOption
+  /** Options 2–4: the orders are open in the card. */
+  expanded: boolean
+  onToggle: () => void
+  /** Option 1: the orders sheet. */
+  onOrders: () => void
+  onTpsl: () => void
+  onExit: () => void
+  onExitOrder: (order: PositionOrder) => void
+}
+
+export function AvgPositionCard({ position: p, option, expanded, onToggle, onOrders, onTpsl, onExit, onExitOrder }: Props) {
+  const count = p.orders?.length ?? 0
+  const returns = positionReturns(p)
+  const hasTpsl = p.tp !== undefined && p.tsl !== undefined
+  const o1 = option === '1' || option === '1-timeline'
+  const inside = option === '1-inside'
+  const o3 = option === '3' || option === '3-timeline'
+  const o4 = option === '4'
+  // Option 2 and "inside" are Figma's newer card (40 avatar, Bold 14 name, Label/12 figures); 1, 3, 4 the older one.
+  const newer = option === '2' || inside
+  const label = t('positions.card', { name: p.name, state: t('positions.state.open'), returns: signedInr(returns) })
+  const sub = option === '2' ? p.contract ?? '' : [p.contract, t('positions.qty', { qty: p.qty })].filter(Boolean).join(' | ')
+  const toggleText = option === '2' ? t('avg.suborders', { count }) : t('avg.ordersIn', { count })
+  const chevron = <Glyph src={expanded ? chevronUpIcon : chevronDownIcon} />
+
+  const header = (
+    <div className={styles.header}>
+      {(o1 || newer) && <Avatar initials={p.name.slice(0, 1)} size={newer ? 40 : 32} className={newer ? styles.avatar40 : styles.avatar32} />}
+      <span className={styles.name}>
+        <span className={newer ? styles.titleBold : styles.title}>{p.name}</span>
+        <span className={newer ? styles.subLabel : styles.sub}>{sub}</span>
+      </span>
+      {inside ? (
+        <span className={styles.venue}>
+          <span className={styles.pnl14} data-tone={tone(returns)}>{signedInr(returns)}</span>
+          <span className={styles.pnlPct} data-tone={tone(returns)}>{`${Math.abs(positionReturnsPct(p)).toFixed(1)}%`}</span>
+        </span>
+      ) : option === '2' ? (
+        <span className={styles.venue}>
+          <span className={styles.exchangeBold}>{p.exchange}</span>
+          <span className={styles.subLabel}>{p.product}</span>
+        </span>
+      ) : (
+        <span className={styles.venue}>
+          <span className={styles.exchange}>{p.exchange}</span>
+          <span className={styles.product}>{p.product}</span>
+        </span>
+      )}
+    </div>
+  )
+
+  const figure = (name: string, value: ReactNode, align: 'start' | 'center' | 'end', valueTone?: 'up' | 'down') => (
+    <span className={styles.figure} data-align={align}>
+      <span className={styles.figLabel}>{name}</span>
+      <span className={newer ? styles.figValueSmall : styles.figValue} data-tone={valueTone}>{value}</span>
+    </span>
+  )
+  const figures = (
+    <div className={styles.figures}>
+      {figure(t('positions.avgPrice'), formatInr(p.buyPrice), 'start')}
+      {option === '2' ? figure(t('avg.qty'), p.qty, 'center') : figure(t('positions.ltp'), formatInr(p.ltp ?? 0), 'center')}
+      {inside ? (
+        <span className={styles.figure} data-align="end">
+          <span className={styles.figLabel}>
+            {t('avg.tpsl')}
+            {hasTpsl && <button type="button" className={styles.inlineEdit} aria-label={t('positions.manage')} onClick={onTpsl}><Glyph src={editIcon} size={12} /></button>}
+          </span>
+          {hasTpsl
+            ? <span className={styles.figValueSmall}>{`${legPct(p.tp!, p.buyPrice)} • ${legPct(p.tsl!, p.buyPrice)}`}</span>
+            : (
+              <button type="button" className={styles.tagButton} aria-label={t('positions.setTpsl')} onClick={onTpsl}>
+                <Tag variant="secondary" size="sm" color="neutral" iconLeft={<Glyph src={addIcon} size={12} />}>{t('avg.add')}</Tag>
+              </button>
+            )}
+        </span>
+      ) : figure(t('positions.returns'), signedInr(returns), 'end', tone(returns))}
+    </div>
+  )
+
+  // Buttons: 32 tall, 8 radius, 12 apart (Figma "Pills" and L3 Button Small).
+  const outline = (content: string | ReactElement, icon: 'left' | 'right', glyph: string, onClick: () => void, aria?: string) => (
+    <Button variant="secondary" size="sm" raised="none" className={styles.pill}
+      {...(icon === 'left' ? { iconLeft: <Glyph src={glyph} /> } : { iconRight: <Glyph src={glyph} /> })}
+      onClick={onClick} aria-label={aria}>{content}</Button>
+  )
+  let left: ReactNode
+  if (o1 || inside) left = outline(t('avg.positions', { count }), 'left', layersIcon, onOrders)
+  else if (option === '2' || o3) left = outline(hasTpsl ? <TpslQty qty={p.qty} colon={t(option === '2' ? 'avg.tpslColon' : 'avg.tpslSpacedColon')} /> : t('positions.setTpsl'), 'right', editIcon, onTpsl, hasTpsl ? t('positions.manage') : undefined)
+  else left = outline(t(hasTpsl ? 'avg.editTpsl' : 'positions.setTpsl'), 'right', editIcon, onTpsl)
+  // Option 1's Exit Now is the L3 Button (raised, Label/12); 2–4 draw the older black pill (flat, Bold 12).
+  const right = o1 || inside
+    ? <Button variant="primary" size="sm" className={styles.l3Exit} onClick={onExit}>{t('positions.exit')}</Button>
+    : o3
+      ? <Button variant="primary" size="sm" raised="none" className={styles.pill} iconRight={<Glyph src={exitIcon} />} onClick={onExit}>{t('avg.exitAll')}</Button>
+      : <Button variant="primary" size="sm" raised="none" className={styles.pill} onClick={onExit}>{t(option === '2' && expanded ? 'avg.exitAll' : 'positions.exit')}</Button>
+  const actions = <div className={styles.actions}>{left}{right}</div>
+
+  // ── Option 3: the card sits on a grey footer that holds the toggle and the orders (6994:19017). ──
+  if (o3) {
+    return (
+      <article className={styles.o3} aria-label={label}>
+        <div className={styles.o3Top}>
+          <Stack gap="12">{header}<hr className={styles.rule} />{figures}</Stack>
+          {actions}
+        </div>
+        <div className={styles.o3Foot}>
+          <button type="button" className={styles.o3Toggle} aria-expanded={expanded} onClick={onToggle}>
+            <span className={styles.toggleLead}><Glyph src={layersIcon} />{toggleText}</span>{chevron}
+          </button>
+          {expanded && (
+            <ul className={styles.o3Orders} data-timeline={option === '3-timeline' || undefined}>
+              {(p.orders ?? []).map((o) => (
+                <li key={o.id} className={styles.o3Item}>
+                  {option === '3-timeline' && <span className={styles.cardDot} aria-hidden="true" />}
+                  <div className={styles.o3Order}>
+                    <OrderLine position={p} order={o} />
+                    <button type="button" className={styles.exitSmall} aria-label={t('avg.exitOrder', { order: o.label })} onClick={() => onExitOrder(o)}><Glyph src={exitIcon} /></button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </article>
+    )
+  }
+
+  return (
+    <article className={styles.card} aria-label={label} data-foot={o1 || o4 ? '' : undefined}>
+      <div className={styles.body}>
+        <Stack gap="12">
+          {header}
+          <hr className={styles.rule} />
+          {figures}
+          {inside && <hr className={styles.rule} />}
+        </Stack>
+        {option === '2' && (
+          <div className={styles.subBox} data-open={expanded || undefined}>
+            <button type="button" className={styles.subHead} aria-expanded={expanded} onClick={onToggle}>
+              <span className={styles.subLead}><Glyph src={layersIcon} />{toggleText}</span>{chevron}
+            </button>
+            {expanded && <SuborderRows position={p} onExitOrder={onExitOrder} />}
+          </div>
+        )}
+        {actions}
+      </div>
+
+      {o4 && (
+        <div className={styles.o4Foot}>
+          {expanded && (
+            <ul className={styles.o4Orders}>
+              {(p.orders ?? []).map((o) => (
+                <li key={o.id} className={styles.o4Item}>
+                  <span className={styles.cardDot} aria-hidden="true" />
+                  <div className={styles.o4Order}>
+                    <OrderLine position={p} order={o} withPct />
+                    <button type="button" className={styles.exitText} aria-label={t('avg.exitOrder', { order: o.label })} onClick={() => onExitOrder(o)}>{t('avg.exit')}</button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+          <button type="button" className={styles.strip} data-tone="discover" aria-expanded={expanded} onClick={onToggle}>
+            <span className={styles.toggleLead}><Glyph src={layersIcon} />{toggleText}</span>{chevron}
+          </button>
+        </div>
+      )}
+
+      {o1 && (hasTpsl ? (
+        <button type="button" className={styles.strip} data-tone="success" onClick={onTpsl}>
+          <span className={styles.toggleLead}><Glyph src={tickIcon} className={styles.tick} />{t('avg.tpslLegs', { tp: formatInr(p.tp!), tsl: formatInr(p.tsl!) })}</span>
+          <span className={styles.stripEnd}>{t('positions.tpslQty', { qty: p.qty })}<Glyph src={arrowIcon} size={12} /></span>
+        </button>
+      ) : (
+        <button type="button" className={styles.strip} data-tone="discover" onClick={onTpsl}>
+          <span className={styles.toggleLead}><Glyph src={shieldIcon} />{t('avg.nudge')}</span>
+          <span className={styles.stripEndBold}>{t('avg.add')}<Glyph src={arrowIcon} size={12} /></span>
+        </button>
+      ))}
+    </article>
+  )
+}
+
+/** The orders sheet's list (Option 1, Figma 6980:17181): L3 list cell cards — Order 1 over its time · P&L (Label/14)
+ *  over "50 Qty @ ₹133.10" · an L3 Secondary Small "Exit"; optionally on a timeline (green dots, 20 wide, 16 to the list). */
+export function SheetOrders({ position, timeline, onExitOrder }: { position: FnoPosition; timeline: boolean; onExitOrder: (o: PositionOrder) => void }) {
+  return (
+    <ul className={styles.sheetOrders} data-timeline={timeline || undefined}>
+      {(position.orders ?? []).map((o) => {
+        const r = orderReturns(position, o)
+        return (
+          <li key={o.id} className={styles.sheetItem}>
+            {timeline && <span className={styles.sheetDot} aria-hidden="true" />}
+            <ListCell
+              variant="card"
+              labelSize="14"
+              className={styles.sheetRow}
+              label={o.label}
+              description={o.time}
+              trailing={<span className={styles.pnl14} data-tone={tone(r)}>{signedInr(r)}</span>}
+              caption={t('avg.orderQty', { qty: o.qty, price: formatInr(o.price) })}
+              iconRight={<Button variant="secondary" size="sm" raised="none" aria-label={t('avg.exitOrder', { order: o.label })} onClick={() => onExitOrder(o)}>{t('avg.exit')}</Button>}
+            />
+          </li>
+        )
+      })}
+    </ul>
+  )
+}
+```
+
 ### `src/flows/fno/positions/components/Cards.tsx`
 
 ```tsx
@@ -10877,7 +11994,7 @@ const tone = (n: number) => (n > 0 ? 'up' : n < 0 ? 'down' : undefined)
 export const signedInr = (n: number) => formatInr(n, { sign: true })
 
 /** A stock's logo, a commodity's picture, or the name's first letter (index options). */
-function Logo({ name, symbol, image, size }: { name: string; symbol?: string; image?: string; size: 24 | 40 }) {
+export function Logo({ name, symbol, image, size }: { name: string; symbol?: string; image?: string; size: 24 | 40 }) {
   const company = symbol ? getCompany(symbol) : undefined
   return <Avatar src={company?.logoUrl ?? image} initials={company?.initials ?? name.slice(0, 1)} size={size} />
 }
@@ -11118,6 +12235,18 @@ export type FnoPosition = {
   /** Take profit and trailing stop loss, when set on an open position (the card's green strip). */
   tp?: number
   tsl?: number
+  /** Bought more than once: the buys averaged into this position (Figma "Avg position"). buyPrice is their average and
+   *  qty their total; TP / TSL always cover the whole position, never one order. */
+  orders?: PositionOrder[]
+}
+
+/** One buy of an averaged position: "Order 1 · Today, 9:18 AM · 50 Qty @ ₹133.10". */
+export type PositionOrder = {
+  id: string
+  label: string
+  time: string
+  qty: number
+  price: number
 }
 
 export const isExited = (p: FnoPosition) => p.sellPrice !== undefined
@@ -11125,7 +12254,13 @@ export const isExited = (p: FnoPosition) => p.sellPrice !== undefined
 export const positionReturns = (p: FnoPosition) => ((p.sellPrice ?? p.ltp ?? p.buyPrice) - p.buyPrice) * p.qty
 
 export const positions: FnoPosition[] = [
-  { id: 'p1', name: 'NIFTY 25600', contract: 'Put | 02 Dec 26', segment: 'equity', exchange: 'NSE', product: 'Intraday', qty: 150, buyPrice: 127.2, ltp: 131.85, tp: 138.5, tsl: 124 },
+  { id: 'p1', name: 'NIFTY 25600', contract: 'Put | 02 Dec 26', segment: 'equity', exchange: 'NSE', product: 'Intraday', qty: 150, buyPrice: 127.2, ltp: 131.85, tp: 138.5, tsl: 124,
+    // Bought three times, averaged to ₹127.20 (the Avg position options, fno-54 …; today's card ignores it).
+    orders: [
+      { id: 'p1-o1', label: 'Order 1', time: 'Today, 9:18 AM', qty: 50, price: 133.1 },
+      { id: 'p1-o2', label: 'Order 2', time: 'Today, 10:42 AM', qty: 50, price: 127.2 },
+      { id: 'p1-o3', label: 'Order 3', time: 'Today, 1:05 PM', qty: 50, price: 121.3 },
+    ] },
   { id: 'p2', name: 'RELIANCE', symbol: 'RELIANCE', segment: 'equity', exchange: 'NSE', product: 'Intraday', qty: 1, buyPrice: 1393.8, sellPrice: 1393.0 },
   { id: 'p3', name: 'CRUDEOILM 7700', contract: 'Put | 16 Dec 26', image: crudeOil, segment: 'commodity', exchange: 'MCX', product: 'Delivery', qty: 10, buyPrice: 312.4, sellPrice: 338.9 },
   { id: 'p4', name: 'NIFTY 25700', contract: 'Call | 02 Dec 26', segment: 'equity', exchange: 'NSE', product: 'Intraday', qty: 150, buyPrice: 96.45, sellPrice: 82.1 },
@@ -11136,6 +12271,21 @@ export const positions: FnoPosition[] = [
   { id: 'p9', name: 'NATGASMINI 340', contract: 'Call | 23 Dec 26', image: naturalGas, segment: 'commodity', exchange: 'MCX', product: 'Delivery', qty: 250, buyPrice: 14.2, sellPrice: 12.85 },
   { id: 'p10', name: 'SILVERM 92000', contract: 'Call | 26 Feb 27', image: silver, segment: 'commodity', exchange: 'MCX', product: 'Delivery', qty: 5, buyPrice: 1_812.5, sellPrice: 1_770 },
 ]
+
+/** Returns on one order of an averaged position: (LTP − its buy price) × its qty, and as a % of what it cost. */
+export const orderReturns = (p: FnoPosition, o: PositionOrder) => ((p.ltp ?? o.price) - o.price) * o.qty
+export const orderReturnsPct = (p: FnoPosition, o: PositionOrder) => (((p.ltp ?? o.price) - o.price) / o.price) * 100
+/** The position's returns as a % of what it cost. */
+export const positionReturnsPct = (p: FnoPosition) => (positionReturns(p) / (p.buyPrice * p.qty)) * 100
+
+/** Exits one order: qty and average are worked out again from what's left; one order left → a plain position. TP / TSL
+ *  stay on the position (the order pad's TPSL quantity is the position's). */
+export const exitOrder = (p: FnoPosition, orderId: string): FnoPosition => {
+  const left = (p.orders ?? []).filter((o) => o.id !== orderId)
+  const qty = left.reduce((sum, o) => sum + o.qty, 0)
+  const buyPrice = Math.round((left.reduce((sum, o) => sum + o.price * o.qty, 0) / qty) * 100) / 100
+  return { ...p, qty, buyPrice, orders: left.length > 1 ? left : undefined }
+}
 
 export const unrealisedReturns = positions.filter((p) => !isExited(p)).reduce((sum, p) => sum + positionReturns(p), 0)
 export const realisedReturns = positions.filter(isExited).reduce((sum, p) => sum + positionReturns(p), 0)
@@ -11225,8 +12375,10 @@ import { FnoNav } from '../../components/FnoNav'
 import { MarketIndices } from '../../components/Overview'
 import { DetailSheet } from '../../sheets/HomeSheets'
 import { t } from '../../copy'
-import { isOpenOrder, orders, positions, type FnoOrder, type FnoPosition, type Period, type Segment } from '../data'
+import { exitOrder, isOpenOrder, orders, positions, type FnoOrder, type FnoPosition, type Period, type Segment } from '../data'
 import { OrderCard, PositionCard } from '../components/Cards'
+import { AvgPositionCard, type AvgOption } from '../components/AvgPositionCard'
+import { OrdersSheet } from '../sheets/OrdersSheet'
 import { CollapsedTotal, TotalReturnsCard, type Unit } from '../components/TotalReturns'
 import styles from '../Positions.module.css'
 
@@ -11249,9 +12401,21 @@ type Props = {
   onWatchlist: () => void
   /** Set / Manage TPSL on an open position: the F&O order pad with the TPSL sheet open. */
   onTpsl: (position: FnoPosition) => void
+  /** Avg position (Figma 6980:7204, fno-54 …): which option draws a position bought more than once. Leave out for
+   *  today's card. Only the card changes; the rest of the page is the same. */
+  avg?: AvgOption
+  /** false: the averaged position has no TP / TSL yet (the Set TPSL / Add states). */
+  avgTpsl?: boolean
+  /** Options 2–4: start with its orders open. */
+  avgExpanded?: boolean
+  /** Option 1: start with its orders sheet up. */
+  avgSheet?: boolean
 }
 
-export function Positions({ tab: initialTab = 'positions', ordersView: initialView = 'history', scrolled, onHome, onFno, onChain, onScalper, onSearch, onWallet, onWatchlist, onTpsl }: Props) {
+/** The page's positions for an Avg position screen: the averaged one with or without its TP / TSL. */
+const avgList = (withTpsl: boolean) => positions.map((p) => (p.orders && !withTpsl ? { ...p, tp: undefined, tsl: undefined } : p))
+
+export function Positions({ tab: initialTab = 'positions', ordersView: initialView = 'history', scrolled, onHome, onFno, onChain, onScalper, onSearch, onWallet, onWatchlist, onTpsl, avg, avgTpsl = true, avgExpanded = false, avgSheet = false }: Props) {
   const root = useRef<HTMLDivElement>(null)
   const card = useRef<HTMLDivElement>(null)
   const [tab, setTab] = useState<PositionsTab>(initialTab)
@@ -11264,6 +12428,26 @@ export function Positions({ tab: initialTab = 'positions', ordersView: initialVi
   const [detail, setDetail] = useState<string | null>(null)
   const [refreshed, setRefreshed] = useState(false)
   const [atTop, setAtTop] = useState(true)
+  const [list, setList] = useState<FnoPosition[]>(() => (avg ? avgList(avgTpsl) : positions))
+  const averaged = () => list.find((p) => p.orders)?.id ?? null
+  const [open, setOpen] = useState<string | null>(avgExpanded ? averaged() : null)
+  const [ordersOf, setOrdersOf] = useState<string | null>(avgSheet ? averaged() : null)
+  const [exitedToast, setExitedToast] = useState<string | null>(null)
+  // The Avg position screens are one page: picking another resets the card to that screen's start state.
+  useEffect(() => {
+    const next = avg ? avgList(avgTpsl) : positions
+    setList(next)
+    const id = next.find((p) => p.orders)?.id ?? null
+    setOpen(avgExpanded ? id : null)
+    setOrdersOf(avgSheet ? id : null)
+  }, [avg, avgTpsl, avgExpanded, avgSheet])
+  const exitOne = (p: FnoPosition, orderId: string) => {
+    const order = p.orders?.find((o) => o.id === orderId)
+    setList((ps) => ps.map((x) => (x.id === p.id ? exitOrder(x, orderId) : x)))
+    setOrdersOf(null)
+    if (order) setExitedToast(t('avg.exitOrderDone', { order: order.label, qty: order.qty }))
+  }
+  const sheetPosition = ordersOf ? list.find((p) => p.id === ordersOf && p.orders) : undefined
   // The four screens are one page (group 'positions'): picking another in the preview keeps this page and moves its tab.
   useEffect(() => { setTab(initialTab) }, [initialTab])
   useEffect(() => { setView(initialView) }, [initialView])
@@ -11296,8 +12480,8 @@ export function Positions({ tab: initialTab = 'positions', ordersView: initialVi
     setTab(next)
     root.current?.parentElement?.scrollTo({ top: 0 })
   }
-  const count = (s: SegmentFilter) => positions.filter((p) => s === 'all' || p.segment === s).length
-  const shown = positions.filter((p) => segment === 'all' || p.segment === segment)
+  const count = (s: SegmentFilter) => list.filter((p) => s === 'all' || p.segment === s).length
+  const shown = list.filter((p) => segment === 'all' || p.segment === segment)
   const shownOrders = orders.filter((o) => (view === 'open' ? isOpenOrder(o) : !isOpenOrder(o)))
 
   // Laid out as the stocks Portfolio → Orders header: the pills 12 above and 8 below, then the list's name with the round
@@ -11341,8 +12525,14 @@ export function Positions({ tab: initialTab = 'positions', ordersView: initialVi
         />
       }
       bottom={<FnoNav value="positions" onHome={onHome} onFno={onFno} onPositions={() => pickTab('positions')} onChain={onChain} onScalper={onScalper} />}
-      toast={refreshed ? <Aerobar floating type="success" heading={t('positions.refreshed')} onDismiss={() => setRefreshed(false)} /> : undefined}
-      sheet={detail ? <DetailSheet title={detail} onClose={() => setDetail(null)} /> : undefined}
+      toast={exitedToast
+        ? <Aerobar key={exitedToast} floating type="success" heading={exitedToast} onDismiss={() => setExitedToast(null)} />
+        : refreshed ? <Aerobar floating type="success" heading={t('positions.refreshed')} onDismiss={() => setRefreshed(false)} /> : undefined}
+      sheet={detail
+        ? <DetailSheet title={detail} onClose={() => setDetail(null)} />
+        : sheetPosition
+          ? <OrdersSheet position={sheetPosition} timeline={avg === '1-timeline'} onClose={() => setOrdersOf(null)} onExitAll={() => { setOrdersOf(null); setDetail(t('positions.exit')) }} onExitOrder={(o) => exitOne(sheetPosition, o.id)} />
+          : undefined}
     >
       <div ref={root}>
         {tab === 'positions' ? (
@@ -11372,7 +12562,22 @@ export function Positions({ tab: initialTab = 'positions', ordersView: initialVi
                   items={(['all', 'equity', 'commodity'] as const).map((s) => ({ value: s, label: t(`positions.segment.${s}`, { count: count(s) }) }))} />
                 {shown.length ? (
                   <Stack as="ul" gap="12" className={styles.list}>
-                    {shown.map((p) => <li key={p.id}><PositionCard position={p} onTpsl={() => onTpsl(p)} onExit={() => setDetail(t('positions.exit'))} /></li>)}
+                    {shown.map((p) => (
+                      <li key={p.id}>
+                        {avg && p.orders
+                          ? <AvgPositionCard
+                              position={p}
+                              option={avg}
+                              expanded={open === p.id}
+                              onToggle={() => setOpen(open === p.id ? null : p.id)}
+                              onOrders={() => setOrdersOf(p.id)}
+                              onTpsl={() => onTpsl(p)}
+                              onExit={() => setDetail(t('positions.exit'))}
+                              onExitOrder={(o) => exitOne(p, o.id)}
+                            />
+                          : <PositionCard position={p} onTpsl={() => onTpsl(p)} onExit={() => setDetail(t('positions.exit'))} />}
+                      </li>
+                    ))}
                   </Stack>
                 ) : (
                   <EmptyState title={t('positions.empty.title')} description={t('positions.empty.text')} action={<Button variant="primary" size="sm" onClick={onFno}>{t('positions.empty.button')}</Button>} />
@@ -11424,6 +12629,117 @@ function OrderGroups({ orders: list, onOpen }: { orders: FnoOrder[]; onOpen: (or
         )
       })}
     </Stack>
+  )
+}
+```
+
+### `src/flows/fno/positions/sheets/OrdersSheet.module.css`
+
+```css
+/* Option 1 orders sheet header (Figma L3 Bottom sheet header 6980:17156): 16 all round, a hairline under it; the text
+   block (two justified rows 4 apart) and the Exit All button 8 apart. */
+.header {
+  display: flex;
+  align-items: center;
+  gap: var(--l3-spacing-08);
+  padding: var(--l3-spacing-16);
+  border-bottom: 1px solid var(--l3-border-light);
+}
+
+.text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--l3-spacing-04);
+  min-width: 0;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--l3-spacing-08);
+  white-space: nowrap;
+}
+
+.heading {
+  margin: 0;
+  font: var(--l3-text-heading-16);
+  color: var(--l3-content-primary);
+}
+
+.pnl {
+  font: var(--l3-text-label-14);
+  font-variant-numeric: tabular-nums;
+}
+
+.pnl[data-tone='up'] {
+  color: var(--l3-content-accent-success-default);
+}
+
+.pnl[data-tone='down'] {
+  color: var(--l3-content-accent-error-default);
+}
+
+.line {
+  font: var(--l3-text-description-12);
+  color: var(--l3-content-secondary);
+}
+```
+
+### `src/flows/fno/positions/sheets/OrdersSheet.tsx`
+
+```tsx
+// Option 1 (Figma 8HEY699cTPiWiQeAVX3122 6980:12777 / 6980:16681): the card's "3 Positions" opens the orders that make
+// up the averaged position. The L3 bottom sheet header (16 all round, a hairline under it) holds two justified rows:
+// the name (Heading/16) and its P&L (Label/14), then "Put | 02 Dec 26 | Qty 150" and "LTP: ₹131.85" (Description/12).
+// FLAG: L3 BottomSheetHeader has no slot for a value beside the heading or a second justified line, so the header's
+// content is laid out here in its padding (L3 gap). Below it, an L3 list cell card per order (SheetOrders).
+//   list     (6980:12777) Exit All in the dock.
+//   timeline (6980:16681) the orders on a green timeline; Exit All (L3 Secondary Small) beside the header, Okay in the dock.
+import { useId } from 'react'
+import { Button } from '@l3/components/Button'
+import { ButtonGroup } from '@l3/components/ButtonGroup'
+import { formatInr } from '../../../../shared/money'
+import { Sheet } from '../../../../shared/ui/Sheet'
+import { t } from '../../copy'
+import { positionReturns, type FnoPosition, type PositionOrder } from '../data'
+import { SheetOrders } from '../components/AvgPositionCard'
+import { signedInr } from '../components/Cards'
+import styles from './OrdersSheet.module.css'
+
+export function OrdersSheet({ position, timeline, onExitOrder, onExitAll, onClose }: { position: FnoPosition; timeline: boolean; onExitOrder: (o: PositionOrder) => void; onExitAll: () => void; onClose: () => void }) {
+  const id = useId()
+  const returns = positionReturns(position)
+  return (
+    <Sheet
+      labelledBy={id}
+      onClose={onClose}
+      header={
+        <div className={styles.header}>
+          <div className={styles.text}>
+            <div className={styles.row}>
+              <h2 id={id} className={styles.heading}>{position.name}</h2>
+              <span className={styles.pnl} data-tone={returns > 0 ? 'up' : returns < 0 ? 'down' : undefined}>{signedInr(returns)}</span>
+            </div>
+            <div className={styles.row}>
+              <span className={styles.line}>{[position.contract, t('avg.sheetQty', { qty: position.qty })].filter(Boolean).join(' | ')}</span>
+              <span className={styles.line}>{t('avg.sheetLtp', { ltp: formatInr(position.ltp ?? 0) })}</span>
+            </div>
+          </div>
+          {timeline && <Button variant="secondary" size="sm" raised="none" onClick={onExitAll}>{t('avg.exitAll')}</Button>}
+        </div>
+      }
+      footer={
+        <ButtonGroup direction="horizontal" aria-label={t('avg.sheetDock')}>
+          {timeline
+            ? <Button variant="primary" onClick={onClose}>{t('avg.okay')}</Button>
+            : <Button variant="primary" onClick={onExitAll}>{t('avg.exitAll')}</Button>}
+        </ButtonGroup>
+      }
+    >
+      <SheetOrders position={position} timeline={timeline} onExitOrder={onExitOrder} />
+    </Sheet>
   )
 }
 ```
