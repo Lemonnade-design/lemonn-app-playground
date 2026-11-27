@@ -1399,6 +1399,8 @@ type SheetProps = {
   className?: string
   /** 'top' (L3 isBottom=False): drops from the top of the screen, for menus tied to the top (a market or sort picker). */
   placement?: 'bottom' | 'top'
+  /** Under the footer, inside the sheet: the app keypad (<KeypadSlide><Keyboard/></KeypadSlide>) for typed prices. */
+  utility?: ReactNode
 }
 
 type Publish = (id: string, sheet: SheetProps | null) => void
@@ -1464,6 +1466,7 @@ export function SheetHost({ container, children }: { container: HTMLElement | nu
           aria-label={shown.sheet.label}
           className={shown.sheet.className}
           placement={shown.sheet.placement}
+          utility={shown.sheet.utility}
         >
           {shown.sheet.children}
         </BottomSheet>

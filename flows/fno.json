@@ -229,6 +229,22 @@
       "figmaUrl": ""
     },
     {
+      "id": "fno-52",
+      "name": "Order pad · TPSL sheet (Set)",
+      "figma": "",
+      "note": "Set TPSL on an open position (GOLDM FEB FUT) lands on the F&O order pad — the position’s contract, Sell to exit it — with the TPSL sheet open (live app, 27 Nov; no Figma frame). F&O TP/SL is set per quantity, in whole lots: Order (Avg. Buy) with Quantity ⇕ (lot hint, stepper of one lot), Take Profit at Mkt ⇄ Lmt and Stop Loss (price typed or a % from the average buy, Est. Profit / Est. Loss), + Add new TP/SL for another order on part of the position (Remove from Order 2), “Combined qty exceeds total qty” when the orders cover more than is held, TP above / SL below the LTP, Trailing stop loss. Laid out like the stocks TP/SL sheet (header, one price card per leg with its Switch, prices typed from the keypad). Footer: Apply (needs a valid qty and a TP or SL on every order). Closing the sheet leaves the pad; Set TPSL reopens it.",
+      "goesTo": [],
+      "figmaUrl": ""
+    },
+    {
+      "id": "fno-53",
+      "name": "Order pad · TPSL sheet (Manage)",
+      "figma": "",
+      "note": "Manage TPSL (or the green strip’s Qty ›) on NIFTY 25600 Put, 2 lots: the sheet prefilled with what’s set — TP ₹138.50, SL ₹124.00, trailing on. Add a second order to split the 2 lots between two TP/SL pairs.",
+      "goesTo": [],
+      "figmaUrl": ""
+    },
+    {
       "id": "fno-51",
       "name": "Orders · Open",
       "figma": "",
@@ -447,7 +463,7 @@
       "id": "fno-29",
       "name": "Order pad · Sell · Market",
       "figma": "8671:18433",
-      "note": "Sell adds Margin · Leverage (grey strip) above the quantity; the action is Sell (red).",
+      "note": "Sell adds Margin · Leverage to the line under the quantity; the action is Sell.",
       "goesTo": [],
       "figmaUrl": "https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=8671-18433"
     },
@@ -587,9 +603,13 @@
     "src/flows/fno/option-chain/data.ts",
     "src/flows/fno/option-chain/screens/OptionChain.module.css",
     "src/flows/fno/option-chain/screens/OptionChain.tsx",
+    "src/flows/fno/order-pad/components/PriceField.module.css",
+    "src/flows/fno/order-pad/components/PriceField.tsx",
     "src/flows/fno/order-pad/data.ts",
     "src/flows/fno/order-pad/screens/OrderPad.module.css",
     "src/flows/fno/order-pad/screens/OrderPad.tsx",
+    "src/flows/fno/order-pad/screens/TpslSheet.module.css",
+    "src/flows/fno/order-pad/screens/TpslSheet.tsx",
     "src/flows/fno/positions/Positions.module.css",
     "src/flows/fno/positions/components/Cards.tsx",
     "src/flows/fno/positions/components/TotalReturns.tsx",
@@ -630,6 +650,8 @@
     "src/shared/ui/FloatingNav.tsx",
     "src/shared/ui/IlliquidSheet.module.css",
     "src/shared/ui/IlliquidSheet.tsx",
+    "src/shared/ui/Keyboard.module.css",
+    "src/shared/ui/Keyboard.tsx",
     "src/shared/ui/Rail.module.css",
     "src/shared/ui/Rail.tsx",
     "src/shared/ui/Screen.module.css",

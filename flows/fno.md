@@ -33,6 +33,8 @@ Prototype: https://lemonnade-design.github.io/lemonn-app-prototype/#/fno · mach
 | `fno-48` | Positions | — | — | The F&O navbar’s Positions tab (also the P&L arrow on F&O home), from the live app (screenshots, 27 Nov 2026; no Figma frame yet), on the stocks Portfolio → Positions patterns. Top bar: Positions with search, watchlist (→ market-11) and wallet; Positions | Orders tabs; its hairline shows only once the page scrolls. Grey top: the Total Returns card — “Total Returns ⇕” (₹ ↔ %) over the amount, square D / W / M / Y beside it, Unrealised | Realised, this week’s days with an eye that greys them out (amounts always show), P&L Analysis. White body with rounded top corners: Market Indices (as F&O home), then Your Positions — Refresh, settings, All / Equity / Commodity pills, a card per position: 40 logo, name, “Put | date | Qty.75”, exchange over product, Avg. price | LTP | Returns between dashed lines; open ones get Set TPSL / Manage TPSL + Exit Now, and with TP / TSL set a green strip “✓ TP (₹…) • TSL (₹…)  Qty 75/75 ›”. Unbuilt destinations open the explanatory sheet. |
 | `fno-49` | Positions · scrolled (Total Returns collapsed) | — | — | Once the Total Returns card has gone under the top bar, its one-line form (“Total Returns −₹…”, on a wash of the result’s colour, fading in) stays under the tabs in the Actionbar’s bottom slot; scrolling back up brings the card back. |
 | `fno-50` | Orders · History | — | — | The Orders tab. Sticky under the tabs: Open · History (equal-width pills, the selected one primary) and All Orders with a round filter button. Orders by day as stocks Portfolio → Orders: a closed day is a card cell, an open one a plain row with its cards (the first open). A card: product • time, status tag (Executed blue, Cancelled / Rejected red, Open yellow) and side tag (Buy green, Sell red); logo, contract, filled/qty; Avg. price, a limit, or At Market, and TP • TSL when set. |
+| `fno-52` | Order pad · TPSL sheet (Set) | — | — | Set TPSL on an open position (GOLDM FEB FUT) lands on the F&O order pad — the position’s contract, Sell to exit it — with the TPSL sheet open (live app, 27 Nov; no Figma frame). F&O TP/SL is set per quantity, in whole lots: Order (Avg. Buy) with Quantity ⇕ (lot hint, stepper of one lot), Take Profit at Mkt ⇄ Lmt and Stop Loss (price typed or a % from the average buy, Est. Profit / Est. Loss), + Add new TP/SL for another order on part of the position (Remove from Order 2), “Combined qty exceeds total qty” when the orders cover more than is held, TP above / SL below the LTP, Trailing stop loss. Laid out like the stocks TP/SL sheet (header, one price card per leg with its Switch, prices typed from the keypad). Footer: Apply (needs a valid qty and a TP or SL on every order). Closing the sheet leaves the pad; Set TPSL reopens it. |
+| `fno-53` | Order pad · TPSL sheet (Manage) | — | — | Manage TPSL (or the green strip’s Qty ›) on NIFTY 25600 Put, 2 lots: the sheet prefilled with what’s set — TP ₹138.50, SL ₹124.00, trailing on. Add a second order to split the 2 lots between two TP/SL pairs. |
 | `fno-51` | Orders · Open | — | — | Orders waiting to go through, with their limit price; none → the L3 empty state. |
 | `fno-08` | Commodities home | [6754:63637](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=6754-63637) | — | The Commodities product tab. Gold / Silver / Crude Oil / Natural Gas shortcuts open the Lot summary (Gold Summary). The chart’s instrument selector (“Gold”) opens the contract picker. Popular commodities: Options ⇕ Futures switch; Futures Heatmap: Bullion / Energy / Metals. |
 | `fno-09` | Commodities home · heatmap & Smart Futures | [6754:63637](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=6754-63637) | — | The same long screen, scrolled to the Futures Heatmap. |
@@ -56,7 +58,7 @@ Prototype: https://lemonnade-design.github.io/lemonn-app-prototype/#/fno · mach
 | `fno-26` | Order pad · Buy · Limit | [8671:18433](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=8671-18433) | — | Limit adds the validity (Day ⇕ → Day / IOC) and a limit price row with a % stepper from the market price. |
 | `fno-27` | Order pad · Buy · SL | [8671:18433](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=8671-18433) | — | SL adds a trigger price row above the limit row. |
 | `fno-28` | Order pad · Buy · Intraday | [8671:18433](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=8671-18433) | — | Intraday: “This position will auto close by 11:30 PM” above the dock. |
-| `fno-29` | Order pad · Sell · Market | [8671:18433](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=8671-18433) | — | Sell adds Margin · Leverage (grey strip) above the quantity; the action is Sell (red). |
+| `fno-29` | Order pad · Sell · Market | [8671:18433](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=8671-18433) | — | Sell adds Margin · Leverage to the line under the quantity; the action is Sell. |
 | `fno-30` | Order pad · Sell · SL | [8671:18433](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=8671-18433) | — |  |
 | `fno-31` | Order pad · Sell · Intraday | [8671:18433](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=8671-18433) | — |  |
 | `fno-32` | Order pad · Buy · ILLIQUID (edge case) | [8671:18433 + product rule](https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=8671-18433 + product rule) | — | Should never be reached — every entry point blocks illiquid contracts — but if one slips through: ILLIQUID tag in the header (tap → “What does illiquidity mean?”), the blocked note in the dock (tap → same sheet) and Buy disabled. Inputs stay usable. |
@@ -418,7 +420,8 @@ Positions / Orders patterns (copied, not imported: a flow can't import another's
   filter button. Orders by day as stocks Portfolio → Orders: closed days are L3 card cells, an open day a plain row
   with its cards under it (the first starts open). Order card: product • time, status + side tags, logo, contract,
   filled/qty, avg / limit / At Market, TP • TSL when set. No open orders → L3 empty state.
-- **Not built yet** (open the explanatory sheet): P&L Analysis, settings, Filter, TPSL, Exit, a position's or order's
+- **Set / Manage TPSL** opens the order pad with the TPSL sheet (fno-52, 53, below).
+- **Not built yet** (open the explanatory sheet): P&L Analysis, settings, Filter, Exit, a position's or order's
   details.
 - **L3 gaps:** square period pills (L3's 48 min-width overridden); round icon button (`--btn-radius` full); equal-width
   plain pills with `width="fill"`; dashed divider; card button inline padding 8; Actionbar hairline only on scroll.
@@ -440,15 +443,32 @@ Positions / Orders patterns (copied, not imported: a flow can't import another's
 
 `order-pad/screens/OrderPad` (Figma 8671:18433) — **commodity option chain only**; other order pads (equity, futures) differ a little and get their own. Opened from Buy / Sell on the commodity asset page and in the Gold Summary Buy / Sell sheet; Back returns there.
 - Actionbar: back · “Gold ⇕ 5 OCT Fut” over price + change (contract switch) · MCX; **Delivery / Intraday** tabs in its bottom slot.
-- **Market / Limit / SL** pills; Limit and SL add the validity pill (**Day ⇕** → Day / IOC).
-- **Sell** only: Margin · Leverage grey strip.
-- **Quantity ⇕** (switches to Lots) · “(100 = 1 Lot)” · compact stepper in steps of one lot (grey −, blue +, as in Figma).
-- **Limit**: a limit price row (price + % stepper from the market price); **SL**: a Trigger Price row above it.
-- **Set TPSL ⊕** (right). **Intraday**: “This position will auto close by 11:30 PM” above the dock.
-- Dock: Avail. ₹ · <u>Req</u> ₹ (Req opens its breakdown), then **Buy** (brand) or **Sell** (L3 sell, red). Placing shows a sample toast; no order is sent.
-- Steppers are the L3 Stepper Small as the design system draws it (dark + / − on the grey track), not Figma's grey / blue.
+Laid out like the live app (27 Nov, the user's reference), left-aligned, not the stocks pad's centred amount:
+- **Market / Limit / SL** pills (L3 Tabs pill) at the left; Limit and SL add the validity (**Day ⇕** → Day / IOC) at the right.
+- **Quantity card:** Quantity ⇄ Lots · “(100 = 1 Lot)” · L3 Stepper Small in steps of one lot (white ± on the grey pill).
+  The app keypad starts open and types the quantity (a tap on the card makes it the keypad's field; no focused edge,
+  as in the live app); closing the keypad rounds it to whole lots. **Sell** adds Margin · Leverage under the card.
+- **Limit**: a price card (Limit price, typed ₹ + a % stepper from the LTP); **SL**: Trigger price above it in the same card.
+- **Set TPSL ⊕** at the right (primary label, blue ⊕). On a position it opens the TPSL sheet. **Intraday**: “This
+  position will auto close by 11:30 PM” above the dock.
+- Dock: a 1px line on top, Avail. ₹ · <u>Req</u> ₹ (Req opens its breakdown), then **Buy** (brand) or **Sell** (L3 sell), then the keypad. Placing shows a sample toast; no order is sent.
 - **ILLIQUID edge case** (`fno-32` Buy, `fno-33` Sell): should never be reached, but if an illiquid contract slips through — ILLIQUID tag in the header, the blocked note in the dock, Buy / Sell disabled (see docs/ILLIQUID.md).
 - Data: `order-pad/data.ts` (contract, lot size, margin / leverage, funds, auto-close time, validities).
+
+#### TPSL sheet (fno-52, 53)
+
+`order-pad/screens/TpslSheet` — Set / Manage TPSL on an F&O position lands on the order pad with this sheet open
+(fno-52 GOLDM FEB FUT, nothing set; fno-53 NIFTY 25600 Put, 2 lots, TP + SL set). Built like the stocks TP/SL sheet.
+- Header: TPSL · “Qty 150” · the contract, LTP and change at the right.
+- **F&O TP/SL is per quantity, in whole lots:** the position can be split into several orders (**Add new TP/SL**);
+  each is a grey panel (L3 Card filled, from the first order) with Order N · (Avg. Buy …) · Remove (from the second).
+  In it: the quantity card (Quantity ⇄ Lots · lot size · Stepper), then **Take profit** and **Stop loss**, one card
+  each: name · Market ⇄ Limit, the typed ₹ trigger price (“--” when empty) and a % stepper from the average price.
+  **No on/off switch:** an empty leg isn't applied; set either or both. Est. profit / loss and Clear under a set leg.
+- Rules: TP above the LTP, SL below it (red card + message); combined qty over the position → error on the last order.
+  Apply needs no errors and at least one price on every order.
+- Trailing stop loss: checkbox · label · ⓘ tooltip. Footer: Apply only. Prices typed from the app keypad (in the sheet).
+- Data: `order-pad/data.ts` (`TpslPosition`, `TpslOrder`, `tpslGoldm`, `tpslPositionSet`).
 
 #### Buy / Sell sheet (fno-23, 24)
 
@@ -590,7 +610,16 @@ The source uses old D2 controls alongside L3; their code equivalents are L3 comp
 - Divider: L3 has no divider component or border-width token; the month line on fno-38 is a 2 border-top with the local token `--app-week-divider`.
 - Section header size: L3 SectionHeader's title is heading-14 with no size option; fno-38's month titles are set to heading-20 locally (`.calendarMonthHead h2`).
 
+#### L3 gaps (Order pad and TPSL sheet)
+
+- `components/PriceField` is copied from us-stocks (a flow can't import another); keep the two in step.
+- Stepper on a grey pill: L3's light-blue Small buttons blur into it; the ± are white with a blue icon locally.
+- Card has no error or focused state: the price card's red border is set locally (`--card-border`).
+- No link-style Button: Req (underlined), Clear and Set TPSL (blue ⊕) are ghost Buttons recoloured locally.
+- Shared `Sheet` gained a `utility` slot (the keypad under the footer).
+
 ### Changelog
+- 2026-11-27 — F&O order pad laid out like the live app (types left · validity right, quantity card with Stepper, price cards, Set TPSL right; the centred amount and +lot chips removed). New TPSL sheet from Positions (fno-52, 53): TP/SL per lot quantity as several orders, each a grey panel; one compact card per leg, no on/off switch (empty = not set); typed prices from the keypad; trailing stop loss with a tooltip.
 - 2026-11-27 — New Positions page (fno-48 … 51): Total Returns card (₹/% switch, square D/W/M/Y, week days with an eye that greys them), Market Indices and Your Positions in a white body with rounded top corners, position cards with Set / Manage TPSL + Exit Now and a green TP/SL strip, a collapsed total under the tabs on scroll, Orders by day (Open · History, All Orders + filter). Top bar hairline only once scrolled. F&O navbar Positions tab and the home P&L arrow open it.
 - 2026-11-27 — L3 moved to c56598f: ribbon tabs (F&O product tabs, Scalper strategy tab) have Chrome-style SVG reverse corners, crisp, no seam at the border. Option chain keeps no corners (its override now hides the SVG flares, `svg[data-side]`).
 - 2026-11-27 — V5 View all: a tab with nothing in it (Futures in the sample) shows the L3 empty state (illustration, “No futures expiring soon”, a line on what shows up there, Show all → the All tab) instead of a plain line.
@@ -8455,8 +8484,8 @@ function addMinutes(start: string, add: number) {
   "order.lots": "Lots",
   "order.unitSwitch": "Switch between quantity and lots",
   "order.lotHint": "({lot} = 1 Lot)",
-  "order.limitPrice": "Limit",
-  "order.trigger": "Trigger Price",
+  "order.limitPrice": "Limit price",
+  "order.trigger": "Trigger price",
   "order.offset": "Distance from the market price",
   "order.tpsl": "Set TPSL",
   "order.margin": "Margin:",
@@ -8467,6 +8496,35 @@ function addMinutes(start: string, add: number) {
   "order.buy": "Buy",
   "order.sell": "Sell",
   "order.placed": "{side} order placed · {name} {contract}",
+  "tpsl.title": "TPSL",
+  "tpsl.qtyHeld": "Qty {qty}",
+  "tpsl.close": "Close",
+  "tpsl.orderN": "Order {n}",
+  "tpsl.avg": "(Avg. Buy: {price})",
+  "tpsl.remove": "Remove",
+  "tpsl.removeLabel": "Remove order {n}",
+  "tpsl.tp": "Take profit",
+  "tpsl.sl": "Stop loss",
+  "tpsl.at.mkt": "Market",
+  "tpsl.at.lmt": "Limit",
+  "tpsl.triggerAt": "Trigger at",
+  "tpsl.clear": "Clear",
+  "tpsl.atSwitch": "{leg}: switch between at market and at limit",
+  "tpsl.price": "Enter price",
+  "tpsl.priceLabel": "{leg} price",
+  "tpsl.pct": "{leg} distance from the average price",
+  "tpsl.estProfit": "Est. profit",
+  "tpsl.estLoss": "Est. loss",
+  "tpsl.none": "--",
+  "tpsl.tpLow": "Take profit must be above the LTP ({price})",
+  "tpsl.slHigh": "Stop loss must be below the LTP ({price})",
+  "tpsl.add": "Add new TP/SL",
+  "tpsl.over": "Combined qty ({total}) exceeds total qty ({qty})",
+  "tpsl.trailing": "Trailing stop loss",
+  "tpsl.trailingHint": "The stop loss moves up as the price rises",
+  "tpsl.trailingInfo": "What is a trailing stop loss?",
+  "tpsl.apply": "Apply",
+  "tpsl.applied": "TP/SL set · {name}",
   "position.tp": "TP Qty:{quantity}",
   "position.sl": "SL Qty:{quantity}",
   "position.moveTp": "Take-profit at ₹{price}. Drag or use the arrow keys to move it",
@@ -8765,7 +8823,13 @@ function addMinutes(start: string, add: number) {
   "orders.card": "{side} {name}, {status}. Open order",
   "orders.list": "F&O orders",
   "orders.empty.title": "No open orders",
-  "orders.empty.text": "Orders waiting to go through show up here."
+  "orders.empty.text": "Orders waiting to go through show up here.",
+  "order.price": "Enter price",
+  "order.priceOf": "{label} in rupees",
+  "order.offsetOf": "{label}: distance from the market price",
+  "order.add": "Add to the quantity",
+  "order.lotsN": "{lots} lots",
+  "order.lot1": "1 lot"
 }
 ```
 
@@ -9085,6 +9149,7 @@ import { CommodityCalendar } from './commodities/screens/CommodityCalendar'
 import { goldMiniAsset, illiquidAsset } from './commodities/data'
 import { OptionChain } from './option-chain/screens/OptionChain'
 import { OrderPad } from './order-pad/screens/OrderPad'
+import { tpslGoldm, tpslPositionSet } from './order-pad/data'
 import type { Segment } from './strategies/data'
 import { noSignalFilter, sampleSignalFilter, scalperPosition } from './data'
 import { Scalper } from './screens/Scalper'
@@ -9111,7 +9176,7 @@ type HomeOptions = { scrollTo?: HomePart; product?: Product; segment?: Segment; 
 const home = (go: Go, scrollTo?: HomePart, options: HomeOptions = {}) => <Home scrollTo={scrollTo} product={options.product} segment={options.segment} picker={options.picker} onProduct={(product, segment) => go(tabScreen(product, segment))} onCommodity={() => go('fno-12')} onAsset={() => go('fno-21')} onExpiries={() => go('fno-38')} onHome={() => go('stocks-01')} onSearch={() => go('search-25')} onProfile={() => go('profile-01')} onWallet={() => go('deposit-01')} onDash={() => go('dash-02')} onUsStocks={() => go('stocks-09')} onOptions={() => go('search-26')} onFutures={() => go('search-27')} onChain={() => go('fno-17')} onScalper={() => openScalper(go)} onPositions={() => go('fno-48')} />
 
 /** F&O Positions: the navbar's Positions tab — Positions or Orders, one page. */
-const positionsPage = (go: Go, tab: PositionsTab = 'positions', options: { ordersView?: OrdersView; scrolled?: boolean } = {}) => <Positions tab={tab} ordersView={options.ordersView} scrolled={options.scrolled} onHome={() => go('stocks-01')} onFno={() => go('fno-01')} onChain={() => go('fno-17')} onScalper={() => openScalper(go)} onSearch={() => go('search-25')} onWallet={() => go('deposit-01')} onWatchlist={() => { markMove('market-11', 'forward'); go('market-11') }} />
+const positionsPage = (go: Go, tab: PositionsTab = 'positions', options: { ordersView?: OrdersView; scrolled?: boolean } = {}) => <Positions tab={tab} ordersView={options.ordersView} scrolled={options.scrolled} onHome={() => go('stocks-01')} onFno={() => go('fno-01')} onChain={() => go('fno-17')} onScalper={() => openScalper(go)} onSearch={() => go('search-25')} onWallet={() => go('deposit-01')} onWatchlist={() => { markMove('market-11', 'forward'); go('market-11') }} onTpsl={(p) => go(p.tp === undefined ? 'fno-52' : 'fno-53')} />
 
 export const fno: Flow = {
   id: 'fno', title: 'F&O',
@@ -9157,6 +9222,8 @@ export const fno: Flow = {
     { id: 'fno-48', section: 'positions', group: 'positions', name: 'Positions', figma: '', badge: 'new', tab: true, note: 'The F&O navbar’s Positions tab (also the P&L arrow on F&O home), from the live app (screenshots, 27 Nov 2026; no Figma frame yet), on the stocks Portfolio → Positions patterns. Top bar: Positions with search, watchlist (→ market-11) and wallet; Positions | Orders tabs; its hairline shows only once the page scrolls. Grey top: the Total Returns card — “Total Returns ⇕” (₹ ↔ %) over the amount, square D / W / M / Y beside it, Unrealised | Realised, this week’s days with an eye that greys them out (amounts always show), P&L Analysis. White body with rounded top corners: Market Indices (as F&O home), then Your Positions — Refresh, settings, All / Equity / Commodity pills, a card per position: 40 logo, name, “Put | date | Qty.75”, exchange over product, Avg. price | LTP | Returns between dashed lines; open ones get Set TPSL / Manage TPSL + Exit Now, and with TP / TSL set a green strip “✓ TP (₹…) • TSL (₹…)  Qty 75/75 ›”. Unbuilt destinations open the explanatory sheet.', render: (go) => positionsPage(go) },
     { id: 'fno-49', section: 'positions', group: 'positions', name: 'Positions · scrolled (Total Returns collapsed)', figma: '', badge: 'new', tab: true, note: 'Once the Total Returns card has gone under the top bar, its one-line form (“Total Returns −₹…”, on a wash of the result’s colour, fading in) stays under the tabs in the Actionbar’s bottom slot; scrolling back up brings the card back.', render: (go) => positionsPage(go, 'positions', { scrolled: true }) },
     { id: 'fno-50', section: 'positions', group: 'positions', name: 'Orders · History', figma: '', badge: 'new', tab: true, note: 'The Orders tab. Sticky under the tabs: Open · History (equal-width pills, the selected one primary) and All Orders with a round filter button. Orders by day as stocks Portfolio → Orders: a closed day is a card cell, an open one a plain row with its cards (the first open). A card: product • time, status tag (Executed blue, Cancelled / Rejected red, Open yellow) and side tag (Buy green, Sell red); logo, contract, filled/qty; Avg. price, a limit, or At Market, and TP • TSL when set.', render: (go) => positionsPage(go, 'orders') },
+    { id: 'fno-52', section: 'positions', group: 'tpsl', name: 'Order pad · TPSL sheet (Set)', figma: '', badge: 'new', note: 'Set TPSL on an open position (GOLDM FEB FUT) lands on the F&O order pad — the position’s contract, Sell to exit it — with the TPSL sheet open (live app, 27 Nov; no Figma frame). F&O TP/SL is set per quantity, in whole lots: Order (Avg. Buy) with Quantity ⇕ (lot hint, stepper of one lot), Take Profit at Mkt ⇄ Lmt and Stop Loss (price typed or a % from the average buy, Est. Profit / Est. Loss), + Add new TP/SL for another order on part of the position (Remove from Order 2), “Combined qty exceeds total qty” when the orders cover more than is held, TP above / SL below the LTP, Trailing stop loss. Laid out like the stocks TP/SL sheet (header, one price card per leg with its Switch, prices typed from the keypad). Footer: Apply (needs a valid qty and a TP or SL on every order). Closing the sheet leaves the pad; Set TPSL reopens it.', render: (go) => <OrderPad side="sell" position={tpslGoldm} tpslOpen onBack={() => backOr(go, 'fno-48')} /> },
+    { id: 'fno-53', section: 'positions', group: 'tpsl', name: 'Order pad · TPSL sheet (Manage)', figma: '', badge: 'new', note: 'Manage TPSL (or the green strip’s Qty ›) on NIFTY 25600 Put, 2 lots: the sheet prefilled with what’s set — TP ₹138.50, SL ₹124.00, trailing on. Add a second order to split the 2 lots between two TP/SL pairs.', render: (go) => <OrderPad side="sell" product="intraday" position={tpslPositionSet} tpslOpen onBack={() => backOr(go, 'fno-48')} /> },
     { id: 'fno-51', section: 'positions', group: 'positions', name: 'Orders · Open', figma: '', badge: 'new', tab: true, note: 'Orders waiting to go through, with their limit price; none → the L3 empty state.', render: (go) => positionsPage(go, 'orders', { ordersView: 'open' }) },
     { id: 'fno-08', section: 'home', group: 'home', name: 'Commodities home', figma: '6754:63637', tab: true, note: 'The Commodities product tab. Gold / Silver / Crude Oil / Natural Gas shortcuts open the Lot summary (Gold Summary). The chart’s instrument selector (“Gold”) opens the contract picker. Popular commodities: Options ⇕ Futures switch; Futures Heatmap: Bullion / Energy / Metals.', render: (go) => home(go, undefined, { product: 'commodities' }) },
     { id: 'fno-09', section: 'home', group: 'home', name: 'Commodities home · heatmap & Smart Futures', figma: '6754:63637', tab: true, note: 'The same long screen, scrolled to the Futures Heatmap.', render: (go) => home(go, 'heatmap', { product: 'commodities' }) },
@@ -9180,7 +9247,7 @@ export const fno: Flow = {
     { id: 'fno-26', section: 'order', group: 'order', name: 'Order pad · Buy · Limit', figma: '8671:18433', note: 'Limit adds the validity (Day ⇕ → Day / IOC) and a limit price row with a % stepper from the market price.', render: (go) => <OrderPad side="buy" type="limit" onBack={() => backOr(go, 'fno-21')} /> },
     { id: 'fno-27', section: 'order', group: 'order', name: 'Order pad · Buy · SL', figma: '8671:18433', note: 'SL adds a trigger price row above the limit row.', render: (go) => <OrderPad side="buy" type="sl" onBack={() => backOr(go, 'fno-21')} /> },
     { id: 'fno-28', section: 'order', group: 'order', name: 'Order pad · Buy · Intraday', figma: '8671:18433', note: 'Intraday: “This position will auto close by 11:30 PM” above the dock.', render: (go) => <OrderPad side="buy" product="intraday" onBack={() => backOr(go, 'fno-21')} /> },
-    { id: 'fno-29', section: 'order', group: 'order', name: 'Order pad · Sell · Market', figma: '8671:18433', note: 'Sell adds Margin · Leverage (grey strip) above the quantity; the action is Sell (red).', render: (go) => <OrderPad side="sell" onBack={() => backOr(go, 'fno-21')} /> },
+    { id: 'fno-29', section: 'order', group: 'order', name: 'Order pad · Sell · Market', figma: '8671:18433', note: 'Sell adds Margin · Leverage to the line under the quantity; the action is Sell.', render: (go) => <OrderPad side="sell" onBack={() => backOr(go, 'fno-21')} /> },
     { id: 'fno-30', section: 'order', group: 'order', name: 'Order pad · Sell · SL', figma: '8671:18433', render: (go) => <OrderPad side="sell" type="sl" onBack={() => backOr(go, 'fno-21')} /> },
     { id: 'fno-31', section: 'order', group: 'order', name: 'Order pad · Sell · Intraday', figma: '8671:18433', render: (go) => <OrderPad side="sell" product="intraday" onBack={() => backOr(go, 'fno-21')} /> },
     { id: 'fno-32', section: 'order', group: 'order', name: 'Order pad · Buy · ILLIQUID (edge case)', figma: '8671:18433 + product rule', note: 'Should never be reached — every entry point blocks illiquid contracts — but if one slips through: ILLIQUID tag in the header (tap → “What does illiquidity mean?”), the blocked note in the dock (tap → same sheet) and Buy disabled. Inputs stay usable.', render: (go) => <OrderPad side="buy" illiquid onBack={() => backOr(go, 'fno-21')} /> },
@@ -9648,6 +9715,183 @@ function IlliquidCell({ open, onToggle, onMore, label, side, children }: { open:
 }
 ```
 
+### `src/flows/fno/order-pad/components/PriceField.module.css`
+
+```css
+/* Price field (PriceField.tsx): one box, rows 16 padded all round (12 + 4, 24 Nov, user), a hairline between rows. */
+.box { --pf-pad: var(--l3-spacing-12); } /* back to 12 (24 Nov, user): the 16 had reached every pad, not just the new version */
+
+/* L3 Card (padding none: the rows bring the 12), its own 8 gap off — the hairline separates rows. */
+.box { gap: 0; }
+/* With an error the border is red. L3 gap: Card has no error state — its border variable is set here. */
+.boxError.boxError { --card-border: inset 0 0 0 1px var(--l3-border-accent-error-default); }
+
+.row { padding: var(--pf-pad); }
+.row + .row { border-top: 1px solid var(--l3-border-light); } /* 1px hairline */
+
+/* The tap target for typing: the left part of the row, out to the box's left, top and bottom edges. */
+.text { flex: 1; min-width: 0; align-self: stretch; margin: calc(-1 * var(--pf-pad)) 0 calc(-1 * var(--pf-pad)) calc(-1 * var(--pf-pad)); padding: var(--pf-pad) 0 var(--pf-pad) var(--pf-pad); cursor: text; }
+.label { font: var(--l3-text-description-12); color: var(--l3-content-secondary); }
+.hint { font: var(--l3-text-description-14); color: var(--l3-content-secondary); }
+.value { display: flex; align-items: center; font: var(--l3-text-heading-16); color: var(--l3-content-primary); }
+/* A raw input sized to its text; the native caret is hidden and drawn instead (it only paints while the page has
+   focus and hides in captures), as L3 TextField's Typing state. */
+.input { min-width: 0; height: var(--l3-size-24); margin: 0; padding: 0; border: 0; outline: none; background: none; font: inherit; color: inherit; field-sizing: content; caret-color: transparent; }
+.input::placeholder { color: var(--l3-content-secondary); opacity: 1; }
+.caret { width: 2px; height: var(--l3-size-20); margin-left: var(--l3-spacing-02); background: var(--l3-content-accent-discover-default); animation: caretBlink 1s steps(1) infinite; }
+.caret[data-start] { margin: 0 var(--l3-spacing-02) 0 0; }
+@keyframes caretBlink { 50% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .caret { animation: none; } }
+
+/* On the Stepper's grey pill, L3's light-blue Small buttons blur into it: the enabled ± are white with the blue icon.
+   L3 gap: Stepper has no on-grey button option. */
+.stepper.stepper[data-size] button:not(:disabled) { background: var(--l3-surface-primary); color: var(--l3-content-accent-discover-default); }
+```
+
+### `src/flows/fno/order-pad/components/PriceField.tsx`
+
+```tsx
+// Price field — copied from us-stocks screens/trade/PriceField (a flow can't import another's; keep the two in step). The US Stocks trade screens' price card, one component for every use (19 Nov, the user's call: "make it
+// a component … same padding 12 in all cards"). Before, each screen drew its own (12 / 16 padding, filled or outlined).
+//
+// The uses it covers (audited 19 Nov):
+//  1. Order pad V2, Limit / SL order prices (OrderPadV2): label ("Limit price"), the typed $ price, a % Stepper. One box
+//     per price, or one box holding every price with a hairline between (flow option "Price cards").
+//  2. TP/SL sheet, trigger / limit rows (Tpsl LegCard): label + a unit switch (Points ⇄ Percentage) on the trigger row;
+//     empty ("Enter price" placeholder, the caret at its start, "--" in the Stepper); the box red with an error.
+//  3. Trailing TP / SL sheet (Tpsl TrailSheet): no typed price — a hint ("Trailing TP will move in") over a Medium unit
+//     switch; the Stepper is the value.
+//  4. Indian order pad, SL's second price (20 Nov): its unit switch is the label (Limit ⇄ Market); at Market the row
+//     shows a fixed "At market", with no typed price and no Stepper (`fixed`).
+//
+// Anatomy: PriceFieldBox (an L3 Card, padding none) holds one or more PriceField rows. Every row is 12 padded all round
+// and the box puts a 1px hairline between rows. The left part of a row (label + price, to the box's edges) is the tap
+// target for typing the price from the app keypad; the Stepper sits at the right.
+import type { InputHTMLAttributes, ReactNode } from 'react'
+import { Card } from '@l3/components/Card'
+import type { CardSurface } from '@l3/components/Card/Card'
+import { Select } from '@l3/components/Select'
+import { Stack } from '@l3/components/Stack'
+import { Stepper, type StepperProps } from '@l3/components/Stepper'
+import { keypadFieldProps } from '../../../../shared/ui/Keyboard'
+import styles from './PriceField.module.css'
+
+/** The box round one or more PriceField rows. `error`: the border turns red (the message goes under the box).
+ *  `surface`: the card's background (L3 Card's; default surface/default). */
+export function PriceFieldBox({ error = false, surface, children, className }: { error?: boolean; surface?: CardSurface; children: ReactNode; className?: string }) {
+  return (
+    <Card padding="none" surface={surface} className={[styles.box, error && styles.boxError, className].filter(Boolean).join(' ')}>
+      {children}
+    </Card>
+  )
+}
+
+/** A unit switch on the row (Points ⇄ Percentage): an L3 Select with the swap icon. */
+export type PriceFieldUnit = { label: string; onSwitch: () => void; 'aria-label': string; className?: string }
+
+/** The typed price (uses 1 and 2). */
+export type PriceFieldPrice = {
+  /** What's typed / the price, without the "$" ('' shows the placeholder). */
+  text: string
+  placeholder?: string
+  /** This is the keypad's field: the drawn caret shows (at the placeholder's start when empty, after the text when not). */
+  typing: boolean
+  'aria-label': string
+  /** The row was tapped or the input focused: make this the keypad's field. */
+  onPick: (input: HTMLInputElement) => void
+  /** Extra input handlers (e.g. the pad keeps focus on blur). */
+  inputProps?: Pick<InputHTMLAttributes<HTMLInputElement>, 'onBlur'>
+}
+
+export type PriceFieldProps = {
+  /** "Limit price", "Trigger at", or the trail's hint ("Trailing TP will move in"). */
+  label: string
+  unit?: PriceFieldUnit
+  /** Omit for a stepper-only row (use 3): the unit switch then sits under the label, at Medium. */
+  price?: PriceFieldPrice
+  /** The L3 Small Stepper at the right (its ± buttons are white on the grey pill). */
+  stepper?: Omit<StepperProps, 'size'>
+  /** A value that can't be typed ("At market", use 4): shown in place of the price; no Stepper. */
+  fixed?: string
+  /** Stepper-only row: a note on the unit switch's line, after it (F&O "1 = 1 Lot"). */
+  unitNote?: string
+}
+
+export function PriceField({ label, unit, price, stepper, fixed, unitNote }: PriceFieldProps) {
+  // F&O prices are in ₹.
+  const symbol = '₹'
+  const stepperEl = stepper && <Stepper {...stepper} size="sm" className={[styles.stepper, stepper.className].filter(Boolean).join(' ')} />
+  const labelEl = (
+    <Stack direction="horizontal" align="center" gap="04">
+      {label && <span className={styles.label}>{label}</span>}
+      {unit && <Select size="sm" icon="swap" className={unit.className} onClick={unit.onSwitch} aria-label={unit['aria-label']}>{unit.label}</Select>}
+    </Stack>
+  )
+  if (fixed !== undefined) {
+    return (
+      <Stack gap="04" className={styles.row}>
+        {labelEl}
+        <span className={styles.value}>{fixed}</span>
+      </Stack>
+    )
+  }
+  if (!price) {
+    return (
+      <Stack direction="horizontal" justify="between" align="center" gap="12" className={styles.row}>
+        {unitNote !== undefined ? (
+          <Stack direction="horizontal" align="center" gap="08">
+            {unit && <Select size="md" icon="swap" onClick={unit.onSwitch} aria-label={unit['aria-label']}>{unit.label}</Select>}
+            <span className={styles.hint}>{unitNote}</span>
+          </Stack>
+        ) : (
+          <Stack gap="04">
+            <span className={styles.hint}>{label}</span>
+            {unit && <Select size="md" icon="swap" onClick={unit.onSwitch} aria-label={unit['aria-label']}>{unit.label}</Select>}
+          </Stack>
+        )}
+        {stepperEl}
+      </Stack>
+    )
+  }
+  const empty = price.text === ''
+  return (
+    <Stack direction="horizontal" justify="between" align="center" gap="08" className={styles.row} data-price-field>
+      <Stack
+        gap="04"
+        className={styles.text}
+        onPointerDown={(e) => {
+          const input = e.currentTarget.querySelector('input')
+          if (!input || (e.target as HTMLElement).closest('button')) return
+          if (e.target !== input) e.preventDefault()
+          input.focus({ preventScroll: true })
+          price.onPick(input)
+        }}
+      >
+        {labelEl}
+        {/* FLAG: a raw input (L3 has no inline price field), typed from the shared app Keyboard. */}
+        <label className={styles.value} data-empty={empty || undefined}>
+          {!empty && <span>{symbol}</span>}
+          {price.typing && empty && <span className={styles.caret} data-start aria-hidden="true" />}
+          <input
+            className={styles.input}
+            {...keypadFieldProps()}
+            autoComplete="off"
+            aria-label={price['aria-label']}
+            placeholder={price.placeholder}
+            value={price.text}
+            onFocus={(e) => price.onPick(e.currentTarget)}
+            onChange={() => undefined}
+            {...price.inputProps}
+          />
+          {price.typing && !empty && <span className={styles.caret} aria-hidden="true" />}
+        </label>
+      </Stack>
+      {stepperEl}
+    </Stack>
+  )
+}
+```
+
 ### `src/flows/fno/order-pad/data.ts`
 
 ```ts
@@ -9673,42 +9917,82 @@ export const funds = { available: 1105002, required: 1075060 }
 /** Intraday positions are squared off automatically at this time (MCX evening session). */
 export const intradayCloseTime = '11:30 PM'
 export const validities = ['Day', 'IOC']
+
+// ---- TP / SL on an open position (the TPSL sheet over the pad, opened from F&O → Positions) ----
+// How F&O TP/SL works (live app + Dhan / Groww, 27 Nov): it is set per quantity, in whole lots, not on the whole
+// position at once. A position can be split into several TP/SL orders, each with its own lots, take profit and stop
+// loss; together they can't cover more than is held. In each order TP and SL are one-cancels-other. Prices are the
+// contract's own premium (not the index), from the average buy price.
+
+/** The open position the TP/SL orders protect: its contract (header) and what was bought. */
+export type TpslPosition = {
+  name: string
+  contract: string
+  /** The sheet's contract line: "NIFTY 02 Dec 2026 25600 Put". */
+  fullName: string
+  exchange: string
+  ltp: number
+  change: number
+  lotSize: number
+  /** Quantity held: the TP/SL orders together can cover up to this. */
+  qty: number
+  /** Average buy price: TP / SL distances and estimates are counted from it. */
+  avg: number
+  /** Already set (Manage TPSL): prefilled into the first order. */
+  tp?: number
+  sl?: number
+  trailing?: boolean
+}
+/** At market (exits at the market price once hit) or at a limit (exits at that price). */
+export type TpslAt = 'mkt' | 'lmt'
+export type TpslLeg = { at: TpslAt; on: boolean; price: number | null }
+/** One TP/SL order: a quantity with its take profit and stop loss. */
+export type TpslOrder = { id: number; qty: number; tp: TpslLeg; sl: TpslLeg }
+
+/** GOLDM FEB FUT, an open position with no TP / SL yet (Set TPSL). */
+export const tpslGoldm: TpslPosition = {
+  name: 'GOLDM FEB FUT', contract: 'Fut 05 Feb 27', fullName: 'GOLDM 05 Feb 2027 FUT', exchange: 'MCX', ltp: 1_28_912, change: 0.29, lotSize: 1, qty: 1, avg: 1_28_540,
+}
+/** NIFTY 25600 Put, the open position on F&O → Positions (fno-48). */
+export const tpslPosition: TpslPosition = {
+  name: 'NIFTY 25600', contract: 'Put 02 Dec 26', fullName: 'NIFTY 02 Dec 2026 25600 Put', exchange: 'NSE', ltp: 131.85, change: 3.66, lotSize: 75, qty: 150, avg: 127.2,
+}
+/** The same position with TP / SL already set (Manage TPSL): the green strip on its card. */
+export const tpslPositionSet: TpslPosition = { ...tpslPosition, tp: 138.5, sl: 124, trailing: true }
 ```
 
 ### `src/flows/fno/order-pad/screens/OrderPad.module.css`
 
 ```css
-/* Commodity options order pad (Figma 8671:18433) on L3 tokens. */
+/* F&O order pad (Figma 8671:18433), laid out like the stocks order pad (us-stocks OrderPadV2.module.css). */
 .contract { display: flex; flex-direction: column; align-items: flex-start; gap: var(--l3-spacing-02); padding: 0; border: 0; background: none; color: var(--l3-content-primary); text-align: left; cursor: pointer; }
 .contractName { display: inline-flex; align-items: center; gap: var(--l3-spacing-04); font: var(--l3-text-heading-14); }
-.expiry { margin-left: var(--l3-spacing-04); font: var(--l3-text-label-12); color: var(--l3-content-tertiary); }
+.expiry { margin-left: var(--l3-spacing-04); font: var(--l3-text-label-12); color: var(--l3-content-secondary); }
 .contractPrice { display: inline-flex; align-items: center; gap: var(--l3-spacing-08); font: var(--l3-text-label-12); }
 .exchange { font: var(--l3-text-label-12); color: var(--l3-content-primary); }
 
-.body { padding: var(--l3-spacing-16); }
-.validity.validity { min-height: var(--l3-size-32); border: 1px solid var(--l3-border-dark); border-radius: var(--l3-radius-full); padding-inline: var(--l3-spacing-12); }
+.body { padding: var(--l3-spacing-24) var(--l3-spacing-16) var(--l3-spacing-16); overflow-x: clip; }
+.fields { align-self: stretch; }
+.typeRow { align-self: stretch; }
 
-/* Margin · Leverage (Sell): a grey strip. */
-.margin { display: flex; justify-content: space-between; padding: var(--l3-spacing-12); border-radius: var(--l3-radius-12); background: var(--l3-surface-secondary); font: var(--l3-text-label-12); }
-.margin strong, .funds strong { font: var(--l3-text-heading-12); color: var(--l3-content-primary); }
-.muted { color: var(--l3-content-tertiary); }
+/* The quantity card: no focused edge while the keypad types into it, as in the live app (27 Nov, the user's call). */
+.qtyCard { cursor: text; }
+.helper { margin: 0; padding-left: var(--l3-spacing-04); font: var(--l3-text-label-12); color: var(--l3-content-secondary); }
+.helper strong { font: var(--l3-text-heading-12); color: var(--l3-content-primary); }
 
-/* A field row: label, value / hint, compact stepper at the right — bordered, 12 radius. */
-.field { display: flex; align-items: center; gap: var(--l3-spacing-08); min-height: var(--l3-size-40); padding: var(--l3-spacing-04) var(--l3-spacing-04) var(--l3-spacing-04) var(--l3-spacing-12); border: 1px solid var(--l3-border-light); border-radius: var(--l3-radius-08); }
-.fieldLabel { flex: 1; font: var(--l3-text-label-12); color: var(--l3-content-secondary); }
-.fieldValue { font: var(--l3-text-heading-12); }
-.unit { display: inline-flex; align-items: center; gap: var(--l3-spacing-02); padding: 0; border: 0; background: none; color: var(--l3-content-primary); font: var(--l3-text-label-12); cursor: pointer; }
-.hint { flex: 1; font: var(--l3-text-label-12); color: var(--l3-content-tertiary); }
-/* Steppers are the L3 Stepper Small as it is (dark + / −) — the design system's style wins over Figma's grey / blue. */
+/* Set TPSL: primary label, the + in discover blue. */
+.tpslLink.tpslLink { color: var(--l3-content-primary); }
+.tpslLink.tpslLink [class*='icon'] { color: var(--l3-content-accent-discover-default); }
 
-.tpsl { display: inline-flex; align-items: center; gap: var(--l3-spacing-04); min-height: var(--l3-size-32); padding: 0; border: 0; background: none; color: var(--l3-content-primary); font: var(--l3-text-label-12); cursor: pointer; }
-
-/* Dock: optional auto-close note (intraday), then Avail. · Req and the action. */
+/* Dock: the note above the hairline, Avail. · Req, the action, then the keypad. */
 .dock { background: var(--l3-surface-primary); }
-.autoClose { margin: 0; padding: var(--l3-spacing-12) var(--l3-spacing-16); font: var(--l3-text-label-12); color: var(--l3-content-tertiary); text-align: center; }
-.dockBody { display: flex; flex-direction: column; gap: var(--l3-spacing-12); padding: var(--l3-spacing-12) var(--l3-spacing-16) var(--l3-spacing-16); border-top: 1px solid var(--l3-border-light); }
-.funds { display: flex; justify-content: space-between; font: var(--l3-text-label-12); }
-.req { padding: 0; border: 0; background: none; color: var(--l3-content-accent-discover-default); font: var(--l3-text-label-12); text-decoration: underline; cursor: pointer; }
+.note { margin: 0; padding: var(--l3-spacing-08) var(--l3-spacing-16); font: var(--l3-text-label-12); color: var(--l3-content-secondary); text-align: center; }
+.dockBody { padding: var(--l3-spacing-12) var(--l3-spacing-16); border-top: 1px solid var(--l3-border-light); }
+.funds { font: var(--l3-text-label-12); }
+.funds strong { font: var(--l3-text-heading-12); color: var(--l3-content-primary); }
+.muted { color: var(--l3-content-secondary); }
+/* "Req" opens the fee sheet: secondary text, underlined like a link (L3 gap: no link-style Button). */
+.reqLink.reqLink { color: var(--l3-content-secondary); text-decoration: underline; text-underline-offset: var(--l3-spacing-02); }
 
 /* ILLIQUID edge case: tag in the header (tap → explainer), the blocked note above the disabled action. */
 .headEnd { display: inline-flex; align-items: center; gap: var(--l3-spacing-08); }
@@ -9720,7 +10004,7 @@ export const validities = ['Day', 'IOC']
 ### `src/flows/fno/order-pad/screens/OrderPad.tsx`
 
 ```tsx
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Actionbar } from '@l3/components/Actionbar'
 import { Aerobar } from '@l3/components/Aerobar'
 import { Button } from '@l3/components/Button'
@@ -9728,19 +10012,20 @@ import { Icon } from '@l3/components/Icon'
 import { PriceChange } from '@l3/components/PriceChange'
 import { Select } from '@l3/components/Select'
 import { Stack } from '@l3/components/Stack'
-import { Stepper } from '@l3/components/Stepper'
 import { Tabs } from '@l3/components/Tabs'
 import { Tag } from '@l3/components/Tag'
 import { lmSwitchArrowVertical } from '@l3/icons/lemonnade'
 import { msAddCircleFill, msBlock, msInfo } from '@l3/icons/material'
 import { inr } from '../../../../shared/data/format'
+import { Keyboard, KeypadSlide, typeKey } from '../../../../shared/ui/Keyboard'
 import { Screen } from '../../../../shared/ui/Screen'
 import { ChoiceSheet, DetailSheet } from '../../sheets/HomeSheets'
 import { IlliquidSheet } from '../../sheets/IlliquidSheet'
 import { t } from '../../copy'
-import { funds, intradayCloseTime, orderContract, sellMargin, validities, type OrderProduct, type OrderSide, type OrderType } from '../data'
+import { PriceField, PriceFieldBox } from '../components/PriceField'
+import { funds, intradayCloseTime, orderContract, sellMargin, validities, type OrderProduct, type OrderSide, type OrderType, type TpslPosition } from '../data'
+import { TpslSheet } from './TpslSheet'
 import styles from './OrderPad.module.css'
-import flat from '../../flatCards.module.css'
 
 type Props = {
   side: OrderSide
@@ -9751,39 +10036,151 @@ type Props = {
    * the pad shows the ILLIQUID tag, the blocked note in the dock and a disabled Buy / Sell.
    */
   illiquid?: boolean
+  /** Opened from an open position (F&O → Positions): its contract in the header, its quantity, and Set TPSL opens the TPSL sheet for it. */
+  position?: TpslPosition
+  /** Land with the TPSL sheet open (the position card's Set / Manage TPSL). */
+  tpslOpen?: boolean
   onBack: () => void
 }
 
-type Modal = { kind: 'choice'; title: string; values: string[]; value: string; onPick: (v: string) => void } | { kind: 'detail'; title: string } | { kind: 'illiquid' }
+type Modal = { kind: 'choice'; title: string; values: string[]; value: string; onPick: (v: string) => void } | { kind: 'detail'; title: string } | { kind: 'illiquid' } | { kind: 'tpsl' }
+/** The field the keypad types into. */
+type Field = 'qty' | 'trigger' | 'limit'
+
 
 /**
- * Commodity options order pad (Figma 8671:18433) — commodity option chain only; other order pads differ a little.
+ * F&O order pad (Figma 8671:18433), laid out like the stocks order pad (us-stocks OrderPadV2, 27 Nov, the user's call:
+ * "keep the component the same as the stocks order pad … maintain the layout, the information and the inputs").
  * Actionbar: back · contract ⇕ (name, expiry, price + change) · exchange, Delivery / Intraday tabs in its bottom slot.
- * Body: Market / Limit / SL pills (+ validity “Day ⇕” for Limit / SL); Sell shows Margin · Leverage; Quantity (⇕ lots,
- * lot hint, stepper of one lot); Limit adds a limit price row, SL a trigger price row and a limit row (each with a %
- * stepper from the market price); Set TPSL. Intraday: the auto-close note above the dock. Dock: Avail. · Req, then
- * Buy (brand) or Sell (sell).
+ * Body, centred: Market / Limit / SL pills; Quantity ⇄ Lots (+ validity "Day ⇅" on Limit / SL); the quantity, big and
+ * typed from the app keypad, the lot hint under it (Sell: Margin · Leverage too); + lot chips; on Limit / SL the price
+ * card (SL: Trigger price + Limit price rows; Limit: Limit price), each a typed ₹ price with a % Stepper from the market
+ * price; Set TPSL. Dock: the intraday auto-close note above it, then Avail. · Req, Buy (brand) or Sell (sell), the keypad.
  */
-export function OrderPad({ side, product: initialProduct = 'delivery', type: initialType = 'market', illiquid = false, onBack }: Props) {
-  const c = orderContract
+export function OrderPad({ side, product: initialProduct = 'delivery', type: initialType = 'market', illiquid = false, position, tpslOpen = false, onBack }: Props) {
+  const c = position ?? orderContract
+  const buy = side === 'buy'
+  // Option premiums move in ₹0.05; the commodity future's price in whole rupees.
+  const tick = position ? 0.05 : 1
+  const toTick = (n: number) => Math.max(tick, Math.round(n / tick) * tick)
+  const fmtPrice = (n: number) => (tick < 1 ? n.toFixed(2) : String(Math.round(n)))
+  // Limit / trigger start 2% on the good side of the market price (below for a buy, above for a sell).
+  const start = toTick(c.ltp * (buy ? 0.98 : 1.02))
+
   const [product, setProduct] = useState<OrderProduct>(initialProduct)
   const [type, setType] = useState<OrderType>(initialType)
   const [validity, setValidity] = useState(validities[0])
   const [lots, setLots] = useState(false)
-  const [quantity, setQuantity] = useState(c.lotSize)
-  const [limitPct, setLimitPct] = useState(20.3)
-  const [triggerPct, setTriggerPct] = useState(20.3)
-  const [modal, setModal] = useState<Modal | null>(null)
+  const [quantity, setQuantity] = useState(position?.qty ?? c.lotSize)
+  const [prices, setPrices] = useState<Record<'trigger' | 'limit', number>>({ trigger: start, limit: start })
+  const [modal, setModal] = useState<Modal | null>(position && tpslOpen ? { kind: 'tpsl' } : null)
   const [placed, setPlaced] = useState(false)
-  const buy = side === 'buy'
-  const priceAt = (pct: number) => inr(Math.round(c.ltp * (buy ? 1 - pct / 1000 : 1 + pct / 1000)), 0)
-  const priceRow = (label: string, pct: number, setPct: (n: number) => void) => <div className={styles.field}>
-    <span className={styles.fieldLabel}>{label}</span>
-    <span className={styles.fieldValue}>{priceAt(pct)}</span>
-    <Stepper size="sm" className={styles.stepper} label={t('order.offset')} value={pct} onChange={setPct} min={0} step={0.1} format={(n) => `${n.toFixed(1)}%`} />
-  </div>
+  const [tpslSet, setTpslSet] = useState(false)
 
-  const sheet = modal?.kind === 'illiquid' ? <IlliquidSheet contract={`${c.name} ${c.contract}`} onClose={() => setModal(null)} /> : modal?.kind === 'choice' ? <ChoiceSheet {...modal} onClose={() => setModal(null)} /> : modal?.kind === 'detail' ? <DetailSheet title={modal.title} onClose={() => setModal(null)} /> : undefined
+  // The keypad: which field it types into, the typed text, and whether the next key replaces the value.
+  const [keypad, setKeypad] = useState(!tpslOpen)
+  const [active, setActive] = useState<Field>('qty')
+  const [draft, setDraft] = useState<string | null>(null)
+  const [fresh, setFresh] = useState(true)
+  const activeInput = useRef<HTMLInputElement | null>(null)
+  const bodyRef = useRef<HTMLDivElement>(null)
+
+  const shownQty = lots ? quantity / c.lotSize : quantity
+  const qtyText = active === 'qty' && draft !== null ? draft : String(shownQty)
+  const pick = (field: Field, input: HTMLInputElement) => {
+    activeInput.current = input
+    setKeypad(true)
+    if (field === active && keypad) return
+    setActive(field)
+    setDraft(null)
+    setFresh(true)
+  }
+  const pickQty = () => {
+    activeInput.current = null
+    ;(document.activeElement as HTMLElement | null)?.blur()
+    setKeypad(true)
+    if (active === 'qty' && keypad) return
+    setActive('qty')
+    setDraft(null)
+    setFresh(true)
+  }
+  const onKey = (key: string) => {
+    if (active === 'qty') {
+      // Whole numbers: lots, or the quantity (rounded to whole lots when the keypad closes).
+      const text = typeKey(fresh ? '' : qtyText, key, 6).replace(/^0+(?=\d)/, '')
+      setFresh(false)
+      setDraft(text)
+      const n = Number(text) || 0
+      setQuantity(lots ? n * c.lotSize : n)
+      return
+    }
+    const base = fresh ? '' : (draft ?? fmtPrice(prices[active]))
+    let text: string | undefined
+    if (key === '.') text = tick >= 1 || base.includes('.') ? undefined : (base || '0') + '.'
+    else if (/^\d$/.test(key) && base.includes('.') && (base.split('.')[1]?.length ?? 0) >= 2) text = undefined
+    else text = typeKey(base, key, 8).replace(/^0+(?=\d)/, '')
+    setFresh(false)
+    if (text === undefined) return
+    setDraft(text)
+    const price = Number(text) || 0
+    if (price > 0) setPrices((all) => ({ ...all, [active]: price }))
+  }
+  const closeKeypad = () => {
+    setKeypad(false)
+    setDraft(null)
+    // A typed quantity becomes whole lots (at least one).
+    setQuantity((q) => Math.max(c.lotSize, Math.round(q / c.lotSize) * c.lotSize))
+    activeInput.current?.blur()
+  }
+  // While the keypad is up the field keeps focus (the keypad never takes it), so it shows the typing caret.
+  const keepFocus = () => requestAnimationFrame(() => {
+    const field = activeInput.current
+    if (keypad && field?.isConnected && !(document.activeElement instanceof HTMLInputElement)) field.focus({ preventScroll: true })
+  })
+  // A tap on the page outside the typable areas closes the keypad; the dock and the order type leave it open.
+  useEffect(() => {
+    if (!keypad) return
+    const onDown = (e: PointerEvent) => {
+      const target = e.target as HTMLElement
+      const screen = bodyRef.current?.closest('section')
+      if (!screen?.contains(target) || target.closest(`input, .${styles.qtyCard}, [data-price-field], footer, .${styles.typeRow}`)) return
+      closeKeypad()
+    }
+    document.addEventListener('pointerdown', onDown)
+    return () => document.removeEventListener('pointerdown', onDown)
+  })
+
+  const priceRow = (field: 'trigger' | 'limit') => {
+    const label = t(field === 'trigger' ? 'order.trigger' : 'order.limitPrice')
+    const typing = keypad && active === field
+    const pct = Math.round(((prices[field] - c.ltp) / c.ltp) * 1000) / 10
+    return (
+      <PriceField
+        key={field}
+        label={label}
+        price={{
+          text: typing && draft !== null ? draft : fmtPrice(prices[field]),
+          placeholder: t('order.price'),
+          typing,
+          'aria-label': t('order.priceOf', { label }),
+          onPick: (input) => pick(field, input),
+          inputProps: { onBlur: keepFocus },
+        }}
+        stepper={{
+          label: t('order.offsetOf', { label }),
+          value: pct,
+          min: -50, max: 50, step: 0.5,
+          format: (n) => `${n > 0 ? '+' : ''}${n.toFixed(1)}%`,
+          onChange: (n) => {
+            setPrices((all) => ({ ...all, [field]: toTick(c.ltp * (1 + n / 100)) }))
+            if (active === field) { setDraft(null); setFresh(true) }
+          },
+        }}
+      />
+    )
+  }
+
+  const sheet = modal?.kind === 'tpsl' && position ? <TpslSheet position={position} onClose={() => setModal(null)} onApply={() => { setModal(null); setTpslSet(true) }} /> : modal?.kind === 'illiquid' ? <IlliquidSheet contract={`${c.name} ${c.contract}`} onClose={() => setModal(null)} /> : modal?.kind === 'choice' ? <ChoiceSheet {...modal} onClose={() => setModal(null)} /> : modal?.kind === 'detail' ? <DetailSheet title={modal.title} onClose={() => setModal(null)} /> : undefined
   const top = <Actionbar onBack={onBack} backLabel={t('order.back')}
     title={<button type="button" className={styles.contract} aria-label={t('order.switch')} onClick={() => setModal({ kind: 'detail', title: t('order.switch') })}>
       <span className={styles.contractName}>{c.name}<Icon icon={lmSwitchArrowVertical} size={16} /><span className={styles.expiry}>{c.contract}</span></span>
@@ -9792,38 +10189,321 @@ export function OrderPad({ side, product: initialProduct = 'delivery', type: ini
     actions={<span className={styles.headEnd}>{illiquid && <button type="button" className={styles.tagButton} aria-label={t('illiquid.open')} onClick={() => setModal({ kind: 'illiquid' })}><Tag color="error" variant="secondary" size="sm" iconLeft={<Icon icon={msBlock} size={12} />}>{t('asset.illiquid')}</Tag></button>}<span className={styles.exchange}>{c.exchange}</span></span>}
     bottom={<Tabs aria-label={t('order.product')} value={product} onChange={setProduct} items={[{ value: 'delivery', label: t('order.delivery') }, { value: 'intraday', label: t('order.intraday') }]} />} />
 
+  // The stocks pad's dock: the note above the hairline, Avail. · Req, the action, then the keypad.
   const dock = <div className={styles.dock} data-surface="primary">
-    {product === 'intraday' && <p className={styles.autoClose}>{t('order.autoClose', { time: intradayCloseTime })}</p>}
-    <div className={styles.dockBody}>
-      <div className={styles.funds}>
+    {product === 'intraday' && <p className={styles.note}>{t('order.autoClose', { time: intradayCloseTime })}</p>}
+    <Stack gap="12" className={styles.dockBody}>
+      <Stack direction="horizontal" justify="between" align="center" className={styles.funds}>
         <span><span className={styles.muted}>{t('order.available')}</span> <strong>{inr(funds.available, 0)}</strong></span>
-        <span><button type="button" className={styles.req} onClick={() => setModal({ kind: 'detail', title: t('order.required') })}>{t('order.required')}</button> <strong>{inr(funds.required, 0)}</strong></span>
-      </div>
+        <Stack direction="horizontal" gap="04" align="center">
+          <Button variant="ghost" size="sm" className={styles.reqLink} onClick={() => setModal({ kind: 'detail', title: t('order.required') })}>{t('order.required')}</Button>
+          <strong>{inr(funds.required, 0)}</strong>
+        </Stack>
+      </Stack>
       {illiquid && <button type="button" className={styles.illiquidNote} onClick={() => setModal({ kind: 'illiquid' })}>{t('asset.illiquidNote')}<Icon icon={msInfo} size={16} /></button>}
       <Button variant={buy ? 'brand' : 'sell'} size="lg" fullWidth disabled={illiquid} onClick={() => setPlaced(true)}>{t(buy ? 'order.buy' : 'order.sell')}</Button>
-    </div>
+    </Stack>
+    <KeypadSlide open={keypad}><Keyboard decimal={active !== 'qty' && tick < 1} onKey={onKey} /></KeypadSlide>
   </div>
 
-  return <Screen className={flat.flatCards} top={top} bottom={dock} sheet={sheet}
-    toast={placed ? <Aerobar floating type="success" heading={t('order.placed', { side: t(buy ? 'order.buy' : 'order.sell'), name: c.name, contract: c.contract })} onDismiss={() => setPlaced(false)} /> : undefined}>
-    <Stack gap="16" className={styles.body}>
-      <Stack direction="horizontal" align="center" justify="between">
-        <Tabs aria-label={t('order.type')} appearance="pill" size="sm" value={type} onChange={setType} items={(['market', 'limit', 'sl'] as const).map((value) => ({ value, label: t(`order.${value}`) }))} />
-        {type !== 'market' && <Select size="sm" aria-label={t('order.validity')} className={styles.validity} onClick={() => setModal({ kind: 'choice', title: t('order.validity'), values: validities, value: validity, onPick: setValidity })}>{validity}</Select>}
+  return <Screen top={top} bottom={dock} sheet={sheet}
+    toast={tpslSet ? <Aerobar floating type="success" heading={t('tpsl.applied', { name: `${c.name} ${c.contract}` })} onDismiss={() => setTpslSet(false)} /> : placed ? <Aerobar floating type="success" heading={t('order.placed', { side: t(buy ? 'order.buy' : 'order.sell'), name: c.name, contract: c.contract })} onDismiss={() => setPlaced(false)} /> : undefined}>
+    {/* Laid out like the live app (27 Nov, the user's reference): order types left · validity right, then the quantity
+        card (Quantity ⇄ Lots · lot size · Stepper), the price card(s), and Set TPSL at the right. */}
+    <Stack gap="16" className={styles.body} ref={bodyRef}>
+      <Stack direction="horizontal" justify="between" align="center" gap="08" className={styles.typeRow}>
+        <Tabs aria-label={t('order.type')} appearance="pill" size="md" value={type} onChange={setType} items={(['market', 'limit', 'sl'] as const).map((value) => ({ value, label: t(`order.${value}`) }))} />
+        {type !== 'market' && (
+          <Select size="sm" icon="swap" aria-label={t('order.validity')} onClick={() => setModal({ kind: 'choice', title: t('order.validity'), values: validities, value: validity, onPick: setValidity })}>{validity}</Select>
+        )}
       </Stack>
-      {!buy && <div className={styles.margin}><span><span className={styles.muted}>{t('order.margin')}</span> <strong>{sellMargin.margin}</strong></span><span><span className={styles.muted}>{t('order.leverage')}</span> <strong>{sellMargin.leverage}</strong></span></div>}
-      <div className={styles.field}>
-        <button type="button" className={styles.unit} aria-label={t('order.unitSwitch')} onClick={() => setLots(!lots)}>{t(lots ? 'order.lots' : 'order.quantity')}<Icon icon={lmSwitchArrowVertical} size={12} /></button>
-        <span className={styles.hint}>{t('order.lotHint', { lot: c.lotSize })}</span>
-        <Stepper size="sm" className={styles.stepper} label={t(lots ? 'order.lots' : 'order.quantity')} value={lots ? quantity / c.lotSize : quantity} onChange={(n) => setQuantity(lots ? n * c.lotSize : n)} min={lots ? 1 : c.lotSize} step={lots ? 1 : c.lotSize} />
-      </div>
-      {type === 'sl' && priceRow(t('order.trigger'), triggerPct, setTriggerPct)}
-      {type !== 'market' && priceRow(t('order.limitPrice'), limitPct, setLimitPct)}
+      {/* Quantity: typed from the app keypad (a tap on the card makes it the keypad's field) or stepped by a lot. */}
+      <Stack gap="08">
+        <div className={styles.qtyCard} onPointerDown={(e) => { if (!(e.target as HTMLElement).closest('button')) pickQty() }}>
+          <PriceFieldBox>
+            <PriceField
+              label={t(lots ? 'order.lots' : 'order.quantity')}
+              unit={{ label: t(lots ? 'order.lots' : 'order.quantity'), onSwitch: () => { setLots(!lots); setDraft(null); setFresh(true) }, 'aria-label': t('order.unitSwitch') }}
+              unitNote={t('order.lotHint', { lot: c.lotSize })}
+              stepper={{
+                label: t(lots ? 'order.lots' : 'order.quantity'),
+                value: shownQty, editable: false,
+                min: lots ? 1 : c.lotSize, step: lots ? 1 : c.lotSize,
+                format: () => qtyText,
+                onChange: (n) => { setQuantity(lots ? n * c.lotSize : n); setDraft(null); setFresh(true) },
+              }}
+            />
+          </PriceFieldBox>
+        </div>
+        {!buy && <p className={styles.helper}>{t('order.margin')} <strong>{sellMargin.margin}</strong> · {t('order.leverage')} <strong>{sellMargin.leverage}</strong></p>}
+      </Stack>
+      {type !== 'market' && (
+        <PriceFieldBox className={styles.fields}>
+          {type === 'sl' && priceRow('trigger')}
+          {priceRow('limit')}
+        </PriceFieldBox>
+      )}
+      {/* Set TPSL at the right: the label, then the + in discover blue. L3 gap: no link-style Button. */}
       <Stack direction="horizontal" justify="end">
-        <button type="button" className={styles.tpsl} onClick={() => setModal({ kind: 'detail', title: t('order.tpsl') })}>{t('order.tpsl')}<Icon icon={msAddCircleFill} size={16} /></button>
+        <Button variant="ghost" size="sm" className={styles.tpslLink} iconRight={<Icon icon={msAddCircleFill} size={20} />}
+          onClick={() => setModal(position ? { kind: 'tpsl' } : { kind: 'detail', title: t('order.tpsl') })}>{t('order.tpsl')}</Button>
       </Stack>
     </Stack>
   </Screen>
+}
+```
+
+### `src/flows/fno/order-pad/screens/TpslSheet.module.css`
+
+```css
+/* TPSL sheet (F&O order pad, open position) — built like the stocks TP/SL sheet (us-stocks TpslSheetB.module.css). */
+
+.contract { font: var(--l3-text-label-14); color: var(--l3-content-primary); font-variant-numeric: tabular-nums; }
+.inline { display: inline-flex; align-items: baseline; gap: var(--l3-spacing-04); }
+.orderTitle { font: var(--l3-text-heading-16); color: var(--l3-content-primary); }
+.muted { font: var(--l3-text-label-12); color: var(--l3-content-secondary); }
+
+/* The card's 1px edge is border/intense, as on the stocks sheet. An error's red still wins (PriceField's .boxError). */
+.card { --card-border: inset 0 0 0 1px var(--l3-border-intense); }
+
+
+/* Under the card: Est. profit / loss or the error, and Clear. */
+.estRow { min-height: var(--l3-size-24); padding: var(--l3-spacing-08) 0 0 var(--l3-spacing-04); }
+.est { margin: 0; font: var(--l3-text-description-12); color: var(--l3-content-secondary); }
+.error { margin: 0; font: var(--l3-text-label-12); color: var(--l3-content-accent-error-default); }
+.up { font: var(--l3-text-label-12); color: var(--l3-content-accent-success-default); }
+.down { font: var(--l3-text-label-12); color: var(--l3-content-accent-error-default); }
+/* Clear: a ghost Button in the discover blue. L3 gap: no link-style Button. */
+.link.link { color: var(--l3-content-accent-discover-default); }
+
+.trailing { display: flex; align-items: center; gap: var(--l3-spacing-08); font: var(--l3-text-label-14); color: var(--l3-content-primary); cursor: pointer; }
+```
+
+### `src/flows/fno/order-pad/screens/TpslSheet.tsx`
+
+```tsx
+import { useEffect, useId, useState } from 'react'
+import { BottomSheetHeader } from '@l3/components/BottomSheet'
+import { Button } from '@l3/components/Button'
+import { ButtonGroup } from '@l3/components/ButtonGroup'
+import { Card } from '@l3/components/Card'
+import { Checkbox } from '@l3/components/Checkbox'
+import { Icon } from '@l3/components/Icon'
+import { PriceChange } from '@l3/components/PriceChange'
+import { Select } from '@l3/components/Select'
+import { Stack } from '@l3/components/Stack'
+import { Tooltip } from '@l3/components/Tooltip'
+import { msAdd, msDelete, msInfo } from '@l3/icons/material'
+import { formatInr } from '../../../../shared/money'
+import { Keyboard, KeypadSlide, typeKey } from '../../../../shared/ui/Keyboard'
+import { Sheet } from '../../../../shared/ui/Sheet'
+import { t } from '../../copy'
+import { PriceField, PriceFieldBox } from '../components/PriceField'
+import type { TpslLeg, TpslOrder, TpslPosition } from '../data'
+import styles from './TpslSheet.module.css'
+
+type Leg = 'tp' | 'sl'
+const LEGS: Leg[] = ['tp', 'sl']
+const TICK = 0.05
+/** Option prices move in ₹0.05 ticks. */
+const toTick = (n: number) => Math.max(TICK, Math.round(n / TICK) * TICK)
+/** Where a leg starts when it's turned on: TP 5% above the LTP, SL 5% below. */
+const startPrice = (leg: Leg, ltp: number) => toTick(ltp * (leg === 'tp' ? 1.05 : 0.95))
+
+type Typing = { orderId: number; leg: Leg; text: string | null; fresh: boolean }
+
+/**
+ * TPSL sheet over the F&O order pad, for an open (bought) position. Built like the stocks TP/SL sheet (us-stocks
+ * TpslSheetB, 27 Nov, the user's call: "part of the same ecosystem"): the same header (title, Qty as the description,
+ * the contract + LTP at the right), each leg one price card (name · Market ⇄ Limit · Switch, then "Trigger at" with the
+ * typed ₹ price and a % Stepper), Est. profit / loss and Clear under it, and Apply in the dock.
+ * F&O TP/SL is set per quantity, in whole lots: the position can be split into several orders ("Order 2" …), each with
+ * its own lots, take profit and stop loss. Together they can't cover more than is held. TP must be above the LTP and SL
+ * below it. Apply needs a valid quantity and a TP or SL on every order. Prices are typed from the app keypad.
+ */
+export function TpslSheet({ position: p, onApply, onClose }: { position: TpslPosition; onApply: () => void; onClose: () => void }) {
+  const id = useId()
+  const [orders, setOrders] = useState<TpslOrder[]>([{
+    id: 1, qty: p.qty,
+    tp: { at: 'mkt', on: true, price: p.tp ?? startPrice('tp', p.ltp) },
+    sl: { at: 'mkt', on: p.sl !== undefined, price: p.sl ?? null },
+  }])
+  const [lots, setLots] = useState(false)
+  const [trailing, setTrailing] = useState(p.trailing ?? false)
+  const [typing, setTyping] = useState<Typing | null>(null)
+
+  const update = (orderId: number, change: Partial<TpslOrder>) => setOrders((all) => all.map((o) => (o.id === orderId ? { ...o, ...change } : o)))
+  // A leg is set when it has a price; empty = not applied.
+  const setLeg = (o: TpslOrder, leg: Leg, change: Partial<TpslLeg>) => {
+    const next = { ...o[leg], ...change }
+    update(o.id, { [leg]: { ...next, on: next.price !== null } })
+  }
+  const add = () => setOrders([...orders, { id: Math.max(...orders.map((o) => o.id)) + 1, qty: p.lotSize, tp: { at: 'mkt', on: true, price: startPrice('tp', p.ltp) }, sl: { at: 'mkt', on: false, price: null } }])
+
+  const total = orders.reduce((sum, o) => sum + o.qty, 0)
+  const over = total > p.qty
+  const legError = (leg: Leg, l: TpslLeg) =>
+    l.price === null ? undefined
+      : leg === 'tp' ? (l.price <= p.ltp ? t('tpsl.tpLow', { price: formatInr(p.ltp) }) : undefined)
+        : l.price >= p.ltp ? t('tpsl.slHigh', { price: formatInr(p.ltp) }) : undefined
+  const valid = !over && orders.every((o) => LEGS.some((leg) => o[leg].price !== null) && LEGS.every((leg) => !legError(leg, o[leg])))
+
+  // A tap in the sheet outside a price and the keypad closes the keypad (as on the stocks sheet).
+  const typingOn = typing !== null
+  useEffect(() => {
+    if (!typingOn) return
+    const onDown = (e: PointerEvent) => {
+      const target = e.target as HTMLElement
+      const sheet = document.getElementById(id)?.closest('[role="dialog"]')
+      if (!sheet?.contains(target) || target.closest('[data-price-field], [aria-label="Number keypad"]')) return
+      setTyping(null)
+      ;(document.activeElement as HTMLElement | null)?.blur()
+    }
+    document.addEventListener('pointerdown', onDown)
+    return () => document.removeEventListener('pointerdown', onDown)
+  }, [typingOn, id])
+
+  // One key into the typed price: up to 2 decimals.
+  const onKey = (key: string) => {
+    if (!typing) return
+    const o = orders.find((x) => x.id === typing.orderId)
+    if (!o) return
+    const base = typing.fresh ? '' : (typing.text ?? '')
+    let text: string | undefined
+    if (key === '.') text = base.includes('.') ? undefined : (base || '0') + '.'
+    else if (/^\d$/.test(key) && base.includes('.') && (base.split('.')[1]?.length ?? 0) >= 2) text = undefined
+    else text = typeKey(base, key, 8).replace(/^0+(?=\d)/, '')
+    if (text === undefined) return
+    setTyping({ ...typing, text, fresh: false })
+    const price = Number(text) || 0
+    setLeg(o, typing.leg, { price: price > 0 ? price : null })
+  }
+
+  /** One leg: one compact price card (name · Market ⇄ Limit, the typed price, a % Stepper), then Est. / the error and
+   *  Clear under it. No on/off Switch (27 Nov, the user's call): a leg left empty ("--") isn't applied. */
+  const legCard = (o: TpslOrder, leg: Leg) => {
+    const l = o[leg]
+    const name = t(`tpsl.${leg}`)
+    const error = legError(leg, l)
+    const est = l.price === null ? undefined : (l.price - p.avg) * o.qty
+    // TP counts up from the average price, SL down from it.
+    const pct = l.price === null ? null : Math.round(((leg === 'tp' ? l.price - p.avg : p.avg - l.price) / p.avg) * 1000) / 10
+    const active = typing?.orderId === o.id && typing.leg === leg ? typing : null
+    return (
+      <Stack key={leg}>
+        <PriceFieldBox error={Boolean(error)} surface="primary" className={styles.card}>
+          <PriceField
+            label={name}
+            unit={{ label: t(`tpsl.at.${l.at}`), onSwitch: () => setLeg(o, leg, { at: l.at === 'mkt' ? 'lmt' : 'mkt' }), 'aria-label': t('tpsl.atSwitch', { leg: name }) }}
+            price={{
+              text: active && active.text !== null ? active.text : l.price === null ? '' : l.price.toFixed(2),
+              placeholder: t('tpsl.none'),
+              typing: active !== null,
+              'aria-label': t('tpsl.priceLabel', { leg: name }),
+              onPick: () => { if (!active) setTyping({ orderId: o.id, leg, text: null, fresh: true }) },
+            }}
+            stepper={{
+              label: t('tpsl.pct', { leg: name }),
+              value: pct ?? 0,
+              min: 0, max: leg === 'sl' ? 99.5 : 500, step: 0.5,
+              format: (n) => (pct === null ? t('tpsl.none') : `${n.toFixed(1)}%`),
+              onChange: (n) => {
+                setLeg(o, leg, { price: toTick(p.avg * (leg === 'tp' ? 1 + n / 100 : 1 - n / 100)) })
+                if (active) setTyping({ ...active, text: null, fresh: true })
+              },
+            }}
+          />
+        </PriceFieldBox>
+        {(l.price !== null || error) && (
+          <Stack direction="horizontal" justify="between" align="center" gap="08" className={styles.estRow}>
+            {error ? (
+              <p className={styles.error} role="alert">{error}</p>
+            ) : (
+              <p className={styles.est}>
+                {t(leg === 'tp' ? 'tpsl.estProfit' : 'tpsl.estLoss')}{' '}
+                <span className={leg === 'tp' ? styles.up : styles.down}>{est === undefined ? t('tpsl.none') : formatInr(est, { sign: true })}</span>
+              </p>
+            )}
+            <Button variant="ghost" size="sm" className={styles.link} onClick={() => { setLeg(o, leg, { price: null }); if (active) setTyping(null) }}>{t('tpsl.clear')}</Button>
+          </Stack>
+        )}
+      </Stack>
+    )
+  }
+
+  // The stocks sheet's header: the qty as the description, the contract + LTP + change at the right.
+  const header = (
+    <BottomSheetHeader heading={t('tpsl.title')} headingId={id} description={t('tpsl.qtyHeld', { qty: p.qty })} trailing={
+      <Stack gap="04" align="end">
+        <span className={styles.contract}>{p.fullName}</span>
+        <span className={styles.inline}>
+          <span className={styles.contract}>{formatInr(p.ltp)}</span>
+          <PriceChange value={p.change} unit="percent" size="sm" />
+        </span>
+      </Stack>
+    } />
+  )
+
+  const footer = (
+    <ButtonGroup aria-label={t('tpsl.title')}>
+      <Button size="lg" fullWidth disabled={!valid} onClick={onApply}>{t('tpsl.apply')}</Button>
+    </ButtonGroup>
+  )
+
+  return (
+    <Sheet labelledBy={id} onClose={onClose} header={header} footer={footer}
+      utility={<KeypadSlide open={typing !== null}><Keyboard decimal onKey={onKey} /></KeypadSlide>}>
+      <Stack gap="16">
+        {orders.map((o, i) => {
+          const body = (
+          <Stack gap="16">
+            {(
+              <Stack direction="horizontal" align="center" justify="between" gap="08">
+                <Stack direction="horizontal" align="center" gap="08">
+                  <span className={styles.orderTitle}>{t('tpsl.orderN', { n: i + 1 })}</span>
+                  <span className={styles.muted}>{t('tpsl.avg', { price: formatInr(p.avg) })}</span>
+                </Stack>
+                {i > 0 && <Button variant="ghost" size="sm" aria-label={t('tpsl.removeLabel', { n: i + 1 })} iconLeft={<Icon icon={msDelete} size={16} />} onClick={() => setOrders(orders.filter((x) => x.id !== o.id))}>{t('tpsl.remove')}</Button>}
+              </Stack>
+            )}
+            {/* Quantity: a stepper-only row, Quantity ⇄ Lots with the lot hint after it on one line. */}
+            <Stack>
+              <PriceFieldBox error={over && i === orders.length - 1} surface="primary" className={styles.card}>
+                <PriceField
+                  label={t(lots ? 'order.lots' : 'order.quantity')}
+                  unitNote={t('order.lotHint', { lot: p.lotSize })}
+                  unit={{ label: t(lots ? 'order.lots' : 'order.quantity'), onSwitch: () => setLots(!lots), 'aria-label': t('order.unitSwitch') }}
+                  stepper={{
+                    label: t(lots ? 'order.lots' : 'order.quantity'),
+                    value: lots ? o.qty / p.lotSize : o.qty,
+                    min: lots ? 1 : p.lotSize, step: lots ? 1 : p.lotSize,
+                    onChange: (n) => update(o.id, { qty: lots ? n * p.lotSize : n }),
+                  }}
+                />
+              </PriceFieldBox>
+              {over && i === orders.length - 1 && <p className={`${styles.error} ${styles.estRow}`} role="alert">{t('tpsl.over', { total, qty: p.qty })}</p>}
+            </Stack>
+            {LEGS.map((leg) => legCard(o, leg))}
+          </Stack>
+          )
+          // Several orders: each is one grey panel (L3 Card filled) holding its white cards, so an order reads as one
+          // group (27 Nov, the user's call) — from the first order on, so adding a second doesn't change the look.
+          return <Card key={o.id} variant="filled">{body}</Card>
+        })}
+        <Button variant="secondary" size="lg" fullWidth iconLeft={<Icon icon={msAdd} />} onClick={add}>{t('tpsl.add')}</Button>
+        {/* Small, as in the live app: checkbox · label · ⓘ (the hint is in the tooltip). */}
+        <Stack direction="horizontal" align="center" gap="04">
+          <label className={styles.trailing}>
+            <Checkbox checked={trailing} onChange={(e) => setTrailing(e.target.checked)} />
+            {t('tpsl.trailing')}
+          </label>
+          <Tooltip content={t('tpsl.trailingHint')} placement="top">
+            <Button variant="ghost" size="sm" aria-label={t('tpsl.trailingInfo')} iconLeft={<Icon icon={msInfo} size={16} />} />
+          </Tooltip>
+        </Stack>
+      </Stack>
+    </Sheet>
+  )
 }
 ```
 
@@ -10423,7 +11103,7 @@ export const isExited = (p: FnoPosition) => p.sellPrice !== undefined
 export const positionReturns = (p: FnoPosition) => ((p.sellPrice ?? p.ltp ?? p.buyPrice) - p.buyPrice) * p.qty
 
 export const positions: FnoPosition[] = [
-  { id: 'p1', name: 'NIFTY 25600', contract: 'Put | 02 Dec 26', segment: 'equity', exchange: 'NSE', product: 'Intraday', qty: 75, buyPrice: 127.2, ltp: 131.85, tp: 138.5, tsl: 124 },
+  { id: 'p1', name: 'NIFTY 25600', contract: 'Put | 02 Dec 26', segment: 'equity', exchange: 'NSE', product: 'Intraday', qty: 150, buyPrice: 127.2, ltp: 131.85, tp: 138.5, tsl: 124 },
   { id: 'p2', name: 'RELIANCE', symbol: 'RELIANCE', segment: 'equity', exchange: 'NSE', product: 'Intraday', qty: 1, buyPrice: 1393.8, sellPrice: 1393.0 },
   { id: 'p3', name: 'CRUDEOILM 7700', contract: 'Put | 16 Dec 26', image: crudeOil, segment: 'commodity', exchange: 'MCX', product: 'Delivery', qty: 10, buyPrice: 312.4, sellPrice: 338.9 },
   { id: 'p4', name: 'NIFTY 25700', contract: 'Call | 02 Dec 26', segment: 'equity', exchange: 'NSE', product: 'Intraday', qty: 150, buyPrice: 96.45, sellPrice: 82.1 },
@@ -10523,7 +11203,7 @@ import { FnoNav } from '../../components/FnoNav'
 import { MarketIndices } from '../../components/Overview'
 import { DetailSheet } from '../../sheets/HomeSheets'
 import { t } from '../../copy'
-import { isOpenOrder, orders, positions, type FnoOrder, type Period, type Segment } from '../data'
+import { isOpenOrder, orders, positions, type FnoOrder, type FnoPosition, type Period, type Segment } from '../data'
 import { OrderCard, PositionCard } from '../components/Cards'
 import { CollapsedTotal, TotalReturnsCard, type Unit } from '../components/TotalReturns'
 import styles from '../Positions.module.css'
@@ -10545,9 +11225,11 @@ type Props = {
   onWallet: () => void
   /** The top bar's watchlist button → the Watchlist page (market-11). */
   onWatchlist: () => void
+  /** Set / Manage TPSL on an open position: the F&O order pad with the TPSL sheet open. */
+  onTpsl: (position: FnoPosition) => void
 }
 
-export function Positions({ tab: initialTab = 'positions', ordersView: initialView = 'history', scrolled, onHome, onFno, onChain, onScalper, onSearch, onWallet, onWatchlist }: Props) {
+export function Positions({ tab: initialTab = 'positions', ordersView: initialView = 'history', scrolled, onHome, onFno, onChain, onScalper, onSearch, onWallet, onWatchlist, onTpsl }: Props) {
   const root = useRef<HTMLDivElement>(null)
   const card = useRef<HTMLDivElement>(null)
   const [tab, setTab] = useState<PositionsTab>(initialTab)
@@ -10668,7 +11350,7 @@ export function Positions({ tab: initialTab = 'positions', ordersView: initialVi
                   items={(['all', 'equity', 'commodity'] as const).map((s) => ({ value: s, label: t(`positions.segment.${s}`, { count: count(s) }) }))} />
                 {shown.length ? (
                   <Stack as="ul" gap="12" className={styles.list}>
-                    {shown.map((p) => <li key={p.id}><PositionCard position={p} onTpsl={() => setDetail(t(p.tp === undefined ? 'positions.setTpsl' : 'positions.manage'))} onExit={() => setDetail(t('positions.exit'))} /></li>)}
+                    {shown.map((p) => <li key={p.id}><PositionCard position={p} onTpsl={() => onTpsl(p)} onExit={() => setDetail(t('positions.exit'))} /></li>)}
                   </Stack>
                 ) : (
                   <EmptyState title={t('positions.empty.title')} description={t('positions.empty.text')} action={<Button variant="primary" size="sm" onClick={onFno}>{t('positions.empty.button')}</Button>} />
@@ -38778,6 +39460,161 @@ export function IlliquidSheet({ copy, onClose }: { copy: IlliquidSheetCopy; onCl
 }
 ```
 
+### `src/shared/ui/Keyboard.module.css`
+
+```css
+/* OS number keypad mock: 3 × 4 keys on a tray the colour of the button dock above it, so the two read as one
+   (24 Nov, the user's call); the keys take the grey. */
+.keyboard {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--app-space-key);
+  padding: var(--l3-spacing-12) var(--l3-spacing-12) var(--l3-spacing-24);
+  /* On a real phone, clear the home indicator (like the L3 button dock does). */
+  padding-bottom: calc(var(--l3-spacing-24) + env(safe-area-inset-bottom, var(--l3-spacing-00)));
+  /* The dock above sets --app-dock-surface when it isn't on surface-default (the order pads' dock is surface-primary). */
+  background: var(--app-dock-surface, var(--l3-surface-default));
+}
+
+.key {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--l3-spacing-04);
+  height: var(--app-size-key);
+  border: 0;
+  border-radius: var(--l3-radius-08);
+  background: var(--l3-surface-secondary);
+  color: var(--l3-content-primary);
+  font: var(--l3-text-description-18);
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.key[data-kind='fn'] {
+  background: var(--l3-surface-tertiary);
+}
+
+
+.key:active {
+  transform: scale(var(--l3-motion-scale-press-default));
+}
+
+
+/* KeypadSlide: the wrapper's height is animated; the keypad stays pinned to its top and is clipped. */
+.slide { overflow: hidden; flex: none; }
+```
+
+### `src/shared/ui/Keyboard.tsx`
+
+```tsx
+import { useEffect, useLayoutEffect, useRef, useState, type PointerEvent, type ReactNode } from 'react'
+import { Icon } from '@l3/components/Icon'
+import { msBackspace } from '@l3/icons/material'
+import styles from './Keyboard.module.css'
+
+const KEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', 'Backspace']
+
+/**
+ * The phone's own number keypad (OS chrome, NOT part of the app or L3 — real apps get the system keyboard by setting
+ * the field's input type to number). Drawn so the phone / OTP / PIN screens read like the phone. In the prototype the
+ * keys type into the screen. `data-surface` tells the OS navigation bar below it to take the keypad's colour (the dock's).
+ */
+export function Keyboard({ onKey, decimal }: { onKey?: (key: string) => void; /** Show "." in the bottom-left key (amounts in $, fractional shares). */ decimal?: boolean }) {
+  const keys = decimal ? KEYS.map((k) => (k === '' ? '.' : k)) : KEYS
+  return (
+    <div className={styles.keyboard} role="group" aria-label="Number keypad" data-surface="default">
+      {keys.map((k) =>
+        k === '' ? <span key="blank" /> : (
+          <button key={k} type="button" className={styles.key} data-kind={k === 'Backspace' ? 'fn' : 'digit'} aria-label={k === 'Backspace' ? 'Delete' : k === '.' ? 'Decimal point' : undefined} onPointerDown={keepFocus} onClick={() => onKey?.(k)}>
+            {k === 'Backspace' ? <Icon icon={msBackspace} /> : k}
+          </button>
+        ),
+      )}
+    </div>
+  )
+}
+
+/** Like the OS keyboard, a key press doesn't take focus: the field being typed into keeps its Typing state. */
+const keepFocus = (e: PointerEvent) => e.preventDefault()
+
+/** Apply a keypad key to a digit string (max length). */
+export const typeKey = (value: string, key: string, max: number) =>
+  key === 'Backspace' ? value.slice(0, -1) : /^\d$/.test(key) && value.length < max ? value + key : value
+
+/**
+ * The drawn keypad IS the keyboard here, so the fields it types into must never open the phone's own keyboard:
+ * inputmode="none" (Android, desktop) and, on touch screens, read-only too (the only sure way on iPhone). They still
+ * take focus, so they show L3's Typing state. Real apps don't need this: the system keyboard is the keypad.
+ */
+export const keypadFieldProps = () => ({
+  inputMode: 'none' as const,
+  readOnly: typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches,
+})
+
+/**
+ * Prototype glue: the drawn keypad types into an L3 OtpInput, so focus follows the box being typed (the next empty
+ * one) — the Typing state moves along as it would with the phone's keyboard — and the boxes never open the phone's
+ * keyboard (keypadFieldProps). Put the ref on an element around the OtpInput.
+ */
+export function useKeypadFocus(value: string, length: number, enabled: boolean) {
+  const ref = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (!enabled) return
+    const boxes = ref.current?.querySelectorAll('input')
+    const { inputMode, readOnly } = keypadFieldProps()
+    boxes?.forEach((box) => { box.inputMode = inputMode; box.readOnly = readOnly })
+    boxes?.[Math.min(value.length, length - 1)]?.focus({ preventScroll: true })
+  }, [value, length, enabled])
+  return ref
+}
+
+/**
+ * The keypad sliding in and out, like the phone's own keyboard: up from the bottom when `open` turns on (260 ms,
+ * ease-out), down to the bottom when it turns off (200 ms, ease-in), then gone. The wrapper's height runs between 0 and
+ * the keypad's with the keypad pinned to its top, so what sits above it (a dock, a sheet) moves with it. A reopen
+ * mid-close turns around from where it is; reduced motion skips the slide.
+ */
+export function KeypadSlide({ open, children }: { open: boolean; children: ReactNode }) {
+  const [mounted, setMounted] = useState(open)
+  const openRef = useRef(open)
+  openRef.current = open
+  const wrap = useRef<HTMLDivElement>(null)
+  const anim = useRef<Animation | null>(null)
+  const first = useRef(true)
+  if (open && !mounted) setMounted(true)
+  useLayoutEffect(() => {
+    if (first.current) { first.current = false; return }
+    const el = wrap.current
+    const midway = anim.current
+    if (!el || matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      midway?.cancel()
+      anim.current = null
+      if (!open) setMounted(false)
+      return
+    }
+    const from = open && !midway ? 0 : el.getBoundingClientRect().height
+    midway?.cancel()
+    const full = el.getBoundingClientRect().height
+    const run = el.animate(
+      [{ height: `${from}px` }, { height: `${open ? full : 0}px` }],
+      open
+        ? { duration: 260, easing: 'cubic-bezier(0.2, 0, 0, 1)' }
+        : { duration: 200, easing: 'cubic-bezier(0.4, 0, 1, 1)', fill: 'forwards' },
+    )
+    anim.current = run
+    run.finished.then(() => {
+      if (anim.current !== run) return
+      anim.current = null
+      if (!openRef.current) setMounted(false)
+    }, () => {})
+  }, [open])
+  if (!mounted) return null
+  return <div ref={wrap} className={styles.slide} inert={!open}>{children}</div>
+}
+```
+
 ### `src/shared/ui/Rail.module.css`
 
 ```css
@@ -39054,6 +39891,8 @@ type SheetProps = {
   className?: string
   /** 'top' (L3 isBottom=False): drops from the top of the screen, for menus tied to the top (a market or sort picker). */
   placement?: 'bottom' | 'top'
+  /** Under the footer, inside the sheet: the app keypad (<KeypadSlide><Keyboard/></KeypadSlide>) for typed prices. */
+  utility?: ReactNode
 }
 
 type Publish = (id: string, sheet: SheetProps | null) => void
@@ -39119,6 +39958,7 @@ export function SheetHost({ container, children }: { container: HTMLElement | nu
           aria-label={shown.sheet.label}
           className={shown.sheet.className}
           placement={shown.sheet.placement}
+          utility={shown.sheet.utility}
         >
           {shown.sheet.children}
         </BottomSheet>
