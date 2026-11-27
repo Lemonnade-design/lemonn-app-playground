@@ -1,6 +1,6 @@
 # Flow: US Stocks (`us-stocks`)
 
-> One self-contained file for converting this flow to another platform. Read https://lemonnade-design.github.io/lemonn-app-prototype/CONVERT.md first. Design system: Lemonnade V3 @ `ed10506` (components, tokens and rules: https://lemonnade-design.github.io/lemonnade-v3-docs/llms.txt).
+> One self-contained file for converting this flow to another platform. Read https://lemonnade-design.github.io/lemonn-app-prototype/CONVERT.md first. Design system: Lemonnade V3 @ `c56598f` (components, tokens and rules: https://lemonnade-design.github.io/lemonnade-v3-docs/llms.txt).
 
 Activate US Stocks, add money to the USD wallet, buy and sell, withdraw (teammate import, under review).
 
@@ -286,6 +286,7 @@ Every tap he wired is kept. The main path: FTUX sheet → Activate → Declarati
 
 ### Changelog
 
+- 27 Nov 2026 · Asset pages (stock and ETF): scroll reveal as on the Stocks Home (each section's header, chips and cards fade and rise 16 in as they scroll into view, 80 apart; what's on screen at open shows at once), and every chart draws in once on screen: price line wipes left to right (again per period), day range wipes, analyst ring and donuts sweep clockwise, rating / holding bars grow from the left, Financials columns rise (60 apart). 900 over 120 wait, L3 decelerate; off with reduced motion. Shared hook src/shared/ui/scrollReveal (useScrollReveal, useChartDraw); timings are local tokens (--app-scroll-reveal, --app-chart-draw*, L3 gap: longest L3 duration is 400).
 - 27 Nov 2026 · Screen list: the INR wallet screens have their own section, "Indian wallet (INR)" (the other is now "US wallet (USD)"); every withdrawal state folds under Wallet → US tab / Indian tab → Withdrawal; search results show the section beside the flow and search matches it. Across the app, 37 screens renamed so they fold with their page (deposit's bank check and payment steps, Stock ⓘ sheets, Market filters and watchlist, F&O Equity / Commodities home, DASH Ready, Bank app, ETF Top holdings).
 - 27 Nov 2026 · INR wallet: pending and failed money (`us-stocks-116`–`121`, `deposit-18`): withdrawal sent back by the bank (bar + sheet), withdrawal cut short by trades (bar + sheet), withdrawal in progress with Cancel, add money payment pending (bar, and the deposit flow's Payment · pending). The US wallet gets the sent-back withdrawal too (`us-stocks-114`, `115`).
 - 27 Nov 2026 · Order details: the reason bar is the flat rounded card (Aerobar floating inline), no shadow.
@@ -25136,6 +25137,7 @@ export const screens: UsScreenMap = {
 // FLAG: price block, chart and period picker are hand-made (module CSS) instead of L3 Chart; see StockPage.module.css.
 import { emailSupport } from '../../../../shared/support'
 import { useEffect, useState, type CSSProperties } from 'react'
+import { useChartDraw, useScrollReveal } from '../../../../shared/ui/scrollReveal'
 import { Actionbar, ActionbarAction } from '@l3/components/Actionbar'
 import { Button } from '@l3/components/Button'
 import { Icon } from '@l3/components/Icon'
@@ -25249,6 +25251,10 @@ export function StockPage({ state, backdrop, emptyWallet }: { state: StockState;
     body.addEventListener('scroll', onScroll, { passive: true })
     return () => body.removeEventListener('scroll', onScroll)
   }, [body])
+  // Scroll reveal (27 Nov, user: as the Home): the open tab's sections come in as they scroll into view, and every
+  // chart (price line, day range, ratings, financials, holdings) draws in once on screen; the line again per period.
+  useScrollReveal(body, '[data-reveal-feed] > *', [tab, feed], !backdrop)
+  useChartDraw(body, [tab, feed, period], !backdrop)
 
   const header = (
     <Actionbar
@@ -25379,7 +25385,7 @@ export function StockPage({ state, backdrop, emptyWallet }: { state: StockState;
               <Stack gap="16">
                 <div className={styles.chart} role="img" aria-label={`${shortName} price over ${period}, ${usd(chartLow)} to ${usd(chartHigh)}`}>
                   <div className={styles.plot} data-down={periodPct < 0 || undefined}>
-                    <span className={styles.line} style={{ '--y': `${yOf(stock.price)}%` } as CSSProperties}>
+                    <span className={styles.line} data-draw="wipe" style={{ '--y': `${yOf(stock.price)}%` } as CSSProperties}>
                       <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
                         <polyline points={linePoints} fill="none" stroke="currentColor" strokeWidth={1.5} vectorEffect="non-scaling-stroke" strokeLinejoin="round" />
                       </svg>
@@ -25419,7 +25425,7 @@ export function StockPage({ state, backdrop, emptyWallet }: { state: StockState;
             />
             <Inset paddingInline="16" paddingBlock="00">
               {tab === 'news' ? (
-                <div className={styles.feed}>
+                <div className={styles.feed} data-reveal-feed="">
                   <Tabs
                     appearance="pill"
                     size="sm"
@@ -25434,7 +25440,7 @@ export function StockPage({ state, backdrop, emptyWallet }: { state: StockState;
                   {feed === 'events' ? <Events /> : <News items={news} stock={shortName} />}
                 </div>
               ) : (
-                <div className={styles.overview}>
+                <div className={styles.overview} data-reveal-feed="">
                   {state === 'holding' && <HoldingsSection stock={stock} dayChange={dayChangeAbs} />}
                   <DailyPerformance price={stock.price} low={low} high={high} stats={stockDayStats(stock)} />
                   <AnalystRatings />
@@ -25904,7 +25910,7 @@ function RatingRingClassic() {
     return arc
   })
   return (
-    <svg className={styles.ring} viewBox="0 0 72 72" aria-hidden="true">
+    <svg className={styles.ring} viewBox="0 0 72 72" aria-hidden="true" data-draw="sweep">
       <defs>
         <linearGradient id="rating-disc" x1="35" y1="18.5" x2="36" y2="72" gradientUnits="userSpaceOnUse">
           <stop className={styles.discTop} />
@@ -27122,6 +27128,7 @@ export function DailyPerformance({ price, low, high, stats }: { price: number; l
         </div>
         <div
           className={styles.dayRange}
+          data-draw="wipe"
           role="meter"
           aria-label="Last traded price within today's range"
           aria-valuemin={low}
@@ -27165,11 +27172,11 @@ export function AnalystRatings() {
             <span>Buy</span>
           </div>
           <div className={styles.ratings}>
-            {RATINGS.map((r) => (
+            {RATINGS.map((r, i) => (
               <div className={styles.ratingRow} key={r.label}>
                 <span className={styles.ratingLabel}>{r.label}</span>
                 <span className={styles.track} data-size="6">
-                  <span className={styles.fill} data-tone={r.tone} style={{ width: `${r.value}%` }} />
+                  <span className={styles.fill} data-tone={r.tone} data-draw="wipe" style={{ width: `${r.value}%`, '--draw-i': i } as CSSProperties} />
                 </span>
                 <span className={styles.ratingValue}>{r.value.toFixed(r.value >= 10 ? 2 : 1)}%</span>
               </div>
@@ -27371,8 +27378,8 @@ export function Financials() {
                   onClick={() => setPicked(i)}
                   key={label}
                 >
-                  <span className={styles.bar} data-tone="up" style={{ top: barTop(a[i]), height: 136 - barTop(a[i]) }} />
-                  <span className={styles.bar} style={{ top: barTop(b[i]), height: 136 - barTop(b[i]), left: 11 }} />
+                  <span className={styles.bar} data-tone="up" data-draw="rise" style={{ top: barTop(a[i]), height: 136 - barTop(a[i]), '--draw-i': k } as CSSProperties} />
+                  <span className={styles.bar} data-draw="rise" style={{ top: barTop(b[i]), height: 136 - barTop(b[i]), left: 11, '--draw-i': k } as CSSProperties} />
                   <span className={styles.fy}>{label}</span>
                 </button>
               )
@@ -33813,12 +33820,12 @@ export function HoldingRow({ sym, weight, biggest, onOpen, look = 'bar' }: { sym
       <HoldingLogo sym={sym} size={32} />
       <span className={styles.text}>
         <span className={styles.name}>{name}</span>
-        {look === 'bar' && <span className={styles.bar} aria-hidden="true"><span style={{ width: share }} /></span>}
+        {look === 'bar' && <span className={styles.bar} aria-hidden="true"><span data-draw="wipe" style={{ width: share }} /></span>}
       </span>
-      {look === 'mini' && <span className={`${styles.bar} ${styles.miniBar}`} aria-hidden="true"><span style={{ width: share }} /></span>}
+      {look === 'mini' && <span className={`${styles.bar} ${styles.miniBar}`} aria-hidden="true"><span data-draw="wipe" style={{ width: share }} /></span>}
       {look === 'fill' || look === 'pill' ? (
         <span className={styles.weightPill} data-look={look}>
-          {look === 'fill' && <span className={styles.weightFill} style={{ width: share }} aria-hidden="true" />}
+          {look === 'fill' && <span className={styles.weightFill} data-draw="wipe" style={{ width: share }} aria-hidden="true" />}
           <span className={styles.weight}>{weight.toFixed(1)}%</span>
         </span>
       ) : (
@@ -33898,7 +33905,7 @@ export function ShareDonut({ parts: items, of, legendLabel, format = (n) => `${n
   return (
     <div className={styles.allocCard}>
       <div className={styles.donut} role="img" aria-label={`Biggest: ${biggest.name}, ${format(biggest.weight)} of ${of}`}>
-        <svg viewBox="0 0 100 100" aria-hidden="true">
+        <svg viewBox="0 0 100 100" aria-hidden="true" data-draw="sweep">
           {parts.map((p) => (
             <circle
               key={p.name}
@@ -33955,7 +33962,7 @@ export function ShareBars({ parts, count, label }: { parts: DonutPart[]; count: 
         {parts.map((p) => (
           <li key={p.name} className={styles.shareRow} aria-label={`${p.name}, ${p.weight}%`}>
             <span className={`${styles.name} ${styles.shareName}`}>{p.name}</span>
-            <span className={`${styles.bar} ${styles.miniBar}`} aria-hidden="true"><span style={{ width: `${(p.weight / biggest) * 100}%` }} /></span>
+            <span className={`${styles.bar} ${styles.miniBar}`} aria-hidden="true"><span data-draw="wipe" style={{ width: `${(p.weight / biggest) * 100}%` }} /></span>
             <span className={styles.weight}>{p.weight.toFixed(1)}%</span>
           </li>
         ))}
@@ -34888,6 +34895,7 @@ export function EtfListScreen({ backdrop }: { backdrop?: boolean }) {
 // FLAG: price block, chart, range meter and info buttons are hand-made
 // (EtfPage.module.css, copied from the stock page) instead of L3 Chart; same as the stock page.
 import { useEffect, useState, type ReactNode } from 'react'
+import { useChartDraw, useScrollReveal } from '../../../../shared/ui/scrollReveal'
 import { Actionbar, ActionbarAction } from '@l3/components/Actionbar'
 import { Icon } from '@l3/components/Icon'
 import { MaskIcon } from '@l3/components/MaskIcon'
@@ -34969,6 +34977,9 @@ export function EtfPage({ backdrop }: { backdrop?: boolean }) {
     body.addEventListener('scroll', onScroll, { passive: true })
     return () => body.removeEventListener('scroll', onScroll)
   }, [body])
+  // Scroll reveal and chart draw-in, as the stock page (27 Nov, user).
+  useScrollReveal(body, '[data-reveal-feed] > *', [section, feed], !backdrop && !f1Details)
+  useChartDraw(body, [section, feed, period], !backdrop && !f1Details)
   const act = (fn: () => void) => () => { if (!backdrop) fn() }
 
   const header = (
@@ -35142,7 +35153,7 @@ export function EtfPage({ backdrop }: { backdrop?: boolean }) {
               </Stack>
               <Stack gap="16">
                 <div className={styles.chart} role="img" aria-label={`${etf.sym} price today`}>
-                  <div className={styles.plot}>
+                  <div className={styles.plot} data-draw="wipe">
                     <span className={styles.line}><MaskIcon src={asset('assets/etf/price-line-1d.svg')} /></span>
                     <span className={styles.halo} />
                     <span className={styles.dot} />
@@ -35168,7 +35179,7 @@ export function EtfPage({ backdrop }: { backdrop?: boolean }) {
             <Inset paddingInline="16" paddingBlock="00">
               {section === 'news' ? (
                 // News & Events, as on the stock page: Events / News pills, then the list.
-                <div className={styles.feed}>
+                <div className={styles.feed} data-reveal-feed="">
                   <Tabs
                     appearance="pill"
                     size="sm"
@@ -35183,7 +35194,7 @@ export function EtfPage({ backdrop }: { backdrop?: boolean }) {
                   {feed === 'events' ? <Events items={d.events} /> : <News items={newsFor(etf)} stock={etf.sym} />}
                 </div>
               ) : (
-                <div className={styles.overview}>
+                <div className={styles.overview} data-reveal-feed="">
                   {/* A Boosted fund (3 Nov): what its leverage does, in one sentence on the gold strip, above About. */}
                   {leveraged && <LeverageStrip etf={etf} onOpen={BOOST_SHEET ? act(() => setBoostOpen(true)) : undefined} />}
                   {/* What the ETF is: the stock page's About card ("SPY tracks …"), three lines until Read more. */}
@@ -76571,6 +76582,139 @@ export function TransactionListCard({ title, icon, status, amount, when, onOpen,
 <path id="Vector" d="M10.45 12.62L11.82 13.99C11.9867 14.1633 12.1967 14.25 12.45 14.25C12.7033 14.25 12.9167 14.1633 13.09 13.99L16.26 10.83V12.03C16.26 12.2367 16.3333 12.41 16.48 12.55C16.6267 12.69 16.8 12.7567 17 12.75C17.2067 12.75 17.3833 12.6767 17.53 12.53C17.6767 12.3833 17.75 12.2067 17.75 12V9.15C17.75 8.89667 17.6633 8.68333 17.49 8.51C17.3167 8.33667 17.1033 8.25 16.85 8.25H13.98C13.7733 8.25 13.6 8.32333 13.46 8.47C13.32 8.61667 13.25 8.79333 13.25 9C13.25 9.21333 13.3233 9.39 13.47 9.53C13.6167 9.67 13.7933 9.74333 14 9.75H15.17L12.45 12.51L11.08 11.14C10.9067 10.96 10.6933 10.87 10.44 10.87C10.1867 10.87 9.98 10.96 9.82 11.14L6.87 14.07C6.72333 14.2167 6.65 14.3933 6.65 14.6C6.65 14.8067 6.72333 14.98 6.87 15.12C7.01667 15.2733 7.19333 15.35 7.4 15.35C7.60667 15.35 7.78 15.2733 7.92 15.12L10.44 12.61L10.45 12.62ZM5.31 20.5C4.80333 20.5 4.37667 20.3267 4.03 19.98C3.68333 19.6333 3.50667 19.2033 3.5 18.69V5.31C3.5 4.80333 3.67333 4.37667 4.02 4.03C4.36667 3.68333 4.79667 3.50667 5.31 3.5H18.69C19.1967 3.5 19.6233 3.67333 19.97 4.02C20.3167 4.36667 20.4933 4.79667 20.5 5.31V18.69C20.5 19.1967 20.3267 19.6233 19.98 19.97C19.6333 20.3167 19.2033 20.4933 18.69 20.5H5.31Z" fill="#000"/>
 </g>
 </svg>
+```
+
+### `src/shared/ui/scrollReveal.ts`
+
+```ts
+// Scroll reveal and chart draw-in, for any scrolling screen body (first used by the US Stocks asset pages, 27 Nov, user:
+// "the reveal on scroll animation similar to the Home screen … we have a lot of graphs in the asset page, animate them").
+//
+// useScrollReveal: below the fold, each part of the page fades in (and rises 16) on its own as it scrolls into view,
+// once — a section's header, its chips row, then each card or row (revealPieces). Parts that arrive together are
+// staggered 80 apart; a horizontal rail's cards come in one after another. What is on screen when the page opens shows
+// at once. The Stocks Home does the same in its own code (Home.tsx), tuned to its feed.
+//
+// useChartDraw: every element marked `data-draw="wipe" | "rise" | "sweep"` (a price line, a bar, a ring) starts
+// undrawn and draws in once it is on screen. `--draw-i` on the element staggers bars in a row. Re-run (deps) to draw
+// again, e.g. when the chart's period changes.
+//
+// Both are off with reduced motion and when `enabled` is false (a screen drawn still, as a board backdrop). The CSS is
+// scrollReveal.css (global, keyed by the data attributes these set).
+import { useEffect, type DependencyList } from 'react'
+import './scrollReveal.css'
+
+/** The gap between parts that come into view together (ms). */
+const REVEAL_STAGGER = 80
+/** How far below the screen a part starts coming in (px), so the bottom of the screen is never left empty. */
+const REVEAL_AHEAD = 48
+/** The most steps a batch waits (a fast scroll never queues more than 480 of delay). */
+const REVEAL_MAX_STEPS = 6
+
+const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches
+
+/**
+ * Reveal the parts of `selector` (inside the scrolling `body`) as they scroll into view.
+ * `selector` picks the blocks to split, e.g. '[data-reveal-feed] > *' (each section of the open tab).
+ */
+export function useScrollReveal(body: HTMLElement | null, selector: string, deps: DependencyList, enabled = true) {
+  useEffect(() => {
+    if (!body || !enabled || reducedMotion()) return
+    const fold = body.getBoundingClientRect().bottom
+    const pieces = [...body.querySelectorAll<HTMLElement>(selector)]
+      .flatMap(revealPieces)
+      .filter((el) => el.getBoundingClientRect().top > fold)
+    const rails = new Map<HTMLElement, HTMLElement[]>()
+    for (const el of pieces) {
+      const rail = horizontalRail(el, body)
+      if (rail) rails.set(rail, [...(rails.get(rail) ?? []), el])
+    }
+    const show = (el: HTMLElement, delay: number) => {
+      if (el.dataset.scrollReveal !== 'hidden') return
+      el.style.transitionDelay = `${delay}ms`
+      el.dataset.scrollReveal = 'shown'
+      observer.unobserve(el)
+      // Once in, hand the element back its own transitions (a card's press state). Only its own transition counts:
+      // a chart drawing inside it ends later and bubbles up here.
+      const done = (event: TransitionEvent) => {
+        if (event.target !== el) return
+        el.removeEventListener('transitionend', done)
+        delete el.dataset.scrollReveal
+        el.style.transitionDelay = ''
+      }
+      el.addEventListener('transitionend', done)
+    }
+    const observer = new IntersectionObserver((entries) => {
+      let step = 0
+      for (const entry of entries) {
+        const el = entry.target as HTMLElement
+        if (!entry.isIntersecting || el.dataset.scrollReveal !== 'hidden') continue
+        const rail = horizontalRail(el, body)
+        for (const piece of rail ? rails.get(rail) ?? [el] : [el]) show(piece, Math.min(step++, REVEAL_MAX_STEPS) * REVEAL_STAGGER)
+      }
+    }, { root: body, rootMargin: `0px 0px ${REVEAL_AHEAD}px 0px` })
+    for (const el of pieces) {
+      el.dataset.scrollReveal = 'hidden'
+      observer.observe(el)
+    }
+    return () => {
+      observer.disconnect()
+      for (const el of pieces) { delete el.dataset.scrollReveal; el.style.transitionDelay = '' }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [body, selector, enabled, ...deps])
+}
+
+/** Draw in every `[data-draw]` chart inside `body` once it is on screen (a fifth of the way up from the bottom). */
+export function useChartDraw(body: HTMLElement | null, deps: DependencyList, enabled = true) {
+  useEffect(() => {
+    if (!body || !enabled || reducedMotion()) return
+    const charts = [...body.querySelectorAll<HTMLElement>('[data-draw]')]
+    // Watch each chart's parent, not the chart: an undrawn chart is clipped to nothing, and the browser counts the clip.
+    const waiting = new Map<Element, HTMLElement[]>()
+    for (const el of charts) {
+      const box = el.parentElement ?? el
+      waiting.set(box, [...(waiting.get(box) ?? []), el])
+    }
+    const observer = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue
+        for (const el of waiting.get(entry.target) ?? []) el.dataset.drawn = 'yes'
+        observer.unobserve(entry.target)
+      }
+    }, { root: body, rootMargin: '0px 0px -20% 0px' })
+    for (const el of charts) el.dataset.drawn = 'no'
+    for (const box of waiting.keys()) observer.observe(box)
+    return () => {
+      observer.disconnect()
+      for (const el of charts) delete el.dataset.drawn
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [body, enabled, ...deps])
+}
+
+/** Splits a block into the parts that appear one by one — its header (a heading with its one action), a chips row
+ *  (as one), and each card or row; a block with nothing to split shows whole. Reads the DOM, so any section's layout
+ *  works without marking it up. */
+function revealPieces(el: HTMLElement): HTMLElement[] {
+  const isCard = el.matches('button, a[href], [role="button"]')
+  // A card, a chips row or a chart (its bars and year buttons come in together; they draw in with useChartDraw).
+  if (isCard || el.matches('[role="tablist"], [role="img"], [role="meter"], [data-draw]')) return [el]
+  const buttons = [...el.querySelectorAll('button, a[href], [role="button"]')]
+  const outsideTabs = buttons.filter((b) => !b.closest('[role="tablist"]'))
+  if (outsideTabs.length === 0) return [el] // a chips row, or static content
+  if (el.querySelector('h2, h3') && outsideTabs.length <= 1 && !el.querySelector('[role="tablist"]')) return [el] // a header
+  return [...el.children].flatMap((child) => revealPieces(child as HTMLElement))
+}
+
+/** The horizontally scrolling rail a part sits in (peers, related funds…), if any — within the body. */
+function horizontalRail(el: HTMLElement, body: HTMLElement): HTMLElement | null {
+  for (let node = el.parentElement; node && node !== body; node = node.parentElement) {
+    const x = getComputedStyle(node).overflowX
+    if (x === 'auto' || x === 'scroll') return node
+  }
+  return null
+}
 ```
 
 ### `src/shared/userStatus.ts`

@@ -4,7 +4,7 @@
   "description": "Activate US Stocks, add money to the USD wallet, buy and sell, withdraw (teammate import, under review).",
   "designSystem": {
     "name": "Lemonnade V3 (L3)",
-    "commit": "ed10506",
+    "commit": "c56598f",
     "docs": "https://lemonnade-design.github.io/lemonnade-v3-docs/llms.txt"
   },
   "prototype": {
@@ -391,6 +391,7 @@
     "src/shared/ui/assets/floating-nav/mutual-fund.svg",
     "src/shared/ui/assets/floating-nav/portfolio.svg",
     "src/shared/ui/assets/floating-nav/stocks.svg",
+    "src/shared/ui/scrollReveal.ts",
     "src/shared/userStatus.ts"
   ]
 }

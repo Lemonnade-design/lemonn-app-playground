@@ -1,6 +1,6 @@
 # Flow: F&O (`fno`)
 
-> One self-contained file for converting this flow to another platform. Read https://lemonnade-design.github.io/lemonn-app-prototype/CONVERT.md first. Design system: Lemonnade V3 @ `ed10506` (components, tokens and rules: https://lemonnade-design.github.io/lemonnade-v3-docs/llms.txt).
+> One self-contained file for converting this flow to another platform. Read https://lemonnade-design.github.io/lemonn-app-prototype/CONVERT.md first. Design system: Lemonnade V3 @ `c56598f` (components, tokens and rules: https://lemonnade-design.github.io/lemonnade-v3-docs/llms.txt).
 
 Equity F&O home: P&L, indices, chart metrics, watchlists, Smart Options, Futures Heatmap and Smart Futures.
 
@@ -553,6 +553,7 @@ The source uses old D2 controls alongside L3; their code equivalents are L3 comp
 - Section header size: L3 SectionHeader's title is heading-14 with no size option; fno-38's month titles are set to heading-20 locally (`.calendarMonthHead h2`).
 
 ### Changelog
+- 2026-11-27 — L3 moved to c56598f: ribbon tabs (F&O product tabs, Scalper strategy tab) have Chrome-style SVG reverse corners, crisp, no seam at the border. Option chain keeps no corners (its override now hides the SVG flares, `svg[data-side]`).
 - 2026-11-27 — V5 View all: a tab with nothing in it (Futures in the sample) shows the L3 empty state (illustration, “No futures expiring soon”, a line on what shows up there, Show all → the All tab) instead of a plain line.
 - 2026-11-26 — V5 View all: the note's bulb sits 1 higher so it lines up with its text.
 - 2026-11-26 — **Final: Expiring This Week is V5 · Timeline only.** V1–V4, V6 and the settings Expiring This Week, Timeline and Event phase archived (`archive/AllEventsVersions.tsx`, `archive/ExpiringDayPicker.tsx`, `archive/ExpiryTimeline.tsx`). Dev link `#/fno-08`.
@@ -9226,7 +9227,8 @@ export const sellMarginPerLot = 1250
 .ribbon.ribbon { flex: none; padding-inline: var(--l3-spacing-12) var(--l3-spacing-16); background: transparent; box-shadow: none; }
 /* Figma: the selected tab is white with a light outline, no flares, so it opens into the white selector row. */
 .ribbon.ribbon [role='tab'][aria-selected='true'] { --tab-surface: var(--l3-surface-default); --tab-border: var(--l3-border-light); --tab-font: var(--l3-text-label-12); }
-.ribbon.ribbon [role='tab'][aria-selected='true']::before { display: none; }
+/* No flares here (L3 draws them as SVG corners since 26 Nov, marked data-side). */
+.ribbon.ribbon [role='tab'][aria-selected='true'] > svg[data-side] { display: none; }
 .addStrategies { display: inline-flex; align-items: center; gap: var(--l3-spacing-06); align-self: center; margin-top: var(--l3-spacing-04); padding: 0; border: 0; background: none; color: var(--l3-content-secondary); font: var(--l3-text-label-12); cursor: pointer; }
 .addRing { display: grid; place-items: center; width: var(--l3-size-16); height: var(--l3-size-16); border-radius: var(--l3-radius-full); box-shadow: inset 0 0 0 1px var(--l3-border-dark); color: var(--l3-content-primary); }
 
