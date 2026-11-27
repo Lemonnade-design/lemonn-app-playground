@@ -619,6 +619,7 @@ The source uses old D2 controls alongside L3; their code equivalents are L3 comp
 - Shared `Sheet` gained a `utility` slot (the keypad under the footer).
 
 ### Changelog
+- 2026-11-27 — US Markets banner follows the prototype's Market setting (US market): Live (green pulsing dot, as before) · Closed / Holiday (CLOSED, when it opens) · Coming soon (light-blue COMING SOON tag, "US Stocks, coming soon").
 - 2026-11-27 — F&O order pad laid out like the live app (types left · validity right, quantity card with Stepper, price cards, Set TPSL right; the centred amount and +lot chips removed). New TPSL sheet from Positions (fno-52, 53): TP/SL per lot quantity as several orders, each a grey panel; one compact card per leg, no on/off switch (empty = not set); typed prices from the keypad; trailing stop loss with a tooltip.
 - 2026-11-27 — New Positions page (fno-48 … 51): Total Returns card (₹/% switch, square D/W/M/Y, week days with an eye that greys them), Market Indices and Your Positions in a white body with rounded top corners, position cards with Set / Manage TPSL + Exit Now and a green TP/SL strip, a collapsed total under the tabs on scroll, Orders by day (Open · History, All Orders + filter). Top bar hairline only once scrolled. F&O navbar Positions tab and the home P&L arrow open it.
 - 2026-11-27 — L3 moved to c56598f: ribbon tabs (F&O product tabs, Scalper strategy tab) have Chrome-style SVG reverse corners, crisp, no seam at the border. Option chain keeps no corners (its override now hides the SVG flares, `svg[data-side]`).
@@ -8039,7 +8040,11 @@ export function TrendBadge({ trend, label, since, largeSince = false, info, onIn
 .flag { width: 138px; height: 79px; object-fit: cover; transform: rotate(12deg); }
 .copy { position: relative; display: flex; flex: 1; flex-direction: column; gap: var(--l3-spacing-02); min-width: 0; padding-left: 58px; white-space: nowrap; }
 .kicker { display: flex; align-items: center; gap: var(--l3-spacing-04); font: var(--l3-text-heading-10); letter-spacing: var(--l3-letter-spacing-ai-caps); color: var(--l3-base-hue-blue-400); }
-.live { display: inline-flex; align-items: center; gap: var(--l3-spacing-04); margin-left: var(--l3-spacing-04); color: var(--l3-content-accent-indicator-up-default); }
+.status { display: inline-flex; align-items: center; gap: var(--l3-spacing-04); margin-left: var(--l3-spacing-04); }
+.live { color: var(--l3-content-accent-indicator-up-default); }
+/* Coming soon: a small light-blue tag on the dark card (27 Nov). */
+.soon { padding: 0 var(--l3-spacing-04); border-radius: var(--l3-radius-04); background: color-mix(in srgb, var(--l3-base-hue-blue-400) 20%, transparent); color: var(--l3-base-hue-blue-200); }
+.closed { color: var(--l3-base-neutral-charcoal-400); }
 .dot { width: 6px; height: 6px; border-radius: var(--l3-radius-full); background: currentColor; animation: us-pulse 1.6s ease-in-out infinite; }
 .headline { font: var(--l3-text-heading-14); color: var(--l3-base-neutral-charcoal-50); }
 .sub { margin-top: var(--l3-spacing-02); font: var(--l3-text-description-10); color: var(--l3-base-neutral-charcoal-400); }
@@ -8054,22 +8059,33 @@ export function TrendBadge({ trend, label, since, largeSince = false, info, onIn
 import { Icon } from '@l3/components/Icon'
 import { msChevronRight } from '@l3/icons/material'
 import { t } from '../copy'
+import { useUsMarket } from '../../../shared/marketStatus'
 import flag from '../assets/us-flag.png'
 import glow from '../assets/us-glow.svg'
 import glow2 from '../assets/us-glow-2.svg'
 import styles from './UsBanner.module.css'
 
-/** "US MARKETS · LIVE" flag banner under the F&O quick actions (Equity tab). The whole card is one tap target → US Stocks. */
+/**
+ * "US MARKETS · LIVE" flag banner under the F&O quick actions (Equity tab). The whole card is one tap target → US Stocks.
+ * Follows the prototype's Market setting (US market): Live (green pulsing dot) · Closed / Holiday (when it opens) ·
+ * Coming soon (27 Nov, user: before US Stocks launches; blue tag, no dot).
+ */
 export function UsBanner({ onOpen }: { onOpen: () => void }) {
+  const market = useUsMarket()
+  const state = market === 'live'
+    ? { tag: t('us.live'), tone: styles.live, dot: true, headline: t('us.headline'), sub: t('us.sub') }
+    : market === 'soon'
+      ? { tag: t('us.soon'), tone: styles.soon, dot: false, headline: t('us.soonHeadline'), sub: t('us.soonSub') }
+      : { tag: t('us.closed'), tone: styles.closed, dot: false, headline: market === 'holiday' ? t('us.holidayHeadline') : t('us.closedHeadline'), sub: t('us.sub') }
   return <div className={styles.wrap}>
     <button type="button" className={styles.banner} onClick={onOpen}>
       <img src={glow} alt="" aria-hidden="true" className={styles.glow} />
       <img src={glow2} alt="" aria-hidden="true" className={styles.glow2} />
       <span className={styles.flagWrap}><img src={flag} alt="" className={styles.flag} /></span>
       <span className={styles.copy}>
-        <span className={styles.kicker}>{t('us.eyebrow')}<span className={styles.live}><span className={styles.dot} aria-hidden="true" />{t('us.live')}</span></span>
-        <span className={styles.headline}>{t('us.headline')}</span>
-        <span className={styles.sub}>{t('us.sub')}</span>
+        <span className={styles.kicker}>{t('us.eyebrow')}<span className={`${styles.status} ${state.tone}`}>{state.dot && <span className={styles.dot} aria-hidden="true" />}{state.tag}</span></span>
+        <span className={styles.headline}>{state.headline}</span>
+        <span className={styles.sub}>{state.sub}</span>
       </span>
       <span className={styles.arrow} aria-hidden="true"><Icon icon={msChevronRight} size={24} /></span>
     </button>
@@ -8167,6 +8183,12 @@ function addMinutes(start: string, add: number) {
   "us.live": "LIVE",
   "us.headline": "Live now · till 2:30 AM IST",
   "us.sub": "Buy Apple, NVIDIA & more",
+  "us.soon": "COMING SOON",
+  "us.soonHeadline": "US Stocks, coming soon",
+  "us.soonSub": "Buy Apple, NVIDIA & more from India",
+  "us.closed": "CLOSED",
+  "us.closedHeadline": "Opens at 8:00 PM IST",
+  "us.holidayHeadline": "Closed today · US holiday",
   "shortcut.label": "Shortcuts",
   "shortcut.calls": "Trade Calls",
   "shortcut.analysis": "Analysis",
@@ -38661,6 +38683,62 @@ export const otherBank: LinkedBank = { id: 'sbi', bank: 'State Bank of India', a
 export const INSTANT_BALANCE = 149
 ```
 
+### `src/shared/marketStatus.ts`
+
+```ts
+// Market status — app-level prototype settings ("Market" in the User status panel), 27 Nov, user: "give this thing in the
+// prototype setting, what the status of the market is, before market, after market, because this is just a prototype".
+// Nothing here follows the clock: whoever tests picks the state and every screen that depends on it follows — the order
+// pads' notes, the order result (placed now vs. queued for the open), the US Markets banner on the F&O home.
+// In a real app these come from the exchange calendar and the time of day.
+import type { FlowOption } from '../flows/types'
+import { useFlowOption } from './prototype'
+import { USER_STATUS } from './userStatus'
+
+/** NSE / BSE (Indian stocks). Pre-open: 9:00–9:15 AM, orders go into the opening auction. */
+export type NseMarket = 'open' | 'preOpen' | 'closed' | 'holiday'
+/** The US market (US Stocks), and the US Markets banner. Coming soon: US Stocks isn't launched yet (banner only). */
+export type UsMarket = 'live' | 'closed' | 'holiday' | 'soon'
+
+/** Where the setting floats beside the phone: the F&O home (banner), the stock pages and the order pads. */
+const MARKET_SCREENS = ['fno-01', 'fno-02', 'fno-03', 'fno-04', 'us-stocks-13', 'us-stocks-33', 'us-stocks-34', 'us-stocks-37', 'us-stocks-38', 'us-stocks-40', 'us-stocks-41', 'us-stocks-47', 'us-stocks-106', 'us-stocks-107']
+
+export const marketStatusOptions: FlowOption[] = [
+  {
+    id: 'nseMarket',
+    group: 'Market',
+    label: 'Indian market (NSE)',
+    values: [
+      { value: 'open', label: 'Open' },
+      { value: 'preOpen', label: 'Pre-open' },
+      { value: 'closed', label: 'Closed (after market)' },
+      { value: 'holiday', label: 'Holiday' },
+    ],
+    default: 'open',
+    floatOn: MARKET_SCREENS,
+  },
+  {
+    id: 'usMarket',
+    group: 'Market',
+    label: 'US market',
+    values: [
+      { value: 'live', label: 'Live' },
+      { value: 'closed', label: 'Closed' },
+      { value: 'holiday', label: 'Holiday' },
+      { value: 'soon', label: 'Coming soon' },
+    ],
+    default: 'live',
+    floatOn: MARKET_SCREENS,
+  },
+]
+
+const option = (id: string) => marketStatusOptions.find((o) => o.id === id)!
+const useMarket = (id: string) => useFlowOption(USER_STATUS, id, option(id).default)
+
+export const useNseMarket = () => useMarket('nseMarket') as NseMarket
+export const useUsMarket = () => useMarket('usMarket') as UsMarket
+```
+
 ### `src/shared/money.module.css`
 
 ```css
@@ -40957,5 +41035,191 @@ export function useSwipeBetween({ canGo, onSwitch, page, area, slides, fades }: 
     /** Switch by tap (tabs, market button): the same switch as a swipe, towards `direction`. */
     go: (direction: 1 | -1, commit: () => void) => leave(direction, commit),
   }
+}
+```
+
+### `src/shared/userStatus.ts`
+
+```ts
+// Where the user is in the app — the prototype's app-level settings ("User status" in the preview panel, the phone's
+// settings sheet and a floating card beside the phone). Every screen that depends on it reads it here, so they all stay
+// in sync: pick "User account state: Active · money on the way" once and the Home's US tab, a US stock page and the wallet all
+// show that state. Picking never moves on by itself; taps in the prototype don't change it.
+// In a real app these come from the user's account (KYC status, US Stocks activation, wallet, holdings).
+import type { FlowOption } from '../flows/types'
+import { setFlowOption, useFlowOption } from './prototype'
+import { linkedBanks, otherBank, type LinkedBank } from './data/user'
+
+/** The settings' owner in the preview (as a flow id: where the picks are remembered). */
+export const USER_STATUS = 'app'
+
+export type KycStatus = 'done' | 'pending'
+export type UsActivation = 'kyc' | 'off' | 'review' | 'support' | 'failed' | 'active'
+export type UsWallet = 'empty' | 'onTheWay' | 'funded'
+export type UsHoldings = 'none' | 'some'
+export type BankLinks = 'none' | 'one' | 'two' | 'three' | 'sbi'
+
+/**
+ * Screens that change with the user status: the settings float beside the phone on these (desktop preview). The Home,
+ * its US tab screens (each one sets the status to its own state on arrival, then follows a pick), a US stock page and
+ * the wallet's US tab.
+ */
+/** The add-money screens and the wallet: the bank row and its sheet change with the user's linked banks. */
+const BANK_SCREENS = ['deposit-01', 'deposit-06', 'deposit-07', 'deposit-08', 'deposit-09', 'us-stocks-21', 'us-stocks-22', 'us-stocks-23', 'us-stocks-24', 'us-stocks-53', 'us-stocks-54', 'us-stocks-95']
+
+const STATUS_SCREENS = ['stocks-01', 'stocks-09', 'stocks-10', 'stocks-13', 'stocks-14', 'stocks-15', 'stocks-16', 'stocks-17', 'stocks-19', 'stocks-20', 'stocks-21', 'us-stocks-13', 'us-stocks-54']
+
+/** The app-level user status settings. */
+export const userStatusOptions: FlowOption[] = [
+  {
+    // One list for the whole way in, in order — one row of states (18 Nov, the user's call; was three settings: US
+    // Stocks activation, then USD wallet and US holdings under "Active"): not active while the Lemonn KYC is pending
+    // (US Stocks can't be activated until it's done), not active, the activation steps, then active with $0, money on
+    // the way, money in the wallet, US holdings. The values are the UsJourney steps.
+    id: 'account',
+    group: 'User status',
+    label: 'User account state',
+    picker: 'dropdown',
+    values: [
+      { value: 'kyc', label: 'Not active · KYC pending' },
+      { value: 'activate', label: 'Not active' },
+      { value: 'review', label: 'Under review' },
+      { value: 'support', label: 'Under review · contact support' },
+      { value: 'failed', label: 'Activation failed' },
+      { value: 'activated', label: 'Active · $0' },
+      { value: 'onTheWay', label: 'Active · money on the way' },
+      { value: 'ready', label: 'Active · has money' },
+      { value: 'holding', label: 'Active · US holdings' },
+    ],
+    // The prototype opens on a user who's all set: activated, money in the wallet, holding US stocks.
+    default: 'holding',
+    floatOn: STATUS_SCREENS,
+  },
+  {
+    // Money on the way, more than once: a US deposit takes 1–2 working days, so adding money again before the first one
+    // lands means two or three on the way (20 Nov). The wallet's bar and Home's card add them up; their sheet shows each one.
+    id: 'deposits',
+    group: 'User status',
+    label: 'Deposits on the way',
+    showIf: { account: ['onTheWay'] },
+    values: [{ value: 'one', label: 'One' }, { value: 'two', label: 'Two' }, { value: 'three', label: 'Three' }],
+    default: 'one',
+    floatOn: [...STATUS_SCREENS, 'us-stocks-28', 'us-stocks-93'],
+  },
+  {
+    // How the oldest deposit on the way is doing (20 Nov). Taking longer: past its day, still with the US bank — the
+    // sheet says it's taking longer than usual, the money is safe, and a failed one is refunded to the bank it came from.
+    // Failed: the US bank sent it back — where it stopped, the refund, Try again and Contact support. Home's card and the
+    // wallet's bar say so.
+    id: 'depositStatus',
+    group: 'User status',
+    label: 'Deposit status',
+    showIf: { account: ['onTheWay'] },
+    values: [{ value: 'onTime', label: 'On time' }, { value: 'delayed', label: 'Taking longer' }, { value: 'failed', label: 'Failed' }],
+    default: 'onTime',
+    floatOn: [...STATUS_SCREENS, 'us-stocks-28'],
+  },
+  {
+    // Indian stocks in Portfolio (26 Nov, user: developers need every empty state). Empty = no Indian holdings, no open
+    // orders, no SIPs and no order history: Holdings shows its empty state and ₹0 on the IN P&L card, and each Orders
+    // list (Open, SIP, History) its own. Positions are always empty in the prototype.
+    id: 'inPortfolio',
+    group: 'User status',
+    label: 'Indian stocks',
+    values: [{ value: 'some', label: 'Holdings & orders' }, { value: 'none', label: 'Empty' }],
+    default: 'some',
+    floatOn: ['us-stocks-05', 'us-stocks-06', 'us-stocks-77', 'us-stocks-91', 'us-stocks-92'],
+  },
+  {
+    // Bank accounts linked to Lemonn (KYC adds the first). None = the add-money screens ask for one first.
+    id: 'banks',
+    group: 'User status',
+    label: 'Bank accounts',
+    picker: 'dropdown', // a dropdown like User account state (18 Nov: five choices didn't fit a segmented row)
+    // Three / SBI only: with an account at a bank US Stocks money can't go from (State Bank of India).
+    values: [{ value: 'none', label: 'None' }, { value: 'one', label: 'One' }, { value: 'two', label: 'Two' }, { value: 'three', label: 'Three (+ SBI)' }, { value: 'sbi', label: 'SBI only' }],
+    default: 'three',
+    floatOn: BANK_SCREENS,
+  },
+]
+
+const option = (id: string) => userStatusOptions.find((o) => o.id === id)!
+const useStatus = (id: string) => useFlowOption(USER_STATUS, id, option(id).default)
+
+/** True when the user has no Indian holdings or orders ("User status → Indian stocks: Empty"). */
+export const useInPortfolioEmpty = () => useStatus('inPortfolio') === 'none'
+
+export type UserStatus = { kyc: KycStatus; us: UsActivation; usWallet: UsWallet; usHoldings: UsHoldings; banks: BankLinks }
+
+/** The user status as picked (settings under one that's off keep their last pick). KYC comes from the activation list. */
+export function useUserStatus(): UserStatus {
+  return { ...statusOf(useStatus('account') as UsJourney), banks: useStatus('banks') as BankLinks }
+}
+
+/** One account state as the activation, wallet and holdings it means. */
+function statusOf(step: UsJourney): Omit<UserStatus, 'banks'> {
+  const us: UsActivation = step === 'activate' ? 'off' : ['kyc', 'review', 'support', 'failed'].includes(step) ? (step as UsActivation) : 'active'
+  return {
+    kyc: us === 'kyc' ? 'pending' : 'done',
+    us,
+    usWallet: step === 'activated' ? 'empty' : step === 'onTheWay' ? 'onTheWay' : 'funded',
+    usHoldings: step === 'holding' ? 'some' : 'none',
+  }
+}
+
+/**
+ * The bank accounts the user has linked, as picked in "User status → Bank accounts" (primary first). Money in the USD
+ * wallet (on the way or landed) came from a bank, so then "None" counts as one — as in the real app, a user with money
+ * moving always has a bank.
+ */
+export function useLinkedBanks(): LinkedBank[] {
+  const picked = useStatus('banks') as BankLinks
+  const { us, usWallet } = statusOf(useStatus('account') as UsJourney)
+  const moneyMoved = us === 'active' && usWallet !== 'empty'
+  const banks = picked === 'none' && moneyMoved ? 'one' : picked
+  const linked = { none: [], one: linkedBanks.slice(0, 1), two: linkedBanks, three: [...linkedBanks, otherBank], sbi: [{ ...otherBank, primary: true }] }[banks]
+  return addedBank ? [...linked, addedBank] : linked
+}
+
+// A bank account added in the prototype ("Add bank account" → verified). Kept in memory, so a reload starts without it.
+let addedBank: LinkedBank | undefined
+let addBankOpener: string | undefined
+let addBankForUsStocks = false
+
+/**
+ * An add-money screen (₹ or US) or the US Stocks activation opens "Add bank account": remember which, so the verified
+ * account comes back to it. `usStocks`: the account is for US Stocks, so it must be at a bank that can send money abroad.
+ */
+export const startAddBank = (fromScreen?: string, { usStocks = false }: { usStocks?: boolean } = {}) => { addBankOpener = fromScreen; addBankForUsStocks = usStocks }
+/** "Add bank account" was opened from US Stocks: only the supported banks can be added. */
+export const addBankForUs = () => addBankForUsStocks
+/** The add-money screen that opened "Add bank account" (undefined when it was opened straight from the screen list). */
+export const addBankReturnScreen = () => addBankOpener
+/** The ₹1 check passed: the account joins the linked banks, and the add-money screens pick it. */
+export const linkBank = (bank: LinkedBank) => { addedBank = bank }
+/** The account added in this session, if any. */
+export const newlyLinkedBank = () => addedBank
+
+/**
+ * Where the user is with US Stocks, as one step: KYC pending → 'kyc'; not activated → 'activate'; under review /
+ * contact support / failed; activated → $0 'activated', 'onTheWay', or with money 'ready' / 'holding'.
+ * (The Stocks flow's UsState uses the same names.)
+ */
+export type UsJourney = 'kyc' | 'activate' | 'review' | 'support' | 'failed' | 'activated' | 'onTheWay' | 'ready' | 'holding'
+
+export function usJourney({ kyc, us, usWallet, usHoldings }: UserStatus): UsJourney {
+  if (kyc === 'pending' || us === 'kyc') return 'kyc'
+  if (us === 'off') return 'activate'
+  if (us !== 'active') return us
+  if (usWallet === 'empty') return 'activated'
+  if (usWallet === 'onTheWay') return 'onTheWay'
+  return usHoldings === 'some' ? 'holding' : 'ready'
+}
+
+export const useUsJourney = () => usJourney(useUserStatus())
+
+/** Sets the user status to one US Stocks step (a US tab screen showing its own state sets it on arrival). */
+export function setUsJourney(step: UsJourney) {
+  setFlowOption(USER_STATUS, 'account', option('account').default, step)
 }
 ```

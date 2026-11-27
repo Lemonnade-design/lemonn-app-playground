@@ -286,6 +286,7 @@ Every tap he wired is kept. The main path: FTUX sheet → Activate → Declarati
 
 ### Changelog
 
+- 27 Nov 2026 · Market setting (prototype, app-level, src/shared/marketStatus.ts): Indian market (NSE) Open · Pre-open · Closed (after market) · Holiday and US market Live · Closed · Holiday · Coming soon, floating beside the phone on the pads and stock pages. The order pads' notes follow it (trade/marketNotes.ts): a Market buy says when the order goes in, Limit / SL / sell notes get "Pre-open order · " / "After-market order · "; placing an order while the market isn't open ends on Order created (T13) with that market's note, otherwise Order executed (T14). Indian Order Details for a failed order: us-stocks-122 (LT, Cancelled limit sell) and us-stocks-123 (ETERNAL, Rejected intraday buy). Reason bars and the Add money mismatch warning are the rounded, shadowless Aerobar (floating, inline).
 - 27 Nov 2026 · Asset pages (stock and ETF): scroll reveal as on the Stocks Home (each section's header, chips and cards fade and rise 16 in as they scroll into view, 80 apart; what's on screen at open shows at once), and every chart draws in once on screen: price line wipes left to right (again per period), day range wipes, analyst ring and donuts sweep clockwise, rating / holding bars grow from the left, Financials columns rise (60 apart). 900 over 120 wait, L3 decelerate; off with reduced motion. Shared hook src/shared/ui/scrollReveal (useScrollReveal, useChartDraw); timings are local tokens (--app-scroll-reveal, --app-chart-draw*, L3 gap: longest L3 duration is 400).
 - 27 Nov 2026 · Screen list: the INR wallet screens have their own section, "Indian wallet (INR)" (the other is now "US wallet (USD)"); every withdrawal state folds under Wallet → US tab / Indian tab → Withdrawal; search results show the section beside the flow and search matches it. Across the app, 37 screens renamed so they fold with their page (deposit's bank check and payment steps, Stock ⓘ sheets, Market filters and watchlist, F&O Equity / Commodities home, DASH Ready, Bank app, ETF Top holdings).
 - 27 Nov 2026 · INR wallet: pending and failed money (`us-stocks-116`–`121`, `deposit-18`): withdrawal sent back by the bank (bar + sheet), withdrawal cut short by trades (bar + sheet), withdrawal in progress with Cancel, add money payment pending (bar, and the deposit flow's Payment · pending). The US wallet gets the sent-back withdrawal too (`us-stocks-114`, `115`).
@@ -23437,6 +23438,8 @@ export const registry: UsScreenEntry[] = [
   { figma: '9001:49', id: 'us-stocks-88', badge: 'new', section: 'activated', name: "Order Details · Failed", note: "META: rejected — not enough USD balance. Retry." },
   { figma: '9001:50', id: 'us-stocks-89', badge: 'new', section: 'activated', name: "Order Details · Cancelled · Limit sell", note: "NVDA: a sell the user cancelled. Place again." },
   { figma: '9001:69', id: 'us-stocks-105', badge: 'new', badgeNote: "Not in Figma: the US Order Details for Indian orders", section: 'activated', name: "Order Details · Indian", note: "An Indian order card in Portfolio → Orders (IND) opens this: the US Order Details layout in ₹ — the stock row (NSE), status line, the reason, the facts (order type, product, trigger / limit, avg, validity incl. GTT, placed on, NSE, order ID), the Order status timeline, and the dock by status (Cancel order + Modify, Repeat order, Retry, Place again). Back lands on the IND side, same list." },
+  { figma: '9001:86', id: 'us-stocks-122', badge: 'new', badgeNote: "Not in Figma", section: 'activated', name: "Order Details · Indian · Cancelled · Limit sell", note: "LT: a Day limit sell (3 shares at ₹3,720.00) the user cancelled. Grey Cancelled status, 0/3 shares, the reason bar, Avg. price –, the timeline ends at Cancelled by you. Place again." },
+  { figma: '9001:87', id: 'us-stocks-123', badge: 'new', badgeNote: "Not in Figma", section: 'activated', name: "Order Details · Indian · Rejected · Intraday market buy", note: "ETERNAL: an intraday buy placed after 3:20 PM, rejected. Red Rejected status, the reason (Intraday orders close at 3:20 PM), the timeline ends at Rejected. Retry." },
   { figma: '9001:51', id: 'us-stocks-90', badge: 'new', section: 'activated', name: "Order Details · Expired", note: "GOOGL: a Day limit order that never reached its price. Place again." },
 ]
 
@@ -36768,7 +36771,7 @@ export function AddMoneyScreen({ id, initial, breakdown = false, mismatch = fals
         />
       }
     >
-      {mismatch && <Aerobar type="danger" placement="inline" heading={t('addMoney.mismatchHeading')} paragraph={t('addMoney.mismatchText')} />}
+      {mismatch && <Aerobar type="danger" floating placement="inline" heading={t('addMoney.mismatchHeading')} paragraph={t('addMoney.mismatchText')} />}
       <AmountEntry
         amount={typed}
         currency="$"
@@ -38014,7 +38017,7 @@ export function InOrderDetailsScreen({ backdrop, order: given }: { backdrop?: bo
               </span>
               <span className={styles.filled}>{order.filled}/{order.qty} shares</span>
             </Stack>
-            {order.reason && <Aerobar type={REASON_BAR[order.status] ?? 'primary'} placement="inline" heading={order.reason} />}
+            {order.reason && <Aerobar type={REASON_BAR[order.status] ?? 'primary'} floating placement="inline" heading={order.reason} />}
           </Section>
         </Section>
 
@@ -39999,7 +40002,7 @@ import type { UsScreenMap } from '../types'
 import { ORDER_DETAILS, POSITION_DETAILS } from './data'
 import { OrderDetailsFor, OrderDetailsScreen } from './OrderDetailsScreen'
 import { PositionDetailsScreen } from './PositionDetailsScreen'
-import { InOrderDetailsScreen } from './InOrderDetailsScreen'
+import { InOrderDetailsFor, InOrderDetailsScreen } from './InOrderDetailsScreen'
 import { IN_ORDER_DETAILS } from './indianOrders'
 
 /** Order Details in each status, for the preview (figma id → sample order id in data.ts). */
@@ -40016,12 +40019,21 @@ export const ORDER_STATE_SCREENS: Record<string, string> = {
   '9001:51': 'h6', // Expired
 }
 
+/** Indian Order Details in a finished-badly status, for the preview (figma id → sample order id in indianOrders.ts). */
+export const IN_ORDER_STATE_SCREENS: Record<string, string> = {
+  '9001:86': 'in-h5', // Cancelled · Limit sell (LT)
+  '9001:87': 'in-h4', // Rejected · Intraday market buy (ETERNAL)
+}
+
 export const screens: UsScreenMap = {
   [ORDER_DETAILS]: OrderDetailsScreen, // Order Details (every status)
   [POSITION_DETAILS]: PositionDetailsScreen, // Position Details
   [IN_ORDER_DETAILS]: InOrderDetailsScreen, // Order Details · Indian (every status)
   ...Object.fromEntries(
     Object.entries(ORDER_STATE_SCREENS).map(([figma, id]) => [figma, ({ backdrop }: { backdrop?: boolean }) => <OrderDetailsFor id={id} backdrop={backdrop} />]),
+  ),
+  ...Object.fromEntries(
+    Object.entries(IN_ORDER_STATE_SCREENS).map(([figma, id]) => [figma, ({ backdrop }: { backdrop?: boolean }) => <InOrderDetailsFor id={id} backdrop={backdrop} />]),
   ),
 }
 ```
@@ -41629,6 +41641,7 @@ import { FeeBreakdownSheet } from './FeeBreakdown'
 import { CHARGE_FACTOR } from './orderPads'
 import { PriceField, PriceFieldBox } from './PriceField'
 import { PadAmount, PadCurrencyProvider, usePadMoney, usePadSymbol } from './padMoney'
+import { marketPadNote, usePadMarket } from './marketNotes'
 import { LIMIT_VALIDITY_LABELS, NEXT_LIMIT_VALIDITY, PRODUCT_LABELS, indianPadFor, productsOn, requiredFor, setIndianPad, useIndianPad, validityPrefix, type Product } from './indianPad'
 import styles from './OrderPadV2.module.css'
 
@@ -41696,6 +41709,8 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
   const symbol = usePadSymbol()
   const india = config.currency === 'inr'
   const indian = useIndianPad()
+  // The prototype's Market setting: pre-open / closed / holiday change the note (marketNotes.ts).
+  const padMarket = usePadMarket()
   // The US pad always shows what the order is worth in ₹ (in the Buy button), whatever the app's ₹ setting: you pay in
   // from an Indian bank, so the ₹ figure is part of deciding the order. The Indian pad is in ₹ already.
   const rate = useUsdInrRate()
@@ -42036,7 +42051,8 @@ function OrderPadV2Body({ config, backdrop, sheet }: PadProps) {
   // Day is the only validity for US orders: Limit / SL notes say so. The Indian pad's say the validity picked.
   // A Market order says nothing unless it's Instant.
   const notePrefix = india ? validityPrefix(indian, config.type) : config.type === 'market' ? '' : 'Day order · '
-  const note = derived.note ? `${notePrefix}${forCurrentStock(derived.note)}` : undefined
+  const marketNote = marketPadNote(padMarket, config.type, config.side, derived.note)
+  const note = marketNote ? `${notePrefix}${forCurrentStock(marketNote)}` : undefined
   const footer = (
     <div className={styles.dock}>
       {note && <p className={styles.note}>{note}</p>}
@@ -42767,6 +42783,7 @@ import { tradeIds } from './ids'
 import { OrderLoader, ResultBadge, type LoaderPhase } from './OrderLoader'
 import { orderResults } from './orderResults'
 import { useProcessingAnimation } from './version'
+import { marketResultNote, usePadMarket } from './marketNotes'
 import type { OrderResultConfig } from './types'
 import styles from './OrderResultV2.module.css'
 
@@ -42784,8 +42801,9 @@ const headingOf = (title: string) => forCurrentStock(title).replace(/^(Yay!|Oops
 const orderScreens = new Set<string>(Object.entries(tradeIds).filter(([k]) => !k.startsWith('stock')).map(([, f]) => f))
 const isOrderScreen = (figma: string) => orderScreens.has(figma)
 
-/** Where processing goes: the buy order executed (T14). */
-const NEXT = tradeIds.T14
+/** Where processing goes: the buy order executed (T14), or created (T13) while the pad's market isn't open (Market setting). */
+const EXECUTED = tradeIds.T14
+const CREATED = tradeIds.T13
 /** The non-glass loaders' rotating step lines (Minted's). */
 const STEPS = ['Placing your order', 'Confirming with the exchange', 'Almost done']
 
@@ -42814,6 +42832,7 @@ export function OrderProcessingV2({ config, backdrop }: { config: OrderResultCon
   const variant = useProcessingAnimation()
   const glass = variant === 'glass'
   const stock = currentStock()
+  const NEXT = usePadMarket().queued ? CREATED : EXECUTED
   const result = orderResults[NEXT]
   const [phase, setPhase] = useState<LoaderPhase>('run')
   const [step, setStep] = useState(0)
@@ -42869,6 +42888,9 @@ export function OrderProcessingV2({ config, backdrop }: { config: OrderResultCon
 }
 
 export function OrderResultV2({ config }: { config: OrderResultConfig }) {
+  // Order created (T13) names the market it waits on (Indian or US, and how: pre-open, closed, holiday).
+  const market = usePadMarket()
+  const note = config === orderResults[CREATED] ? (marketResultNote(market) ?? config.note) : config.note
   const { leave, go } = useUsNav()
   // Back leaves the whole order (pad, processing, result): to the page the order was started from (the stock or ETF
   // page), or the stock page when the result was opened straight from the list (19 Nov, the user's call).
@@ -42945,7 +42967,7 @@ export function OrderResultV2({ config }: { config: OrderResultConfig }) {
               <KeyValueRow key={label} label={label} value={<Usd text={value} align="end" />} />
             ))}
           </KeyValueList>
-          {config.note && <p className={styles.note}>{forCurrentStock(config.note)}</p>}
+          {note && <p className={styles.note}>{forCurrentStock(note)}</p>}
         </Section>
       </div>
     </Phone>
@@ -44915,6 +44937,72 @@ const indianPads = new Map(Object.entries(orderPads).map(([id, config]) => [conf
 
 /** The Indian pad for a US pad state (the same screen, as RELIANCE in ₹). */
 export const indianPadFor = (config: OrderPadConfig) => indianPads.get(config) ?? config
+```
+
+### `src/flows/us-stocks/screens/trade/marketNotes.ts`
+
+```ts
+// The order pads and the order result follow the prototype's Market setting (src/shared/marketStatus.ts, 27 Nov, user:
+// "I'm not able to test the complete flow … give this thing in the prototype setting, before market, after market").
+// Open / Live: the pads' own notes and the order executes (T14). Anything else: a Market buy's note says when the order
+// goes in, Limit / SL / sell notes start with what kind of order it is, and placing it ends on "Order created" (T13),
+// queued for the open. The fixed market-closed screens (T09, T10) keep their own notes while the market is open.
+import { useNseMarket, useUsMarket, type NseMarket, type UsMarket } from '../../../../shared/marketStatus'
+import { usePadVersion } from './version'
+
+const NSE_MARKET_NOTES: Record<Exclude<NseMarket, 'open'>, string> = {
+  preOpen: 'NSE pre-open. Your order joins the opening auction and is placed at the opening price at 9:15 AM.',
+  closed: 'NSE is closed. Your order will be placed when it opens at 9:15 AM on Monday, Nov 23, at the opening price.',
+  holiday: 'NSE is closed on Tuesday, Nov 24 for Guru Nanak Jayanti. Your order will be placed when it opens at 9:15 AM on Wednesday, Nov 25.',
+}
+const NSE_PREFIX: Record<Exclude<NseMarket, 'open'>, string> = {
+  preOpen: 'Pre-open order · ',
+  closed: 'After-market order · ',
+  holiday: 'After-market order · ',
+}
+const NSE_RESULT_NOTES: Record<Exclude<NseMarket, 'open'>, string> = {
+  preOpen: 'NSE is in pre-open. Your order will be placed at the opening price at 9:15 AM.',
+  closed: 'NSE is closed. Your order will be sent when it opens at 9:15 AM.',
+  holiday: 'NSE is closed today for a holiday. Your order will be sent when it opens at 9:15 AM on Wednesday, Nov 25.',
+}
+
+const US_MARKET_NOTES: Record<'closed' | 'holiday', string> = {
+  closed: 'Order will be placed once the US market opens at 8:00 PM IST. Shares are worked out at the opening price.',
+  holiday: 'US markets are closed today for Thanksgiving. Order will be placed once the market opens at 8:00 PM IST on Friday, Nov 27. Shares are worked out at the opening price.',
+}
+const US_RESULT_NOTES: Record<'closed' | 'holiday', string> = {
+  closed: 'The US market is closed. Your order will be sent when it opens at 8:00 PM IST.',
+  holiday: 'US markets are closed today for a holiday. Your order will be sent when they open at 8:00 PM IST on Friday, Nov 27.',
+}
+
+/** The pad's market (Indian or US, from the page it was opened on) and whether an order now waits for the open. */
+export function usePadMarket() {
+  const india = usePadVersion() === 'india'
+  const nse = useNseMarket()
+  const us = useUsMarket()
+  const usShut = (us === 'closed' || us === 'holiday') ? us : undefined
+  const nseShut = nse === 'open' ? undefined : nse
+  return { india, nse: nseShut, us: usShut, queued: india ? nseShut !== undefined : usShut !== undefined }
+}
+
+type PadMarket = ReturnType<typeof usePadMarket>
+
+/** The pad's note with the market applied: a Market buy says when it goes in; other orders get a prefix. */
+export function marketPadNote(market: PadMarket, type: 'market' | 'limit' | 'sl', side: 'buy' | 'sell', note: string | undefined): string | undefined {
+  if (!market.queued) return note
+  if (market.india) {
+    const nse = market.nse!
+    return type === 'market' && side === 'buy' ? NSE_MARKET_NOTES[nse] : note && `${NSE_PREFIX[nse]}${note}`
+  }
+  const us = market.us!
+  return type === 'market' && side === 'buy' ? US_MARKET_NOTES[us] : note && `After-market order · ${note}`
+}
+
+/** The "Order created" result's note for the market the order waits on. */
+export function marketResultNote(market: PadMarket): string | undefined {
+  if (!market.queued) return undefined
+  return market.india ? NSE_RESULT_NOTES[market.nse!] : US_RESULT_NOTES[market.us!]
+}
 ```
 
 ### `src/flows/us-stocks/screens/trade/orderPads.tsx`
@@ -73934,6 +74022,62 @@ export const otherBank: LinkedBank = { id: 'sbi', bank: 'State Bank of India', a
 
 /** The instant-balance offer (₹, for intraday, MTF and F&O): Profile's row and the Indian wallet's card show it. */
 export const INSTANT_BALANCE = 149
+```
+
+### `src/shared/marketStatus.ts`
+
+```ts
+// Market status — app-level prototype settings ("Market" in the User status panel), 27 Nov, user: "give this thing in the
+// prototype setting, what the status of the market is, before market, after market, because this is just a prototype".
+// Nothing here follows the clock: whoever tests picks the state and every screen that depends on it follows — the order
+// pads' notes, the order result (placed now vs. queued for the open), the US Markets banner on the F&O home.
+// In a real app these come from the exchange calendar and the time of day.
+import type { FlowOption } from '../flows/types'
+import { useFlowOption } from './prototype'
+import { USER_STATUS } from './userStatus'
+
+/** NSE / BSE (Indian stocks). Pre-open: 9:00–9:15 AM, orders go into the opening auction. */
+export type NseMarket = 'open' | 'preOpen' | 'closed' | 'holiday'
+/** The US market (US Stocks), and the US Markets banner. Coming soon: US Stocks isn't launched yet (banner only). */
+export type UsMarket = 'live' | 'closed' | 'holiday' | 'soon'
+
+/** Where the setting floats beside the phone: the F&O home (banner), the stock pages and the order pads. */
+const MARKET_SCREENS = ['fno-01', 'fno-02', 'fno-03', 'fno-04', 'us-stocks-13', 'us-stocks-33', 'us-stocks-34', 'us-stocks-37', 'us-stocks-38', 'us-stocks-40', 'us-stocks-41', 'us-stocks-47', 'us-stocks-106', 'us-stocks-107']
+
+export const marketStatusOptions: FlowOption[] = [
+  {
+    id: 'nseMarket',
+    group: 'Market',
+    label: 'Indian market (NSE)',
+    values: [
+      { value: 'open', label: 'Open' },
+      { value: 'preOpen', label: 'Pre-open' },
+      { value: 'closed', label: 'Closed (after market)' },
+      { value: 'holiday', label: 'Holiday' },
+    ],
+    default: 'open',
+    floatOn: MARKET_SCREENS,
+  },
+  {
+    id: 'usMarket',
+    group: 'Market',
+    label: 'US market',
+    values: [
+      { value: 'live', label: 'Live' },
+      { value: 'closed', label: 'Closed' },
+      { value: 'holiday', label: 'Holiday' },
+      { value: 'soon', label: 'Coming soon' },
+    ],
+    default: 'live',
+    floatOn: MARKET_SCREENS,
+  },
+]
+
+const option = (id: string) => marketStatusOptions.find((o) => o.id === id)!
+const useMarket = (id: string) => useFlowOption(USER_STATUS, id, option(id).default)
+
+export const useNseMarket = () => useMarket('nseMarket') as NseMarket
+export const useUsMarket = () => useMarket('usMarket') as UsMarket
 ```
 
 ### `src/shared/money.module.css`

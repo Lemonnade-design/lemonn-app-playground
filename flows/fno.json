@@ -643,6 +643,7 @@
     "src/shared/data/us-market-snapshot.json",
     "src/shared/data/usStocks.ts",
     "src/shared/data/user.ts",
+    "src/shared/marketStatus.ts",
     "src/shared/money.module.css",
     "src/shared/money.tsx",
     "src/shared/prototype.ts",
@@ -680,6 +681,7 @@
     "src/shared/ui/dash/assets/leaf-front.svg",
     "src/shared/ui/dash/assets/orb-fill.svg",
     "src/shared/ui/dash/assets/orb-ring.svg",
-    "src/shared/ui/useSwipeBetween.ts"
+    "src/shared/ui/useSwipeBetween.ts",
+    "src/shared/userStatus.ts"
   ]
 }
