@@ -205,6 +205,38 @@
       "figmaUrl": "https://www.figma.com/design/nLs24dTJdPz9A5pu3AWMbe/?node-id=6900-25420"
     },
     {
+      "id": "fno-48",
+      "name": "Positions",
+      "figma": "",
+      "note": "The F&O navbar’s Positions tab (also the P&L arrow on F&O home), from the live app (screenshots, 27 Nov 2026; no Figma frame yet), on the stocks Portfolio → Positions patterns. Top bar: Positions with search, watchlist (→ market-11) and wallet; Positions | Orders tabs; its hairline shows only once the page scrolls. Grey top: the Total Returns card — “Total Returns ⇕” (₹ ↔ %) over the amount, square D / W / M / Y beside it, Unrealised | Realised, this week’s days with an eye that greys them out (amounts always show), P&L Analysis. White body with rounded top corners: Market Indices (as F&O home), then Your Positions — Refresh, settings, All / Equity / Commodity pills, a card per position: 40 logo, name, “Put | date | Qty.75”, exchange over product, Avg. price | LTP | Returns between dashed lines; open ones get Set TPSL / Manage TPSL + Exit Now, and with TP / TSL set a green strip “✓ TP (₹…) • TSL (₹…)  Qty 75/75 ›”. Unbuilt destinations open the explanatory sheet.",
+      "goesTo": [],
+      "figmaUrl": ""
+    },
+    {
+      "id": "fno-49",
+      "name": "Positions · scrolled (Total Returns collapsed)",
+      "figma": "",
+      "note": "Once the Total Returns card has gone under the top bar, its one-line form (“Total Returns −₹…”, on a wash of the result’s colour, fading in) stays under the tabs in the Actionbar’s bottom slot; scrolling back up brings the card back.",
+      "goesTo": [],
+      "figmaUrl": ""
+    },
+    {
+      "id": "fno-50",
+      "name": "Orders · History",
+      "figma": "",
+      "note": "The Orders tab. Sticky under the tabs: Open · History (equal-width pills, the selected one primary) and All Orders with a round filter button. Orders by day as stocks Portfolio → Orders: a closed day is a card cell, an open one a plain row with its cards (the first open). A card: product • time, status tag (Executed blue, Cancelled / Rejected red, Open yellow) and side tag (Buy green, Sell red); logo, contract, filled/qty; Avg. price, a limit, or At Market, and TP • TSL when set.",
+      "goesTo": [],
+      "figmaUrl": ""
+    },
+    {
+      "id": "fno-51",
+      "name": "Orders · Open",
+      "figma": "",
+      "note": "Orders waiting to go through, with their limit price; none → the L3 empty state.",
+      "goesTo": [],
+      "figmaUrl": ""
+    },
+    {
       "id": "fno-08",
       "name": "Commodities home",
       "figma": "6754:63637",
@@ -558,6 +590,11 @@
     "src/flows/fno/order-pad/data.ts",
     "src/flows/fno/order-pad/screens/OrderPad.module.css",
     "src/flows/fno/order-pad/screens/OrderPad.tsx",
+    "src/flows/fno/positions/Positions.module.css",
+    "src/flows/fno/positions/components/Cards.tsx",
+    "src/flows/fno/positions/components/TotalReturns.tsx",
+    "src/flows/fno/positions/data.ts",
+    "src/flows/fno/positions/screens/Positions.tsx",
     "src/flows/fno/screens/Home.tsx",
     "src/flows/fno/screens/Scalper.module.css",
     "src/flows/fno/screens/Scalper.tsx",
@@ -579,8 +616,15 @@
   ],
   "shared": [
     "src/shared/copy.ts",
+    "src/shared/data/companies.ts",
     "src/shared/data/format.ts",
+    "src/shared/data/live.ts",
+    "src/shared/data/market-snapshot.json",
+    "src/shared/data/us-market-snapshot.json",
+    "src/shared/data/usStocks.ts",
     "src/shared/data/user.ts",
+    "src/shared/money.module.css",
+    "src/shared/money.tsx",
     "src/shared/prototype.ts",
     "src/shared/ui/FloatingNav.module.css",
     "src/shared/ui/FloatingNav.tsx",
