@@ -1189,7 +1189,7 @@ export function Intro({ title, description, art, align = 'start', children }: {
   padding: var(--l3-spacing-12) var(--l3-spacing-12) var(--l3-spacing-24);
   /* On a real phone, clear the home indicator (like the L3 button dock does). */
   padding-bottom: calc(var(--l3-spacing-24) + env(safe-area-inset-bottom, var(--l3-spacing-00)));
-  /* The dock above sets --app-dock-surface when it isn't on surface-default (the order pads' dock is surface-primary). */
+  /* The dock above sets --app-dock-surface when it isn't on surface-default (page docks are surface-default since 28 Nov; a sheet dock is surface-primary). */
   background: var(--app-dock-surface, var(--l3-surface-default));
 }
 

@@ -9368,11 +9368,11 @@ export const fno: Flow = {
 
 ```css
 /* Option chain order dock (Figma 11630:16715) on L3 tokens. */
-.dock { background: var(--l3-surface-primary); box-shadow: var(--l3-shadow-elevation-high); }
+.dock { background: var(--l3-surface-default); box-shadow: var(--l3-shadow-elevation-high); }
 .header { display: flex; align-items: center; gap: var(--l3-spacing-04); height: var(--app-size-chain-dock-header); padding-inline: var(--l3-spacing-16) var(--l3-spacing-08); border-bottom: 1px solid var(--l3-border-light); }
 /* A wash of the action's colour from the left edge (Figma: green-50 → white by 30%). */
-.header[data-action='buy'] { background: linear-gradient(90deg, var(--l3-surface-accent-indicator-up-light), var(--l3-surface-primary) 30%); }
-.header[data-action='sell'] { background: linear-gradient(90deg, var(--l3-surface-accent-indicator-down-light), var(--l3-surface-primary) 30%); }
+.header[data-action='buy'] { background: linear-gradient(90deg, var(--l3-surface-accent-indicator-up-light), var(--l3-surface-default) 30%); }
+.header[data-action='sell'] { background: linear-gradient(90deg, var(--l3-surface-accent-indicator-down-light), var(--l3-surface-default) 30%); }
 .badge { display: inline-grid; place-items: center; flex: none; min-width: var(--l3-size-16); height: var(--l3-size-16); padding-inline: var(--l3-spacing-04); border-radius: var(--l3-radius-04); font: var(--l3-text-heading-10); color: var(--l3-content-inverted); }
 .badge[data-action='buy'] { background: var(--l3-surface-accent-indicator-up-default); }
 .badge[data-action='sell'] { background: var(--l3-surface-accent-indicator-down-default); }
@@ -9419,7 +9419,7 @@ export function OrderDock({ selection, lotSize, onContract, onOptions, onPlace }
   const lots = quantity / lotSize
   const required = selection.action === 'buy' ? selection.ltp * quantity : sellMarginPerLot * lots
   const contract = t('chain.contract', { strike: selection.strike.toLocaleString('en-IN'), side: t(`chain.${selection.side}`) })
-  return <div className={styles.dock} data-surface="primary">
+  return <div className={styles.dock} data-surface="default">
     <div className={styles.header} data-action={selection.action}>
       <span className={styles.badge} data-action={selection.action} aria-hidden>{t(selection.action === 'buy' ? 'chain.buyBadge' : 'chain.sellBadge')}</span>
       <Button variant="ghost" size="sm" iconRight={<Icon icon={msChevronRight} size={16} />} onClick={onContract} className={styles.contract}>{contract}</Button>
@@ -10093,7 +10093,7 @@ export const tpslPositionSet: TpslPosition = { ...tpslPosition, tp: 138.5, sl: 1
 .tpslLink.tpslLink [class*='icon'] { color: var(--l3-content-accent-discover-default); }
 
 /* Dock: the note above the hairline, Avail. · Req, the action, then the keypad. */
-.dock { background: var(--l3-surface-primary); }
+.dock { background: var(--l3-surface-default); }
 .note { margin: 0; padding: var(--l3-spacing-08) var(--l3-spacing-16); font: var(--l3-text-label-12); color: var(--l3-content-secondary); text-align: center; }
 .dockBody { padding: var(--l3-spacing-12) var(--l3-spacing-16); border-top: 1px solid var(--l3-border-light); }
 .funds { font: var(--l3-text-label-12); }
@@ -10298,7 +10298,7 @@ export function OrderPad({ side, product: initialProduct = 'delivery', type: ini
     bottom={<Tabs aria-label={t('order.product')} value={product} onChange={setProduct} items={[{ value: 'delivery', label: t('order.delivery') }, { value: 'intraday', label: t('order.intraday') }]} />} />
 
   // The stocks pad's dock: the note above the hairline, Avail. · Req, the action, then the keypad.
-  const dock = <div className={styles.dock} data-surface="primary">
+  const dock = <div className={styles.dock} data-surface="default">
     {product === 'intraday' && <p className={styles.note}>{t('order.autoClose', { time: intradayCloseTime })}</p>}
     <Stack gap="12" className={styles.dockBody}>
       <Stack direction="horizontal" justify="between" align="center" className={styles.funds}>
@@ -40866,7 +40866,7 @@ export function IlliquidSheet({ copy, onClose }: { copy: IlliquidSheetCopy; onCl
   padding: var(--l3-spacing-12) var(--l3-spacing-12) var(--l3-spacing-24);
   /* On a real phone, clear the home indicator (like the L3 button dock does). */
   padding-bottom: calc(var(--l3-spacing-24) + env(safe-area-inset-bottom, var(--l3-spacing-00)));
-  /* The dock above sets --app-dock-surface when it isn't on surface-default (the order pads' dock is surface-primary). */
+  /* The dock above sets --app-dock-surface when it isn't on surface-default (page docks are surface-default since 28 Nov; a sheet dock is surface-primary). */
   background: var(--app-dock-surface, var(--l3-surface-default));
 }
 

@@ -41329,7 +41329,7 @@ function GlassRing({ frozen }: { frozen: boolean }) {
 .error { margin: 0; font: var(--l3-text-label-12); color: var(--l3-content-accent-error-default); }
 
 /* Dock: optional note, then Avail. · Req. and the action. */
-.dock { --app-dock-surface: var(--l3-surface-primary); background: var(--app-dock-surface); }
+.dock { --app-dock-surface: var(--l3-surface-default); background: var(--app-dock-surface); }
 .note { margin: 0; padding: var(--l3-spacing-12) var(--l3-spacing-16); font: var(--l3-text-label-12); color: var(--l3-content-secondary); text-align: center; }
 .dockBody { display: flex; flex-direction: column; gap: var(--l3-spacing-12); padding: var(--l3-spacing-12) var(--l3-spacing-16) var(--l3-spacing-16); border-top: 1px solid var(--l3-border-light); }
 .funds { display: flex; justify-content: space-between; font: var(--l3-text-label-12); }
@@ -41628,7 +41628,7 @@ function OrderPadV1({ config, backdrop, sheet }: OrderPadProps) {
 
 /* Dock: the note strip, Balance · Approx. req., the main button, then the keypad. The note sits above the dock's
    hairline (on the page, outside the button dock); the hairline opens the dock itself. */
-.dock { --app-dock-surface: var(--l3-surface-primary); background: var(--app-dock-surface); }
+.dock { --app-dock-surface: var(--l3-surface-default); background: var(--app-dock-surface); }
 .note { margin: 0; padding: var(--l3-spacing-08) var(--l3-spacing-16); font: var(--l3-text-label-12); color: var(--l3-content-secondary); text-align: center; }
 .dockBody { padding: var(--l3-spacing-12) var(--l3-spacing-16); border-top: 1px solid var(--l3-border-light); }
 .funds { font: var(--l3-text-label-12); }
@@ -75279,7 +75279,7 @@ export function AmountEntry({ amount, currency, error = false, below, chips }: {
 
 /**
  * The bottom of the amount screen: the payment method row (a ListCell), the keypad and the button (a ButtonGroup).
- * `data-surface="primary"` so the OS navigation bar under it takes the same colour.
+ * `data-surface="default"` so the OS navigation bar under it takes the same colour.
  */
 export function AmountDock({ method, decimal = false, onKey, action }: {
   method?: ReactNode
@@ -75289,7 +75289,7 @@ export function AmountDock({ method, decimal = false, onKey, action }: {
   action: ReactNode
 }) {
   return (
-    <div className={styles.dock} data-surface="primary">
+    <div className={styles.dock} data-surface="default">
       {method && <div className={styles.method}>{method}</div>}
       <AmountKeypad decimal={decimal} onKey={onKey} />
       {action}
@@ -76185,7 +76185,7 @@ export function FloatingNav({ children }: { children: ReactNode }) {
   padding: var(--l3-spacing-12) var(--l3-spacing-12) var(--l3-spacing-24);
   /* On a real phone, clear the home indicator (like the L3 button dock does). */
   padding-bottom: calc(var(--l3-spacing-24) + env(safe-area-inset-bottom, var(--l3-spacing-00)));
-  /* The dock above sets --app-dock-surface when it isn't on surface-default (the order pads' dock is surface-primary). */
+  /* The dock above sets --app-dock-surface when it isn't on surface-default (page docks are surface-default since 28 Nov; a sheet dock is surface-primary). */
   background: var(--app-dock-surface, var(--l3-surface-default));
 }
 

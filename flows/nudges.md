@@ -2265,7 +2265,7 @@ export const nudgeOptions = [
 .tpslValue { font: var(--l3-text-label-12); color: var(--l3-content-secondary); }
 
 /* Dock: optional auto-close note (intraday), then Avail. · Req and the action. */
-.dock { background: var(--l3-surface-primary); }
+.dock { background: var(--l3-surface-default); }
 .autoClose { margin: 0; padding: var(--l3-spacing-12) var(--l3-spacing-16); font: var(--l3-text-label-12); color: var(--l3-content-tertiary); text-align: center; }
 .dockBody { display: flex; flex-direction: column; gap: var(--l3-spacing-12); padding: var(--l3-spacing-12) var(--l3-spacing-16) var(--l3-spacing-16); border-top: 1px solid var(--l3-border-light); }
 .funds { display: flex; justify-content: space-between; font: var(--l3-text-label-12); }
@@ -2417,7 +2417,7 @@ export function OrderPad({ side = 'buy', product: initialProduct = 'delivery', t
       <Icon icon={msShield} size={16} />{t('silent.limitAdd')}<Icon icon={msChevronRight} size={16} />
     </button>
 
-  const dock = <div className={styles.dock} data-surface="primary">
+  const dock = <div className={styles.dock} data-surface="default">
     {product === 'intraday' && <p className={styles.autoClose}>{t('order.autoClose', { time: intradayCloseTime })}</p>}
     <div className={styles.dockBody}>
       {lossLimit}

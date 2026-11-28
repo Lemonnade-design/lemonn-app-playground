@@ -16659,7 +16659,7 @@ export function AmountEntry({ amount, currency, error = false, below, chips }: {
 
 /**
  * The bottom of the amount screen: the payment method row (a ListCell), the keypad and the button (a ButtonGroup).
- * `data-surface="primary"` so the OS navigation bar under it takes the same colour.
+ * `data-surface="default"` so the OS navigation bar under it takes the same colour.
  */
 export function AmountDock({ method, decimal = false, onKey, action }: {
   method?: ReactNode
@@ -16669,7 +16669,7 @@ export function AmountDock({ method, decimal = false, onKey, action }: {
   action: ReactNode
 }) {
   return (
-    <div className={styles.dock} data-surface="primary">
+    <div className={styles.dock} data-surface="default">
       {method && <div className={styles.method}>{method}</div>}
       <AmountKeypad decimal={decimal} onKey={onKey} />
       {action}
@@ -16980,7 +16980,7 @@ export function Intro({ title, description, art, align = 'start', children }: {
   padding: var(--l3-spacing-12) var(--l3-spacing-12) var(--l3-spacing-24);
   /* On a real phone, clear the home indicator (like the L3 button dock does). */
   padding-bottom: calc(var(--l3-spacing-24) + env(safe-area-inset-bottom, var(--l3-spacing-00)));
-  /* The dock above sets --app-dock-surface when it isn't on surface-default (the order pads' dock is surface-primary). */
+  /* The dock above sets --app-dock-surface when it isn't on surface-default (page docks are surface-default since 28 Nov; a sheet dock is surface-primary). */
   background: var(--app-dock-surface, var(--l3-surface-default));
 }
 
