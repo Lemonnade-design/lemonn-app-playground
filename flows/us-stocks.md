@@ -286,6 +286,8 @@ Every tap he wired is kept. The main path: FTUX sheet → Activate → Declarati
 
 ### Changelog
 
+- 28 Nov 2026 · Created (T13) and Rejected (T15) are one page with Processing (group order-status): the loader turns into them, no slide.
+- 28 Nov 2026 · Order result setting (Trade: Executed / Rejected): on Rejected, processing ends on the alert badge and goes to Buy order not placed (T15).
 - 27 Nov 2026 · Indian sell pad: Advance options (and the applied Disclosed quantity card) moved to the far bottom of the pad, under the prices, 12 below the card above.
 - 27 Nov 2026 · Indian order pad: the Intraday tab gets the Day ⇄ Instant switch too; Buy / Sell read "Sell 25 QTY" (same size), the short-balance row reads "Buy 22 QTY" and animates from one full button into Buy + Add money (columns 1fr 0fr → 1fr 1fr, colour cross-fade). Sell pad: "Advance options" pill under Boost opens the Disclosed quantity sheet (one stepper row typed from the keypad, at least 10% of the order, error animated in with Reveal); once applied a one-row card "3 of 25 QTY" with neutral icon-only Edit / Remove (a button row: 40 × 40, tap areas don't overlap). Shared Reveal (src/shared/ui/Reveal) animates things appearing and leaving. TP/SL order card radius 14 (local token, L3 gap).
 - 27 Nov 2026 · Market setting (prototype, app-level, src/shared/marketStatus.ts): Indian market (NSE) Open · Pre-open · Closed (after market) · Holiday and US market Live · Closed · Holiday · Coming soon, floating beside the phone on the pads and stock pages. The order pads' notes follow it (trade/marketNotes.ts): a Market buy says when the order goes in, Limit / SL / sell notes get "Pre-open order · " / "After-market order · "; placing an order while the market isn't open ends on Order created (T13) with that market's note, otherwise Order executed (T14). Indian Order Details for a failed order: us-stocks-122 (LT, Cancelled limit sell) and us-stocks-123 (ETERNAL, Rejected intraday buy). Reason bars and the Add money mismatch warning are the rounded, shadowless Aerobar (floating, inline).
@@ -23115,6 +23117,19 @@ export const usStocks: Flow = {
     // the stock name). All open the same sheet; once set, all show the saved card.
     // "Orderpad version" archived 24 Nov (the user's call): V7 · stop loss switch in the top bar kept; V1, V2, V4, V5,
     // V6, V8, V9 archived. useTpslCard() returns 'v7' (screens/trade/version.ts); the other versions' code stays unused.
+    // What the exchange does with the order (28 Nov, the user: "the process fails afterwards"): Executed (or Created while the
+    // market is closed) as before, or Rejected · processing ends on the alert badge and Buy order not placed (T15).
+    {
+      id: 'orderOutcome',
+      group: 'Trade',
+      label: 'Order result',
+      values: [
+        { value: 'ok', label: 'Executed' },
+        { value: 'rejected', label: 'Rejected' },
+      ],
+      default: 'ok',
+      floatOn: ['us-stocks-43', ...ORDER_PAD_SCREEN_IDS],
+    },
     // The processing screen's loader (19 Nov, from Minted): glass ring (default) or Minted's other processing animations.
     {
       id: 'procAnim',
@@ -23374,9 +23389,9 @@ export const registry: UsScreenEntry[] = [
   { figma: '5837:95888', id: 'us-stocks-41', section: 'activated', name: "T08 · Buy · SL", note: "Stop-loss order: a trigger price places a limit order." },
   { figma: '5852:98171', id: 'us-stocks-42', over: 'us-stocks-41', section: 'activated', name: "T11 · Buy · Fee breakdown", note: "Fee breakdown for the required amount." },
   { figma: '5837:95677', id: 'us-stocks-43', group: 'order-status', section: 'activated', name: "T12 · Order result · Processing", note: "Minted's processing screen (19 Nov): its loader (flow option Processing animation; glass ring by default) (its running ring in discover blue) over Buy NVDA and Order in progress, no progress bar. The glass ring turns into the tick and the result lines, then T14 takes over on the same page (no slide) and rises into place." },
-  { figma: '5837:95657', id: 'us-stocks-44', section: 'activated', name: "T13 · Order result · Created (US market closed)", note: "Order created while the US market is closed. Sent when it opens." },
+  { figma: '5837:95657', id: 'us-stocks-44', group: 'order-status', section: 'activated', name: "T13 · Order result · Created (US market closed)", note: "Order created while the US market is closed. Sent when it opens." },
   { figma: '5837:95638', id: 'us-stocks-45', group: 'order-status', section: 'activated', name: "T14 · Order result · Executed", note: "Buy order executed." },
-  { figma: '5837:95619', id: 'us-stocks-46', section: 'activated', name: "T15 · Order result · Rejected", note: "Buy order rejected." },
+  { figma: '5837:95619', id: 'us-stocks-46', group: 'order-status', section: 'activated', name: "T15 · Order result · Rejected", note: "Buy order rejected. Processing turns into it on the same page (Order result setting: Rejected): the ring becomes the alert badge, then the summary rises into place." },
   { figma: '5837:95560', id: 'us-stocks-47', section: 'activated', name: "H03 · Sell · Holding", note: "Sell sheet for a user who holds the stock." },
   { figma: '5837:95507', id: 'us-stocks-48', section: 'activated', name: "H04 · Sell · no shares", note: "Account has no shares of this stock to sell." },
   { figma: '5837:95447', id: 'us-stocks-49', section: 'activated', name: "H05 · Sell · more than you hold", note: "Sell quantity is more than the shares held." },
@@ -43037,7 +43052,7 @@ import { forCurrentStock } from './format'
 import { tradeIds } from './ids'
 import { OrderLoader, ResultBadge, type LoaderPhase } from './OrderLoader'
 import { orderResults } from './orderResults'
-import { useProcessingAnimation } from './version'
+import { useOrderRejected, useProcessingAnimation } from './version'
 import { marketResultNote, usePadMarket } from './marketNotes'
 import type { OrderResultConfig } from './types'
 import styles from './OrderResultV2.module.css'
@@ -43056,9 +43071,11 @@ const headingOf = (title: string) => forCurrentStock(title).replace(/^(Yay!|Oops
 const orderScreens = new Set<string>(Object.entries(tradeIds).filter(([k]) => !k.startsWith('stock')).map(([, f]) => f))
 const isOrderScreen = (figma: string) => orderScreens.has(figma)
 
-/** Where processing goes: the buy order executed (T14), or created (T13) while the pad's market isn't open (Market setting). */
+/** Where processing goes: the buy order executed (T14), created (T13) while the pad's market isn't open (Market setting),
+ *  or not placed (T15) when the "Order result" setting is Rejected. */
 const EXECUTED = tradeIds.T14
 const CREATED = tradeIds.T13
+const REJECTED = tradeIds.T15
 /** The non-glass loaders' rotating step lines (Minted's). */
 const STEPS = ['Placing your order', 'Confirming with the exchange', 'Almost done']
 
@@ -43087,7 +43104,9 @@ export function OrderProcessingV2({ config, backdrop }: { config: OrderResultCon
   const variant = useProcessingAnimation()
   const glass = variant === 'glass'
   const stock = currentStock()
-  const NEXT = usePadMarket().queued ? CREATED : EXECUTED
+  const queued = usePadMarket().queued
+  const rejected = useOrderRejected()
+  const NEXT = rejected ? REJECTED : queued ? CREATED : EXECUTED
   const result = orderResults[NEXT]
   const [phase, setPhase] = useState<LoaderPhase>('run')
   const [step, setStep] = useState(0)
@@ -43115,7 +43134,7 @@ export function OrderProcessingV2({ config, backdrop }: { config: OrderResultCon
       <div className={styles.page}>
         <Stack className={styles.centre} align="center" justify="center" role="status">
           <Stack align="center" gap="16">
-            <OrderLoader variant={variant} phase={phase} outcome="success" symbol={stock.sym} side="Buy" amount={amount} />
+            <OrderLoader variant={variant} phase={phase} outcome={rejected ? 'error' : 'success'} symbol={stock.sym} side="Buy" amount={amount} />
             {glass ? (
               <Stack align="center" gap="08" className={styles.lines}>
                 <p className={styles.side}>{side}</p>
@@ -46138,6 +46157,10 @@ export const useIntradayPosition = (): number => {
 // The order pad's Share icon (flow option "Share icon", group Trade, 26 Nov, the user): an edge case — the live app shows
 // it only on some (internal staff) accounts; the condition is unknown. Hidden by default.
 export const useShareIcon = (): boolean => useFlowOption('us-stocks', 'shareIcon', 'off') === 'on'
+
+// What the exchange does with the order (flow option "Order result", group Trade, 28 Nov, the user): ok · executed (or
+// created while the market is closed); rejected · processing ends on the alert and goes to Buy order not placed (T15).
+export const useOrderRejected = (): boolean => useFlowOption('us-stocks', 'orderOutcome', 'ok') === 'rejected'
 ```
 
 ### `src/flows/us-stocks/screens/types.ts`
