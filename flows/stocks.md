@@ -435,6 +435,7 @@ lower on the page is scrolled into view first). `components/MarketSwitchGuide.ts
   16 / 24 icon or an Avatar only — event rows are plain buttons laid out with Stack.
 
 ### Changelog
+- 2026-11-28 · Stock page: the holdings card, View Order History and Boost SIP sit 16 apart. The card's footer is now the F&O positions TP/SL strip, tappable as a whole. New "TP/SL set on holding" setting (`stockTpsl`, off by default) shows the applied state: green with a tick, "TP (₹…) • SL (₹…)" and "Qty 2/2 ›" (sample TP +8% / SL −5% of the average, `stockHolding`).
 - 2026-11-28 · Stock page: Your Holdings card at the top of Overview (Total / 1D Returns switch; quantity, avg. price, returns %, current, invested, returns; Protect your order · Set TP/SL → the sell pad; View Order History, no screen yet), behind the "Holds this stock" setting (on by default). Sample holding: 2 shares (`stockHolding`, data.ts).
 - 2026-11-27 · Stock page: the advanced-chart button beside NSE shows the TV terminal mark (`assets/tv-terminal.svg`, drawn as an L3 Icon mask so it takes the button colour) instead of the candlestick.
 - 2026-11-26 · Stock page tabs (Overview / Events / F&O, or the two without F&O) are equal widths. L3 gap: Tabs' fill sizes each tab from its label.
@@ -24624,8 +24625,9 @@ import { ProgressBar } from '@l3/components/ProgressBar'
 import { SectionHeader } from '@l3/components/SectionHeader'
 import { Select } from '@l3/components/Select'
 import { Stack } from '@l3/components/Stack'
+import { Inset } from '@l3/components/Inset'
 import { Tabs } from '@l3/components/Tabs'
-import { msBoltFill, msChevronLeft, msChevronRight, msEventRepeat, msHistory } from '@l3/icons/material'
+import { msBoltFill, msCheckCircleFill, msChevronLeft, msChevronRight, msEventRepeat, msHistory } from '@l3/icons/material'
 import { Button } from '@l3/components/Button'
 import { PriceChange } from '@l3/components/PriceChange'
 import { inr } from '../../../shared/data/format'
@@ -24647,6 +24649,8 @@ type Props = {
   holding?: boolean
   /** Set TP/SL on the holdings card: the sell pad, where TP/SL is set. */
   onSetTpsl?: () => void
+  /** The holding has a TP/SL: the strip turns green with its prices. */
+  tpslSet?: boolean
 }
 
 /**
@@ -24654,20 +24658,28 @@ type Props = {
  * over value), top to bottom: Boost SIP, Daily Performance, Fundamentals, Market Depth, About Company, Key Holders,
  * Company financials, then the data source line. Boost SIP and Market Depth are Indian-only.
  */
-export function StockOverview({ page, price, aboutOpen = false, onGlossary, holding = false, onSetTpsl }: Props) {
+export function StockOverview({ page, price, aboutOpen = false, onGlossary, holding = false, tpslSet = false, onSetTpsl }: Props) {
+  // No SIP flow in the prototype yet: the card doesn't go anywhere.
+  const boostSip = (
+    <ListCell
+      variant="card"
+      as="button"
+      iconLeft={<span className={styles.boostIcon}><Icon icon={msEventRepeat} size={24} /></span>}
+      label={t('stock.boostTitle')}
+      description={t('stock.boostBody')}
+      iconRight={<Icon icon={msChevronRight} size={24} />}
+      onClick={() => {}}
+    />
+  )
   return (
     <Stack gap="32">
-      {holding && <YourHoldings page={page} price={price} onSetTpsl={onSetTpsl} />}
-      {/* No SIP flow in the prototype yet: the card doesn't go anywhere. */}
-      <ListCell
-        variant="card"
-        as="button"
-        iconLeft={<span className={styles.boostIcon}><Icon icon={msEventRepeat} size={24} /></span>}
-        label={t('stock.boostTitle')}
-        description={t('stock.boostBody')}
-        iconRight={<Icon icon={msChevronRight} size={24} />}
-        onClick={() => {}}
-      />
+      {/* Holding: the holdings card, View Order History and Boost SIP are one run of cards, 16 apart (28 Nov, user). */}
+      {holding ? (
+        <Stack gap="16">
+          <YourHoldings page={page} price={price} tpslSet={tpslSet} onSetTpsl={onSetTpsl} />
+          {boostSip}
+        </Stack>
+      ) : boostSip}
       <DailyPerformance page={page} price={price} onInfo={() => onGlossary('performance')} />
       <Fundamentals page={page} onInfo={() => onGlossary('fundamentals')} />
       <div data-part="depth"><MarketDepth page={page} /></div>
@@ -24702,9 +24714,9 @@ function Stat({ label, value, end }: { label: string; value: string; end?: boole
 /** Your Holdings (28 Nov, from the live app; drawn like the US page's): Total / 1D Returns switch; quantity, average
  *  price, returns % over current, invested, returns; "Protect your order · Set TP/SL" as the card's grey footer; then
  *  View Order History. Values in the app's other stats' type (heading 12), returns coloured by PriceChange. */
-function YourHoldings({ page, price, onSetTpsl }: { page: StockPageData; price: number; onSetTpsl?: () => void }) {
+function YourHoldings({ page, price, tpslSet, onSetTpsl }: { page: StockPageData; price: number; tpslSet: boolean; onSetTpsl?: () => void }) {
   const [daily, setDaily] = useState(false)
-  const { qty, avg } = stockHolding(page)
+  const { qty, avg, tp, sl } = stockHolding(page)
   const current = qty * price
   const invested = qty * avg
   const returns = daily ? qty * (price - page.prevClose) : current - invested
@@ -24714,13 +24726,8 @@ function YourHoldings({ page, price, onSetTpsl }: { page: StockPageData; price: 
     <Stack as="section" gap="16" aria-label={t('stock.holdings')}>
       <SectionHeader className={styles.heading} title={t('stock.holdings')}
         action={{ type: 'switcher', label, onClick: () => setDaily((d) => !d), 'aria-label': t('stock.returnsShown', { label }) }} />
-      <Stack gap="12">
-        <Card padding="none" footerFilled footer={
-          <Stack direction="horizontal" justify="between" align="center" gap="08" className={styles.protect}>
-            <span>{t('stock.protect')}</span>
-            <Button variant="tertiary" size="sm" iconRight={<Icon icon={msChevronRight} size={16} />} onClick={onSetTpsl}>{t('stock.setTpsl')}</Button>
-          </Stack>
-        }>
+      {/* Card and Order History 16 apart, the same as the heading above (28 Nov, user: "increase spacing, keep it consistent"). */}
+      <Card padding="none">
           <Stack gap="12" className={styles.holdingStats}>
             <dl className={styles.statGrid} data-columns="3">
               <Stat label={t('stock.qty')} value={String(qty)} />
@@ -24740,11 +24747,30 @@ function YourHoldings({ page, price, onSetTpsl }: { page: StockPageData; price: 
               </div>
             </dl>
           </Stack>
+          {/* The F&O positions card's TP/SL strip (fno Cards.tsx): 8 × 12, label 12, a ghost Small button at the right
+              (28 Nov, user: "use the same strip"). Grey until TP/SL is set. */}
+          {/* The whole strip is the tap target (28 Nov, user): a tap anywhere, or the button's own click (keyboard), bubbles here. */}
+          <Inset paddingInline="12" paddingBlock="08" className={styles.tpslStrip} data-set={tpslSet || undefined} onClick={onSetTpsl}>
+            {tpslSet ? (
+              // Applied: green, a tick, the prices, and the quantity covered (as the F&O strip's "Qty 150/150").
+              <Stack direction="horizontal" align="center" justify="between" gap="08">
+                <Stack direction="horizontal" align="center" gap="08">
+                  <Icon icon={msCheckCircleFill} size={20} className={styles.tpslCheck} aria-label={t('stock.tpslOn')} />
+                  <span className={styles.tpslText}>{t('stock.tpslSet', { tp: inr(tp), sl: inr(sl) })}</span>
+                </Stack>
+                <Button variant="ghost" size="sm" iconRight={<Icon icon={msChevronRight} />}>{t('stock.tpslQty', { qty })}</Button>
+              </Stack>
+            ) : (
+              <Stack direction="horizontal" align="center" justify="between" gap="08">
+                <span className={styles.tpslText}>{t('stock.protect')}</span>
+                <Button variant="ghost" size="sm" iconRight={<Icon icon={msChevronRight} />}>{t('stock.setTpsl')}</Button>
+              </Stack>
+            )}
+          </Inset>
         </Card>
         {/* No Indian order history screen in the prototype yet: the row doesn't go anywhere. */}
         <ListCell variant="card" as="button" iconLeft={<Icon icon={msHistory} size={24} />} label={t('stock.orderHistory')}
           iconRight={<Icon icon={msChevronRight} size={24} />} onClick={() => {}} />
-      </Stack>
     </Stack>
   )
 }
@@ -30574,6 +30600,9 @@ export function useLiveHeatmap(symbols: string[] = heatSymbols): HeatValue[] {
   "stock.returns": "Returns",
   "stock.protect": "Protect your order",
   "stock.setTpsl": "Set TP/SL",
+  "stock.tpslSet": "TP ({tp}) • SL ({sl})",
+  "stock.tpslQty": "Qty {qty}/{qty}",
+  "stock.tpslOn": "TP and SL set",
   "stock.orderHistory": "View Order History"
 }
 ```
@@ -31002,8 +31031,14 @@ export function stockFno(symbol: string, price: number): StockFnoData | undefine
 
 /** The sample holding on the stock page ("Your Holdings", the "Holds this stock" setting): 2 shares bought a little
  *  above yesterday's close, so it reads as a small loss, as in the live app. FICTIONAL. */
-export type StockHolding = { qty: number; avg: number }
-export const stockHolding = (page: StockPageData): StockHolding => ({ qty: 2, avg: Math.round(page.prevClose * 1.0093 * 20) / 20 })
+export type StockHolding = { qty: number; avg: number; tp: number; sl: number }
+/** To the exchange's 0.05 tick. */
+const tick = (n: number) => Math.round(n * 20) / 20
+export const stockHolding = (page: StockPageData): StockHolding => {
+  const avg = tick(page.prevClose * 1.0093)
+  // The TP/SL when the "TP/SL set on holding" setting is on: take profit 8% above the average, stop loss 5% below.
+  return { qty: 2, avg, tp: tick(avg * 1.08), sl: tick(avg * 0.95) }
+}
 ```
 
 ### `src/flows/stocks/index.tsx`
@@ -31118,6 +31153,8 @@ export const stocks: Flow = {
   options: [
     // The stock page's "Your Holdings" card (28 Nov, the user, from the live app): shown when the user holds the stock.
     { id: 'stockHolding', group: 'Stock page', label: 'Holds this stock', picker: 'toggle', values: [{ value: 'off', label: 'Off' }, { value: 'on', label: 'On' }], default: 'on', floatOn: ['stocks-32', 'stocks-33', 'stocks-34'] },
+    // The holding's TP/SL: off = the grey "Protect your order" strip, on = the green applied strip (28 Nov, user).
+    { id: 'stockTpsl', group: 'Stock page', label: 'TP/SL set on holding', picker: 'toggle', values: [{ value: 'off', label: 'Off' }, { value: 'on', label: 'On' }], default: 'off', floatOn: ['stocks-32', 'stocks-33', 'stocks-34'] },
     // Jojo's homepage versions (designs/lemonn-us-stocks-design.html "Homepage version"): applies to every Home screen.
     {
       id: 'homeVersion',
@@ -33323,10 +33360,14 @@ export function IdeaPage({ basket: id, onStock, onIdea }: IdeaPageProps) {
 .futureDate { font: var(--l3-text-description-14); color: var(--l3-content-secondary); }
 .futurePrice { border-top: 1px solid var(--l3-border-light); font: var(--l3-text-label-14); color: var(--l3-content-primary); }
 
-/* Your Holdings: the stats 12 from the card's edge; a hairline between the two rows; the footer's line (label 12). */
+/* Your Holdings: the stats 12 from the card's edge; a hairline between the two rows; the TP/SL strip as on the F&O
+   positions card (grey until set). */
 .holdingStats { padding: var(--l3-spacing-12); }
 .hairline { margin: 0; border: 0; border-top: 1px solid var(--l3-border-light); }
-.protect { flex: 1; min-width: 0; font: var(--l3-text-label-12); color: var(--l3-content-primary); }
+.tpslStrip { background: var(--l3-surface-secondary); cursor: pointer; }
+.tpslStrip[data-set] { background: var(--l3-surface-accent-success-light); }
+.tpslCheck { color: var(--l3-content-accent-success-default); }
+.tpslText { min-width: 0; font: var(--l3-text-label-12); color: var(--l3-content-primary); }
 ```
 
 ### `src/flows/stocks/screens/StockPage.tsx`
@@ -33410,6 +33451,7 @@ export function StockPage({ tab: initialTab = 'overview', scrollTo = 'top', rang
   const price = page.price[exchange]
   // "Holds this stock" (Stock page setting): the Overview starts with Your Holdings.
   const holds = useFlowOption('stocks', 'stockHolding', 'on') === 'on'
+  const tpslSet = useFlowOption('stocks', 'stockTpsl', 'off') === 'on'
   const fno = stockFno(page.symbol, page.price.NSE)
   // A stock opened on F&O that has none (another stock tapped since) falls back to Overview.
   const shownTab: StockTab = tab === 'fno' && !fno ? 'overview' : tab
@@ -33533,7 +33575,7 @@ export function StockPage({ tab: initialTab = 'overview', scrollTo = 'top', rang
             {shownTab === 'fno' && fno
               ? <StockFno symbol={page.symbol} fno={fno} onOption={() => onOptionChain?.()} onFuture={() => onOptionChain?.()} />
               : shownTab === 'overview'
-              ? <StockOverview page={page} price={price} aboutOpen={aboutOpen} onGlossary={onGlossary} holding={holds} onSetTpsl={onSell} />
+              ? <StockOverview page={page} price={price} aboutOpen={aboutOpen} onGlossary={onGlossary} holding={holds} tpslSet={tpslSet} onSetTpsl={onSell} />
               : <StockEvents events={page.events} shown={shown} expanded={eventsExpanded} onFilters={() => setSheet({ kind: 'filter' })} onEvent={(event) => setSheet({ kind: 'event', event })} />}
           </Inset>
         </Stack>
